@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)..\..\common\CommonProperties.properties" />
+  <PropertyGroup>
+    <ProjectGuid>{1E3E5912-B315-43A8-8415-91217892BEDA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SyncTool.FileSystem</RootNamespace>
+    <AssemblyName>SyncTool.FileSystem</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Implementation\Directory.cs" />
+    <Compile Include="Implementation\DirectoryExtensions.cs" />
+    <Compile Include="Implementation\File.cs" />
+    <Compile Include="Implementation\FileInfoExtensions.cs" />
+    <Compile Include="Implementation\FileSystemItem.cs" />
+    <Compile Include="Implementation\LocalFileSystemLoader.cs" />
+    <Compile Include="Interfaces\ChangeType.cs" />
+    <Compile Include="Interfaces\IChange.cs" />
+    <Compile Include="Interfaces\IFileSystemDiff.cs" />
+    <Compile Include="Interfaces\IFileSystemLoader.cs" />
+    <Compile Include="Interfaces\IFileSystemSnapshot.cs" />
+    <Compile Include="Interfaces\IFileSystemHistory.cs" />
+    <Compile Include="Interfaces\IHistoryManager.cs" />
+    <Compile Include="Interfaces\IGroupDiff.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

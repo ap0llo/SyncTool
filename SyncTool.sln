@@ -1,0 +1,88 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool", "SyncTool\main\SyncTool.csproj", "{7BA544F9-AE57-4D3B-8DCD-74BBFAC64AE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.FileSystem", "SyncTool.FileSystem\main\SyncTool.FileSystem.csproj", "{1E3E5912-B315-43A8-8415-91217892BEDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.FileSystem.Git", "SyncTool.FileSystem.Git\main\SyncTool.FileSystem.Git.csproj", "{142013EC-F091-4235-A5D1-04019E795146}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool", "SyncTool", "{56043B5F-C763-488B-9699-D5250B2DDB1E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool.FileSystem", "SyncTool.FileSystem", "{88AE0552-700A-4A37-A768-BABA4C4253B8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool.FileSystem.Git", "SyncTool.FileSystem.Git", "{50224086-614B-41D4-8775-9F9A9B9764A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Test", "SyncTool\test\SyncTool.Test.csproj", "{FBC69896-8B65-4C09-8B8D-634272B41DDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.FileSystem.Test", "SyncTool.FileSystem\test\SyncTool.FileSystem.Test.csproj", "{7F7F158B-EB20-4354-89D9-C415CD8E3B21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.FileSystem.Git.Test", "SyncTool.FileSystem.Git\test\SyncTool.FileSystem.Git.Test.csproj", "{4B588A94-AA4F-494E-BB35-283F09172745}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{D09F19C8-EF3C-47B4-9F1E-CD4B3AB8B752}"
+	ProjectSection(SolutionItems) = preProject
+		common\CommonProperties.properties = common\CommonProperties.properties
+		common\GlobalAssemblyInfo.cs = common\GlobalAssemblyInfo.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool.Utilities", "SyncTool.Utilities", "{72F683F1-2F75-4541-AA3D-F07A86441025}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Utilities", "SyncTool.Utilities\main\SyncTool.Utilities.csproj", "{8495C561-6553-45F8-BA04-72486273AE47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Utilities.Test", "SyncTool.Utilities\test\SyncTool.Utilities.Test.csproj", "{DA54C484-4021-4628-BBF0-DFCA543A585A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7BA544F9-AE57-4D3B-8DCD-74BBFAC64AE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BA544F9-AE57-4D3B-8DCD-74BBFAC64AE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BA544F9-AE57-4D3B-8DCD-74BBFAC64AE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BA544F9-AE57-4D3B-8DCD-74BBFAC64AE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E3E5912-B315-43A8-8415-91217892BEDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E3E5912-B315-43A8-8415-91217892BEDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E3E5912-B315-43A8-8415-91217892BEDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E3E5912-B315-43A8-8415-91217892BEDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{142013EC-F091-4235-A5D1-04019E795146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{142013EC-F091-4235-A5D1-04019E795146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{142013EC-F091-4235-A5D1-04019E795146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{142013EC-F091-4235-A5D1-04019E795146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBC69896-8B65-4C09-8B8D-634272B41DDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBC69896-8B65-4C09-8B8D-634272B41DDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBC69896-8B65-4C09-8B8D-634272B41DDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBC69896-8B65-4C09-8B8D-634272B41DDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F7F158B-EB20-4354-89D9-C415CD8E3B21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F7F158B-EB20-4354-89D9-C415CD8E3B21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F7F158B-EB20-4354-89D9-C415CD8E3B21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F7F158B-EB20-4354-89D9-C415CD8E3B21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B588A94-AA4F-494E-BB35-283F09172745}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B588A94-AA4F-494E-BB35-283F09172745}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B588A94-AA4F-494E-BB35-283F09172745}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B588A94-AA4F-494E-BB35-283F09172745}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8495C561-6553-45F8-BA04-72486273AE47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8495C561-6553-45F8-BA04-72486273AE47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8495C561-6553-45F8-BA04-72486273AE47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8495C561-6553-45F8-BA04-72486273AE47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA54C484-4021-4628-BBF0-DFCA543A585A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA54C484-4021-4628-BBF0-DFCA543A585A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA54C484-4021-4628-BBF0-DFCA543A585A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA54C484-4021-4628-BBF0-DFCA543A585A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7BA544F9-AE57-4D3B-8DCD-74BBFAC64AE8} = {56043B5F-C763-488B-9699-D5250B2DDB1E}
+		{1E3E5912-B315-43A8-8415-91217892BEDA} = {88AE0552-700A-4A37-A768-BABA4C4253B8}
+		{142013EC-F091-4235-A5D1-04019E795146} = {50224086-614B-41D4-8775-9F9A9B9764A0}
+		{FBC69896-8B65-4C09-8B8D-634272B41DDB} = {56043B5F-C763-488B-9699-D5250B2DDB1E}
+		{7F7F158B-EB20-4354-89D9-C415CD8E3B21} = {88AE0552-700A-4A37-A768-BABA4C4253B8}
+		{4B588A94-AA4F-494E-BB35-283F09172745} = {50224086-614B-41D4-8775-9F9A9B9764A0}
+		{8495C561-6553-45F8-BA04-72486273AE47} = {72F683F1-2F75-4541-AA3D-F07A86441025}
+		{DA54C484-4021-4628-BBF0-DFCA543A585A} = {72F683F1-2F75-4541-AA3D-F07A86441025}
+	EndGlobalSection
+EndGlobal
