@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SyncTool.FileSystem;
-using SyncTool.FileSystem.Git;
+
 
 namespace SyncTool
 {
@@ -13,19 +13,19 @@ namespace SyncTool
         static void Main(string[] args)
         {
 
-            using (var historyManager = new GitBasedHistoryManager(@"C:\Users\Andreas\Desktop\test2"))
-            {
-                var histories = historyManager.Histories.ToList();
-                var history = histories.First(); //historyManager.CreateHistory("test");
-
-
-                var fs = new LocalFileSystemLoader(@"D:\tmp").LoadFileSystem();
-
-                history.CreateSnapshot(fs);
-
-
-
-            }
+//            using (var historyManager = new GitBasedHistoryManager(@"C:\Users\Andreas\Desktop\test2"))
+//            {
+//                var histories = historyManager.Histories.ToList();
+//                var history = histories.First(); //historyManager.CreateHistory("test");
+//
+//
+//                var fs = new LocalFileSystemLoader(@"D:\tmp").LoadFileSystem();
+//
+//                history.CreateSnapshot(fs);
+//
+//
+//
+//            }
 
 
 

@@ -20,21 +20,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\CreateLocalDirectoryVisitorExtensions.cs" />
+    <Compile Include="Implementation\EmptyFile.cs" />
+    <Compile Include="Implementation\ILocalDirectoryExtensions.cs" />
+    <Compile Include="Implementation\LocalDirectory.cs" />
+    <Compile Include="Implementation\LocalFile.cs" />
+    <Compile Include="Implementation\CreateLocalDirectoryVisitor.cs" />
     <Compile Include="Implementation\Directory.cs" />
-    <Compile Include="Implementation\DirectoryExtensions.cs" />
     <Compile Include="Implementation\File.cs" />
-    <Compile Include="Implementation\FileInfoExtensions.cs" />
-    <Compile Include="Implementation\FileSystemItem.cs" />
-    <Compile Include="Implementation\LocalFileSystemLoader.cs" />
-    <Compile Include="Interfaces\ChangeType.cs" />
-    <Compile Include="Interfaces\IChange.cs" />
-    <Compile Include="Interfaces\IFileSystemDiff.cs" />
-    <Compile Include="Interfaces\IFileSystemLoader.cs" />
-    <Compile Include="Interfaces\IFileSystemSnapshot.cs" />
-    <Compile Include="Interfaces\IFileSystemHistory.cs" />
-    <Compile Include="Interfaces\IHistoryManager.cs" />
-    <Compile Include="Interfaces\IGroupDiff.cs" />
+    <Compile Include="Implementation\TemporaryLocalDirectory.cs" />
+    <Compile Include="Interfaces\IDirectory.cs" />
+    <Compile Include="Interfaces\ILocalDirectory.cs" />
+    <Compile Include="Interfaces\IFile.cs" />
+    <Compile Include="Interfaces\IFileSystemItem.cs" />
+    <Compile Include="Interfaces\IFileSystemVisitor.cs" />
+    <Compile Include="Interfaces\IReadableFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

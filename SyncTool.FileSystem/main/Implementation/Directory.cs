@@ -1,63 +1,88 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SyncTool.FileSystem
 {
-    public class Directory : FileSystemItem
+    public class Directory : IDirectory, IEnumerable<IFileSystemItem>
     {
+        readonly IDictionary<string, IDirectory> m_Directories;
+        readonly IDictionary<string, IFile> m_Files;
+        
 
-        readonly IDictionary<string, Directory> m_Directories = new Dictionary<string, Directory>(StringComparer.InvariantCultureIgnoreCase); 
-        readonly IDictionary<string, File> m_Files = new Dictionary<string, File>(StringComparer.InvariantCultureIgnoreCase); 
+        public string Name { get; set; }
 
-        public IEnumerable<Directory> Directories => m_Directories.Values;
+        public IEnumerable<IDirectory> Directories => m_Directories.Values;
 
-        public IEnumerable<File> Files => m_Files.Values;
+        public IEnumerable<IFile> Files => m_Files.Values;
 
-
-        public FileSystemItem this[string name]
+        public IFileSystemItem this[string name]
         {
             get
             {
-                File file;
-                if (m_Files.TryGetValue(name, out file))
+                if (FileExists(name))
                 {
-                    return file;
+                    return GetFile(name);
                 }
                 else
                 {
-                    return m_Directories[name];
+                    return GetDirectory(name);                    
                 }
             }
         }
 
+        public IDirectory GetDirectory(string name) => m_Directories[name];
 
-        public override bool Equals(object obj) => Equals(obj as Directory);
-
-        public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(this.Path);
+        public IFile GetFile(string name) => m_Files[name];
         
-        public bool Equals(Directory other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
+        public bool FileExists(string name) => m_Files.ContainsKey(name);
 
-            return StringComparer.InvariantCultureIgnoreCase.Equals(this.Path, other.Path);
+        public bool DirectoryExists(string name) => m_Directories.ContainsKey(name);
+
+
+        public Directory(string name) : this(name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
+        {
+            Name = name;
+        }
+
+        public Directory(string name, IEnumerable<IDirectory> directories, IEnumerable<IFile> files)
+        {
+            Name = name;
+            m_Directories = directories.ToDictionary(dir => dir.Name, StringComparer.InvariantCultureIgnoreCase);
+            m_Files = files.ToDictionary(file => file.Name, StringComparer.InvariantCultureIgnoreCase);
+        }
+
+        public Directory(string name, IEnumerable<IFile> files): this(name, Enumerable.Empty<IDirectory>(), files)
+        {
+            
+        }
+
+        public Directory(string name, IEnumerable<IDirectory> directories) : this(name, directories, Enumerable.Empty<IFile>())
+        {
+
         }
 
 
-        public File Add(File file)
+        public IEnumerator<IFileSystemItem> GetEnumerator()
         {
-            file.Parent = this;
-            m_Files.Add(file.Name, file);
-            return file;
+            return m_Directories.Values.Cast<IFileSystemItem>().Union(m_Files.Values).GetEnumerator();
         }
 
-        public Directory Add(Directory directory)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            directory.Parent = this;
+            return GetEnumerator();
+        }
+
+
+        public void Add(Directory directory)
+        {
             m_Directories.Add(directory.Name, directory);
-            return directory;
+        }
+
+        public void Add(IFile file)
+        {
+            m_Files.Add(file.Name, file);
         }
     }
 }

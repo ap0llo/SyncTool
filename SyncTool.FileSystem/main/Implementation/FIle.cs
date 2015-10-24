@@ -1,30 +1,25 @@
 ﻿using System;
-using static System.IO.Path;
 
 namespace SyncTool.FileSystem
 {
-    public class File : FileSystemItem, IEquatable<File>
+    public abstract class File : IFile
     {
+        
+        public string Name { get; set; }
+
         public DateTime LastWriteTime { get; set; }
 
-        public long Length { get; set; }
+        public abstract long Length { get; set; }        
 
-
-
-        public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(Path);
-
-        public override bool Equals(object obj) => Equals(obj as File);
-        
-        public bool Equals(File other)
+        protected File()
         {
-            if (other == null)
-            {
-                return false;
-            }
-
-            return StringComparer.InvariantCultureIgnoreCase.Equals(this.Path, other.Path);
+            
         }
 
+        protected File(string name)
+        {
+            this.Name = name;
+        }
 
     }
 }

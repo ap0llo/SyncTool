@@ -31,9 +31,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChangeType.cs" />
     <Compile Include="GitBasedFileSystemSnapshot.cs" />
     <Compile Include="GitBasedHistoryManager.cs" />
     <Compile Include="GitBasedFileSystemHistory.cs" />
+    <Compile Include="IChange.cs" />
+    <Compile Include="IFileSystemDiff.cs" />
+    <Compile Include="IFileSystemHistory.cs" />
+    <Compile Include="IFileSystemSnapshot.cs" />
+    <Compile Include="IGroupDiff.cs" />
+    <Compile Include="IHistoryManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TemporaryWorkingDirectory.cs" />
   </ItemGroup>
