@@ -31,6 +31,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\FileProperties.cs" />
+    <Compile Include="Implementation\FilePropertiesFile.cs" />
+    <Compile Include="Implementation\MetaFileSystemCreator.cs" />
     <Compile Include="Interfaces\ChangeType.cs" />
     <Compile Include="Implementation\GitBasedFileSystemSnapshot.cs" />
     <Compile Include="Implementation\GitBasedHistoryManager.cs" />
@@ -40,7 +43,7 @@
     <Compile Include="Interfaces\IFileSystemHistory.cs" />
     <Compile Include="Interfaces\IFileSystemSnapshot.cs" />
     <Compile Include="Interfaces\IGroupDiff.cs" />
-    <Compile Include="Interfaces\IHistoryManager.cs" />
+    <Compile Include="Interfaces\IHistoryRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Implementation\TemporaryWorkingDirectory.cs" />
   </ItemGroup>

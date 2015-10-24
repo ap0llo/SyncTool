@@ -75,7 +75,7 @@ namespace SyncTool.FileSystem
         }
 
 
-        public void Add(Directory directory)
+        public void Add(IDirectory directory)
         {
             m_Directories.Add(directory.Name, directory);
         }

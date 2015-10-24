@@ -1,9 +1,9 @@
 ﻿
 using System.Collections.Generic;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.FileSystem.Git
 {
-    public interface IHistoryManager
+    public interface IHistoryRepository
     {
                  
         IEnumerable<IFileSystemHistory> Histories { get; }
