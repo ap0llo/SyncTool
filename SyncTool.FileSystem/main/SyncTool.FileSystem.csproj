@@ -20,6 +20,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\BaseVisitor.cs" />
     <Compile Include="Implementation\CreateLocalDirectoryVisitorExtensions.cs" />
     <Compile Include="Implementation\EmptyFile.cs" />
     <Compile Include="Implementation\ILocalDirectoryExtensions.cs" />
