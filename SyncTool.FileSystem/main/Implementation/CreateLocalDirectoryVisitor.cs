@@ -6,13 +6,14 @@ using System.Runtime.CompilerServices;
 
 namespace SyncTool.FileSystem
 {
+    //TODO: Rename to something without visitor in name (that's an implementation detail)
     public class CreateLocalDirectoryVisitor
     {
         /// <summary>
         /// Creates the specified file system tree in the specified location
         /// </summary>
         /// <param name="toCreate">The file system tree to create</param>
-        /// <param name="createIn">The toCreate to create the tree in</param>
+        /// <param name="createIn">The path to create the tree in</param>
         /// <returns></returns>
         public ILocalDirectory CreateDirectory(IDirectory toCreate, string createIn)
         {

@@ -31,18 +31,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChangeType.cs" />
-    <Compile Include="GitBasedFileSystemSnapshot.cs" />
-    <Compile Include="GitBasedHistoryManager.cs" />
-    <Compile Include="GitBasedFileSystemHistory.cs" />
-    <Compile Include="IChange.cs" />
-    <Compile Include="IFileSystemDiff.cs" />
-    <Compile Include="IFileSystemHistory.cs" />
-    <Compile Include="IFileSystemSnapshot.cs" />
-    <Compile Include="IGroupDiff.cs" />
-    <Compile Include="IHistoryManager.cs" />
+    <Compile Include="Interfaces\ChangeType.cs" />
+    <Compile Include="Implementation\GitBasedFileSystemSnapshot.cs" />
+    <Compile Include="Implementation\GitBasedHistoryManager.cs" />
+    <Compile Include="Implementation\GitBasedFileSystemHistory.cs" />
+    <Compile Include="Interfaces\IChange.cs" />
+    <Compile Include="Interfaces\IFileSystemDiff.cs" />
+    <Compile Include="Interfaces\IFileSystemHistory.cs" />
+    <Compile Include="Interfaces\IFileSystemSnapshot.cs" />
+    <Compile Include="Interfaces\IGroupDiff.cs" />
+    <Compile Include="Interfaces\IHistoryManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TemporaryWorkingDirectory.cs" />
+    <Compile Include="Implementation\TemporaryWorkingDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">

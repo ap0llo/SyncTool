@@ -8,5 +8,10 @@ namespace SyncTool.FileSystem
         {
             return visitor.CreateDirectory(directory, Path.GetTempPath()).ToTemporaryDirectory();
         }
+
+        public static TemporaryLocalDirectory CreateTemporaryDirectory(this CreateLocalDirectoryVisitor visitor)
+        {
+            return visitor.CreateTemporaryDirectory(new Directory(Path.GetRandomFileName()));
+        }
     }
 }
