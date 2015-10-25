@@ -2,21 +2,21 @@
 
 namespace SyncTool.FileSystem
 {
-    public abstract class File : IFile
+    public class File : IFile
     {
         
         public string Name { get; set; }
 
         public DateTime LastWriteTime { get; set; }
 
-        public abstract long Length { get; set; }        
+        public long Length { get; set; }        
 
-        protected File()
+        public File()
         {
             
         }
 
-        protected File(string name)
+        public File(string name)
         {
             this.Name = name;
         }

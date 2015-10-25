@@ -3,11 +3,7 @@
     public class BaseVisitor<T>
     {
 
-        public virtual void Visit(IFile file, T parameter)
-        {
-            
-        }
-
+   
         public virtual void Visit(IDirectory directory, T parameter)
         {            
             foreach (var subDir in directory.Directories)
@@ -17,7 +13,7 @@
 
             foreach (var file in directory.Files)
             {
-                ((dynamic)this).Visit((dynamic)file, parameter);
+                ((dynamic)this).Visit((dynamic) file, parameter);
             }
         }
     }

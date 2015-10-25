@@ -14,7 +14,7 @@ namespace SyncTool.FileSystem.Git.Test
         public void FilePropertiesStream_returns_json_readable_stream()
         {
             var file = new EmptyFile("file1") { LastWriteTime = DateTime.Now, Length = 42};
-            var filePropertiesFile = new FilePropertiesFile(file);
+            var filePropertiesFile = FilePropertiesFile.ForFile(file);
 
             FileProperties properties;
             using (var jsonReader = new JsonTextReader(new StreamReader(filePropertiesFile.Open(FileMode.Open))))
@@ -34,7 +34,7 @@ namespace SyncTool.FileSystem.Git.Test
             foreach (var mode in Enum.GetValues(typeof(FileMode)).Cast<FileMode>().Where(m => m != FileMode.Open))
             {
                 var file = new EmptyFile("file1") { LastWriteTime = DateTime.Now, Length = 42 };
-                var filePropertiesFile = new FilePropertiesFile(file);
+                var filePropertiesFile = FilePropertiesFile.ForFile(file);
 
                 Assert.Throws<NotSupportedException>(() => filePropertiesFile.Open(mode));
             }

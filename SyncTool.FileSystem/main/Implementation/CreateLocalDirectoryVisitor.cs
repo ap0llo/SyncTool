@@ -26,7 +26,7 @@ namespace SyncTool.FileSystem
             return new LocalDirectory(Path.Combine(createIn, toCreate.Name));
         }
 
-        public override void Visit(IFile file, string parentPath)
+        public void Visit(IFile file, string parentPath)
         {
             using (System.IO.File.Create(Path.Combine(parentPath, file.Name)))
             {

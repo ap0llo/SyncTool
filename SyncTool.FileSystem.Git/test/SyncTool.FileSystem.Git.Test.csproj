@@ -59,6 +59,8 @@
     <Compile Include="FilePropertiesFileTest.cs" />
     <Compile Include="GitBasedFileSystemSnapshotTest.cs" />
     <Compile Include="MetaFileSystemCreatorTest.cs" />
+    <Compile Include="MetaFileSystemLoaderTest.cs" />
+    <Compile Include="MetaFileSystemToFileSystemConverterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TemporaryWorkingDirectoryTest.cs" />
   </ItemGroup>

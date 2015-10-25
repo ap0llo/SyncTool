@@ -20,7 +20,6 @@ namespace SyncTool.FileSystem
             return new MemoryStream(Array.Empty<byte>());
         }
 
-        public override long Length { get; set; }
       
     }
 }
