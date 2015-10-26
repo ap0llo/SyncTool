@@ -29,13 +29,12 @@ namespace SyncTool.FileSystem
         public long Length => m_FileInfo.Length;
 
         public Stream Open(FileMode mode) => m_FileInfo.Open(mode);
-        
 
-        public void Accept<T>(IFileSystemVisitor<T> visitor, T parameter)
+
+        public LocalFile(string path) : this(new FileInfo(path))
         {
-            visitor.Visit(this, parameter);
+            
         }
-
 
         public LocalFile(FileInfo fileInfo)
         {

@@ -87,23 +87,7 @@
 //
 //
 //
-//        private class FileProperties
-//        {
-//            public DateTime LastWriteTime { get; }
-//
-//            public long Length { get; }
-//
-//            public FileProperties(File file)
-//            {
-//
-//                LastWriteTime = file.LastWriteTime;
-//                Length = file.Length;
-//            }
-//
-//            public FileProperties()
-//            {                
-//            }
-//        }
+
 //
 //
 //

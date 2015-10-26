@@ -10,31 +10,12 @@
 //{
 //    public class GitBasedFileSystemSnapshotTest : TemporaryDirectory
 //    {
-//        private const string s_DummyFileName = "dummy.txt";
+
 //        
 //
 //        public GitBasedFileSystemSnapshotTest()
 //        {
-//            // create empty bare repository 
-//            Repository.Init(DirectoryInfo.FullName, true);
-//
-//            // clone repo so we can make edits
-//            using (var tempDirectory = new TemporaryDirectory())
-//            {
-//                var clonedRepoPath = Repository.Clone(DirectoryInfo.FullName, tempDirectory.DirectoryInfo.FullName);
-//
-//                // add a empty file to the repository
-//                tempDirectory.CreateFiles(s_DummyFileName);
-//
-//                // commit and push the file to the bare repository we created
-//                using (var clonedRepo = new Repository(clonedRepoPath))
-//                {
-//                    clonedRepo.Stage(s_DummyFileName);    
-//                    clonedRepo.Commit("Initial Commit", NewSignature(), NewSignature(), new CommitOptions());
-//                    
-//                    clonedRepo.Network.Push(clonedRepo.Network.Remotes["origin"], @"refs/heads/master");
-//                }
-//            }
+
 //        }
 //
 //
@@ -82,6 +63,6 @@
 //        }
 //
 //
-//        Signature NewSignature() => new Signature("SyncTool", "SyncTool@example.com", DateTimeOffset.Now);
+
 //    }
 //}

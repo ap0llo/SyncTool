@@ -13,6 +13,7 @@ namespace SyncTool
         static void Main(string[] args)
         {
 
+
 //            using (var historyManager = new GitBasedHistoryManager(@"C:\Users\Andreas\Desktop\test2"))
 //            {
 //                var histories = historyManager.Histories.ToList();

@@ -26,6 +26,18 @@ namespace SyncTool.FileSystem
             return new LocalDirectory(Path.Combine(createIn, toCreate.Name));
         }
 
+        public IFile CreateFile(IFile toCreate, string createIn)
+        {
+            if (toCreate == null)
+            {
+                throw new ArgumentNullException(nameof(toCreate));
+            }
+
+            ((dynamic)this).Visit((dynamic)toCreate, createIn);
+            return new LocalFile(Path.Combine(createIn, toCreate.Name));
+        }
+
+
         public void Visit(IFile file, string parentPath)
         {
             using (System.IO.File.Create(Path.Combine(parentPath, file.Name)))

@@ -34,6 +34,8 @@
     <Compile Include="Implementation\FileProperties.cs" />
     <Compile Include="Implementation\FilePropertiesFile.cs" />
     <Compile Include="Implementation\FileSystemConverter.cs" />
+    <Compile Include="Implementation\GitDirectory.cs" />
+    <Compile Include="Implementation\GitFile.cs" />
     <Compile Include="Implementation\MetaFileSystemCreator.cs" />
     <Compile Include="Implementation\MetaFileSystemLoader.cs" />
     <Compile Include="Implementation\MetaFileSystemToFileSystemConverter.cs" />
