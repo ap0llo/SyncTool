@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -9,6 +10,7 @@ namespace SyncTool.FileSystem
     //TODO: Rename to something without visitor in name (that's an implementation detail)
     public class CreateLocalDirectoryVisitor : BaseVisitor<string>
     {
+
         /// <summary>
         /// Creates the specified file system tree in the specified location
         /// </summary>
@@ -22,7 +24,7 @@ namespace SyncTool.FileSystem
                 throw new ArgumentNullException(nameof(toCreate));
             }
 
-            ((dynamic)this).Visit((dynamic)toCreate, createIn);            
+            VisitDynamic(toCreate, createIn);
             return new LocalDirectory(Path.Combine(createIn, toCreate.Name));
         }
 
@@ -33,7 +35,7 @@ namespace SyncTool.FileSystem
                 throw new ArgumentNullException(nameof(toCreate));
             }
 
-            ((dynamic)this).Visit((dynamic)toCreate, createIn);
+            VisitDynamic(toCreate, createIn);
             return new LocalFile(Path.Combine(createIn, toCreate.Name));
         }
 
@@ -56,7 +58,6 @@ namespace SyncTool.FileSystem
             }
         }
 
-
         public override void Visit(IDirectory directory, string parentPath)
         {
             var dirPath = Path.Combine(parentPath, directory.Name);
@@ -69,7 +70,12 @@ namespace SyncTool.FileSystem
             }
 
             base.Visit(directory, dirPath);
+        }
 
+
+        void VisitDynamic(dynamic arg, string parentPath)
+        {
+            ((dynamic)this).Visit(arg, parentPath);
         }
     }
 }
