@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SyncTool.FileSystem.Git
 {
@@ -10,47 +11,52 @@ namespace SyncTool.FileSystem.Git
     {
         public IDirectory Convert(IDirectory directory)
         {
-            var stacks = new Tuple<Stack<IDirectory>, Stack<IFile>>(new Stack<IDirectory>(), new Stack<IFile>());
+            var directories = new List<IDirectory>();
 
-            VisitDynamic(directory, stacks);
-            return stacks.Item1.Pop();
+            VisitDynamic(directory, new Stack<string>(), directories,  new List<IFile>());
+            return directories.Single();
         }
 
 
-        void Visit(IDirectory directory, Tuple<Stack<IDirectory>, Stack<IFile>> stacks)
+        void Visit(IDirectory directory, Stack<string> directoryNames, List<IDirectory> directoriesInParent,  List<IFile> filesInParent)
         {
             // visit directories and files
 
+            directoryNames.Push(directory.Name);
+
+            var directories = new List<IDirectory>();
+            var files = new List<IFile>();
+            
             foreach (var subDir in directory.Directories)
             {
-                VisitDynamic(subDir, stacks);
+                VisitDynamic(subDir, directoryNames, directories, files);
             }
 
             foreach (var file in directory.Files)
             {
-                VisitDynamic(file, stacks);
+                VisitDynamic(file, directoryNames, directories,  files);
             }
 
             // create a new directory to replace the current one
-            var newDir = new Directory(directory.Name);
+            var newDir = new Directory(directoryNames.Pop());
 
             // remove subdirectories from the stack
-            foreach (var _ in directory.Directories)
+            foreach (var dir in directories)
             {
-                newDir.Add(stacks.Item1.Pop());
+                newDir.Add(dir);
             }
 
             // get all files from the stack
-            while (stacks.Item2.Count > 0)
+            foreach (var file in files)
             {
-                newDir.Add(stacks.Item2.Pop());
+                newDir.Add(file);
             }
 
             // push new directory to the stack
-            stacks.Item1.Push(newDir);
+            directoriesInParent.Add(newDir);
         }
 
-        void Visit(FilePropertiesFile file, Tuple<Stack<IDirectory>, Stack<IFile>> stacks)
+        void Visit(FilePropertiesFile file, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent)
         {
             // load file properties
             var describedFile = new File(file.Content.Name)
@@ -59,17 +65,17 @@ namespace SyncTool.FileSystem.Git
                 Length = file.Content.Length
             };
 
-            stacks.Item2.Push(describedFile);
+            filesInParent.Add(describedFile);
         }
 
-        void Visit(IFile file, Tuple<Stack<IDirectory>, Stack<IFile>> stacks)
+        void Visit(IFile file, Stack<string> directoryNames, List<IDirectory> directories, List<IFile> files)
         {
             // ignore file instances that are not instances of FilePropertiesFile
         }
 
-        void VisitDynamic(dynamic arg, Tuple<Stack<IDirectory>, Stack<IFile>> stacks)
+        void VisitDynamic(dynamic arg, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent)
         {
-            ((dynamic) this).Visit(arg, stacks);
+            ((dynamic) this).Visit(arg, directoryNames, directoriesInParent, filesInParent);
         }
 
     }
