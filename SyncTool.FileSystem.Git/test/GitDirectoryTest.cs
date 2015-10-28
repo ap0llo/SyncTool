@@ -17,6 +17,7 @@ namespace SyncTool.FileSystem.Git.Test
         readonly TemporaryLocalDirectory m_Repository;
         readonly CreateLocalDirectoryVisitor m_DirectoryCreator;
 
+
         public GitDirectoryTest()
         {
             m_DirectoryCreator = new CreateLocalDirectoryVisitor();
@@ -115,7 +116,7 @@ namespace SyncTool.FileSystem.Git.Test
         {
             m_Repository.Dispose();
         }
-
+        
 
 
         Signature NewSignature() => new Signature("SyncTool", "SyncTool@example.com", DateTimeOffset.Now);

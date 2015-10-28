@@ -7,8 +7,8 @@ namespace SyncTool.FileSystem.Git.Test
     {
         const string s_File1 = "file1";
 
-
         readonly MetaFileSystemLoader m_Instance = new MetaFileSystemLoader();
+
 
         [Fact]
         public void Convert_replaces_files_with_FilePropertiesFile_instances()
@@ -29,5 +29,6 @@ namespace SyncTool.FileSystem.Git.Test
             }
             
         } 
+
     }
 }

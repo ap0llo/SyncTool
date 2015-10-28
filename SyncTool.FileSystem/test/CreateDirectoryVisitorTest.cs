@@ -1,52 +1,28 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using Xunit;
 using NativeDirectory = System.IO.Directory;
 using NativeFile = System.IO.File;
-using Xunit;
 
 namespace SyncTool.FileSystem.Test
 {
     public class CreateDirectoryVisitorTest
     {
-
-        private class TestReadableFile : IReadableFile
-        {
-            readonly string m_Content;
-
-            public TestReadableFile(string name, string content)
-            {
-                if (content == null)
-                {
-                    throw new ArgumentNullException(nameof(content));
-                }
-                this.m_Content = content;
-                this.Name = name;
-            }
-
-            public string Name { get; }
-
-            public DateTime LastWriteTime { get { throw new NotImplementedException();} }
-
-            public long Length { get { throw  new NotImplementedException();} }
-
-            public Stream Open(FileMode mode)
-            {
-                return new MemoryStream(Encoding.UTF8.GetBytes(m_Content));
-            }
-        }
-
-
-        private const string s_Dir1 = "dir1";
-        private const string s_Dir2 = "dir2";
-        private const string s_File1 = "file1";
+        const string s_Dir1 = "dir1";
+        const string s_Dir2 = "dir2";
+        const string s_File1 = "file1";
 
         readonly CreateLocalDirectoryVisitor m_Instance;
+
+
 
         public CreateDirectoryVisitorTest()
         {
             m_Instance = new CreateLocalDirectoryVisitor();
         }
+
+
 
         [Fact]
         public void CreateDirectory()
@@ -61,10 +37,10 @@ namespace SyncTool.FileSystem.Test
                 },
                 new Directory(s_Dir2)
             };
-            
-                     
-            m_Instance.CreateDirectory(directory, Path.GetTempPath());                  
-            
+
+
+            m_Instance.CreateDirectory(directory, Path.GetTempPath());
+
             Assert.True(NativeDirectory.Exists(Path.Combine(Path.GetTempPath(), rootName)));
             Assert.True(NativeDirectory.Exists(Path.Combine(Path.GetTempPath(), rootName, s_Dir1)));
             Assert.True(NativeFile.Exists(Path.Combine(Path.GetTempPath(), rootName, s_Dir1, s_File1)));
@@ -79,9 +55,9 @@ namespace SyncTool.FileSystem.Test
 
             var directory = new Directory(rootName)
             {
-               new TestReadableFile(s_File1, fileContent)
+                new TestReadableFile(s_File1, fileContent)
             };
-            
+
             m_Instance.CreateDirectory(directory, Path.GetTempPath());
 
             var expectedFilePath = Path.Combine(Path.GetTempPath(), rootName, s_File1);
@@ -90,22 +66,59 @@ namespace SyncTool.FileSystem.Test
             Assert.Equal(fileContent, NativeFile.ReadAllText(expectedFilePath));
         }
 
-
         [Fact]
         public void CreateTemporaryDirectory_created_directory_gets_deleted_on_dispose()
         {
+            // create temporary directory
             var dirName = Path.GetRandomFileName();
-
             var directory = new Directory(dirName);
-            
+
             var createdDir = m_Instance.CreateTemporaryDirectory(directory);
 
+            // assert that the directory was really created
             Assert.True(NativeDirectory.Exists(Path.Combine(Path.GetTempPath(), dirName)));
 
+            // dispose the temporary directory
             createdDir.Dispose();
 
+            // directory has to be gone now
             Assert.False(NativeDirectory.Exists(Path.Combine(Path.GetTempPath(), dirName)));
         }
 
+
+        /// <summary>
+        ///     Implementation of <see cref="IReadableFile" /> used for this test
+        /// </summary>
+        class TestReadableFile : IReadableFile
+        {
+            readonly string m_Content;
+
+            public string Name { get; }
+
+            public DateTime LastWriteTime
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public long Length
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public TestReadableFile(string name, string content)
+            {
+                if (content == null)
+                {
+                    throw new ArgumentNullException(nameof(content));
+                }
+                m_Content = content;
+                Name = name;
+            }
+
+            public Stream Open(FileMode mode)
+            {
+                return new MemoryStream(Encoding.UTF8.GetBytes(m_Content));
+            }
+        }
     }
 }

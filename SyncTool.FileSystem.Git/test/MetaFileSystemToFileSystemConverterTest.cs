@@ -7,10 +7,11 @@ namespace SyncTool.FileSystem.Git.Test
     public class MetaFileSystemToFileSystemConverterTest
     {
         const string s_Dir1 = "dir1";
-        private const string s_Dir2 = "dir2";
+        const string s_Dir2 = "dir2";
 
         readonly MetaFileSystemCreator m_MetaFileSystemCreator = new MetaFileSystemCreator();
         readonly MetaFileSystemToFileSystemConverter m_Instance = new MetaFileSystemToFileSystemConverter();
+
 
         [Fact]
         public void Convert()
@@ -60,5 +61,6 @@ namespace SyncTool.FileSystem.Git.Test
             Assert.Equal(expected.LastWriteTime, actual.LastWriteTime);
             Assert.Equal(expected.LastWriteTime, actual.LastWriteTime);
         }
+
     }
 }

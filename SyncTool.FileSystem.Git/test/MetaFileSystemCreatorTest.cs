@@ -12,6 +12,7 @@ namespace SyncTool.FileSystem.Git.Test
 
         readonly MetaFileSystemCreator m_Instance = new MetaFileSystemCreator();
 
+
         [Fact]
         public void CreateMetaDirectory_with_a_single_file()
         {
@@ -27,7 +28,6 @@ namespace SyncTool.FileSystem.Git.Test
 
             Assert.True(metaFileSystem.FileExists(s_File1 + FilePropertiesFile.FileNameSuffix));            
         }
-
 
         [Fact]
         public void CreateMetaDirectory_with_directories_and_files()
@@ -62,7 +62,7 @@ namespace SyncTool.FileSystem.Git.Test
         }
 
 
-
+        
         Mock<IFile> CreateFileMock(string name, DateTime lastWriteTime, long length)
         {
             var fileMock = new Mock<IFile>();
@@ -72,8 +72,6 @@ namespace SyncTool.FileSystem.Git.Test
 
             return fileMock;
         }
-
-
-
+        
     }
 }
