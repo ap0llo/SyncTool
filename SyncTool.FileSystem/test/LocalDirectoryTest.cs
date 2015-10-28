@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using Xunit;
+using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.FileSystem.Test
 {
@@ -11,7 +12,7 @@ namespace SyncTool.FileSystem.Test
 
 
         [Fact]
-        public void LoadFileSystem_from_flat_directory_containing_only_files()
+        public void Flat_directory_containing_only_files()
         {
             var fileNames = new[] {"file1", "file2.ext", "file3"};
 
@@ -32,7 +33,7 @@ namespace SyncTool.FileSystem.Test
         }
 
         [Fact]
-        public void LoadFileSystem_from_flat_directory_containing_only_directories()
+        public void Flat_directory_containing_only_directories()
         {
             var dirNames = new[] {"dir1", "dir2", "dir3"};
 
@@ -56,7 +57,7 @@ namespace SyncTool.FileSystem.Test
         }
 
         [Fact]
-        public void LoadFileSystem_sets_Name_to_name_of_directory()
+        public void Name_is_set_to_name_of_directory()
         {
             var dirInfo = new DirectoryInfo(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             dirInfo.Create();
@@ -66,5 +67,7 @@ namespace SyncTool.FileSystem.Test
 
             dirInfo.Delete(true);
         }
+
+       
     }
 }

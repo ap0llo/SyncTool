@@ -51,7 +51,7 @@ namespace SyncTool.FileSystem.Git.Test
         }
 
         [Fact]
-        public void Dispose_deltes_the_working_directory()
+        public void Dispose_deletes_the_working_directory()
         {
             var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master");
             Assert.True(IODirectory.Exists(instance.Location));
