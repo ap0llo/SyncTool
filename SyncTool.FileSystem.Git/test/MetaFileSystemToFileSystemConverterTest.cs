@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using Xunit;
 
@@ -26,7 +27,7 @@ namespace SyncTool.FileSystem.Git.Test
                 new Directory(s_Dir1)
                 {
                     file2,
-                    file3
+                    file3                    
                 },
                 new Directory(s_Dir2)
                 {
@@ -50,9 +51,28 @@ namespace SyncTool.FileSystem.Git.Test
             AssertFileEquals(file1, convertedFileSystem.GetFile(file1.Name));
             AssertFileEquals(file2, convertedFileSystem.GetDirectory(s_Dir1).GetFile(file2.Name));
             AssertFileEquals(file3, convertedFileSystem.GetDirectory(s_Dir1).GetFile(file3.Name));
-            AssertFileEquals(file4, convertedFileSystem.GetDirectory(s_Dir2).GetFile(file4.Name));
-            
-            
+            AssertFileEquals(file4, convertedFileSystem.GetDirectory(s_Dir2).GetFile(file4.Name));   
+                               
+        } 
+
+
+        [Fact]
+        public void Convert_name_in_directory_properties_file_overrides_directory_name()
+        {            
+            var metaFileSystem = new Directory("root")
+            {
+                new Directory(Path.GetRandomFileName())
+                {
+                    new DirectoryPropertiesFile(DateTime.Now, new DirectoryProperties() { Name = s_Dir2})
+                },
+                new DirectoryPropertiesFile(DateTime.Now, new DirectoryProperties() { Name = s_Dir1})
+            };
+
+            var convertedFileSystem = m_Instance.Convert(metaFileSystem);
+            Assert.Empty(convertedFileSystem.Files);
+            Assert.Equal(s_Dir1, convertedFileSystem.Name);
+            Assert.Equal(1, convertedFileSystem.Directories.Count());
+            Assert.Equal(s_Dir2, convertedFileSystem.Directories.Single().Name);
         }
 
 

@@ -68,6 +68,15 @@ namespace SyncTool.FileSystem.Git
             filesInParent.Add(describedFile);
         }
 
+        void Visit(DirectoryPropertiesFile file, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent)
+        {
+            // replace name of parent directory with the name from the properties file
+            directoryNames.Pop();
+            directoryNames.Push(file.Content.Name);
+        }
+
+
+
         void Visit(IFile file, Stack<string> directoryNames, List<IDirectory> directories, List<IFile> files)
         {
             // ignore file instances that are not instances of FilePropertiesFile

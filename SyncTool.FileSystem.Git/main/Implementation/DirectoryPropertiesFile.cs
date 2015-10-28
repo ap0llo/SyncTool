@@ -21,7 +21,8 @@ namespace SyncTool.FileSystem.Git
             LastWriteTime = DateTime.Now;
         }
 
-        private DirectoryPropertiesFile(DateTime lastWriteTime, DirectoryProperties content)
+        // constructor needs to be internal because it is used by tests
+        internal DirectoryPropertiesFile(DateTime lastWriteTime, DirectoryProperties content)
         {            
             Content = content;
             LastWriteTime = lastWriteTime;
