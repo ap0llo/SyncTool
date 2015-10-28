@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Moq;
 using Xunit;
 
 namespace SyncTool.FileSystem.Git.Test
@@ -12,7 +13,7 @@ namespace SyncTool.FileSystem.Git.Test
 
         [Fact]
         public void Convert_replaces_files_with_FilePropertiesFile_instances()
-        {            
+        {
             var input = new Directory(Path.GetRandomFileName())
             {
                 FilePropertiesFile.ForFile(new EmptyFile(s_File1))
@@ -22,13 +23,32 @@ namespace SyncTool.FileSystem.Git.Test
             using (var temporaryDirecoty = directoryCreator.CreateTemporaryDirectory(input))
             {
                 var metaFs = m_Instance.Convert(temporaryDirecoty);
-                
+
                 Assert.Empty(metaFs.Directories);
                 Assert.True(metaFs.GetFile(s_File1 + FilePropertiesFile.FileNameSuffix) is FilePropertiesFile);
-
             }
-            
-        } 
+        }
 
+        [Fact]
+        public void Convert_detection_of_files_is_case_invariant()
+        {
+            var file1 = new EmptyFile(s_File1);
+            var filePropertiesFile = FilePropertiesFile.ForFile(file1);
+
+
+            var mock = new Mock<IReadableFile>();
+            mock.Setup(f => f.Name).Returns(file1.Name + FilePropertiesFile.FileNameSuffix.ToUpper());
+            mock.Setup(f => f.Open(FileMode.Open)).Returns(filePropertiesFile.Open(FileMode.Open));
+
+            var directoryCreator = new CreateLocalDirectoryVisitor();
+            using (var temporaryDirecoty = directoryCreator.CreateTemporaryDirectory(new Directory(Path.GetRandomFileName()) {mock.Object}))
+            {
+                var metaFs = m_Instance.Convert(temporaryDirecoty);
+
+                Assert.Empty(metaFs.Directories);
+                Assert.True(metaFs.GetFile(s_File1 + FilePropertiesFile.FileNameSuffix) is FilePropertiesFile);
+            }
+
+        }
     }
 }

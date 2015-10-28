@@ -11,10 +11,10 @@ namespace SyncTool.FileSystem.Git
         public void Visit(IReadableFile file, Tuple<Stack<IDirectory>, Stack<IFile>> stacks)
         {
             // replace all files which's name ends with .SyncTool.json with a FilePropertiesFile
-            if (file.Name.EndsWith(FilePropertiesFile.FileNameSuffix))
+            if (file.Name.EndsWith(FilePropertiesFile.FileNameSuffix, StringComparison.InvariantCultureIgnoreCase))
             {
                 stacks.Item2.Push(FilePropertiesFile.Load(file));
-            }
+            }            
             else
             {
                 // leave other files unchanged

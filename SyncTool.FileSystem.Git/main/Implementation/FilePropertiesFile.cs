@@ -72,7 +72,7 @@ namespace SyncTool.FileSystem.Git
                 throw new ArgumentNullException(nameof(file));
             }
 
-            if (!file.Name.EndsWith(FileNameSuffix))
+            if (!file.Name.EndsWith(FileNameSuffix, StringComparison.InvariantCultureIgnoreCase))
             {
                 throw new ArgumentException($"File name Name must end with {FileNameSuffix}", nameof(file));
             }
