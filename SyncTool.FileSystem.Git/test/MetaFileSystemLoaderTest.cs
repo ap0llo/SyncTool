@@ -7,7 +7,7 @@ namespace SyncTool.FileSystem.Git.Test
     public class MetaFileSystemLoaderTest
     {
         const string s_File1 = "file1";
-
+        
         readonly MetaFileSystemLoader m_Instance = new MetaFileSystemLoader();
 
 
@@ -30,7 +30,7 @@ namespace SyncTool.FileSystem.Git.Test
         }
 
         [Fact]
-        public void Convert_detection_of_files_is_case_invariant()
+        public void Convert_detection_of_file_properties_files_is_case_invariant()
         {
             var file1 = new EmptyFile(s_File1);
             var filePropertiesFile = FilePropertiesFile.ForFile(file1);
@@ -50,5 +50,47 @@ namespace SyncTool.FileSystem.Git.Test
             }
 
         }
+
+
+        [Fact]
+        public void Convert_replaces_files_with_DirectoryPropertiesFile_instances()
+        {
+            var input = new Directory(Path.GetRandomFileName());
+            input.Add(DirectoryPropertiesFile.ForDirectory(input));
+
+
+            var directoryCreator = new CreateLocalDirectoryVisitor();
+            using (var temporaryDirecoty = directoryCreator.CreateTemporaryDirectory(input))
+            {
+                var metaFs = m_Instance.Convert(temporaryDirecoty);
+
+                Assert.Empty(metaFs.Directories);
+                Assert.True(metaFs.GetFile(DirectoryPropertiesFile.FileName) is DirectoryPropertiesFile);
+            }
+        }
+
+        [Fact]
+        public void Convert_detection_of_directory_properties_files_is_case_invariant()
+        {
+            var directory = new Directory(Path.GetRandomFileName());
+            var directoryPropertiesFile = DirectoryPropertiesFile.ForDirectory(directory);
+            
+            var mock = new Mock<IReadableFile>();
+            mock.Setup(f => f.Name).Returns(DirectoryPropertiesFile.FileName.ToUpper());
+            mock.Setup(f => f.Open(FileMode.Open)).Returns(directoryPropertiesFile.Open(FileMode.Open));
+
+            directory.Add(mock.Object);
+
+            var directoryCreator = new CreateLocalDirectoryVisitor();
+            using (var temporaryDirecoty = directoryCreator.CreateTemporaryDirectory(directory))
+            {
+                var metaFs = m_Instance.Convert(temporaryDirecoty);
+
+                Assert.Empty(metaFs.Directories);
+                Assert.True(metaFs.GetFile(DirectoryPropertiesFile.FileName) is DirectoryPropertiesFile);
+            }
+
+        }
+
     }
 }

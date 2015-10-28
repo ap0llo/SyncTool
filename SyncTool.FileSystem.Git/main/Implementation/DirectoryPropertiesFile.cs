@@ -12,7 +12,7 @@ namespace SyncTool.FileSystem.Git
         /// <summary>
         /// The name of the file
         /// </summary>
-        public const string FileName = "Directory.SyncTool.json";
+        public const string FileName = "SyncToolDirectoryInfo.json";
 
 
         private DirectoryPropertiesFile(IDirectory directory)

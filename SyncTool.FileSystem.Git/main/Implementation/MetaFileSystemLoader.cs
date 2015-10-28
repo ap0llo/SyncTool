@@ -14,7 +14,11 @@ namespace SyncTool.FileSystem.Git
             if (file.Name.EndsWith(FilePropertiesFile.FileNameSuffix, StringComparison.InvariantCultureIgnoreCase))
             {
                 stacks.Item2.Push(FilePropertiesFile.Load(file));
-            }            
+            }   
+            else if (file.Name.Equals(DirectoryPropertiesFile.FileName, StringComparison.InvariantCultureIgnoreCase))
+            {
+                stacks.Item2.Push(DirectoryPropertiesFile.Load(file));
+            }         
             else
             {
                 // leave other files unchanged

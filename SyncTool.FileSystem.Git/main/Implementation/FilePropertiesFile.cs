@@ -11,7 +11,7 @@ namespace SyncTool.FileSystem.Git
         /// <summary>
         /// The suffix used to identify file properties files 
         /// </summary>
-        public const string FileNameSuffix = ".SyncTool.json";
+        public const string FileNameSuffix = ".SyncToolFileInfo.json";
         
 
         private FilePropertiesFile(IFile file)
