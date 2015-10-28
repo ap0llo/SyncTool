@@ -24,9 +24,10 @@ namespace SyncTool.FileSystem.Git.Test
             var metaFileSystem = m_Instance.CreateMetaDirectory(directory);
 
             Assert.Equal(0, metaFileSystem.Directories.Count());
-            Assert.Equal(1, metaFileSystem.Files.Count());
+            Assert.Equal(2, metaFileSystem.Files.Count());
 
-            Assert.True(metaFileSystem.FileExists(s_File1 + FilePropertiesFile.FileNameSuffix));            
+            Assert.True(metaFileSystem.FileExists(s_File1 + FilePropertiesFile.FileNameSuffix));
+            Assert.True(metaFileSystem.FileExists(DirectoryPropertiesFile.FileName));
         }
 
         [Fact]
@@ -48,17 +49,19 @@ namespace SyncTool.FileSystem.Git.Test
             var metaFileSystem = m_Instance.CreateMetaDirectory(directory);
 
             Assert.Equal(1, metaFileSystem.Directories.Count());
-            Assert.Equal(1, metaFileSystem.Files.Count());
+            Assert.Equal(1 + 1, metaFileSystem.Files.Count());
 
             Assert.True(metaFileSystem.FileExists(fileMock1.Object.Name + FilePropertiesFile.FileNameSuffix));
+            Assert.True(metaFileSystem.FileExists(DirectoryPropertiesFile.FileName));
 
             Assert.True(metaFileSystem.DirectoryExists(s_Dir1));
             var metaDir1 = metaFileSystem.GetDirectory(s_Dir1);
 
             Assert.Empty(metaDir1.Directories);
-            Assert.Equal(1, metaDir1.Files.Count());
+            Assert.Equal(2, metaDir1.Files.Count());
 
             Assert.True(metaDir1.FileExists(fileMock2.Object.Name + FilePropertiesFile.FileNameSuffix));
+            Assert.True(metaDir1.FileExists(DirectoryPropertiesFile.FileName));
         }
 
 
