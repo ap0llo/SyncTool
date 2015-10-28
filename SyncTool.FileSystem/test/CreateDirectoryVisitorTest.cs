@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Xunit;
 using NativeDirectory = System.IO.Directory;
@@ -85,6 +86,29 @@ namespace SyncTool.FileSystem.Test
             Assert.False(NativeDirectory.Exists(Path.Combine(Path.GetTempPath(), dirName)));
         }
 
+
+        [Fact]
+        public void CreateDirectoryInPlace()
+        {
+            var directory = new Directory(Path.GetRandomFileName())
+            {
+                new Directory(s_Dir1),
+                new Directory(s_Dir2),
+                new EmptyFile(s_File1)
+            };
+
+            using (var temporaryDirectory = m_Instance.CreateTemporaryDirectory())
+            {                
+                m_Instance.CreateDirectoryInPlace(directory, temporaryDirectory.Location);
+                
+                Assert.NotEqual(temporaryDirectory.Name, directory.Name);
+                Assert.Equal(directory.Directories.Count(), temporaryDirectory.Directories.Count());
+                Assert.True(directory.DirectoryExists(s_Dir1));
+                Assert.True(directory.DirectoryExists(s_Dir2));
+                Assert.Equal(directory.Files.Count(), temporaryDirectory.Files.Count());
+                Assert.True(directory.FileExists(s_File1));
+            }
+        }
 
         /// <summary>
         ///     Implementation of <see cref="IReadableFile" /> used for this test
