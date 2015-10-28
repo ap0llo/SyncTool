@@ -31,6 +31,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\DirectoryProperties.cs" />
+    <Compile Include="Implementation\DirectoryPropertiesFile.cs" />
     <Compile Include="Implementation\FileProperties.cs" />
     <Compile Include="Implementation\FilePropertiesFile.cs" />
     <Compile Include="Implementation\FileSystemConverter.cs" />
