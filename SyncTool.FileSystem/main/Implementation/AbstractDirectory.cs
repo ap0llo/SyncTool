@@ -11,9 +11,9 @@ namespace SyncTool.FileSystem
 
         public string Name { get; }
 
-        public IEnumerable<IDirectory> Directories => m_Directories.Values;
+        public virtual IEnumerable<IDirectory> Directories => m_Directories.Values;
 
-        public IEnumerable<IFile> Files => m_Files.Values;
+        public virtual IEnumerable<IFile> Files => m_Files.Values;
 
         public IFileSystemItem this[string name]
         {
@@ -35,12 +35,12 @@ namespace SyncTool.FileSystem
             m_Files = files.ToDictionary(file => file.Name, StringComparer.InvariantCultureIgnoreCase);
         }
 
-        public IDirectory GetDirectory(string name) => m_Directories[name];
+        public virtual IDirectory GetDirectory(string name) => m_Directories[name];
 
-        public IFile GetFile(string name) => m_Files[name];
+        public virtual IFile GetFile(string name) => m_Files[name];
 
-        public bool FileExists(string name) => m_Files.ContainsKey(name);
+        public virtual bool FileExists(string name) => m_Files.ContainsKey(name);
 
-        public bool DirectoryExists(string name) => m_Directories.ContainsKey(name);
+        public virtual bool DirectoryExists(string name) => m_Directories.ContainsKey(name);
     }
 }
