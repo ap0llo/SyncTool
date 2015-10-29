@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using LibGit2Sharp;
+using SyncTool.FileSystem.Local;
 using Xunit;
 
 namespace SyncTool.FileSystem.Git.Test
@@ -15,13 +16,13 @@ namespace SyncTool.FileSystem.Git.Test
         const string s_File1 = "file1";
         const string s_File2 = "file2";
         readonly TemporaryLocalDirectory m_Repository;
-        readonly CreateLocalDirectoryVisitor m_DirectoryCreator;
+        readonly LocalItemCreator m_DirectoryCreator;
 
 
 
         public GitDirectoryTest()
         {
-            m_DirectoryCreator = new CreateLocalDirectoryVisitor();
+            m_DirectoryCreator = new LocalItemCreator();
             m_Repository = m_DirectoryCreator.CreateTemporaryDirectory();
             
             RepositoryInitHelper.InitializeRepository(m_Repository.Location);            

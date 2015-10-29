@@ -1,4 +1,5 @@
 ﻿using LibGit2Sharp;
+using SyncTool.FileSystem.Local;
 
 namespace SyncTool.FileSystem.Git
 {
@@ -17,7 +18,7 @@ namespace SyncTool.FileSystem.Git
             // initialize a bare repository
             Repository.Init(location, true);
 
-            var directoryCreator = new CreateLocalDirectoryVisitor();
+            var directoryCreator = new LocalItemCreator();
 
             // clone the repository, add initial commit and push the changes back to the actual repository
             using (var tempDirectory = directoryCreator.CreateTemporaryDirectory())

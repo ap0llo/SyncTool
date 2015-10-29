@@ -20,23 +20,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Implementation\AbstractDirectory.cs" />
-    <Compile Include="Implementation\BaseVisitor.cs" />
-    <Compile Include="Implementation\CreateLocalDirectoryVisitorExtensions.cs" />
-    <Compile Include="Implementation\EmptyFile.cs" />
-    <Compile Include="Implementation\ILocalDirectoryExtensions.cs" />
-    <Compile Include="Implementation\LocalDirectory.cs" />
-    <Compile Include="Implementation\LocalFile.cs" />
-    <Compile Include="Implementation\CreateLocalDirectoryVisitor.cs" />
-    <Compile Include="Implementation\Directory.cs" />
-    <Compile Include="Implementation\File.cs" />
-    <Compile Include="Implementation\TemporaryLocalDirectory.cs" />
-    <Compile Include="Interfaces\IDirectory.cs" />
-    <Compile Include="Interfaces\ILocalDirectory.cs" />
-    <Compile Include="Interfaces\IFile.cs" />
-    <Compile Include="Interfaces\IFileSystemItem.cs" />
-    <Compile Include="Interfaces\IFileSystemVisitor.cs" />
-    <Compile Include="Interfaces\IReadableFile.cs" />
+    <Compile Include="AbstractDirectory.cs" />
+    <Compile Include="BaseVisitor.cs" />
+    <Compile Include="Local\CreateLocalDirectoryVisitorExtensions.cs" />
+    <Compile Include="EmptyFile.cs" />
+    <Compile Include="Local\LocalDirectoryExtensions.cs" />
+    <Compile Include="Local\ILocalFile.cs" />
+    <Compile Include="Local\LocalDirectory.cs" />
+    <Compile Include="Local\LocalFile.cs" />
+    <Compile Include="Local\LocalItemCreator.cs" />
+    <Compile Include="Directory.cs" />
+    <Compile Include="File.cs" />
+    <Compile Include="Local\TemporaryLocalDirectory.cs" />
+    <Compile Include="IDirectory.cs" />
+    <Compile Include="Local\ILocalDirectory.cs" />
+    <Compile Include="IFile.cs" />
+    <Compile Include="IFileSystemItem.cs" />
+    <Compile Include="IReadableFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

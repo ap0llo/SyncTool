@@ -43,8 +43,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreateDirectoryVisitorTest.cs" />
-    <Compile Include="LocalDirectoryTest.cs" />
+    <Compile Include="Local\LocalItemCreatorTest.cs" />
+    <Compile Include="Local\LocalDirectoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

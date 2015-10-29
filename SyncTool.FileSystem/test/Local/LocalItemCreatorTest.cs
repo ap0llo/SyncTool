@@ -2,25 +2,26 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using SyncTool.FileSystem.Local;
 using Xunit;
 using NativeDirectory = System.IO.Directory;
 using NativeFile = System.IO.File;
 
 namespace SyncTool.FileSystem.Test
 {
-    public class CreateDirectoryVisitorTest
+    public class LocalItemCreatorTest
     {
         const string s_Dir1 = "dir1";
         const string s_Dir2 = "dir2";
         const string s_File1 = "file1";
 
-        readonly CreateLocalDirectoryVisitor m_Instance;
+        readonly LocalItemCreator m_Instance;
 
 
 
-        public CreateDirectoryVisitorTest()
+        public LocalItemCreatorTest()
         {
-            m_Instance = new CreateLocalDirectoryVisitor();
+            m_Instance = new LocalItemCreator();
         }
 
 

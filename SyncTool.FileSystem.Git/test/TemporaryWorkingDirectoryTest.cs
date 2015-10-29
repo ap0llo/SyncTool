@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using LibGit2Sharp;
+using SyncTool.FileSystem.Local;
 using Xunit;
 
 using IOFile = System.IO.File;
@@ -18,15 +19,15 @@ namespace SyncTool.FileSystem.Git.Test
     /// <remarks>Assumes git executable is on PATH</remarks>
     public class TemporaryWorkingDirectoryTest : IDisposable
     {
-        readonly CreateLocalDirectoryVisitor m_CreateLocalDirectoryVisitor = new CreateLocalDirectoryVisitor();
+        readonly LocalItemCreator m_LocalItemCreator = new LocalItemCreator();
 
         readonly TemporaryLocalDirectory m_MasterRepository;
         readonly TemporaryLocalDirectory m_BareMasterRepository;
 
         public TemporaryWorkingDirectoryTest()
         {
-            m_MasterRepository = m_CreateLocalDirectoryVisitor.CreateTemporaryDirectory();
-            m_BareMasterRepository = m_CreateLocalDirectoryVisitor.CreateTemporaryDirectory();
+            m_MasterRepository = m_LocalItemCreator.CreateTemporaryDirectory();
+            m_BareMasterRepository = m_LocalItemCreator.CreateTemporaryDirectory();
 
             Process.Start(new ProcessStartInfo("git", "init") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
             IOFile.WriteAllText(Path.Combine(m_MasterRepository.Location, "dummy.txt"), "hello World!");

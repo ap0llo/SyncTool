@@ -1,9 +1,7 @@
 ﻿namespace SyncTool.FileSystem
 {
-    public class BaseVisitor<T>
+    public abstract class BaseVisitor<T>
     {
-
-   
         public virtual void Visit(IDirectory directory, T parameter)
         {            
             foreach (var subDir in directory.Directories)

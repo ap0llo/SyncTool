@@ -6,7 +6,6 @@ namespace SyncTool.FileSystem
     {
 
         Stream Open(FileMode mode);
-        
-
+               
     }
 }

@@ -1,21 +1,20 @@
 ﻿using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.FileSystem.Local
 {
     public static class CreateLocalDirectoryVisitorExtensions
     {
-        public static TemporaryLocalDirectory CreateTemporaryDirectory(this CreateLocalDirectoryVisitor visitor, IDirectory directory)
+        public static TemporaryLocalDirectory CreateTemporaryDirectory(this LocalItemCreator visitor, IDirectory directory)
         {
             return visitor.CreateDirectory(directory, Path.GetTempPath()).ToTemporaryDirectory();
         }
 
-        public static TemporaryLocalDirectory CreateTemporaryDirectory(this CreateLocalDirectoryVisitor visitor)
+        public static TemporaryLocalDirectory CreateTemporaryDirectory(this LocalItemCreator visitor)
         {
             return visitor.CreateTemporaryDirectory(new Directory(Path.GetRandomFileName()));
         }
 
-        public static void CreateDirectoryInPlace(this CreateLocalDirectoryVisitor visitor, IDirectory directory, string createIn)
+        public static void CreateDirectoryInPlace(this LocalItemCreator visitor, IDirectory directory, string createIn)
         {
             var name = Path.GetFileName(createIn.Trim("\\//".ToCharArray()));
             createIn = Path.GetDirectoryName(createIn);

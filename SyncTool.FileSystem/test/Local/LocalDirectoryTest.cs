@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using SyncTool.FileSystem.Local;
 using Xunit;
 using NativeDirectory = System.IO.Directory;
 
@@ -7,7 +8,7 @@ namespace SyncTool.FileSystem.Test
 {
     public class LocalDirectoryTest
     {
-        readonly CreateLocalDirectoryVisitor m_CreateLocalDirectoryVisitor = new CreateLocalDirectoryVisitor();
+        readonly LocalItemCreator m_LocalItemCreator = new LocalItemCreator();
 
 
 
@@ -16,7 +17,7 @@ namespace SyncTool.FileSystem.Test
         {
             var fileNames = new[] {"file1", "file2.ext", "file3"};
 
-            var temporaryDirectory = m_CreateLocalDirectoryVisitor.CreateTemporaryDirectory(new Directory(Path.GetRandomFileName(), fileNames.Select(name => new EmptyFile(name))));
+            var temporaryDirectory = m_LocalItemCreator.CreateTemporaryDirectory(new Directory(Path.GetRandomFileName(), fileNames.Select(name => new EmptyFile(name))));
 
             using (temporaryDirectory)
             {
@@ -37,7 +38,7 @@ namespace SyncTool.FileSystem.Test
         {
             var dirNames = new[] {"dir1", "dir2", "dir3"};
 
-            var temporaryDirectory = m_CreateLocalDirectoryVisitor.CreateTemporaryDirectory(new Directory(Path.GetRandomFileName(), dirNames.Select(dir => new Directory(dir))));
+            var temporaryDirectory = m_LocalItemCreator.CreateTemporaryDirectory(new Directory(Path.GetRandomFileName(), dirNames.Select(dir => new Directory(dir))));
 
             using (temporaryDirectory)
             {

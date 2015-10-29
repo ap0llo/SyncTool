@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SyncTool.FileSystem
+﻿namespace SyncTool.FileSystem.Local
 {
     public interface ILocalDirectory : IDirectory
     {

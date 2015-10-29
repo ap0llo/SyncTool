@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Moq;
+using SyncTool.FileSystem.Local;
 using Xunit;
 
 namespace SyncTool.FileSystem.Git.Test
@@ -19,7 +20,7 @@ namespace SyncTool.FileSystem.Git.Test
                 FilePropertiesFile.ForFile(new EmptyFile(s_File1))
             };
 
-            var directoryCreator = new CreateLocalDirectoryVisitor();
+            var directoryCreator = new LocalItemCreator();
             using (var temporaryDirecoty = directoryCreator.CreateTemporaryDirectory(input))
             {
                 var metaFs = m_Instance.Convert(temporaryDirecoty);
@@ -40,7 +41,7 @@ namespace SyncTool.FileSystem.Git.Test
             mock.Setup(f => f.Name).Returns(file1.Name + FilePropertiesFile.FileNameSuffix.ToUpper());
             mock.Setup(f => f.Open(FileMode.Open)).Returns(filePropertiesFile.Open(FileMode.Open));
 
-            var directoryCreator = new CreateLocalDirectoryVisitor();
+            var directoryCreator = new LocalItemCreator();
             using (var temporaryDirecoty = directoryCreator.CreateTemporaryDirectory(new Directory(Path.GetRandomFileName()) {mock.Object}))
             {
                 var metaFs = m_Instance.Convert(temporaryDirecoty);
@@ -59,7 +60,7 @@ namespace SyncTool.FileSystem.Git.Test
             input.Add(DirectoryPropertiesFile.ForDirectory(input));
 
 
-            var directoryCreator = new CreateLocalDirectoryVisitor();
+            var directoryCreator = new LocalItemCreator();
             using (var temporaryDirecoty = directoryCreator.CreateTemporaryDirectory(input))
             {
                 var metaFs = m_Instance.Convert(temporaryDirecoty);
@@ -81,7 +82,7 @@ namespace SyncTool.FileSystem.Git.Test
 
             directory.Add(mock.Object);
 
-            var directoryCreator = new CreateLocalDirectoryVisitor();
+            var directoryCreator = new LocalItemCreator();
             using (var temporaryDirecoty = directoryCreator.CreateTemporaryDirectory(directory))
             {
                 var metaFs = m_Instance.Convert(temporaryDirecoty);

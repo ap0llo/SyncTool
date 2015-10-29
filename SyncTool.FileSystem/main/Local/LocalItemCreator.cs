@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
 
-
-namespace SyncTool.FileSystem
+namespace SyncTool.FileSystem.Local
 {
     //TODO: Rename to something without visitor in name (that's an implementation detail)
-    public class CreateLocalDirectoryVisitor : BaseVisitor<string>
+    public class LocalItemCreator : BaseVisitor<string>
     {
 
         /// <summary>
@@ -28,7 +24,10 @@ namespace SyncTool.FileSystem
             return new LocalDirectory(Path.Combine(createIn, toCreate.Name));
         }
 
-        public IFile CreateFile(IFile toCreate, string createIn)
+        /// <summary>
+        /// Creates the specified file in the specified directory
+        /// </summary>
+        public ILocalFile CreateFile(IFile toCreate, string createIn)
         {
             if (toCreate == null)
             {

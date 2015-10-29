@@ -1,4 +1,4 @@
-﻿namespace SyncTool.FileSystem
+﻿namespace SyncTool.FileSystem.Local
 {
     public static class LocalDirectoryExtensions
     {

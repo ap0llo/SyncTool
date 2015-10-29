@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.FileSystem.Local
 {
     /// <summary>
     /// Wraps any instance of <see cref="ILocalDirectory"/> and deletes it when the wrapper is disposed

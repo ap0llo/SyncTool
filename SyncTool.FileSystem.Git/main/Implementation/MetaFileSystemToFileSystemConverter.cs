@@ -69,8 +69,6 @@ namespace SyncTool.FileSystem.Git
             directoryNames.Push(file.Content.Name);
         }
 
-
-
         void Visit(IFile file, Stack<string> directoryNames, List<IDirectory> directories, List<IFile> files)
         {
             // ignore file instances that are not instances of FilePropertiesFile

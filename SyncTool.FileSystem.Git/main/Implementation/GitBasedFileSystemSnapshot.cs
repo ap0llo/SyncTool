@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using LibGit2Sharp;
 using Newtonsoft.Json;
+using SyncTool.FileSystem.Local;
 using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.FileSystem.Git
@@ -16,7 +17,7 @@ namespace SyncTool.FileSystem.Git
         readonly JsonSerializer m_Serializer = new JsonSerializer();
         readonly MetaFileSystemLoader m_MetaFileSystemLoader = new MetaFileSystemLoader();
         readonly MetaFileSystemToFileSystemConverter m_MetaFileSystemConverter = new MetaFileSystemToFileSystemConverter();
-        readonly CreateLocalDirectoryVisitor m_DirectoryCreator = new CreateLocalDirectoryVisitor();
+        readonly LocalItemCreator m_DirectoryCreator = new LocalItemCreator();
 
         readonly Commit m_Commit;
         readonly Lazy<IDirectory> m_Directory;
@@ -44,7 +45,7 @@ namespace SyncTool.FileSystem.Git
         
         public static GitBasedFileSystemSnapshot Create(Repository repository, Branch branch, Directory rootDirectory)
         {
-            var directoryCreator = new CreateLocalDirectoryVisitor();
+            var directoryCreator = new LocalItemCreator();
             var metaFileSystemCreator = new MetaFileSystemCreator();
 
             string commitId;

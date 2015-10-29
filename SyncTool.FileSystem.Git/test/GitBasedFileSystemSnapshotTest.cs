@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using Fluent.IO;
 using LibGit2Sharp;
+using SyncTool.FileSystem.Local;
 using Xunit;
 
 namespace SyncTool.FileSystem.Git.Test
@@ -10,7 +11,7 @@ namespace SyncTool.FileSystem.Git.Test
     public class GitBasedFileSystemSnapshotTest : IDisposable
     {
         
-        readonly CreateLocalDirectoryVisitor m_DirectoryCreator = new CreateLocalDirectoryVisitor();
+        readonly LocalItemCreator m_DirectoryCreator = new LocalItemCreator();
         readonly TemporaryLocalDirectory m_TempDirectory;
 
 

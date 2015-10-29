@@ -1,11 +1,12 @@
 ﻿using System;
 using LibGit2Sharp;
+using SyncTool.FileSystem.Local;
 
 namespace SyncTool.FileSystem.Git
 {
     public class TemporaryWorkingDirectory : IDisposable
     {
-        readonly CreateLocalDirectoryVisitor m_CreateLocalDirectoryVisitor = new CreateLocalDirectoryVisitor();
+        readonly LocalItemCreator m_LocalItemCreator = new LocalItemCreator();
         readonly Repository m_Repository;
         readonly TemporaryLocalDirectory m_TempDirectory;
 
@@ -17,7 +18,7 @@ namespace SyncTool.FileSystem.Git
 
         public TemporaryWorkingDirectory(string sourceUrl, string branchName)
         {
-            m_TempDirectory = m_CreateLocalDirectoryVisitor.CreateTemporaryDirectory();
+            m_TempDirectory = m_LocalItemCreator.CreateTemporaryDirectory();
 
             Repository.Clone(sourceUrl, m_TempDirectory.Location, new CloneOptions {BranchName = branchName, Checkout = true});
             m_Repository = new Repository(m_TempDirectory.Location);

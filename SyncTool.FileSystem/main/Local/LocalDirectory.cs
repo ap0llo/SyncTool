@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.FileSystem.Local
 {
     public class LocalDirectory : ILocalDirectory
     {
         readonly IDictionary<string, IDirectory> m_Directories = new Dictionary<string, IDirectory>(StringComparer.InvariantCultureIgnoreCase);
-        protected readonly DirectoryInfo m_DirectoryInfo;
         readonly IDictionary<string, IFile> m_Files = new Dictionary<string, IFile>(StringComparer.InvariantCultureIgnoreCase);
+        readonly DirectoryInfo m_DirectoryInfo;
 
 
 
@@ -76,11 +75,9 @@ namespace SyncTool.FileSystem
             return m_Files[name];
         }
 
-
         public bool FileExists(string name) => System.IO.File.Exists(Path.Combine(m_DirectoryInfo.FullName, name));
 
         public bool DirectoryExists(string name) => System.IO.Directory.Exists(Path.Combine(m_DirectoryInfo.FullName, name));
-
 
 
         void RefreshDirectories()
@@ -94,7 +91,6 @@ namespace SyncTool.FileSystem
             m_DirectoryInfo.Refresh();
             UpdateValueCache(m_DirectoryInfo.GetFiles(), m_Files, fileInfo => fileInfo.Name, fileInfo => new LocalFile(fileInfo));
         }
-
 
 
         static void UpdateValueCache<TValue, TMappedValue>(IEnumerable<TValue> values, IDictionary<string, TMappedValue> mappedValues,
@@ -112,5 +108,6 @@ namespace SyncTool.FileSystem
                 mappedValues.Add(name, mapper(valuesDict[name]));
             }
         }
+
     }
 }
