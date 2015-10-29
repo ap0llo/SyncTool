@@ -41,6 +41,8 @@
     <Compile Include="Implementation\MetaFileSystemCreator.cs" />
     <Compile Include="Implementation\MetaFileSystemLoader.cs" />
     <Compile Include="Implementation\MetaFileSystemToFileSystemConverter.cs" />
+    <Compile Include="Implementation\RepositoryInitHelper.cs" />
+    <Compile Include="Implementation\SignatureHelper.cs" />
     <Compile Include="Interfaces\ChangeType.cs" />
     <Compile Include="Implementation\GitBasedFileSystemSnapshot.cs" />
     <Compile Include="Implementation\GitBasedHistoryManager.cs" />
