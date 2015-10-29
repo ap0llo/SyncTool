@@ -49,10 +49,7 @@ namespace SyncTool.FileSystem.Git
 
             string commitId;
             using (var workingRepository = new TemporaryWorkingDirectory(repository.Info.Path, branch.Name))
-            {
-
-                System.Diagnostics.Process.Start(workingRepository.Location);
-
+            {                 
                 var snapshotDirectoryPath = Path.Combine(workingRepository.Location, s_SnapshotDirectoryName);
                 if (NativeDirectory.Exists(snapshotDirectoryPath))
                 {
