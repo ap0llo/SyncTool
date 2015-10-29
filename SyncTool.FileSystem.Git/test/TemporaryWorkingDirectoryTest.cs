@@ -31,10 +31,10 @@ namespace SyncTool.FileSystem.Git.Test
             Process.Start(new ProcessStartInfo("git", "init") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
             IOFile.WriteAllText(Path.Combine(m_MasterRepository.Location, "dummy.txt"), "hello World!");
 
-            Process.Start(new ProcessStartInfo("git", "add dummy.txt") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden }).WaitForExit();
-            Process.Start(new ProcessStartInfo("git", "commit -m Commit") { WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden }).WaitForExit();
+            Process.Start(new ProcessStartInfo("git", "add dummy.txt") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
+            Process.Start(new ProcessStartInfo("git", "commit -m Commit") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
 
-            Process.Start(new ProcessStartInfo("git", $"clone \"{m_MasterRepository.Location}\" \"{m_BareMasterRepository.Location}\" --bare") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden }).WaitForExit();
+            Process.Start(new ProcessStartInfo("git", $"clone \"{m_MasterRepository.Location}\" \"{m_BareMasterRepository.Location}\" --bare") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
         }
 
 

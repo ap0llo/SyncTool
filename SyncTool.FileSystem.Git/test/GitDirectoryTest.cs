@@ -23,26 +23,8 @@ namespace SyncTool.FileSystem.Git.Test
         {
             m_DirectoryCreator = new CreateLocalDirectoryVisitor();
             m_Repository = m_DirectoryCreator.CreateTemporaryDirectory();
-
-            // create empty bare repository 
-            Repository.Init(m_Repository.Location, true);
-
-            using (var tempDirectory = m_DirectoryCreator.CreateTemporaryDirectory())
-            {
-                var clonedRepoPath = Repository.Clone(m_Repository.Location, tempDirectory.Location);
-
-                // add a empty file to the repository
-                m_DirectoryCreator.CreateFile(new EmptyFile(s_DummyFileName), tempDirectory.Location);
-
-                // commit and push the file to the bare repository we created
-                using (var clonedRepo = new Repository(clonedRepoPath))
-                {
-                    clonedRepo.Stage(s_DummyFileName);                    
-                    clonedRepo.Commit("Initial Commit", SignatureHelper.NewSignature(), SignatureHelper.NewSignature(), new CommitOptions());
-
-                    clonedRepo.Network.Push(clonedRepo.Network.Remotes["origin"], @"refs/heads/master");
-                }
-            }
+            
+            RepositoryInitHelper.InitializeRepository(m_Repository.Location);            
         }
 
         
@@ -58,7 +40,7 @@ namespace SyncTool.FileSystem.Git.Test
                 Assert.Equal(m_Repository.Name, gitDirectory.Name);
                 Assert.Empty(gitDirectory.Directories);
                 Assert.Single(gitDirectory.Files);
-                Assert.True(gitDirectory.FileExists(s_DummyFileName));
+                Assert.True(gitDirectory.FileExists(RepositoryInitHelper.RepositoryInfoFileName));
             }
         }
 
@@ -68,8 +50,7 @@ namespace SyncTool.FileSystem.Git.Test
             // arrange
             string commitId;
             using (var workingDirectory = new TemporaryWorkingDirectory(m_Repository.Location, "master"))
-            {
-                
+            {                
                 var directory = new Directory(Path.GetFileName(workingDirectory.Location))
                 {
                     new Directory(s_Dir1)
@@ -83,7 +64,7 @@ namespace SyncTool.FileSystem.Git.Test
                     }
                 };
 
-                System.IO.File.Delete(Path.Combine(workingDirectory.Location, s_DummyFileName));
+                System.IO.File.Delete(Path.Combine(workingDirectory.Location, RepositoryInitHelper.RepositoryInfoFileName));
 
                 m_DirectoryCreator.CreateDirectory(directory, Path.GetDirectoryName(workingDirectory.Location));
                 commitId = workingDirectory.Commit();

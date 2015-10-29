@@ -5,9 +5,9 @@ namespace SyncTool.FileSystem.Git.Test
 {
     public class FilePropertiesTest
     {
-        FileProperties instance1;
-        FileProperties instance2;
-        FileProperties instance3;
+        readonly FileProperties m_Instance1;
+        readonly FileProperties m_Instance2;
+        readonly FileProperties m_Instance3;
 
 
         public FilePropertiesTest()
@@ -16,22 +16,22 @@ namespace SyncTool.FileSystem.Git.Test
             var lastWriteTime = DateTime.Now;
             var length = 1234;
 
-            instance1 = new FileProperties() { Name = name, LastWriteTime = lastWriteTime, Length = length };
-            instance2 = new FileProperties() { Name = name, LastWriteTime = lastWriteTime, Length = length };
-            instance3 = new FileProperties() { Name = name.ToUpper(), LastWriteTime = lastWriteTime, Length = length };
+            m_Instance1 = new FileProperties() { Name = name, LastWriteTime = lastWriteTime, Length = length };
+            m_Instance2 = new FileProperties() { Name = name, LastWriteTime = lastWriteTime, Length = length };
+            m_Instance3 = new FileProperties() { Name = name.ToUpper(), LastWriteTime = lastWriteTime, Length = length };
         }
 
 
         [Fact]
         public void Equals_Returns_true_if_all_properties_are_equal()
         {            
-            Assert.Equal(instance1, instance2);
+            Assert.Equal(m_Instance1, m_Instance2);
         }
 
         [Fact]
         public void Equals_treats_the_name_case_invariant()
         {
-            Assert.Equal(instance2, instance3);
+            Assert.Equal(m_Instance2, m_Instance3);
         }
 
         [Fact]

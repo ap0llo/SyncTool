@@ -9,8 +9,7 @@ namespace SyncTool.FileSystem.Git.Test
 {
     public class GitBasedFileSystemSnapshotTest : IDisposable
     {
-        const string s_DummyFileName = "dummy.txt";
-
+        
         readonly CreateLocalDirectoryVisitor m_DirectoryCreator = new CreateLocalDirectoryVisitor();
         readonly TemporaryLocalDirectory m_TempDirectory;
 
@@ -19,25 +18,7 @@ namespace SyncTool.FileSystem.Git.Test
         public GitBasedFileSystemSnapshotTest()
         {
             m_TempDirectory = m_DirectoryCreator.CreateTemporaryDirectory();
-
-            Repository.Init(m_TempDirectory.Location, true);
-
-            using (var tempDirectory = m_DirectoryCreator.CreateTemporaryDirectory())
-            {
-                var clonedRepoPath = Repository.Clone(m_TempDirectory.Location, tempDirectory.Location);
-
-                // add a empty file to the repository
-                m_DirectoryCreator.CreateFile(new EmptyFile(s_DummyFileName), tempDirectory.Location);
-
-                // commit and push the file to the bare repository we created
-                using (var clonedRepo = new Repository(clonedRepoPath))
-                {
-                    clonedRepo.Stage(s_DummyFileName);
-                    clonedRepo.Commit("Initial Commit", SignatureHelper.NewSignature(), SignatureHelper.NewSignature(), new CommitOptions());
-
-                    clonedRepo.Network.Push(clonedRepo.Network.Remotes["origin"], @"refs/heads/master");
-                }
-            }
+            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
         }
 
         [Fact]
