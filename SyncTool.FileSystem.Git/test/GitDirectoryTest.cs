@@ -18,6 +18,7 @@ namespace SyncTool.FileSystem.Git.Test
         readonly CreateLocalDirectoryVisitor m_DirectoryCreator;
 
 
+
         public GitDirectoryTest()
         {
             m_DirectoryCreator = new CreateLocalDirectoryVisitor();
@@ -36,8 +37,8 @@ namespace SyncTool.FileSystem.Git.Test
                 // commit and push the file to the bare repository we created
                 using (var clonedRepo = new Repository(clonedRepoPath))
                 {
-                    clonedRepo.Stage(s_DummyFileName);
-                    clonedRepo.Commit("Initial Commit", NewSignature(), NewSignature(), new CommitOptions());
+                    clonedRepo.Stage(s_DummyFileName);                    
+                    clonedRepo.Commit("Initial Commit", SignatureHelper.NewSignature(), SignatureHelper.NewSignature(), new CommitOptions());
 
                     clonedRepo.Network.Push(clonedRepo.Network.Remotes["origin"], @"refs/heads/master");
                 }
@@ -116,10 +117,5 @@ namespace SyncTool.FileSystem.Git.Test
         {
             m_Repository.Dispose();
         }
-        
-
-
-        Signature NewSignature() => new Signature("SyncTool", "SyncTool@example.com", DateTimeOffset.Now);
-
     }
 }

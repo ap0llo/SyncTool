@@ -78,7 +78,7 @@ namespace SyncTool.FileSystem.Git.Test
 
         void AssertFileEquals(IFile expected, IFile actual)
         {
-            Assert.Equal(expected.LastWriteTime, actual.LastWriteTime);
+            Assert.Equal(expected.Length, actual.Length);
             Assert.Equal(expected.LastWriteTime, actual.LastWriteTime);
         }
 

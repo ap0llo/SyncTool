@@ -8,6 +8,6 @@ namespace SyncTool.FileSystem
 
         DateTime CreationTime { get; } 
 
-        Directory RootDirectory { get; }
+        IDirectory RootDirectory { get; }
     }
 }
