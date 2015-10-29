@@ -33,6 +33,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Utilities", "SyncT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Utilities.Test", "SyncTool.Utilities\test\SyncTool.Utilities.Test.csproj", "{DA54C484-4021-4628-BBF0-DFCA543A585A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool.FileSystem.Versioning", "SyncTool.FileSystem.Versioning", "{EB11C69D-FB63-4E45-9AF4-743DDED3415F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.FileSystem.Versioning", "SyncTool.FileSystem.Versioning\main\SyncTool.FileSystem.Versioning.csproj", "{70919335-5F89-4324-BCDB-8B41C7A2CA7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.FileSystem.Versioning.Test", "SyncTool.FileSystem.Versioning\test\SyncTool.FileSystem.Versioning.Test.csproj", "{C30BAFAC-DD15-4FC6-9B8B-334F9682290D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +77,14 @@ Global
 		{DA54C484-4021-4628-BBF0-DFCA543A585A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA54C484-4021-4628-BBF0-DFCA543A585A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA54C484-4021-4628-BBF0-DFCA543A585A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70919335-5F89-4324-BCDB-8B41C7A2CA7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70919335-5F89-4324-BCDB-8B41C7A2CA7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70919335-5F89-4324-BCDB-8B41C7A2CA7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70919335-5F89-4324-BCDB-8B41C7A2CA7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C30BAFAC-DD15-4FC6-9B8B-334F9682290D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C30BAFAC-DD15-4FC6-9B8B-334F9682290D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C30BAFAC-DD15-4FC6-9B8B-334F9682290D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C30BAFAC-DD15-4FC6-9B8B-334F9682290D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,5 +98,7 @@ Global
 		{4B588A94-AA4F-494E-BB35-283F09172745} = {50224086-614B-41D4-8775-9F9A9B9764A0}
 		{8495C561-6553-45F8-BA04-72486273AE47} = {72F683F1-2F75-4541-AA3D-F07A86441025}
 		{DA54C484-4021-4628-BBF0-DFCA543A585A} = {72F683F1-2F75-4541-AA3D-F07A86441025}
+		{70919335-5F89-4324-BCDB-8B41C7A2CA7E} = {EB11C69D-FB63-4E45-9AF4-743DDED3415F}
+		{C30BAFAC-DD15-4FC6-9B8B-334F9682290D} = {EB11C69D-FB63-4E45-9AF4-743DDED3415F}
 	EndGlobalSection
 EndGlobal

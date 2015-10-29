@@ -1,33 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\LibGit2Sharp.0.21.0.176\build\net40\LibGit2Sharp.props" Condition="Exists('..\..\packages\LibGit2Sharp.0.21.0.176\build\net40\LibGit2Sharp.props')" />
   <Import Project="..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)..\..\common\CommonProperties.properties" />
   <PropertyGroup>
-    <ProjectGuid>{4B588A94-AA4F-494E-BB35-283F09172745}</ProjectGuid>
+    <ProjectGuid>{C30BAFAC-DD15-4FC6-9B8B-334F9682290D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.FileSystem.Git.Test</RootNamespace>
-    <AssemblyName>SyncTool.FileSystem.Git.Test</AssemblyName>
-    <NuGetPackageImportStamp>
+    <RootNamespace>SyncTool.FileSystem.Versioning.Test</RootNamespace>
+    <AssemblyName>SyncTool.FileSystem.Versioning.Test</AssemblyName>    
+	<NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fluent.IO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentPath.1.1.0\lib\Net4\Fluent.IO.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="LibGit2Sharp, Version=0.21.0.176, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LibGit2Sharp.0.21.0.176\lib\net40\LibGit2Sharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -56,38 +43,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MetaFileSystem\DirectoryPropertiesFileTest.cs" />
-    <Compile Include="MetaFileSystem\DirectoryPropertiesTest.cs" />
-    <Compile Include="MetaFileSystem\FilePropertiesFileTest.cs" />
-    <Compile Include="MetaFileSystem\FilePropertiesTest.cs" />
-    <Compile Include="Versioning\GitBasedFileSystemSnapshotTest.cs" />
-    <Compile Include="FileSystem\GitDirectoryTest.cs" />
-    <Compile Include="MetaFileSystem\FileSystemToMetaFileSystemConverterTest.cs" />
-    <Compile Include="MetaFileSystem\MetaFileSystemLoaderTest.cs" />
-    <Compile Include="MetaFileSystem\MetaFileSystemToFileSystemConverterTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\RepositoryInitHelperTest.cs" />
-    <Compile Include="Util\TemporaryWorkingDirectoryTest.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
-      <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
-      <Name>SyncTool.FileSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SyncTool.Utilities\main\SyncTool.Utilities.csproj">
-      <Project>{8495C561-6553-45F8-BA04-72486273AE47}</Project>
-      <Name>SyncTool.Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\main\SyncTool.FileSystem.Git.csproj">
-      <Project>{142013EC-F091-4235-A5D1-04019E795146}</Project>
-      <Name>SyncTool.FileSystem.Git</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -95,13 +54,5 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
-    <Error Condition="!Exists('..\..\packages\LibGit2Sharp.0.21.0.176\build\net40\LibGit2Sharp.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\LibGit2Sharp.0.21.0.176\build\net40\LibGit2Sharp.props'))" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

@@ -5,12 +5,12 @@ using Xunit;
 
 namespace SyncTool.FileSystem.Git.Test
 {
-    public class MetaFileSystemCreatorTest
+    public class FileSystemToMetaFileSystemConverterTest
     {
         const string s_File1 = "file1.txt";
         const string s_Dir1 = "dir1";
 
-        readonly MetaFileSystemCreator m_Instance = new MetaFileSystemCreator();
+        readonly FileSystemToMetaFileSystemConverter m_Instance = new FileSystemToMetaFileSystemConverter();
 
 
         [Fact]

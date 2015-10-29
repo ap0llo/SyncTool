@@ -6,6 +6,6 @@ namespace SyncTool.FileSystem
     {
         ChangeType Type { get; } 
 
-        File File { get; }
+        IFile File { get; }
     }
 }

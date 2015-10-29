@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SyncTool.FileSystem.Git
 {
-    public class MetaFileSystemCreator
+    public class FileSystemToMetaFileSystemConverter
     {
 
 

@@ -10,7 +10,7 @@ namespace SyncTool.FileSystem.Git.Test
         const string s_Dir1 = "dir1";
         const string s_Dir2 = "dir2";
 
-        readonly MetaFileSystemCreator m_MetaFileSystemCreator = new MetaFileSystemCreator();
+        readonly FileSystemToMetaFileSystemConverter m_FileSystemToMetaFileSystemConverter = new FileSystemToMetaFileSystemConverter();
         readonly MetaFileSystemToFileSystemConverter m_Instance = new MetaFileSystemToFileSystemConverter();
 
 
@@ -36,7 +36,7 @@ namespace SyncTool.FileSystem.Git.Test
                 file1                
             };
 
-            var metaFileSystem = m_MetaFileSystemCreator.CreateMetaDirectory(expectedFileSystem);
+            var metaFileSystem = m_FileSystemToMetaFileSystemConverter.CreateMetaDirectory(expectedFileSystem);
 
             var convertedFileSystem = m_Instance.Convert(metaFileSystem);
 

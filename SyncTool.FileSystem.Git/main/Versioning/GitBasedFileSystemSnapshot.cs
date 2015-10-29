@@ -46,7 +46,7 @@ namespace SyncTool.FileSystem.Git
         public static GitBasedFileSystemSnapshot Create(Repository repository, Branch branch, Directory rootDirectory)
         {
             var directoryCreator = new LocalItemCreator();
-            var metaFileSystemCreator = new MetaFileSystemCreator();
+            var metaFileSystemCreator = new FileSystemToMetaFileSystemConverter();
 
             string commitId;
             using (var workingRepository = new TemporaryWorkingDirectory(repository.Info.Path, branch.Name))

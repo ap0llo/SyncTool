@@ -31,32 +31,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Implementation\DirectoryProperties.cs" />
-    <Compile Include="Implementation\DirectoryPropertiesFile.cs" />
-    <Compile Include="Implementation\FileProperties.cs" />
-    <Compile Include="Implementation\FilePropertiesFile.cs" />
-    <Compile Include="Implementation\FileSystemConverter.cs" />
-    <Compile Include="Implementation\GitDirectory.cs" />
-    <Compile Include="Implementation\GitFile.cs" />
-    <Compile Include="Implementation\MetaFileSystemCreator.cs" />
-    <Compile Include="Implementation\MetaFileSystemLoader.cs" />
-    <Compile Include="Implementation\MetaFileSystemToFileSystemConverter.cs" />
-    <Compile Include="Implementation\RepositoryInitHelper.cs" />
-    <Compile Include="Implementation\SignatureHelper.cs" />
-    <Compile Include="Interfaces\ChangeType.cs" />
-    <Compile Include="Implementation\GitBasedFileSystemSnapshot.cs" />
-    <Compile Include="Implementation\GitBasedHistoryManager.cs" />
-    <Compile Include="Implementation\GitBasedFileSystemHistory.cs" />
-    <Compile Include="Interfaces\IChange.cs" />
-    <Compile Include="Interfaces\IFileSystemDiff.cs" />
-    <Compile Include="Interfaces\IFileSystemHistory.cs" />
-    <Compile Include="Interfaces\IFileSystemSnapshot.cs" />
-    <Compile Include="Interfaces\IGroupDiff.cs" />
-    <Compile Include="Interfaces\IHistoryRepository.cs" />
+    <Compile Include="MetaFileSystem\DirectoryProperties.cs" />
+    <Compile Include="MetaFileSystem\DirectoryPropertiesFile.cs" />
+    <Compile Include="MetaFileSystem\FileProperties.cs" />
+    <Compile Include="MetaFileSystem\FilePropertiesFile.cs" />
+    <Compile Include="FileSystem\GitDirectory.cs" />
+    <Compile Include="FileSystem\GitFile.cs" />
+    <Compile Include="MetaFileSystem\FileSystemToMetaFileSystemConverter.cs" />
+    <Compile Include="MetaFileSystem\MetaFileSystemLoader.cs" />
+    <Compile Include="MetaFileSystem\MetaFileSystemToFileSystemConverter.cs" />
+    <Compile Include="Util\FileSystemConverter.cs" />
+    <Compile Include="Util\RepositoryInitHelper.cs" />
+    <Compile Include="Util\SignatureHelper.cs" />
+    <Compile Include="Versioning\GitBasedFileSystemSnapshot.cs" />
+    <Compile Include="Versioning\GitBasedHistoryManager.cs" />
+    <Compile Include="Versioning\GitBasedFileSystemHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Implementation\TemporaryWorkingDirectory.cs" />
+    <Compile Include="Util\TemporaryWorkingDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\main\SyncTool.FileSystem.Versioning.csproj">
+      <Project>{70919335-5f89-4324-bcdb-8b41c7a2ca7e}</Project>
+      <Name>SyncTool.FileSystem.Versioning</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
       <Project>{1E3E5912-B315-43A8-8415-91217892BEDA}</Project>
       <Name>SyncTool.FileSystem</Name>
