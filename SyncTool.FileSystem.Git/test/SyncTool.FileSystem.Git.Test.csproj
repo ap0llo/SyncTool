@@ -57,7 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DirectoryPropertiesFileTest.cs" />
+    <Compile Include="DirectoryPropertiesTest.cs" />
     <Compile Include="FilePropertiesFileTest.cs" />
+    <Compile Include="FilePropertiesTest.cs" />
     <Compile Include="GitBasedFileSystemSnapshotTest.cs" />
     <Compile Include="GitDirectoryTest.cs" />
     <Compile Include="MetaFileSystemCreatorTest.cs" />

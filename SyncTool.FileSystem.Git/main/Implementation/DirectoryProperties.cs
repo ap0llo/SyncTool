@@ -7,7 +7,7 @@ namespace SyncTool.FileSystem.Git
     /// <summary>
     /// Serializable properties of a directory
     /// </summary>
-    public class DirectoryProperties
+    public class DirectoryProperties : IEquatable<DirectoryProperties>
     {
 
         /// <summary>
@@ -61,5 +61,19 @@ namespace SyncTool.FileSystem.Git
             return serializer.Deserialize<DirectoryProperties>(jsonReader);
         }
 
+
+        public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(this.Name);
+
+        public override bool Equals(object obj) => Equals(obj as DirectoryProperties);
+
+        public bool Equals(DirectoryProperties other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return StringComparer.InvariantCultureIgnoreCase.Equals(this.Name, other.Name);
+        }
     }
 }

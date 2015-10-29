@@ -59,13 +59,7 @@ namespace SyncTool.FileSystem.Git
         void Visit(FilePropertiesFile file, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent)
         {
             // load file properties
-            var describedFile = new File(file.Content.Name)
-            {
-                LastWriteTime = file.Content.LastWriteTime,
-                Length = file.Content.Length
-            };
-
-            filesInParent.Add(describedFile);
+            filesInParent.Add(file.Content);
         }
 
         void Visit(DirectoryPropertiesFile file, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent)

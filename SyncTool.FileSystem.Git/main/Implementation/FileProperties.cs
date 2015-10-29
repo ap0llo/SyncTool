@@ -7,7 +7,7 @@ namespace SyncTool.FileSystem.Git
     /// <summary>
     /// Class that provides a simple way to store properties of a <see cref="IFile"/>.    
     /// </summary>
-    public class FileProperties
+    public class FileProperties : IEquatable<FileProperties>, IFile
     {
 
         /// <summary>
@@ -75,6 +75,23 @@ namespace SyncTool.FileSystem.Git
             var serializer = new JsonSerializer();
 
             return serializer.Deserialize<FileProperties>(jsonReader);
+        }
+
+
+        public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(this.Name);
+
+        public override bool Equals(object obj) => Equals(obj as FileProperties);
+
+        public bool Equals(FileProperties other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return StringComparer.InvariantCultureIgnoreCase.Equals(this.Name, other.Name) &&
+                   this.LastWriteTime == other.LastWriteTime &&
+                   this.Length == other.Length;
         }
     }
 }
