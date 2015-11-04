@@ -37,39 +37,14 @@ namespace SyncTool.FileSystem.Git.Test
 
             using (var repository = new Repository(m_TempDirectory.Location))
             {
-                var snapshot = GitBasedFileSystemSnapshot.Create(repository, repository.Branches["master"], directory);
+                var snapshot = GitBasedFileSystemSnapshot.Create(repository, "master", directory);
 
-                AssertDirectoryEquals(directory, snapshot.RootDirectory);
+                FileSystemAssert.DirectoryEqual(directory, snapshot.RootDirectory);
             }
         }
 
 
-        void AssertDirectoryEquals(IDirectory expected, IDirectory actual)
-        {
-            Assert.Equal(expected.Name, actual.Name);
-            Assert.Equal(expected.Directories.Count(), actual.Directories.Count());
-            Assert.Equal(expected.Files.Count(), actual.Files.Count());
 
-            foreach (var directory in expected.Directories)
-            {
-                Assert.True(actual.DirectoryExists(directory.Name));
-                AssertDirectoryEquals(directory, actual.GetDirectory(directory.Name));
-            }
-
-            foreach (var file in expected.Files)
-            {
-                Assert.True(actual.FileExists(file.Name));
-                AssertFileEquals(file, actual.GetFile(file.Name));
-            }
-        }
-
-
-        void AssertFileEquals(IFile expected, IFile actual)
-        {
-            Assert.Equal(expected.Name, actual.Name);
-            Assert.Equal(expected.Length, actual.Length);
-            Assert.Equal(expected.LastWriteTime, actual.LastWriteTime);
-        }
 
         public void Dispose()
         {

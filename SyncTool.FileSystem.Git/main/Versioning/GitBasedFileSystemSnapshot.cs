@@ -43,13 +43,13 @@ namespace SyncTool.FileSystem.Git
 
 
         
-        public static GitBasedFileSystemSnapshot Create(Repository repository, Branch branch, Directory rootDirectory)
+        public static GitBasedFileSystemSnapshot Create(Repository repository, string branchName, Directory rootDirectory)
         {
             var directoryCreator = new LocalItemCreator();
             var metaFileSystemCreator = new FileSystemToMetaFileSystemConverter();
 
             string commitId;
-            using (var workingRepository = new TemporaryWorkingDirectory(repository.Info.Path, branch.Name))
+            using (var workingRepository = new TemporaryWorkingDirectory(repository.Info.Path, branchName))
             {                 
                 var snapshotDirectoryPath = Path.Combine(workingRepository.Location, s_SnapshotDirectoryName);
                 if (NativeDirectory.Exists(snapshotDirectoryPath))
@@ -67,7 +67,7 @@ namespace SyncTool.FileSystem.Git
                 }
                 else
                 {
-                    commitId = branch.Tip.Sha;
+                    commitId = repository.Branches[branchName].Tip.Sha;
                 }
             }
 
@@ -76,6 +76,7 @@ namespace SyncTool.FileSystem.Git
             
        }
 
+        public static bool IsSnapshot(Commit commit) => commit.Tree[s_SnapshotDirectoryName] != null;
 
         IDirectory LoadSnapshot()
         {

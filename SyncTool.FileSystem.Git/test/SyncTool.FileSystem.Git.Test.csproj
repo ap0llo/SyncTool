@@ -60,6 +60,8 @@
     <Compile Include="MetaFileSystem\DirectoryPropertiesTest.cs" />
     <Compile Include="MetaFileSystem\FilePropertiesFileTest.cs" />
     <Compile Include="MetaFileSystem\FilePropertiesTest.cs" />
+    <Compile Include="Util\FileSystemAssert.cs" />
+    <Compile Include="Versioning\GitBasedFileSystemHistoryTest.cs" />
     <Compile Include="Versioning\GitBasedFileSystemSnapshotTest.cs" />
     <Compile Include="FileSystem\GitDirectoryTest.cs" />
     <Compile Include="MetaFileSystem\FileSystemToMetaFileSystemConverterTest.cs" />
@@ -73,6 +75,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\main\SyncTool.FileSystem.Versioning.csproj">
+      <Project>{70919335-5f89-4324-bcdb-8b41c7a2ca7e}</Project>
+      <Name>SyncTool.FileSystem.Versioning</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
       <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
       <Name>SyncTool.FileSystem</Name>
