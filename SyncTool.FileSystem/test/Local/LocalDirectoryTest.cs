@@ -1,10 +1,9 @@
 ﻿using System.IO;
 using System.Linq;
-using SyncTool.FileSystem.Local;
 using Xunit;
 using NativeDirectory = System.IO.Directory;
 
-namespace SyncTool.FileSystem.Test
+namespace SyncTool.FileSystem.Local
 {
     public class LocalDirectoryTest
     {

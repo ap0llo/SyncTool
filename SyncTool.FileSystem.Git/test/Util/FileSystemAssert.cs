@@ -2,7 +2,7 @@
 using System.Linq;
 using Xunit;
 
-namespace SyncTool.FileSystem.Git.Test
+namespace SyncTool.FileSystem.Git
 {
     /// <summary>
     /// Provides assertions for SyncTool.FileSystem types 

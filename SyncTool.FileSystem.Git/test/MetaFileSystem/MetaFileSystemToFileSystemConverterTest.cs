@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Xunit;
 
-namespace SyncTool.FileSystem.Git.Test
+namespace SyncTool.FileSystem.Git
 {
     public class MetaFileSystemToFileSystemConverterTest
     {

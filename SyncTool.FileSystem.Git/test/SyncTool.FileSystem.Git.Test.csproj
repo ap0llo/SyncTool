@@ -8,7 +8,7 @@
     <ProjectGuid>{4B588A94-AA4F-494E-BB35-283F09172745}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.FileSystem.Git.Test</RootNamespace>
+    <RootNamespace>SyncTool.FileSystem.Git</RootNamespace>
     <AssemblyName>SyncTool.FileSystem.Git.Test</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>

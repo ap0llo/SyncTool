@@ -7,9 +7,9 @@
     <ProjectGuid>{C30BAFAC-DD15-4FC6-9B8B-334F9682290D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.FileSystem.Versioning.Test</RootNamespace>
-    <AssemblyName>SyncTool.FileSystem.Versioning.Test</AssemblyName>    
-	<NuGetPackageImportStamp>
+    <RootNamespace>SyncTool.FileSystem.Versioning</RootNamespace>
+    <AssemblyName>SyncTool.FileSystem.Versioning.Test</AssemblyName>
+    <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <ItemGroup>

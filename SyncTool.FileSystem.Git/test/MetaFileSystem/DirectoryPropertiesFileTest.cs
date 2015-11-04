@@ -2,9 +2,10 @@
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using SyncTool.FileSystem.Git;
 using Xunit;
 
-namespace SyncTool.FileSystem.Git.Test
+namespace SyncTool.FileSystem.Git
 {
     public class DirectoryPropertiesFileTest
     {

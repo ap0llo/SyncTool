@@ -11,7 +11,7 @@ using IODirectory = System.IO.Directory;
 
 // ReSharper disable PossibleNullReferenceException
 
-namespace SyncTool.FileSystem.Git.Test
+namespace SyncTool.FileSystem.Git
 {
     /// <summary>
     /// Test for <see cref="TemporaryWorkingDirectory"/>. 

@@ -2,12 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using SyncTool.FileSystem.Local;
 using Xunit;
 using NativeDirectory = System.IO.Directory;
 using NativeFile = System.IO.File;
 
-namespace SyncTool.FileSystem.Test
+namespace SyncTool.FileSystem.Local
 {
     public class LocalItemCreatorTest
     {

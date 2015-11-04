@@ -6,7 +6,7 @@ using LibGit2Sharp;
 using SyncTool.FileSystem.Local;
 using Xunit;
 
-namespace SyncTool.FileSystem.Git.Test
+namespace SyncTool.FileSystem.Git
 {
     public class GitDirectoryTest : IDisposable
     {

@@ -7,7 +7,7 @@
     <ProjectGuid>{FBC69896-8B65-4C09-8B8D-634272B41DDB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.Test</RootNamespace>
+    <RootNamespace>SyncTool</RootNamespace>
     <AssemblyName>SyncTool.Test</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
