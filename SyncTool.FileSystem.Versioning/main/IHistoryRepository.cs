@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 
-namespace SyncTool.FileSystem.Git
+namespace SyncTool.FileSystem.Versioning
 {
     public interface IHistoryRepository
     {

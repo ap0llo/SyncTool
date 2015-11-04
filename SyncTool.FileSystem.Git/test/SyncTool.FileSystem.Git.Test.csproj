@@ -61,6 +61,7 @@
     <Compile Include="MetaFileSystem\FilePropertiesFileTest.cs" />
     <Compile Include="MetaFileSystem\FilePropertiesTest.cs" />
     <Compile Include="Util\FileSystemAssert.cs" />
+    <Compile Include="Versioning\DirectoryBasedTest.cs" />
     <Compile Include="Versioning\GitBasedFileSystemHistoryTest.cs" />
     <Compile Include="Versioning\GitBasedFileSystemSnapshotTest.cs" />
     <Compile Include="FileSystem\GitDirectoryTest.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\RepositoryInitHelperTest.cs" />
     <Compile Include="Util\TemporaryWorkingDirectoryTest.cs" />
+    <Compile Include="Versioning\GitBasedHistoryRepositoryTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

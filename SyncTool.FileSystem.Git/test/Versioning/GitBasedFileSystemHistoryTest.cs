@@ -6,27 +6,23 @@ using Xunit;
 
 namespace SyncTool.FileSystem.Git
 {
-    public class GitBasedFileSystemHistoryTest : IDisposable
+    public class GitBasedFileSystemHistoryTest : DirectoryBasedTest
     {
         const string s_Dir1 = "dir1";
         const string s_Dir2 = "dir2";
         const string s_File1 = "file1";
         const string s_File2 = "file2";
 
-
-        readonly LocalItemCreator m_DirectoryCreator = new LocalItemCreator();
-        readonly TemporaryLocalDirectory m_TempDirectory;
+        
         readonly Repository m_Repository;
         readonly GitBasedFileSystemHistory m_Instance;
 
 
         public GitBasedFileSystemHistoryTest()
-        {
-            m_TempDirectory = m_DirectoryCreator.CreateTemporaryDirectory();
+        { 
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
 
             m_Repository = new Repository(m_TempDirectory.Location);
-
             m_Instance = new GitBasedFileSystemHistory(m_Repository, "master");
 
         }
@@ -81,10 +77,10 @@ namespace SyncTool.FileSystem.Git
         }
 
 
-        public void Dispose()
+        public override void Dispose()
         {
-            m_Repository.Dispose();
-            m_TempDirectory.Dispose();
+            base.Dispose();
+            m_Repository.Dispose();            
         }
     }
 }

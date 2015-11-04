@@ -8,17 +8,12 @@ using Xunit;
 
 namespace SyncTool.FileSystem.Git
 {
-    public class GitBasedFileSystemSnapshotTest : IDisposable
+    public class GitBasedFileSystemSnapshotTest : DirectoryBasedTest
     {
         
-        readonly LocalItemCreator m_DirectoryCreator = new LocalItemCreator();
-        readonly TemporaryLocalDirectory m_TempDirectory;
-
-
 
         public GitBasedFileSystemSnapshotTest()
         {
-            m_TempDirectory = m_DirectoryCreator.CreateTemporaryDirectory();
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
         }
 
@@ -43,12 +38,5 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-
-
-
-        public void Dispose()
-        {
-            m_TempDirectory.Dispose();
-        }
     }
 }
