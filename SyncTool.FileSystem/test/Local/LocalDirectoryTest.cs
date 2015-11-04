@@ -2,6 +2,7 @@
 using System.Linq;
 using Xunit;
 using NativeDirectory = System.IO.Directory;
+using NativeFile = System.IO.File;
 
 namespace SyncTool.FileSystem.Local
 {
@@ -68,6 +69,52 @@ namespace SyncTool.FileSystem.Local
             dirInfo.Delete(true);
         }
 
+        [Fact]
+        public void Files_reflects_deletions_on_disk()
+        {
+            var fileNames = new[] { "file1", "file2.ext", "file3" };
+
+            var temporaryDirectory = m_LocalItemCreator.CreateTemporaryDirectory(
+                new Directory(Path.GetRandomFileName(), fileNames.Select(name => new EmptyFile(name)))
+                );
+
+            using (temporaryDirectory)
+            {
+                var localDirectory = new LocalDirectory(temporaryDirectory.Location);
+
+                Assert.Equal(fileNames.Length, localDirectory.Files.Count());
+                Assert.Equal(0, localDirectory.Directories.Count());
+                
+                NativeFile.Delete(Path.Combine(temporaryDirectory.Location, fileNames.First()));
+
+                Assert.Equal(fileNames.Length - 1 , localDirectory.Files.Count());
+            }
+        }
+
+        [Fact]
+        public void Directories_reflects_deletions_on_disk()
+        {
+            var dirNames = new[] { "dir1", "dir2", "dir3" };
+
+            var temporaryDirectory = m_LocalItemCreator.CreateTemporaryDirectory(new Directory(Path.GetRandomFileName(), dirNames.Select(dir => new Directory(dir))));
+
+            using (temporaryDirectory)
+            {
+                var localDirectory = new LocalDirectory(temporaryDirectory.Location);
+
+                Assert.Equal(0, localDirectory.Files.Count());
+                Assert.Equal(dirNames.Length, localDirectory.Directories.Count());
+
+                
+                NativeDirectory.Delete(Path.Combine(temporaryDirectory.Location, dirNames.First()));
+
+                Assert.Equal(0, localDirectory.Files.Count());
+                Assert.Equal(dirNames.Length - 1, localDirectory.Directories.Count());
+
+
+            }
+        }
+        
        
     }
 }

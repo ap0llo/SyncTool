@@ -98,7 +98,7 @@ namespace SyncTool.FileSystem.Local
         {
             var valuesDict = values.ToDictionary(keySelector, StringComparer.InvariantCultureIgnoreCase);
 
-            foreach (var name in mappedValues.Keys.Where(n => !valuesDict.ContainsKey(n)))
+            foreach (var name in mappedValues.Keys.Where(n => !valuesDict.ContainsKey(n)).ToList())
             {
                 mappedValues.Remove(name);
             }
