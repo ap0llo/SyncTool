@@ -41,7 +41,7 @@ namespace SyncTool.FileSystem.Git
                 Assert.Equal(m_Repository.Name, gitDirectory.Name);
                 Assert.Empty(gitDirectory.Directories);
                 Assert.Single(gitDirectory.Files);
-                Assert.True(gitDirectory.FileExists(RepositoryInitHelper.RepositoryInfoFileName));
+                Assert.True(gitDirectory.FileExists(RepositoryInfoFile.RepositoryInfoFileName));
             }
         }
 
@@ -65,7 +65,7 @@ namespace SyncTool.FileSystem.Git
                     }
                 };
 
-                System.IO.File.Delete(Path.Combine(workingDirectory.Location, RepositoryInitHelper.RepositoryInfoFileName));
+                System.IO.File.Delete(Path.Combine(workingDirectory.Location, RepositoryInfoFile.RepositoryInfoFileName));
 
                 m_DirectoryCreator.CreateDirectory(directory, Path.GetDirectoryName(workingDirectory.Location));
                 commitId = workingDirectory.Commit();

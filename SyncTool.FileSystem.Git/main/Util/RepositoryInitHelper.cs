@@ -5,7 +5,7 @@ namespace SyncTool.FileSystem.Git
 {
     static class RepositoryInitHelper
     {
-        public const string RepositoryInfoFileName = "SyncToolRepositoryInfo.json";
+        
 
         public const string InitialCommitTagName = "InitialCommit";
 
@@ -25,15 +25,17 @@ namespace SyncTool.FileSystem.Git
             {
                 var clonedRepoPath = Repository.Clone(location, tempDirectory.Location);
 
+                var repositoryInfoFile = new RepositoryInfoFile();
+
                 // add a empty file to the repository
-                directoryCreator.CreateFile(new EmptyFile(RepositoryInfoFileName), tempDirectory.Location);
+                directoryCreator.CreateFile(repositoryInfoFile, tempDirectory.Location);
 
                 // commit and push the file to the bare repository we created
                 using (var clonedRepo = new Repository(clonedRepoPath))
                 {
                     var signature = SignatureHelper.NewSignature();
 
-                    clonedRepo.Stage(RepositoryInfoFileName);
+                    clonedRepo.Stage(repositoryInfoFile.Name);
                     var commit = clonedRepo.Commit("Initial Commit", signature, signature, new CommitOptions());
                     clonedRepo.ApplyTag(InitialCommitTagName, commit.Sha);
 

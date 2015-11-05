@@ -21,7 +21,7 @@ namespace SyncTool.FileSystem.Git
         {
             RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Location);
 
-            // test if we can open the reposioty
+            // test if we can open the repository
             using (var repository = new Repository(m_TemporaryDirectory.Location))
             {                
                 Assert.True(repository.Info.IsBare);
@@ -73,7 +73,7 @@ namespace SyncTool.FileSystem.Git
                 
                 var gitDirectory = new GitDirectory("Irrelevant", initialCommit);
 
-                Assert.True(gitDirectory.FileExists(RepositoryInitHelper.RepositoryInfoFileName));
+                Assert.True(gitDirectory.FileExists(RepositoryInfoFile.RepositoryInfoFileName));
 
             }
         }

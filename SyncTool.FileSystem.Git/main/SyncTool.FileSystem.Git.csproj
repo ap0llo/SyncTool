@@ -41,6 +41,8 @@
     <Compile Include="MetaFileSystem\MetaFileSystemLoader.cs" />
     <Compile Include="MetaFileSystem\MetaFileSystemToFileSystemConverter.cs" />
     <Compile Include="Util\FileSystemConverter.cs" />
+    <Compile Include="Util\RepositoryInfo.cs" />
+    <Compile Include="Util\RepositoryInfoFile.cs" />
     <Compile Include="Util\RepositoryInitHelper.cs" />
     <Compile Include="Util\SignatureHelper.cs" />
     <Compile Include="Versioning\GitBasedFileSystemSnapshot.cs" />
