@@ -2,7 +2,7 @@
 
 namespace SyncTool.FileSystem
 {
-    public class IChange
+    public interface IChange
     {
         ChangeType Type { get; } 
 

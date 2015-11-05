@@ -45,6 +45,7 @@
     <Compile Include="Util\RepositoryInfoFile.cs" />
     <Compile Include="Util\RepositoryInitHelper.cs" />
     <Compile Include="Util\SignatureHelper.cs" />
+    <Compile Include="Versioning\FileSystemDiff.cs" />
     <Compile Include="Versioning\GitBasedFileSystemSnapshot.cs" />
     <Compile Include="Versioning\GitBasedHistoryRepository.cs" />
     <Compile Include="Versioning\GitBasedFileSystemHistory.cs" />

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using LibGit2Sharp;
 using SyncTool.FileSystem.Local;
 using Xunit;
@@ -19,10 +20,14 @@ namespace SyncTool.FileSystem.Git
     /// <remarks>Assumes git executable is on PATH</remarks>
     public class TemporaryWorkingDirectoryTest : IDisposable
     {
+        const string s_DummyFileName = "dummy.txt";
+        const string s_File1 = "file1";
+
         readonly LocalItemCreator m_LocalItemCreator = new LocalItemCreator();
 
         readonly TemporaryLocalDirectory m_MasterRepository;
         readonly TemporaryLocalDirectory m_BareMasterRepository;
+        
 
         public TemporaryWorkingDirectoryTest()
         {
@@ -32,7 +37,7 @@ namespace SyncTool.FileSystem.Git
             Process.Start(new ProcessStartInfo("git", "init") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
             IOFile.WriteAllText(Path.Combine(m_MasterRepository.Location, "dummy.txt"), "hello World!");
 
-            Process.Start(new ProcessStartInfo("git", "add dummy.txt") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
+            Process.Start(new ProcessStartInfo("git", $"add {s_DummyFileName}") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
             Process.Start(new ProcessStartInfo("git", "commit -m Commit") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
 
             Process.Start(new ProcessStartInfo("git", $"clone \"{m_MasterRepository.Location}\" \"{m_BareMasterRepository.Location}\" --bare") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
@@ -70,12 +75,42 @@ namespace SyncTool.FileSystem.Git
         }
 
         [Fact]
-        public void HasChanges_Returns_True_if_changes_were_made()
+        public void HasChanges_Returns_True_if_a_file_was_modified()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master"))
             {
-                var filePath = Path.Combine(instance.Location, "file1");
+                var filePath = Path.Combine(instance.Location, s_File1);
+                IOFile.WriteAllText(filePath, "Hello_World");
+
+                Assert.True(instance.HasChanges);
+
+                instance.Commit();
+
+                Assert.False(instance.HasChanges);
                 IOFile.WriteAllText(filePath, "Hello World");
+                  
+                Assert.True(instance.HasChanges);                
+            }
+        }
+
+
+        [Fact]
+        public void HasChanges_Returns_True_if_a_file_properties_file_was_modified()
+        {
+            var file1 = new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-2)};
+            var file2 = new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-1)};
+            
+            using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master"))
+            {                
+                Process.Start(instance.Location);
+
+                m_LocalItemCreator.CreateFile(FilePropertiesFile.ForFile(file1), instance.Location);
+                Assert.True(instance.HasChanges);
+
+                instance.Commit();                
+                Assert.False(instance.HasChanges);
+
+                m_LocalItemCreator.CreateFile(FilePropertiesFile.ForFile(file2), instance.Location);                               
 
                 Assert.True(instance.HasChanges);
             }
@@ -104,7 +139,6 @@ namespace SyncTool.FileSystem.Git
                 Assert.True(instance.HasChanges);
             }
         }
-
 
         [Fact]
         public void HasChanges_Returns_False_after_Commit()

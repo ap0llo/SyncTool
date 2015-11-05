@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.FileSystem.Versioning
 {
     public interface IFileSystemHistory
     {
@@ -12,5 +12,7 @@ namespace SyncTool.FileSystem
         IEnumerable<IFileSystemSnapshot> Snapshots { get; }
 
         IFileSystemSnapshot CreateSnapshot(Directory fileSystemState);
+
+        IFileSystemDiff CompareSnapshots(string fromId, string toId);
     }
 }

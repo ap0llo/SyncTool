@@ -5,9 +5,9 @@ namespace SyncTool.FileSystem
     public interface IFileSystemDiff
     {
          
-        IFileSystemSnapshot LeftState { get; }
+        IFileSystemSnapshot FromSnapshot { get; }
 
-        IFileSystemSnapshot RightState { get; }
+        IFileSystemSnapshot ToSnapshot { get; }
 
 
         IEnumerable<IChange> Changes { get; } 

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using LibGit2Sharp;
 using Newtonsoft.Json;
 using SyncTool.FileSystem.Local;
@@ -27,6 +28,9 @@ namespace SyncTool.FileSystem.Git
         public DateTime CreationTime => m_Commit.Author.When.DateTime;
 
         public IDirectory RootDirectory => m_Directory.Value;
+
+
+        internal Commit Commit => m_Commit;
 
 
         public GitBasedFileSystemSnapshot(Commit commit)
@@ -60,6 +64,11 @@ namespace SyncTool.FileSystem.Git
                 var metaDirectory = metaFileSystemCreator.CreateMetaDirectory(rootDirectory);
                 directoryCreator.CreateDirectoryInPlace(metaDirectory, snapshotDirectoryPath);
                 
+
+
+
+
+
                 if (workingRepository.HasChanges)
                 {
                     commitId = workingRepository.Commit();
@@ -67,9 +76,12 @@ namespace SyncTool.FileSystem.Git
                 }
                 else
                 {
+                    Console.WriteLine("No changes");
                     commitId = repository.Branches[branchName].Tip.Sha;
                 }
             }
+
+            
 
             var commit = repository.Lookup<Commit>(commitId);
             return new GitBasedFileSystemSnapshot(commit);
