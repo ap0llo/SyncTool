@@ -139,7 +139,7 @@ namespace SyncTool.FileSystem.Local
                 Name = name;
             }
 
-            public Stream Open(FileMode mode)
+            public Stream OpenRead()
             {
                 return new MemoryStream(Encoding.UTF8.GetBytes(m_Content));
             }

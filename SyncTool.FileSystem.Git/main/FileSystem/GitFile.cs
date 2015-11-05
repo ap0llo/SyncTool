@@ -22,14 +22,6 @@ namespace SyncTool.FileSystem.Git
             LastWriteTime = commitTime;
         }
 
-        public Stream Open(FileMode mode)
-        {
-            if (mode != FileMode.Open)
-            {
-                throw new NotSupportedException();
-            }
-
-            return m_Blob.GetContentStream();
-        }
+        public Stream OpenRead() => m_Blob.GetContentStream();
     }
 }

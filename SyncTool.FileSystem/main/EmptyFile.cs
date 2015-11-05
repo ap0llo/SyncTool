@@ -15,7 +15,7 @@ namespace SyncTool.FileSystem
         {
         }
 
-        public Stream Open(FileMode mode)
+        public Stream OpenRead()
         {
             return new MemoryStream(Array.Empty<byte>());
         }

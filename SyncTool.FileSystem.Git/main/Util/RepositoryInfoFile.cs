@@ -29,13 +29,8 @@ namespace SyncTool.FileSystem.Git
 
 
 
-        public Stream Open(FileMode mode)
+        public Stream OpenRead()
         {
-            if (mode != FileMode.Open)
-            {
-                throw new NotSupportedException($"{nameof(FilePropertiesFile)} Open() only supports reading");
-            }
-
             using (var writeStream = new MemoryStream())
             {
                 Content.WriteTo(writeStream);

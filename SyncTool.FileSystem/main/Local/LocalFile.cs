@@ -28,7 +28,7 @@ namespace SyncTool.FileSystem.Local
 
         public long Length => m_FileInfo.Length;
 
-        public Stream Open(FileMode mode) => m_FileInfo.Open(mode);
+        public Stream OpenRead() => m_FileInfo.OpenRead();
 
         public string Location => m_FileInfo.FullName;
 

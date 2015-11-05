@@ -40,13 +40,8 @@ namespace SyncTool.FileSystem.Git
         /// </summary>
         public DirectoryProperties Content { get; }
 
-        public Stream Open(FileMode mode)
+        public Stream OpenRead()
         {
-            if (mode != FileMode.Open)
-            {
-                throw new NotSupportedException($"{nameof(FilePropertiesFile)} Open() only supports reading");
-            }
-
             using (var writeStream = new MemoryStream())
             {
                 Content.WriteTo(writeStream);
@@ -77,7 +72,7 @@ namespace SyncTool.FileSystem.Git
                 throw new ArgumentException($"File name has to be {FileName}", nameof(file));
             }
 
-            using (var stream = file.Open(FileMode.Open))
+            using (var stream = file.OpenRead())
             {
                 return new DirectoryPropertiesFile(file.LastWriteTime, DirectoryProperties.Load(stream));
             }

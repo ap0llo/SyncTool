@@ -50,7 +50,7 @@ namespace SyncTool.FileSystem.Local
         {
             using (var outputStream = System.IO.File.Create(Path.Combine(parentPath, file.Name)))
             {
-                using (var inputStream = file.Open(FileMode.Open))
+                using (var inputStream = file.OpenRead())
                 {
                     inputStream.CopyTo(outputStream);
                 }

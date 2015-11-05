@@ -40,13 +40,8 @@ namespace SyncTool.FileSystem.Git
         /// </summary>
         public FileProperties Content { get; }
 
-        public Stream Open(FileMode mode)
-        {
-            if (mode != FileMode.Open)
-            {
-                throw new NotSupportedException($"{nameof(FilePropertiesFile)} Open() only supports reading");
-            }
-            
+        public Stream OpenRead()
+        {            
             using (var writeStream = new MemoryStream())            
             {
                 Content.WriteTo(writeStream);
@@ -77,7 +72,7 @@ namespace SyncTool.FileSystem.Git
                 throw new ArgumentException($"File name Name must end with {FileNameSuffix}", nameof(file));
             }
 
-            using (var stream = file.Open(FileMode.Open))
+            using (var stream = file.OpenRead())
             {
                 return new FilePropertiesFile(file.Name, file.LastWriteTime, FileProperties.Load(stream));
             }            

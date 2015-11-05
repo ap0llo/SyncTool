@@ -39,7 +39,7 @@ namespace SyncTool.FileSystem.Git
 
             var mock = new Mock<IReadableFile>();
             mock.Setup(f => f.Name).Returns(file1.Name + FilePropertiesFile.FileNameSuffix.ToUpper());
-            mock.Setup(f => f.Open(FileMode.Open)).Returns(filePropertiesFile.Open(FileMode.Open));
+            mock.Setup(f => f.OpenRead()).Returns(filePropertiesFile.OpenRead());
 
             var directoryCreator = new LocalItemCreator();
             using (var temporaryDirecoty = directoryCreator.CreateTemporaryDirectory(new Directory(Path.GetRandomFileName()) {mock.Object}))
@@ -78,7 +78,7 @@ namespace SyncTool.FileSystem.Git
             
             var mock = new Mock<IReadableFile>();
             mock.Setup(f => f.Name).Returns(DirectoryPropertiesFile.FileName.ToUpper());
-            mock.Setup(f => f.Open(FileMode.Open)).Returns(directoryPropertiesFile.Open(FileMode.Open));
+            mock.Setup(f => f.OpenRead()).Returns(directoryPropertiesFile.OpenRead());
 
             directory.Add(mock.Object);
 
