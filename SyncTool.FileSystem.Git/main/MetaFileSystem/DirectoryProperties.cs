@@ -38,30 +38,6 @@ namespace SyncTool.FileSystem.Git
         }
 
 
-        public void WriteTo(Stream stream)
-        {
-            var serializer = new JsonSerializer();
-            var streamWriter = new StreamWriter(stream);
-            var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
-
-
-            serializer.Serialize(jsonWriter, this);
-
-            jsonWriter.Flush();
-            streamWriter.Flush();
-        }
-
-      
-        public static DirectoryProperties Load(Stream stream)
-        {
-            var streamReader = new StreamReader(stream);
-            var jsonReader = new JsonTextReader(streamReader);
-            var serializer = new JsonSerializer();
-
-            return serializer.Deserialize<DirectoryProperties>(jsonReader);
-        }
-
-
         public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(this.Name);
 
         public override bool Equals(object obj) => Equals(obj as DirectoryProperties);

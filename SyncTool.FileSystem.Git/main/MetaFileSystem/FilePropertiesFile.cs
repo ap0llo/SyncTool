@@ -74,7 +74,7 @@ namespace SyncTool.FileSystem.Git
 
             using (var stream = file.OpenRead())
             {
-                return new FilePropertiesFile(file.Name, file.LastWriteTime, FileProperties.Load(stream));
+                return new FilePropertiesFile(file.Name, file.LastWriteTime, stream.Deserialize<FileProperties>());
             }            
         }
     }

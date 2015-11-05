@@ -45,39 +45,6 @@ namespace SyncTool.FileSystem.Git
 
 
 
-        /// <summary>
-        /// Serializes this <see cref="FileProperties"/> instance and writes it to the specified stream
-        /// </summary>
-        public void WriteTo(Stream stream)
-        {
-            var serializer = new JsonSerializer();
-            var streamWriter = new StreamWriter(stream);
-            var jsonWriter = new JsonTextWriter(streamWriter) {Formatting = Formatting.Indented};
-
-
-            serializer.Serialize(jsonWriter, this);
-
-            jsonWriter.Flush();
-            streamWriter.Flush();
-        }
-
-
-
-        /// <summary>
-        /// Reads a <see cref="FileProperties"/> instance from the specified stream
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <returns></returns>
-        public static FileProperties Load(Stream stream)
-        {
-            var streamReader = new StreamReader(stream);
-            var jsonReader = new JsonTextReader(streamReader);
-            var serializer = new JsonSerializer();
-
-            return serializer.Deserialize<FileProperties>(jsonReader);
-        }
-
-
         public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(this.Name);
 
         public override bool Equals(object obj) => Equals(obj as FileProperties);

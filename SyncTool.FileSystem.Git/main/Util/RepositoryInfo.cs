@@ -18,17 +18,6 @@ namespace SyncTool.FileSystem.Git
 
 
 
-        public void WriteTo(Stream stream)
-        {
-            var serializer = new JsonSerializer();
-            var streamWriter = new StreamWriter(stream);
-            var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
-
-
-            serializer.Serialize(jsonWriter, this);
-
-            jsonWriter.Flush();
-            streamWriter.Flush();
-        }
+     
     }
 }
