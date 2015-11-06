@@ -38,13 +38,13 @@ namespace SyncTool.FileSystem.Git
         public void Push()
         {
             var remote = m_Repository.Network.Remotes["origin"];
-            m_Repository.Network.Push(remote, @"refs/heads/" + m_Repository.Head.Name);
+            m_Repository.Network.Push(remote, @"refs/heads/" + m_Repository.Head.FriendlyName);
         }
 
         public void Dispose()
         {
-            m_TempDirectory.Dispose();
             m_Repository.Dispose();
+            m_TempDirectory.Dispose();
         }
         
 

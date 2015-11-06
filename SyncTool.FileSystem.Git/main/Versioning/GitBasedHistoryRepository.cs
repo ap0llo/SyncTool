@@ -40,8 +40,8 @@ namespace SyncTool.FileSystem.Git
             var parentCommitId = m_Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
             var parentCommit = m_Repository.Lookup<Commit>(parentCommitId);
             var signature = SignatureHelper.NewSignature();
-
-            m_Repository.CreateBranch(branchName, parentCommit, signature);
+            
+            m_Repository.CreateBranch(branchName, parentCommit);
 
             var newHistory = new GitBasedFileSystemHistory(m_Repository, branchName);
             m_Histories.Add(newHistory);

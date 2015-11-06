@@ -88,16 +88,16 @@ namespace SyncTool.FileSystem.Git
         public void CreateSnapshot_creates_a_new_snapshot_if_state_was_modified()
         {
             var dateTime1 = DateTime.Now;
-            var dateTime2 = dateTime1.AddYears(1000);
+            var dateTime2 = dateTime1.AddDays(-1);
 
             var state1 = new Directory(s_Dir1)
             {
-                new EmptyFile(s_File1) 
+                new EmptyFile(s_File1) { LastWriteTime = dateTime1 }
             };
 
             var state2 = new Directory(s_Dir1)
             {
-                new EmptyFile(s_File1) 
+                new EmptyFile(s_File1) {LastWriteTime = dateTime2 }
             };
 
             var commitCount = m_Repository.Commits.Count();
@@ -161,14 +161,14 @@ namespace SyncTool.FileSystem.Git
             Assert.Equal(1, diff.Changes.Count());
             Assert.Equal(ChangeType.Modified, diff.Changes.Single().Type);
 
-            //TODO compare files
+            //TODO compare files in IChange instance
         }
 
 
         public override void Dispose()
         {
-            base.Dispose();
             m_Repository.Dispose();            
+            base.Dispose();
         }
     }
 }

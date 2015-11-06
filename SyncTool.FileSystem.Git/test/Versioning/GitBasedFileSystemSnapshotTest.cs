@@ -20,7 +20,7 @@ namespace SyncTool.FileSystem.Git
 
             using (var repo = new Repository(m_TempDirectory.Location))
             {
-                repo.CreateBranch(s_BranchName2, repo.Commits.Single(), SignatureHelper.NewSignature());
+                repo.CreateBranch(s_BranchName2, repo.Commits.Single());
             }
 
         }

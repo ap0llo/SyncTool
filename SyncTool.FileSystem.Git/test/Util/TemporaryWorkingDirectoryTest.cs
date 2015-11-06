@@ -88,7 +88,7 @@ namespace SyncTool.FileSystem.Git
 
                 Assert.False(instance.HasChanges);
                 IOFile.WriteAllText(filePath, "Hello World");
-                  
+
                 Assert.True(instance.HasChanges);                
             }
         }
@@ -101,16 +101,15 @@ namespace SyncTool.FileSystem.Git
             var file2 = new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-1)};
             
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master"))
-            {                
-                Process.Start(instance.Location);
-
+            {                                
                 m_LocalItemCreator.CreateFile(FilePropertiesFile.ForFile(file1), instance.Location);
                 Assert.True(instance.HasChanges);
 
                 instance.Commit();                
                 Assert.False(instance.HasChanges);
 
-                m_LocalItemCreator.CreateFile(FilePropertiesFile.ForFile(file2), instance.Location);                               
+                //Thread.Sleep(1000);
+                m_LocalItemCreator.CreateFile(FilePropertiesFile.ForFile(file2), instance.Location);
 
                 Assert.True(instance.HasChanges);
             }
