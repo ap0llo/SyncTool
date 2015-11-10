@@ -23,6 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.FileSystem.Git.Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{D09F19C8-EF3C-47B4-9F1E-CD4B3AB8B752}"
 	ProjectSection(SolutionItems) = preProject
+		common\common.licenseheader = common\common.licenseheader
 		common\CommonProperties.properties = common\CommonProperties.properties
 		common\GlobalAssemblyInfo.cs = common\GlobalAssemblyInfo.cs
 	EndProjectSection

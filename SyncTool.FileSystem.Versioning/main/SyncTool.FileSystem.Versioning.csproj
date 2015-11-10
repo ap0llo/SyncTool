@@ -36,5 +36,10 @@
       <Name>SyncTool.FileSystem</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\common\common.licenseheader">
+      <Link>common.licenseheader</Link>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
