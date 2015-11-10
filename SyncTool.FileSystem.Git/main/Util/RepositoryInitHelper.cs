@@ -1,4 +1,8 @@
-﻿using LibGit2Sharp;
+﻿// -----------------------------------------------------------------------------------------------------------
+//  Copyright (c) 2015, Andreas Grünwald
+//  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
+// -----------------------------------------------------------------------------------------------------------
+using LibGit2Sharp;
 using SyncTool.FileSystem.Local;
 
 namespace SyncTool.FileSystem.Git
