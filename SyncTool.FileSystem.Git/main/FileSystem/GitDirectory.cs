@@ -52,14 +52,14 @@ namespace SyncTool.FileSystem.Git
 
                             var blob = (Blob) treeEntry.Target;
                             var file = new GitFile(treeEntry.Name, m_CommitTime, blob);                        
-                            m_Files.Add(file.Name, file);
+                            Add(file);
                             break;
 
                         case TreeEntryTargetType.Tree:
                             var subTree = (Tree)treeEntry.Target;                        
                             var subDirectory = new GitDirectory(treeEntry.Name, m_CommitTime, subTree);
 
-                            m_Directories.Add(subDirectory.Name, subDirectory);                        
+                            Add(subDirectory);                        
                             break;
                     }
                 }
@@ -91,28 +91,28 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-        public override IDirectory GetDirectory(string name)
+        public override IDirectory GetDirectory(string path)
         {
             LoadTree();
-            return base.GetDirectory(name);
+            return base.GetDirectory(path);
         }
 
-        public override IFile GetFile(string name)
+        public override IFile GetFile(string path)
         {
             LoadTree();
-            return base.GetFile(name);
+            return base.GetFile(path);
         }
 
-        public override bool FileExists(string name)
+        public override bool FileExists(string path)
         {
             LoadTree();
-            return base.FileExists(name);
+            return base.FileExists(path);
         }
 
-        public override bool DirectoryExists(string name)
+        public override bool DirectoryExists(string path)
         {
             LoadTree();
-            return base.DirectoryExists(name);
+            return base.DirectoryExists(path);
         }
     }
 }

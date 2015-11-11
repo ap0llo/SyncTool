@@ -29,7 +29,7 @@ namespace SyncTool.FileSystem
 
         public IEnumerator<IFileSystemItem> GetEnumerator()
         {
-            return m_Directories.Values.Cast<IFileSystemItem>().Union(m_Files.Values).GetEnumerator();
+            return Directories.Cast<IFileSystemItem>().Union(Files).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -38,14 +38,14 @@ namespace SyncTool.FileSystem
         }
 
 
-        public void Add(IDirectory directory)
+        new public void Add(IDirectory directory)
         {
-            m_Directories.Add(directory.Name, directory);
+            base.Add(directory);
         }
 
-        public void Add(IFile file)
+        new public void Add(IFile file)
         {
-            m_Files.Add(file.Name, file);
+            base.Add(file);
         }
     }
 }

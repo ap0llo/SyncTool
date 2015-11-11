@@ -13,7 +13,7 @@ namespace SyncTool.FileSystem
         protected readonly IDictionary<string, IDirectory> m_Directories;
         protected readonly IDictionary<string, IFile> m_Files;
 
-        public string Name { get; }
+        public virtual string Name { get; }
 
         public virtual IEnumerable<IDirectory> Directories => m_Directories.Values;
 
@@ -39,12 +39,149 @@ namespace SyncTool.FileSystem
             m_Files = files.ToDictionary(file => file.Name, StringComparer.InvariantCultureIgnoreCase);
         }
 
-        public virtual IDirectory GetDirectory(string name) => m_Directories[name];
 
-        public virtual IFile GetFile(string name) => m_Files[name];
+        public virtual IDirectory GetDirectory(string path)
+        {
+            EnsurePathIsValid(path);
+            string localName;
+            string remainingPath;
+            ParsePath(path, out localName, out remainingPath);
 
-        public virtual bool FileExists(string name) => m_Files.ContainsKey(name);
+            if (remainingPath == "")
+            {
+                return GetDirectoryByName(localName);
+            }
+            else
+            {
+                return GetDirectoryByName(localName).GetDirectory(remainingPath);
+            }
+        }
 
-        public virtual bool DirectoryExists(string name) => m_Directories.ContainsKey(name);
+        public virtual IFile GetFile(string path)
+        {
+            EnsurePathIsValid(path);
+
+            string localName;
+            string remainingPath;            
+            ParsePath(path, out localName, out remainingPath);       
+            
+            if(remainingPath == "")
+            {
+                return GetFileByName(localName);
+            }
+            else
+            {
+                return GetDirectoryByName(localName).GetFile(remainingPath);
+            }
+        }
+
+        public virtual bool FileExists(string path)
+        {
+            EnsurePathIsValid(path);
+
+            string localName;
+            string remainingPath;
+            ParsePath(path, out localName, out remainingPath);
+
+            if (remainingPath == "")
+            {
+                return m_Files.ContainsKey(localName);
+            }
+            else
+            {
+                return GetDirectoryByName(localName).FileExists(remainingPath);
+            }
+        }
+
+        public virtual bool DirectoryExists(string path)
+        {
+            EnsurePathIsValid(path);
+
+            string localName;
+            string remainingPath;
+            ParsePath(path, out localName, out remainingPath);
+
+            if (remainingPath == "")
+            {
+                return m_Directories.ContainsKey(path);                
+            }
+            else
+            {
+                return GetDirectoryByName(localName).DirectoryExists(remainingPath);
+            }
+        }
+
+
+
+        protected T GetItemByPath<T>(string path, Func<IDirectory, string, T> getByNameAction) where T : IFileSystemItem
+        {
+            if (!path.Contains(Constants.DirectorySeparatorChar))
+            {
+                return getByNameAction.Invoke(this, path);
+            }
+            else
+            {
+                var splitIndex = path.IndexOf(Constants.DirectorySeparatorChar);
+                var name = path.Substring(0, splitIndex);
+                var remainingPath = path.Substring(splitIndex + 1);
+
+                var directory = GetDirectoryByName(name);
+                return (T)getByNameAction.Invoke(directory, remainingPath);
+            }            
+        }
+
+        protected IFile GetFileByName(string name)
+        {
+            return m_Files[name];
+        }
+
+        protected IDirectory GetDirectoryByName(string name)
+        {
+            return m_Directories[name];
+        }
+
+        protected void EnsurePathIsValid(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (String.IsNullOrWhiteSpace(path))
+            {
+                throw new FormatException($"'{nameof(path)}' must not be null or empty");
+            }
+
+            if (path[0] == Constants.DirectorySeparatorChar)
+            {
+                throw new FormatException($"'{nameof(path)}' must not start with '{Constants.DirectorySeparatorChar}'");
+            }
+
+            if (path[path.Length - 1] == Constants.DirectorySeparatorChar)
+            {
+                throw new FormatException($"'{nameof(path)}' must not end with '{Constants.DirectorySeparatorChar}'");
+            }               
+        }
+
+        protected void ParsePath(string path, out string localName, out string remainingPath)
+        {
+            if (path.Contains(Constants.DirectorySeparatorChar))
+            {
+                var splitIndex = path.IndexOf(Constants.DirectorySeparatorChar);
+                localName = path.Substring(0, splitIndex);
+                remainingPath = path.Substring(splitIndex + 1);
+            }
+            else
+            {
+                localName = path;
+                remainingPath = "";
+            }
+        }
+
+        protected void Add(IDirectory directory) => m_Directories.Add(directory.Name, directory);
+
+        protected void Add(IFile file) => m_Files.Add(file.Name, file);
+
+        
     }
 }

@@ -50,12 +50,12 @@ namespace SyncTool.FileSystem.Local
             directoryInfo.Delete(true);
         }
 
-        public IDirectory GetDirectory(string name) => m_Inner.GetDirectory(name);
+        public IDirectory GetDirectory(string path) => m_Inner.GetDirectory(path);
 
-        public IFile GetFile(string name) => m_Inner.GetFile(name);
+        public IFile GetFile(string path) => m_Inner.GetFile(path);
 
-        public bool FileExists(string name) => m_Inner.FileExists(name);
+        public bool FileExists(string path) => m_Inner.FileExists(path);
 
-        public bool DirectoryExists(string name) => m_Inner.DirectoryExists(name);
+        public bool DirectoryExists(string path) => m_Inner.DirectoryExists(path);
     }
 }

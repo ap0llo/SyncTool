@@ -9,55 +9,37 @@ using System.Linq;
 
 namespace SyncTool.FileSystem.Local
 {
-    public class LocalDirectory : ILocalDirectory
+    public class LocalDirectory : AbstractDirectory, ILocalDirectory
     {
-        readonly IDictionary<string, IDirectory> m_Directories = new Dictionary<string, IDirectory>(StringComparer.InvariantCultureIgnoreCase);
-        readonly IDictionary<string, IFile> m_Files = new Dictionary<string, IFile>(StringComparer.InvariantCultureIgnoreCase);
         readonly DirectoryInfo m_DirectoryInfo;
-
-
-
-        public string Name => m_DirectoryInfo.Name;
+             
 
         public string Location => m_DirectoryInfo.FullName;
 
-        public IEnumerable<IDirectory> Directories
+        public override IEnumerable<IDirectory> Directories
         {
             get
             {
                 RefreshDirectories();
-                return m_Directories.Values;
+                return base.Directories;
             }
         }
 
-        public IEnumerable<IFile> Files
+        public override IEnumerable<IFile> Files
         {
             get
             {
                 RefreshFiles();
-                return m_Files.Values;
+                return base.Files;                
             }
         }
-
-        public IFileSystemItem this[string name]
-        {
-            get
-            {
-                if (FileExists(name))
-                {
-                    return GetFile(name);
-                }
-                return GetDirectory(name);
-            }
-        }
-
 
 
         public LocalDirectory(string path) : this(new DirectoryInfo(path))
         {
         }
 
-        public LocalDirectory(DirectoryInfo directoryInfo)
+        public LocalDirectory(DirectoryInfo directoryInfo) : base(directoryInfo.Name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
         {
             if (directoryInfo == null)
             {
@@ -67,21 +49,29 @@ namespace SyncTool.FileSystem.Local
         }
 
 
-        public IDirectory GetDirectory(string name)
+        public override IDirectory GetDirectory(string path)
         {
             RefreshDirectories();
-            return m_Directories[name];
+            return base.GetDirectory(path);
         }
 
-        public IFile GetFile(string name)
+        public override IFile GetFile(string path)
         {
             RefreshFiles();
-            return m_Files[name];
+            return base.GetFile(path);
         }
 
-        public bool FileExists(string name) => System.IO.File.Exists(Path.Combine(m_DirectoryInfo.FullName, name));
+        public override bool FileExists(string path)
+        {
+            RefreshFiles();
+            return base.FileExists(path);
+        }
 
-        public bool DirectoryExists(string name) => System.IO.Directory.Exists(Path.Combine(m_DirectoryInfo.FullName, name));
+        public override bool DirectoryExists(string path)
+        {
+            RefreshDirectories();
+            return base.DirectoryExists(path);
+        }
 
 
         void RefreshDirectories()
@@ -98,7 +88,7 @@ namespace SyncTool.FileSystem.Local
 
 
         static void UpdateValueCache<TValue, TMappedValue>(IEnumerable<TValue> values, IDictionary<string, TMappedValue> mappedValues,
-            Func<TValue, string> keySelector, Func<TValue, TMappedValue> mapper)
+                                                           Func<TValue, string> keySelector, Func<TValue, TMappedValue> mapper)
         {
             var valuesDict = values.ToDictionary(keySelector, StringComparer.InvariantCultureIgnoreCase);
 

@@ -17,13 +17,13 @@ namespace SyncTool.FileSystem
 
         IFileSystemItem this[string name] { get; }
 
-        IDirectory GetDirectory(string name);
+        IDirectory GetDirectory(string path);
 
-        IFile GetFile(string name);
+        IFile GetFile(string path);
 
-        bool FileExists(string name);
+        bool FileExists(string path);
 
-        bool DirectoryExists(string name);
+        bool DirectoryExists(string path);
 
     }
 }

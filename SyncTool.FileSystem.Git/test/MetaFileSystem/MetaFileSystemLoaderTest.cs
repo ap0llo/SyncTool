@@ -87,9 +87,9 @@ namespace SyncTool.FileSystem.Git
             directory.Add(mock.Object);
 
             var directoryCreator = new LocalItemCreator();
-            using (var temporaryDirecoty = directoryCreator.CreateTemporaryDirectory(directory))
+            using (var temporaryDirectory = directoryCreator.CreateTemporaryDirectory(directory))
             {
-                var metaFs = m_Instance.Convert(temporaryDirecoty);
+                var metaFs = m_Instance.Convert(temporaryDirectory);
 
                 Assert.Empty(metaFs.Directories);
                 Assert.True(metaFs.GetFile(DirectoryPropertiesFile.FileName) is DirectoryPropertiesFile);
