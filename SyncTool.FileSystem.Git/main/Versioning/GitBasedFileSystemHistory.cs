@@ -80,7 +80,11 @@ namespace SyncTool.FileSystem.Git
                             return new Change(ChangeType.Modified, fromFile, toFile);
 
                         case ChangeKind.Added:
+                            return new Change(ChangeType.Added, null, toSnapshot.GetFileForGitRelativePath(treeChange.Path));
+
                         case ChangeKind.Deleted:
+                            return new Change(ChangeType.Deleted, fromSnapshot.GetFileForGitRelativePath(treeChange.Path), null); 
+                            
                         case ChangeKind.Renamed:
                         case ChangeKind.Copied:
                         case ChangeKind.Ignored:

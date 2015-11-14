@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using LibGit2Sharp;
 using SyncTool.FileSystem.Local;
@@ -37,29 +38,29 @@ namespace SyncTool.FileSystem.Git
 
         }
 
-        [Fact]
+        [Fact(DisplayName = "Snapshots is empty for empty repository")]
         public void Snapshots_is_empty_for_empty_repository()
         {
             Assert.Empty(m_Instance.Snapshots);
         }
 
 
-        [Fact]
+
+        [Fact(DisplayName = "LatestFileSystemSnapshot is null for empty repository")]
         public void LatestFileSystemSnapshot_is_null_for_empty_repository()
         {
             Assert.Null(m_Instance.LatestFileSystemSnapshot);
         }
 
 
-        [Fact]
+
+        [Fact(DisplayName = "CreateSnapshot() can be executed multiple times")]
         public void CreateSnapshot_can_be_executed_multiple_times()
         {            
-
             var directory1 = new Directory(s_Dir1)
             {
                 new EmptyFile(s_File1)
             };
-
 
             var directory2 = new Directory(s_Dir2)
             {
@@ -73,7 +74,7 @@ namespace SyncTool.FileSystem.Git
             Assert.Equal(snapshot2, m_Instance.LatestFileSystemSnapshot);
         }
 
-        [Fact]
+        [Fact(DisplayName = "CreateSnapshot() creates a valid snapshot")]
         public void CreateSnapshot_creates_a_valid_snapshot()
         {
             var directory = new Directory(s_Dir1)
@@ -86,9 +87,7 @@ namespace SyncTool.FileSystem.Git
             FileSystemAssert.DirectoryEqual(directory, snapshot.RootDirectory);
         }
 
-
-        [Fact]
-        [Trait("foo", "bar")]
+        [Fact(DisplayName = "CreateSnapshot() creates a new snapshot if state was modified")]        
         public void CreateSnapshot_creates_a_new_snapshot_if_state_was_modified()
         {
             var dateTime1 = DateTime.Now;
@@ -115,8 +114,23 @@ namespace SyncTool.FileSystem.Git
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
         }
 
-        [Fact]
-        public void CompareSnapshots_throws_a_SnapshotNotFoundException_is_the_id_is_unknown()
+        [Fact(DisplayName = "CreateSnapshots() returns previous snapshot if state is unchanged")]
+        public void CreateSnapshots_returns_previous_snapshot_if_state_is_unchanged()
+        {            
+            var state = new Directory(s_Dir1)
+            {
+                new EmptyFile(s_File1) { LastWriteTime = DateTime.Now, Length = 1234 }
+            };
+
+            var snapshot1 = m_Instance.CreateSnapshot(state);
+            var snapshot2 = m_Instance.CreateSnapshot(state);
+
+            Assert.Equal(1, m_Instance.Snapshots.Count());
+            Assert.Equal(snapshot1.Id, snapshot2.Id);
+        }
+
+        [Fact(DisplayName = "CompareSnapshots() throws a SnapshotNotFoundException is the Id is unknown")]
+        public void CompareSnapshots_throws_a_SnapshotNotFoundException_is_the_Id_is_unknown()
         {
             Assert.Throws<SnapshotNotFoundException>(() => m_Instance.CompareSnapshots("someId", "someOtherId"));
 
@@ -139,9 +153,9 @@ namespace SyncTool.FileSystem.Git
 
         }
 
-        [Fact]
+        [Fact(DisplayName = "CompareSnapshots() detects modification of files")]
         public void CompareSnapshots_detects_modification_of_files()
-        {
+        {            
             var state1 = new Directory(s_Dir1)
             {
                 new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
@@ -149,7 +163,7 @@ namespace SyncTool.FileSystem.Git
 
             var state2 = new Directory(s_Dir1)
             {
-                new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-1)}
+                new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-1) }
             };
 
             var snapshot1 = m_Instance.CreateSnapshot(state1);
@@ -164,10 +178,62 @@ namespace SyncTool.FileSystem.Git
 
             Assert.Equal(1, diff.Changes.Count());
             Assert.Equal(ChangeType.Modified, diff.Changes.Single().Type);
-
-            //TODO compare files in IChange instance
+            
+            FileSystemAssert.FileEqual(state1.GetFile(s_File1), diff.Changes.Single().FromFile);
+            FileSystemAssert.FileEqual(state2.GetFile(s_File1), diff.Changes.Single().ToFile);
         }
 
+        [Fact(DisplayName = "CompareSnapshots() detects additions of files")]
+        public void CompareSnapshots_detects_additions_of_files()
+        {
+            var file1 = new EmptyFile(s_File1) {LastWriteTime = DateTime.Now.AddDays(-2)};
+            var file2 = new EmptyFile(s_File2) {LastWriteTime = DateTime.Now };            
+            var state1 = new Directory(s_Dir1) { file1 };
+            var state2 = new Directory(s_Dir1) { file1, file2 };
+            
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            Assert.NotEqual(snapshot1.Id, snapshot2.Id);
+
+            var diff = m_Instance.CompareSnapshots(snapshot1.Id, snapshot2.Id);
+
+            Assert.Equal(diff.FromSnapshot, snapshot1);
+            Assert.Equal(diff.ToSnapshot, snapshot2);
+
+            Assert.Equal(1, diff.Changes.Count());
+            Assert.Equal(ChangeType.Added, diff.Changes.Single().Type);
+
+            Assert.Null(diff.Changes.Single().FromFile);            
+            FileSystemAssert.FileEqual(file2, diff.Changes.Single().ToFile);
+        }
+
+        [Fact(DisplayName = "CompareSnapshots() detects deletions of files")]
+        public void CompareSnapshots_detects_deletions_of_files()
+        {
+            var file1 = new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) };            
+            var state1 = new Directory(s_Dir1) { file1 };
+            var state2 = new Directory(s_Dir1);
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            Assert.NotEqual(snapshot1.Id, snapshot2.Id);
+
+            var diff = m_Instance.CompareSnapshots(snapshot1.Id, snapshot2.Id);
+
+            Assert.Equal(diff.FromSnapshot, snapshot1);
+            Assert.Equal(diff.ToSnapshot, snapshot2);
+
+            Assert.Equal(1, diff.Changes.Count());
+            Assert.Equal(ChangeType.Deleted, diff.Changes.Single().Type);
+
+            Assert.Null(diff.Changes.Single().ToFile);
+            FileSystemAssert.FileEqual(file1, diff.Changes.Single().FromFile);
+        }
+
+
+      
 
         public override void Dispose()
         {
