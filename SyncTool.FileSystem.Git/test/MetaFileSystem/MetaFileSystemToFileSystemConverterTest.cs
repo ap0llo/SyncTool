@@ -42,7 +42,7 @@ namespace SyncTool.FileSystem.Git
 
             var metaFileSystem = m_FileSystemToMetaFileSystemConverter.CreateMetaDirectory(expectedFileSystem);
 
-            var convertedFileSystem = m_Instance.Convert(metaFileSystem);
+            var convertedFileSystem = m_Instance.Convert(metaFileSystem).GetMappedDirectory(metaFileSystem);
 
             // check number of files and directories
             Assert.Equal(expectedFileSystem.Directories.Count(), convertedFileSystem.Directories.Count());
@@ -72,7 +72,7 @@ namespace SyncTool.FileSystem.Git
                 new DirectoryPropertiesFile(DateTime.Now, new DirectoryProperties() { Name = s_Dir1})
             };
 
-            var convertedFileSystem = m_Instance.Convert(metaFileSystem);
+            var convertedFileSystem = m_Instance.Convert(metaFileSystem).GetMappedDirectory(metaFileSystem);
             Assert.Empty(convertedFileSystem.Files);
             Assert.Equal(s_Dir1, convertedFileSystem.Name);
             Assert.Equal(1, convertedFileSystem.Directories.Count());

@@ -12,9 +12,6 @@ namespace SyncTool.FileSystem
 
         public const char DirectorySeparatorChar = '/';
 
-
-      
-
-
+        public static readonly char[] InvalidPathCharacters = {'\\'};
     }
 }

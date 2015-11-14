@@ -30,15 +30,22 @@ namespace SyncTool.FileSystem
         [Fact]
         public void GetFile_throws_ArgumentNullException_if_path_is_null()
         {
-            Assert.Throws<ArgumentNullException>(() => m_Root.GetDirectory(null));
+            Assert.Throws<ArgumentNullException>(() => m_Root.GetFile(null));
         }
 
         [Fact]
         public void GetFile_throws_FormatException_if_path_is_empty_or_whitespace()
         {
-            Assert.Throws<FormatException>(() => m_Root.GetDirectory(""));
-            Assert.Throws<FormatException>(() => m_Root.GetDirectory("  "));
+            Assert.Throws<FormatException>(() => m_Root.GetFile(""));
+            Assert.Throws<FormatException>(() => m_Root.GetFile("  "));
         }
+
+        [Fact(DisplayName = "GetFile() throws FormatException if path contains a backslash")]
+        public void GetFile_throws_FormatException_if_path_contains_a_backslash()
+        {
+            Assert.Throws<FormatException>(() => m_Root.GetFile("name\\name"));            
+        }
+
 
         [Fact]
         public void GetFile_throws_FormatException_if_path_starts_with_separator_char()
@@ -98,6 +105,12 @@ namespace SyncTool.FileSystem
         {
             Assert.Throws<FormatException>(() => m_Root.GetDirectory(""));
             Assert.Throws<FormatException>(() => m_Root.GetDirectory("  "));
+        }
+
+        [Fact(DisplayName = "GetDirectory() throws FormatException if path contains a backslash")]
+        public void GetDirectory_throws_FormatException_if_path_contains_a_backslash()
+        {
+            Assert.Throws<FormatException>(() => m_Root.GetDirectory("dir\\dir1"));            
         }
 
         [Fact]

@@ -139,7 +139,7 @@ namespace SyncTool.FileSystem.Git
 
         }
 
-        [Fact(Skip= "Not implemented yet")]
+        [Fact]
         public void CompareSnapshots_detects_modification_of_files()
         {
             var state1 = new Directory(s_Dir1)

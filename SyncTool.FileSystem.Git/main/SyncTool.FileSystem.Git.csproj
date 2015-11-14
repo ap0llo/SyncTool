@@ -31,6 +31,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileSystemMapping.cs" />
+    <Compile Include="IFileSystemMapping.cs" />
     <Compile Include="MetaFileSystem\DirectoryProperties.cs" />
     <Compile Include="MetaFileSystem\DirectoryPropertiesFile.cs" />
     <Compile Include="MetaFileSystem\FileProperties.cs" />
@@ -45,6 +47,7 @@
     <Compile Include="Util\RepositoryInfoFile.cs" />
     <Compile Include="Util\RepositoryInitHelper.cs" />
     <Compile Include="Util\SignatureHelper.cs" />
+    <Compile Include="Versioning\Change.cs" />
     <Compile Include="Versioning\FileSystemDiff.cs" />
     <Compile Include="Versioning\GitBasedFileSystemSnapshot.cs" />
     <Compile Include="Versioning\GitBasedHistoryRepository.cs" />

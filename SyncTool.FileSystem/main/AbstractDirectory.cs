@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace SyncTool.FileSystem
@@ -160,7 +161,13 @@ namespace SyncTool.FileSystem
             if (path[path.Length - 1] == Constants.DirectorySeparatorChar)
             {
                 throw new FormatException($"'{nameof(path)}' must not end with '{Constants.DirectorySeparatorChar}'");
-            }               
+            }
+
+            if (Constants.InvalidPathCharacters.Any(path.Contains))
+            {
+                throw new FormatException("The path contains invalid characters");
+            }
+                       
         }
 
         protected void ParsePath(string path, out string localName, out string remainingPath)

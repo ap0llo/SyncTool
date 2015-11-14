@@ -47,8 +47,6 @@ namespace SyncTool.FileSystem.Git
 
         public IFileSystemSnapshot CreateSnapshot(Directory fileSystemState)
         {
-            Console.WriteLine("Creating Snapshot");
-
             var snapshots = m_Snapshots.Value;
 
             var snapshot = GitBasedFileSystemSnapshot.Create(m_Repository, m_BranchName, fileSystemState);
@@ -67,17 +65,44 @@ namespace SyncTool.FileSystem.Git
             
             var treeChanges = m_Repository.Diff.Compare<TreeChanges>(fromSnapshot.Commit.Tree, toSnapshot.Commit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
 
+            var changes = treeChanges
+                .Where(treeChange => treeChange.Status != ChangeKind.Unmodified)
+                .Select(treeChange =>
+                {
+                    switch (treeChange.Status)
+                    {
+                        case ChangeKind.Unmodified:
+                            throw new InvalidOperationException("Unmodified changes should have been filtered out");
+
+                        case ChangeKind.Modified:
+                            var fromFile = fromSnapshot.GetFileForGitRelativePath(treeChange.Path);
+                            var toFile = toSnapshot.GetFileForGitRelativePath(treeChange.Path);
+                            return new Change(ChangeType.Modified, fromFile, toFile);
+
+                        case ChangeKind.Added:
+                        case ChangeKind.Deleted:
+                        case ChangeKind.Renamed:
+                        case ChangeKind.Copied:
+                        case ChangeKind.Ignored:
+                        case ChangeKind.Untracked:
+                        case ChangeKind.TypeChanged:
+                        case ChangeKind.Unreadable:
+                        case ChangeKind.Conflicted:
+                        default:
+                            throw new NotImplementedException();
+                    }
+                })
+                .ToList();
+
+
+
             //TODO: Convert treeChanges to list of IChange
 
-            return new FileSystemDiff(fromSnapshot, toSnapshot, Enumerable.Empty<IChange>());
-
+            return new FileSystemDiff(fromSnapshot, toSnapshot, changes);
         }
 
 
-        IDictionary<string, GitBasedFileSystemSnapshot> LoadSnapshots() => m_Repository.Branches[m_BranchName].Commits
-            .Where(GitBasedFileSystemSnapshot.IsSnapshot)
-            .Select(commit => new GitBasedFileSystemSnapshot(commit))            
-            .ToDictionary(snapshot => snapshot.Id, StringComparer.InvariantCultureIgnoreCase);
+        IDictionary<string, GitBasedFileSystemSnapshot> LoadSnapshots() => m_Repository.Branches[m_BranchName].Commits.Where(GitBasedFileSystemSnapshot.IsSnapshot).Select(commit => new GitBasedFileSystemSnapshot(commit)).ToDictionary(snapshot => snapshot.Id, StringComparer.InvariantCultureIgnoreCase);
 
 
         GitBasedFileSystemSnapshot GetSnapshot(string id)
@@ -88,7 +113,5 @@ namespace SyncTool.FileSystem.Git
             }
             return m_Snapshots.Value[id];
         }
-
-        
     }
 }

@@ -13,16 +13,17 @@ namespace SyncTool.FileSystem.Git
     /// </summary>
     internal class MetaFileSystemToFileSystemConverter
     {
-        public IDirectory Convert(IDirectory directory)
+        public IFileSystemMapping Convert(IDirectory directory)
         {
-            var directories = new List<IDirectory>();
+            var result = new FileSystemMapping();
+            
+            VisitDynamic(directory, new Stack<string>(), new List<IDirectory>(),  new List<IFile>(), result);
 
-            VisitDynamic(directory, new Stack<string>(), directories,  new List<IFile>());
-            return directories.Single();
+            return result;
         }
 
 
-        void Visit(IDirectory directory, Stack<string> directoryNames, List<IDirectory> directoriesInParent,  List<IFile> filesInParent)
+        void Visit(IDirectory directory, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent, FileSystemMapping result)
         {
             // visit directories and files
 
@@ -33,12 +34,12 @@ namespace SyncTool.FileSystem.Git
             
             foreach (var subDir in directory.Directories)
             {
-                VisitDynamic(subDir, directoryNames, directories, files);
+                VisitDynamic(subDir, directoryNames, directories, files, result);
             }
 
             foreach (var file in directory.Files)
             {
-                VisitDynamic(file, directoryNames, directories,  files);
+                VisitDynamic(file, directoryNames, directories,  files, result);
             }
 
             // create a new directory to replace the current one
@@ -58,29 +59,31 @@ namespace SyncTool.FileSystem.Git
 
             // push new directory to the stack
             directoriesInParent.Add(newDir);
+            result.AddMapping(directory, newDir);
         }
 
-        void Visit(FilePropertiesFile file, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent)
+        void Visit(FilePropertiesFile file, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent , FileSystemMapping result)
         {
             // load file properties
             filesInParent.Add(file.Content);
+            result.AddMapping(file, file.Content);
         }
 
-        void Visit(DirectoryPropertiesFile file, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent)
+        void Visit(DirectoryPropertiesFile file, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent, FileSystemMapping result)
         {
             // replace name of parent directory with the name from the properties file
             directoryNames.Pop();
             directoryNames.Push(file.Content.Name);
         }
 
-        void Visit(IFile file, Stack<string> directoryNames, List<IDirectory> directories, List<IFile> files)
+        void Visit(IFile file, Stack<string> directoryNames, List<IDirectory> directories, List<IFile> files, FileSystemMapping result)
         {
             // ignore file instances that are not instances of FilePropertiesFile
         }
 
-        void VisitDynamic(dynamic arg, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent)
+        void VisitDynamic(dynamic arg, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent,  FileSystemMapping result)
         {
-            ((dynamic) this).Visit(arg, directoryNames, directoriesInParent, filesInParent);
+            ((dynamic) this).Visit(arg, directoryNames, directoriesInParent, filesInParent, result);
         }
 
     }
