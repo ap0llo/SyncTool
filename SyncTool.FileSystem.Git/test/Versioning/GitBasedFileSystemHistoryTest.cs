@@ -114,8 +114,8 @@ namespace SyncTool.FileSystem.Git
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
         }
 
-        [Fact(DisplayName = "CreateSnapshots() returns previous snapshot if state is unchanged")]
-        public void CreateSnapshots_returns_previous_snapshot_if_state_is_unchanged()
+        [Fact(DisplayName = "CreateSnapshot() returns previous snapshot if state is unchanged")]
+        public void CreateSnapshot_returns_previous_snapshot_if_state_is_unchanged()
         {            
             var state = new Directory(s_Dir1)
             {

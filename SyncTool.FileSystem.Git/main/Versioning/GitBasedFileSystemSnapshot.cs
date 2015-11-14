@@ -67,12 +67,20 @@ namespace SyncTool.FileSystem.Git
 
                 if (workingRepository.HasChanges)
                 {
-                    commitId = workingRepository.Commit();
-                    workingRepository.Push();                    
+                    try
+                    {
+                        commitId = workingRepository.Commit();
+                        workingRepository.Push();
+                    }
+                    catch (EmptyCommitException)
+                    {
+                        // no changes after all (HasChanges does not seem to be a 100% accurate)
+                        commitId = repository.Branches[branchName].Tip.Sha;
+                    }
+                    
                 }
                 else
-                {
-                    Console.WriteLine("No changes");
+                {                    
                     commitId = repository.Branches[branchName].Tip.Sha;
                 }
             }
