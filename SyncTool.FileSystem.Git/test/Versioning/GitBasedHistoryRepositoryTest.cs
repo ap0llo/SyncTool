@@ -13,7 +13,7 @@ namespace SyncTool.FileSystem.Git
     {
 
 
-        [Fact]
+        [Fact(DisplayName= "GitBasedHistoryRepository.Create() can create a new repository")]
         public void Create_can_create_a_new_repository()
         {
             using (var historyRepository = GitBasedHistoryRepository.Create(m_TempDirectory.Location))
@@ -23,7 +23,7 @@ namespace SyncTool.FileSystem.Git
         }
 
 
-        [Fact]
+        [Fact(DisplayName = "GitBasedHistoryRepository.CreateHistory() can create multiple histories")]
         public void CreateHistory_can_create_multiple_histories()
         {
             var historyNames = new[] {"history1", "histroy2"};
@@ -40,7 +40,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-        [Theory]
+        [Theory(DisplayName = "GitBasedHistoryRepository.CreateHistory() creates a new branch in the underlying git repository")]
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]

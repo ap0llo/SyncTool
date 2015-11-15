@@ -29,7 +29,7 @@ namespace SyncTool.FileSystem.Git
 
         }
 
-        [Theory]
+        [Theory(DisplayName = "GitBasedFileSystemSnapshot.Create() returns a new snapshot that equals the original directory")]
         [InlineData(s_BranchName1)]
         [InlineData(s_BranchName2)]
         public void Create_returns_a_new_snapshot_that_equals_the_original_directory(string branchName)

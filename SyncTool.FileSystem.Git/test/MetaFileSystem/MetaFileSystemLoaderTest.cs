@@ -16,7 +16,7 @@ namespace SyncTool.FileSystem.Git
         readonly MetaFileSystemLoader m_Instance = new MetaFileSystemLoader();
 
 
-        [Fact]
+        [Fact(DisplayName = "MetaFileSystemLoader.Convert() replaces files with FilePropertiesFile instances")]
         public void Convert_replaces_files_with_FilePropertiesFile_instances()
         {
             var input = new Directory(Path.GetRandomFileName())
@@ -34,7 +34,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "MetaFileSystemLoader.Convert(): Detection of file properties files is case invariant")]
         public void Convert_detection_of_file_properties_files_is_case_invariant()
         {
             var file1 = new EmptyFile(s_File1);
@@ -56,8 +56,7 @@ namespace SyncTool.FileSystem.Git
 
         }
 
-
-        [Fact]
+        [Fact(DisplayName = "MetaFileSystemLoader.Convert() replaces files with DirectoryPropertiesFile instances")]
         public void Convert_replaces_files_with_DirectoryPropertiesFile_instances()
         {
             var input = new Directory(Path.GetRandomFileName());
@@ -74,7 +73,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "MetaFileSystemLoader.Convert(): Detection of directory properties files is case invariant")]
         public void Convert_detection_of_directory_properties_files_is_case_invariant()
         {
             var directory = new Directory(Path.GetRandomFileName());

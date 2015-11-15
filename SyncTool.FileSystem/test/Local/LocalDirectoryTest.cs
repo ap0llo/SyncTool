@@ -16,7 +16,7 @@ namespace SyncTool.FileSystem.Local
 
 
 
-        [Fact]
+        [Fact(DisplayName = nameof(LocalDirectory) + ": Flat directory containing only files")]
         public void Flat_directory_containing_only_files()
         {
             var fileNames = new[] {"file1", "file2.ext", "file3"};
@@ -37,7 +37,7 @@ namespace SyncTool.FileSystem.Local
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(LocalDirectory) + ": Flat directory containing only directories")]
         public void Flat_directory_containing_only_directories()
         {
             var dirNames = new[] {"dir1", "dir2", "dir3"};
@@ -61,7 +61,7 @@ namespace SyncTool.FileSystem.Local
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(LocalDirectory) + ".Name is set to name of directory")]
         public void Name_is_set_to_name_of_directory()
         {
             var dirInfo = new DirectoryInfo(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
@@ -73,7 +73,7 @@ namespace SyncTool.FileSystem.Local
             dirInfo.Delete(true);
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(LocalDirectory) + ".Files reflects deletions on disk")]
         public void Files_reflects_deletions_on_disk()
         {
             var fileNames = new[] { "file1", "file2.ext", "file3" };
@@ -95,7 +95,7 @@ namespace SyncTool.FileSystem.Local
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(LocalDirectory) + ".Directories reflects deletions on disk")]
         public void Directories_reflects_deletions_on_disk()
         {
             var dirNames = new[] { "dir1", "dir2", "dir3" };

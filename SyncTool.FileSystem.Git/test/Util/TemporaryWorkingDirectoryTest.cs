@@ -48,7 +48,7 @@ namespace SyncTool.FileSystem.Git
         }
 
 
-        [Fact]
+        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ": Constructor clones the repository and checks out a working copy")]
         public void Constructor_clones_the_repository_and_checks_out_a_working_copy()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master"))
@@ -60,7 +60,7 @@ namespace SyncTool.FileSystem.Git
 
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".Dispose() deletes the working directory")]
         public void Dispose_deletes_the_working_directory()
         {
             var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master");
@@ -69,7 +69,7 @@ namespace SyncTool.FileSystem.Git
             Assert.False(IODirectory.Exists(instance.Location));
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns False if no changes were made")]
         public void HasChanges_Returns_False_if_no_changes_were_made()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master"))
@@ -78,7 +78,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns True if a file was modified")]
         public void HasChanges_Returns_True_if_a_file_was_modified()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master"))
@@ -98,7 +98,7 @@ namespace SyncTool.FileSystem.Git
         }
 
 
-        [Fact]
+        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns True if a file properties file was modified")]
         public void HasChanges_Returns_True_if_a_file_properties_file_was_modified()
         {
             var file1 = new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-2)};
@@ -119,7 +119,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns True if a file was deleted")]
         public void HasChanges_Returns_True_if_a_file_was_deleted()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master"))
@@ -131,7 +131,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns True if a file was added")]
         public void HasChanges_Returns_True_if_a_file_was_added()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master"))
@@ -143,7 +143,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns False after Commit")]
         public void HasChanges_Returns_False_after_Commit()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master"))
@@ -156,8 +156,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-
-        [Fact]
+        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".Commit() creates a new commit")]
         public void Commit_creates_a_new_commit()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Location, "master"))
@@ -175,8 +174,7 @@ namespace SyncTool.FileSystem.Git
 
         }
 
-
-        [Fact]
+        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".Push() transfers changes to master directory")]
         public void Push_transfers_changes_to_master_directory()
         {
             var fileName = Path.GetRandomFileName();

@@ -3,6 +3,7 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System;
+using System.Reflection;
 using Xunit;
 
 namespace SyncTool.FileSystem.Git
@@ -26,19 +27,19 @@ namespace SyncTool.FileSystem.Git
         }
 
 
-        [Fact]
+        [Fact(DisplayName = "FileProperties.Equals() Returns true if all properties are equal")]
         public void Equals_Returns_true_if_all_properties_are_equal()
         {            
             Assert.Equal(m_Instance1, m_Instance2);
         }
 
-        [Fact]
+        [Fact(DisplayName = "FileProperties.Equals() treats the name case invariant")]
         public void Equals_treats_the_name_case_invariant()
         {
             Assert.Equal(m_Instance2, m_Instance3);
         }
 
-        [Fact]
+        [Fact(DisplayName = "FileProperties.GetHashCode() returns the same value is name is equal")]
         public void GetHashCode_returns_the_same_value_is_name_is_equal()
         {
             var file1 = new FileProperties() {Name = "file", LastWriteTime = DateTime.Now, Length = 1234};

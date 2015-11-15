@@ -14,7 +14,7 @@ namespace SyncTool.FileSystem.Git
     {
         readonly JsonSerializer m_Serializer = new JsonSerializer();
 
-        [Fact]
+        [Fact(DisplayName = "FilePropertiesFile.Open() returns json readable stream")]
         public void Open_returns_json_readable_stream()
         {
             var file = new EmptyFile("file1") { LastWriteTime = DateTime.Now, Length = 42};
@@ -30,7 +30,7 @@ namespace SyncTool.FileSystem.Git
             Assert.Equal(file.Name, properties.Name);
             Assert.Equal(file.Length, properties.Length);
             Assert.Equal(file.LastWriteTime, properties.LastWriteTime);
-
         }        
+
     }
 }

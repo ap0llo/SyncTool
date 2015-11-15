@@ -18,7 +18,7 @@ namespace SyncTool.FileSystem.Git
 
 
 
-        [Fact]
+        [Fact(DisplayName = "DirectoryPropertiesFile.Open() returns json readable stream")]
         public void Open_returns_json_readable_stream()
         {
             var directory = new Directory(s_Dir1);
@@ -32,7 +32,7 @@ namespace SyncTool.FileSystem.Git
 
             Assert.NotNull(properties);
             Assert.Equal(directory.Name, properties.Name);
-
         }
+
     }
 }

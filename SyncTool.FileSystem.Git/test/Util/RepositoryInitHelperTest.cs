@@ -20,7 +20,7 @@ namespace SyncTool.FileSystem.Git
         }
 
 
-        [Fact]
+        [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() creates a bare repository")]
         public void InitializeRepository_Creates_a_bare_repository()
         {
             RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Location);
@@ -32,8 +32,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-
-        [Fact]
+        [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() creates an initial commit")]
         public void InitializeRepository_Creates_an_initial_commit()
         {
             RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Location);
@@ -45,8 +44,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-
-        [Fact]
+        [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() adds a tag for the initial commit")]
         public void InitializeRepository_Adds_a_tag_for_the_initial_commit()
         {
             RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Location);
@@ -65,7 +63,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() adds a repository info file to the repository")]
         public void InitializeRepository_Adds_a_repository_info_file_to_the_repository()
         {
             RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Location);

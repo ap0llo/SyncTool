@@ -38,23 +38,30 @@ namespace SyncTool.FileSystem.Git
 
         }
 
-        [Fact(DisplayName = "Snapshots is empty for empty repository")]
+
+        #region Snapshots
+
+        [Fact(DisplayName = "GitBasedFileSystemHistory.Snapshots is empty for empty repository")]
         public void Snapshots_is_empty_for_empty_repository()
         {
             Assert.Empty(m_Instance.Snapshots);
         }
 
+        #endregion
 
+        #region LatestFileSystemSnapshot
 
-        [Fact(DisplayName = "LatestFileSystemSnapshot is null for empty repository")]
+        [Fact(DisplayName = "GitBasedFileSystemHistory.LatestFileSystemSnapshot is null for empty repository")]
         public void LatestFileSystemSnapshot_is_null_for_empty_repository()
         {
             Assert.Null(m_Instance.LatestFileSystemSnapshot);
         }
 
+        #endregion
 
+        #region CreateSnapshot
 
-        [Fact(DisplayName = "CreateSnapshot() can be executed multiple times")]
+        [Fact(DisplayName = "GitBasedFileSystemHistory.CreateSnapshot() can be executed multiple times")]
         public void CreateSnapshot_can_be_executed_multiple_times()
         {            
             var directory1 = new Directory(s_Dir1)
@@ -74,7 +81,7 @@ namespace SyncTool.FileSystem.Git
             Assert.Equal(snapshot2, m_Instance.LatestFileSystemSnapshot);
         }
 
-        [Fact(DisplayName = "CreateSnapshot() creates a valid snapshot")]
+        [Fact(DisplayName = "GitBasedFileSystemHistory.CreateSnapshot() creates a valid snapshot")]
         public void CreateSnapshot_creates_a_valid_snapshot()
         {
             var directory = new Directory(s_Dir1)
@@ -87,7 +94,7 @@ namespace SyncTool.FileSystem.Git
             FileSystemAssert.DirectoryEqual(directory, snapshot.RootDirectory);
         }
 
-        [Fact(DisplayName = "CreateSnapshot() creates a new snapshot if state was modified")]        
+        [Fact(DisplayName = "GitBasedFileSystemHistory.CreateSnapshot() creates a new snapshot if state was modified")]        
         public void CreateSnapshot_creates_a_new_snapshot_if_state_was_modified()
         {
             var dateTime1 = DateTime.Now;
@@ -114,7 +121,7 @@ namespace SyncTool.FileSystem.Git
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
         }
 
-        [Fact(DisplayName = "CreateSnapshot() returns previous snapshot if state is unchanged")]
+        [Fact(DisplayName = "GitBasedFileSystemHistory.CreateSnapshot() returns previous snapshot if state is unchanged")]
         public void CreateSnapshot_returns_previous_snapshot_if_state_is_unchanged()
         {            
             var state = new Directory(s_Dir1)
@@ -129,7 +136,11 @@ namespace SyncTool.FileSystem.Git
             Assert.Equal(snapshot1.Id, snapshot2.Id);
         }
 
-        [Fact(DisplayName = "CompareSnapshots() throws a SnapshotNotFoundException is the Id is unknown")]
+        #endregion
+
+        #region CompareSnapshots
+
+        [Fact(DisplayName = "GitBasedFileSystemHistory.CompareSnapshots() throws a SnapshotNotFoundException is the Id is unknown")]
         public void CompareSnapshots_throws_a_SnapshotNotFoundException_is_the_Id_is_unknown()
         {
             Assert.Throws<SnapshotNotFoundException>(() => m_Instance.CompareSnapshots("someId", "someOtherId"));
@@ -153,7 +164,7 @@ namespace SyncTool.FileSystem.Git
 
         }
 
-        [Fact(DisplayName = "CompareSnapshots() detects modification of files")]
+        [Fact(DisplayName = "GitBasedFileSystemHistory.CompareSnapshots() detects modification of files")]
         public void CompareSnapshots_detects_modification_of_files()
         {            
             var state1 = new Directory(s_Dir1)
@@ -183,7 +194,7 @@ namespace SyncTool.FileSystem.Git
             FileSystemAssert.FileEqual(state2.GetFile(s_File1), diff.Changes.Single().ToFile);
         }
 
-        [Fact(DisplayName = "CompareSnapshots() detects additions of files")]
+        [Fact(DisplayName = "GitBasedFileSystemHistory.CompareSnapshots() detects additions of files")]
         public void CompareSnapshots_detects_additions_of_files()
         {
             var file1 = new EmptyFile(s_File1) {LastWriteTime = DateTime.Now.AddDays(-2)};
@@ -208,7 +219,7 @@ namespace SyncTool.FileSystem.Git
             FileSystemAssert.FileEqual(file2, diff.Changes.Single().ToFile);
         }
 
-        [Fact(DisplayName = "CompareSnapshots() detects deletions of files")]
+        [Fact(DisplayName = "GitBasedFileSystemHistory.CompareSnapshots() detects deletions of files")]
         public void CompareSnapshots_detects_deletions_of_files()
         {
             var file1 = new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) };            
@@ -232,8 +243,8 @@ namespace SyncTool.FileSystem.Git
             FileSystemAssert.FileEqual(file1, diff.Changes.Single().FromFile);
         }
 
+        #endregion
 
-      
 
         public override void Dispose()
         {

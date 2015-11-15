@@ -23,7 +23,6 @@ namespace SyncTool.FileSystem.Git
         readonly LocalItemCreator m_DirectoryCreator;
 
 
-
         public GitDirectoryTest()
         {
             m_DirectoryCreator = new LocalItemCreator();
@@ -33,7 +32,7 @@ namespace SyncTool.FileSystem.Git
         }
 
         
-        [Fact]
+        [Fact(DisplayName = "GitDirectory: Repository with single commit and single file")]
         public void Repository_with_single_commit_and_single_file()
         {
             using (var repo = new Repository(m_Repository.Location))
@@ -49,7 +48,7 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "GitDirectory: Repository with subdirectories")]
         public void Repository_with_subdirectories()
         {
             // arrange
@@ -98,6 +97,7 @@ namespace SyncTool.FileSystem.Git
             }
 
         }
+
 
         public void Dispose()
         {
