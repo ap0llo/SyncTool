@@ -61,6 +61,7 @@
     <Compile Include="MetaFileSystem\FilePropertiesFileTest.cs" />
     <Compile Include="MetaFileSystem\FilePropertiesTest.cs" />
     <Compile Include="Util\FileSystemAssert.cs" />
+    <Compile Include="Util\RepositoryCloneTest.cs" />
     <Compile Include="Versioning\DirectoryBasedTest.cs" />
     <Compile Include="Versioning\GitBasedFileSystemHistoryTest.cs" />
     <Compile Include="Versioning\GitBasedFileSystemSnapshotTest.cs" />

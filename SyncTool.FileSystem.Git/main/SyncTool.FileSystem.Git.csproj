@@ -42,7 +42,11 @@
     <Compile Include="MetaFileSystem\FileSystemToMetaFileSystemConverter.cs" />
     <Compile Include="MetaFileSystem\MetaFileSystemLoader.cs" />
     <Compile Include="MetaFileSystem\MetaFileSystemToFileSystemConverter.cs" />
+    <Compile Include="Util\BranchCollectionExtensions.cs" />
     <Compile Include="Util\FileSystemConverter.cs" />
+    <Compile Include="Util\RepositoryCloneException.cs" />
+    <Compile Include="Util\RepositoryClone.cs" />
+    <Compile Include="Util\RepositoryExtensions.cs" />
     <Compile Include="Util\RepositoryInfo.cs" />
     <Compile Include="Util\RepositoryInfoFile.cs" />
     <Compile Include="Util\RepositoryInitHelper.cs" />

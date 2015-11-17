@@ -13,7 +13,7 @@ namespace SyncTool.FileSystem.Git
         readonly LocalItemCreator m_LocalItemCreator = new LocalItemCreator();
         readonly Repository m_Repository;
         readonly TemporaryLocalDirectory m_TempDirectory;
-
+        readonly string m_BranchName;
 
         public string Location => m_TempDirectory.Location;
 
@@ -24,25 +24,26 @@ namespace SyncTool.FileSystem.Git
         {
             m_TempDirectory = m_LocalItemCreator.CreateTemporaryDirectory();
 
+            m_BranchName = branchName;
+
             Repository.Clone(sourceUrl, m_TempDirectory.Location, new CloneOptions {BranchName = branchName, Checkout = true});
             m_Repository = new Repository(m_TempDirectory.Location);
         }
 
 
-        public string Commit()
+        public string Commit(string commitMessage = "SyncTool Commit")
         {
             StageAllChanges();
 
             var signature = new Signature("SyncTool", "SyncTool@example.com", DateTimeOffset.Now);
 
-            var commit = m_Repository.Commit("SyncTool commit", signature, signature);
+            var commit = m_Repository.Commit(commitMessage, signature, signature);
             return commit.Sha;
         }
 
         public void Push()
-        {
-            var remote = m_Repository.Network.Remotes["origin"];
-            m_Repository.Network.Push(remote, @"refs/heads/" + m_Repository.Head.FriendlyName);
+        {            
+            m_Repository.Network.Push(m_Repository.Branches[m_BranchName]);
         }
 
         public void Dispose()
