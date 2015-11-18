@@ -4,7 +4,6 @@
 // -----------------------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using LibGit2Sharp;
 using SyncTool.FileSystem.Versioning;
@@ -17,15 +16,12 @@ namespace SyncTool.FileSystem.Git
     {
         const string s_BranchPrefix = "filesystemhistory/";
 
-
-        readonly string m_RepositoryPath;
         readonly Repository m_Repository;
         readonly ISet<GitBasedFileSystemHistory> m_Histories = new HashSet<GitBasedFileSystemHistory>(); 
 
 
         public GitBasedHistoryRepository(string repositoryPath)
         {
-            m_RepositoryPath = repositoryPath;
             m_Repository = new Repository(repositoryPath);
 
             foreach (var history in LoadHistories())
@@ -42,8 +38,7 @@ namespace SyncTool.FileSystem.Git
         {
             var branchName = s_BranchPrefix + name;
             var parentCommitId = m_Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
-            var parentCommit = m_Repository.Lookup<Commit>(parentCommitId);
-            var signature = SignatureHelper.NewSignature();
+            var parentCommit = m_Repository.Lookup<Commit>(parentCommitId);            
             
             m_Repository.CreateBranch(branchName, parentCommit);
 
@@ -75,9 +70,9 @@ namespace SyncTool.FileSystem.Git
         
         IEnumerable<GitBasedFileSystemHistory> LoadHistories()
         {
-            return m_Repository.Branches.Where(b => !b.IsRemote)
-                .Where(b => b.Name.StartsWith(s_BranchPrefix))
-                .Select(b => new GitBasedFileSystemHistory(m_Repository, b.Name));            
+            return m_Repository.Branches.GetLocalBranches()
+                .Where(b => b.FriendlyName.StartsWith(s_BranchPrefix))
+                .Select(b => new GitBasedFileSystemHistory(m_Repository, b.FriendlyName));            
         } 
 
     }

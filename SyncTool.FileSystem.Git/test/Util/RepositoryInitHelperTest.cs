@@ -59,7 +59,7 @@ namespace SyncTool.FileSystem.Git
                 var tag = repository.Tags.Single();
 
                 Assert.Equal(initialCommit.Sha, tag.Target.Sha);
-                Assert.Equal(RepositoryInitHelper.InitialCommitTagName, tag.Name);
+                Assert.Equal(RepositoryInitHelper.InitialCommitTagName, tag.FriendlyName);
             }
         }
 

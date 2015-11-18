@@ -5,7 +5,6 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using Fluent.IO;
 using LibGit2Sharp;
 using SyncTool.FileSystem.Local;
 using Xunit;
