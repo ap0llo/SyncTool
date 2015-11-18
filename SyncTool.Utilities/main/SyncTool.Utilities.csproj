@@ -20,6 +20,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CachingObjectMapper.cs" />
+    <Compile Include="IObjectMapper.cs" />
     <Compile Include="IReversibleDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReversibleDictionary.cs" />
