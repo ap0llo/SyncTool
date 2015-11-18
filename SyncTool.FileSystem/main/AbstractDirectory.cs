@@ -11,6 +11,7 @@ namespace SyncTool.FileSystem
 {
     public abstract class AbstractDirectory : IDirectory
     {
+        //TODO: make private
         protected readonly IDictionary<string, IDirectory> m_Directories;
         protected readonly IDictionary<string, IFile> m_Files;
 

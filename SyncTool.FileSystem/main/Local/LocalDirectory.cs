@@ -6,13 +6,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SyncTool.Utilities;
 
 namespace SyncTool.FileSystem.Local
 {
     public class LocalDirectory : AbstractDirectory, ILocalDirectory
     {
         readonly DirectoryInfo m_DirectoryInfo;
-             
+        readonly CachingObjectMapper<DirectoryInfo, LocalDirectory> m_DirectoryMapper;
+        readonly CachingObjectMapper<FileInfo, LocalFile> m_FileMapper;
+
+
 
         public string Location => m_DirectoryInfo.FullName;
 
@@ -46,6 +50,9 @@ namespace SyncTool.FileSystem.Local
                 throw new ArgumentNullException(nameof(directoryInfo));
             }
             m_DirectoryInfo = directoryInfo;
+
+            m_DirectoryMapper = new CachingObjectMapper<DirectoryInfo, LocalDirectory>(dirInfo => new LocalDirectory(dirInfo), new NameOnlyFileSystemInfoEqualityComparer());
+            m_FileMapper = new CachingObjectMapper<FileInfo, LocalFile>(fileInfo => new LocalFile(fileInfo), new NameOnlyFileSystemInfoEqualityComparer());
         }
 
 
@@ -77,29 +84,58 @@ namespace SyncTool.FileSystem.Local
         void RefreshDirectories()
         {
             m_DirectoryInfo.Refresh();
-            UpdateValueCache(m_DirectoryInfo.GetDirectories(), m_Directories, info => info.Name, dirInfo => new LocalDirectory(dirInfo));
+
+            m_DirectoryMapper.CleanCache(m_DirectoryInfo.GetDirectories());
+
+            m_Directories.Clear();
+            foreach (var dirInfo in m_DirectoryInfo.GetDirectories())
+            {
+                var dir = m_DirectoryMapper.MapObject(dirInfo);
+                m_Directories.Add(dir.Name, dir);
+            }
+            
         }
 
         void RefreshFiles()
         {
             m_DirectoryInfo.Refresh();
-            UpdateValueCache(m_DirectoryInfo.GetFiles(), m_Files, fileInfo => fileInfo.Name, fileInfo => new LocalFile(fileInfo));
+            var fileInfos = m_DirectoryInfo.GetFiles();
+
+            m_FileMapper.CleanCache(fileInfos);
+
+            m_Files.Clear();
+
+            foreach (var fileInfo in fileInfos)
+            {
+                var file = m_FileMapper.MapObject(fileInfo);
+                m_Files.Add(file.Name, file);
+            }            
         }
 
 
-        static void UpdateValueCache<TValue, TMappedValue>(IEnumerable<TValue> values, IDictionary<string, TMappedValue> mappedValues,
-                                                           Func<TValue, string> keySelector, Func<TValue, TMappedValue> mapper)
-        {
-            var valuesDict = values.ToDictionary(keySelector, StringComparer.InvariantCultureIgnoreCase);
+      
 
-            foreach (var name in mappedValues.Keys.Where(n => !valuesDict.ContainsKey(n)).ToList())
+
+        private class  NameOnlyFileSystemInfoEqualityComparer : IEqualityComparer<FileSystemInfo>
+        {
+            public bool Equals(FileSystemInfo x, FileSystemInfo y)
             {
-                mappedValues.Remove(name);
+                if (object.ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+
+                if (x == null || y == null)
+                {
+                    return false;
+                }
+
+                return StringComparer.InvariantCultureIgnoreCase.Equals(x.Name, y.Name);
             }
 
-            foreach (var name in valuesDict.Keys.Where(n => !mappedValues.ContainsKey(n)))
+            public int GetHashCode(FileSystemInfo obj)
             {
-                mappedValues.Add(name, mapper(valuesDict[name]));
+                return obj == null ? 0 : StringComparer.InvariantCultureIgnoreCase.GetHashCode(obj.Name);
             }
         }
 
