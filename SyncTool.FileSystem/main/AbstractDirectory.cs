@@ -11,15 +11,12 @@ namespace SyncTool.FileSystem
 {
     public abstract class AbstractDirectory : IDirectory
     {
-        //TODO: make private
-        protected readonly IDictionary<string, IDirectory> m_Directories;
-        protected readonly IDictionary<string, IFile> m_Files;
 
         public virtual string Name { get; }
 
-        public virtual IEnumerable<IDirectory> Directories => m_Directories.Values;
+        public abstract IEnumerable<IDirectory> Directories { get; }
 
-        public virtual IEnumerable<IFile> Files => m_Files.Values;
+        public abstract IEnumerable<IFile> Files { get; }
 
         public IFileSystemItem this[string name]
         {
@@ -34,11 +31,9 @@ namespace SyncTool.FileSystem
         }
 
 
-        protected AbstractDirectory(string name, IEnumerable<IDirectory> directories, IEnumerable<IFile> files)
+        protected AbstractDirectory(string name)
         {
-            Name = name;
-            m_Directories = directories.ToDictionary(dir => dir.Name, StringComparer.InvariantCultureIgnoreCase);
-            m_Files = files.ToDictionary(file => file.Name, StringComparer.InvariantCultureIgnoreCase);
+            Name = name;            
         }
 
 
@@ -77,6 +72,7 @@ namespace SyncTool.FileSystem
             }
         }
 
+
         public virtual bool FileExists(string path)
         {
             EnsurePathIsValid(path);
@@ -87,13 +83,16 @@ namespace SyncTool.FileSystem
 
             if (remainingPath == "")
             {
-                return m_Files.ContainsKey(localName);
+                return FileExistsByName(localName);
             }
             else
             {
                 return GetDirectoryByName(localName).FileExists(remainingPath);
             }
         }
+
+        protected abstract bool FileExistsByName(string name);
+
 
         public virtual bool DirectoryExists(string path)
         {
@@ -105,7 +104,7 @@ namespace SyncTool.FileSystem
 
             if (remainingPath == "")
             {
-                return m_Directories.ContainsKey(path);                
+                return DirectoryExistsByName(localName);                
             }
             else
             {
@@ -113,36 +112,15 @@ namespace SyncTool.FileSystem
             }
         }
 
+        protected abstract bool DirectoryExistsByName(string name);
 
 
-        protected T GetItemByPath<T>(string path, Func<IDirectory, string, T> getByNameAction) where T : IFileSystemItem
-        {
-            if (!path.Contains(Constants.DirectorySeparatorChar))
-            {
-                return getByNameAction.Invoke(this, path);
-            }
-            else
-            {
-                var splitIndex = path.IndexOf(Constants.DirectorySeparatorChar);
-                var name = path.Substring(0, splitIndex);
-                var remainingPath = path.Substring(splitIndex + 1);
+        protected abstract IFile GetFileByName(string name);
 
-                var directory = GetDirectoryByName(name);
-                return (T)getByNameAction.Invoke(directory, remainingPath);
-            }            
-        }
+        protected abstract IDirectory GetDirectoryByName(string name);
+        
 
-        protected IFile GetFileByName(string name)
-        {
-            return m_Files[name];
-        }
-
-        protected IDirectory GetDirectoryByName(string name)
-        {
-            return m_Directories[name];
-        }
-
-        protected void EnsurePathIsValid(string path)
+        private void EnsurePathIsValid(string path)
         {
             if (path == null)
             {
@@ -171,7 +149,7 @@ namespace SyncTool.FileSystem
                        
         }
 
-        protected void ParsePath(string path, out string localName, out string remainingPath)
+        private void ParsePath(string path, out string localName, out string remainingPath)
         {
             if (path.Contains(Constants.DirectorySeparatorChar))
             {
@@ -186,10 +164,7 @@ namespace SyncTool.FileSystem
             }
         }
 
-        protected void Add(IDirectory directory) => m_Directories.Add(directory.Name, directory);
-
-        protected void Add(IFile file) => m_Files.Add(file.Name, file);
-
+        
         
     }
 }

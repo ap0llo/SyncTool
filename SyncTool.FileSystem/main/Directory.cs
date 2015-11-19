@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace SyncTool.FileSystem
 {
-    public class Directory : AbstractDirectory, IEnumerable<IFileSystemItem>
+    public class Directory : InMemoryDirectory, IEnumerable<IFileSystemItem>
     {
         public Directory(string name) : this(name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
         {

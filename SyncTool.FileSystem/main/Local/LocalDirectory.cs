@@ -24,8 +24,10 @@ namespace SyncTool.FileSystem.Local
         {
             get
             {
-                RefreshDirectories();
-                return base.Directories;
+                m_DirectoryInfo.Refresh();
+                var directories = m_DirectoryInfo.GetDirectories();
+                m_DirectoryMapper.CleanCache(directories);
+                return directories.Select(m_DirectoryMapper.MapObject);
             }
         }
 
@@ -33,9 +35,35 @@ namespace SyncTool.FileSystem.Local
         {
             get
             {
-                RefreshFiles();
-                return base.Files;                
+                m_DirectoryInfo.Refresh();
+                var files = m_DirectoryInfo.GetFiles();
+                m_FileMapper.CleanCache(files);
+                return files.Select(m_FileMapper.MapObject);
             }
+        }
+
+        protected override bool FileExistsByName(string name)
+        {
+            return System.IO.File.Exists(Path.Combine(m_DirectoryInfo.FullName, name));
+        }
+
+        protected override bool DirectoryExistsByName(string name)
+        {
+            return System.IO.Directory.Exists(Path.Combine(m_DirectoryInfo.FullName, name));
+        }
+
+        protected override IFile GetFileByName(string name)
+        {
+            m_DirectoryInfo.Refresh();
+            var fileInfo = m_DirectoryInfo.GetFiles().Single(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            return m_FileMapper.MapObject(fileInfo);
+        }
+
+        protected override IDirectory GetDirectoryByName(string name)
+        {
+            m_DirectoryInfo.Refresh();
+            var dirInfo = m_DirectoryInfo.GetDirectories().Single(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            return m_DirectoryMapper.MapObject(dirInfo);
         }
 
 
@@ -43,7 +71,7 @@ namespace SyncTool.FileSystem.Local
         {
         }
 
-        public LocalDirectory(DirectoryInfo directoryInfo) : base(directoryInfo.Name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
+        public LocalDirectory(DirectoryInfo directoryInfo) : base(directoryInfo.Name)
         {
             if (directoryInfo == null)
             {
@@ -55,62 +83,6 @@ namespace SyncTool.FileSystem.Local
             m_FileMapper = new CachingObjectMapper<FileInfo, LocalFile>(fileInfo => new LocalFile(fileInfo), new NameOnlyFileSystemInfoEqualityComparer());
         }
 
-
-        public override IDirectory GetDirectory(string path)
-        {
-            RefreshDirectories();
-            return base.GetDirectory(path);
-        }
-
-        public override IFile GetFile(string path)
-        {
-            RefreshFiles();
-            return base.GetFile(path);
-        }
-
-        public override bool FileExists(string path)
-        {
-            RefreshFiles();
-            return base.FileExists(path);
-        }
-
-        public override bool DirectoryExists(string path)
-        {
-            RefreshDirectories();
-            return base.DirectoryExists(path);
-        }
-
-
-        void RefreshDirectories()
-        {
-            m_DirectoryInfo.Refresh();
-
-            m_DirectoryMapper.CleanCache(m_DirectoryInfo.GetDirectories());
-
-            m_Directories.Clear();
-            foreach (var dirInfo in m_DirectoryInfo.GetDirectories())
-            {
-                var dir = m_DirectoryMapper.MapObject(dirInfo);
-                m_Directories.Add(dir.Name, dir);
-            }
-            
-        }
-
-        void RefreshFiles()
-        {
-            m_DirectoryInfo.Refresh();
-            var fileInfos = m_DirectoryInfo.GetFiles();
-
-            m_FileMapper.CleanCache(fileInfos);
-
-            m_Files.Clear();
-
-            foreach (var fileInfo in fileInfos)
-            {
-                var file = m_FileMapper.MapObject(fileInfo);
-                m_Files.Add(file.Name, file);
-            }            
-        }
 
 
       

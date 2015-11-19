@@ -43,7 +43,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractDirectoryTest.cs" />
+    <Compile Include="InMemoryDirectoryTest.cs" />
     <Compile Include="Local\LocalItemCreatorTest.cs" />
     <Compile Include="Local\LocalDirectoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

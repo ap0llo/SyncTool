@@ -12,7 +12,7 @@ namespace SyncTool.FileSystem.Git
     /// <summary>
     /// Wraps a git commit and makes it accessable as <see cref="IDirectory"/> 
     /// </summary>
-    public class GitDirectory : AbstractDirectory
+    public class GitDirectory : InMemoryDirectory
     {
         readonly string m_Name;
         readonly DateTime m_CommitTime;
