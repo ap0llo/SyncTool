@@ -27,6 +27,7 @@
     <Compile Include="AbstractDirectory.cs" />
     <Compile Include="BaseVisitor.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Filtering\FilteringDirectoryDecorator.cs" />
     <Compile Include="InMemoryDirectory.cs" />
     <Compile Include="Local\CreateLocalDirectoryVisitorExtensions.cs" />
     <Compile Include="EmptyFile.cs" />
