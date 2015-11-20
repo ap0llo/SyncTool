@@ -8,12 +8,12 @@ namespace SyncTool.FileSystem.Local
 {
     public static class CreateLocalDirectoryVisitorExtensions
     {
-        public static TemporaryLocalDirectory CreateTemporaryDirectory(this LocalItemCreator visitor, IDirectory directory)
+        public static DisposableLocalDirectoryWrapper CreateTemporaryDirectory(this LocalItemCreator visitor, IDirectory directory)
         {
             return visitor.CreateDirectory(directory, Path.GetTempPath()).ToTemporaryDirectory();
         }
 
-        public static TemporaryLocalDirectory CreateTemporaryDirectory(this LocalItemCreator visitor)
+        public static DisposableLocalDirectoryWrapper CreateTemporaryDirectory(this LocalItemCreator visitor)
         {
             return visitor.CreateTemporaryDirectory(new Directory(Path.GetRandomFileName()));
         }

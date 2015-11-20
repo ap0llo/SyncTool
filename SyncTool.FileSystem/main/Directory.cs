@@ -2,6 +2,8 @@
 //  Copyright (c) 2015, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +12,34 @@ namespace SyncTool.FileSystem
 {
     public class Directory : InMemoryDirectory, IEnumerable<IFileSystemItem>
     {
-        public Directory(string name) : this(name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
+        public Directory(string name) : this(null, name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
+        {
+        }
+        public Directory(IDirectory parent, string name) : this(parent, name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
         {
         }
 
-        public Directory(string name, IEnumerable<IDirectory> directories, IEnumerable<IFile> files) : base(name, directories, files)
+        public Directory(string name, IEnumerable<IDirectory> directories, IEnumerable<IFile> files) : this(null, name, directories, files)
         {
         }
 
-        public Directory(string name, IEnumerable<IFile> files) : this(name, Enumerable.Empty<IDirectory>(), files)
+        public Directory(IDirectory parent, string name, IEnumerable<IDirectory> directories, IEnumerable<IFile> files) : base(parent, name, directories, files)
         {
         }
 
-        public Directory(string name, IEnumerable<IDirectory> directories) : this(name, directories, Enumerable.Empty<IFile>())
+        public Directory(string name, IEnumerable<IFile> files) : this(null, name, Enumerable.Empty<IDirectory>(), files)
+        {
+        }
+
+        public Directory(IDirectory parent, string name, IEnumerable<IFile> files) : this(parent, name, Enumerable.Empty<IDirectory>(), files)
+        {
+        }
+
+        public Directory(string name, IEnumerable<IDirectory> directories) : this(null, name, directories, Enumerable.Empty<IFile>())
+        {
+        }
+
+        public Directory(IDirectory parent, string name, IEnumerable<IDirectory> directories) : this(parent, name, directories, Enumerable.Empty<IFile>())
         {
         }
 
@@ -38,14 +55,11 @@ namespace SyncTool.FileSystem
         }
 
 
-        new public void Add(IDirectory directory)
-        {
-            base.Add(directory);
-        }
-
-        new public void Add(IFile file)
-        {
-            base.Add(file);
-        }
+        // Make Add() method public
+        new public IDirectory Add(Func<IDirectory, IDirectory> createDirectory) => base.Add(createDirectory);
+        
+        // Make Add() method public
+        new public IFile Add(Func<IDirectory, IFile> createFile) => base.Add(createFile);
+        
     }
 }

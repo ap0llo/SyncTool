@@ -26,8 +26,8 @@ namespace SyncTool.FileSystem.Git
 
         public RepositoryCloneTest()
         {
-            m_RemoteRepositoryPath = Path.Combine(m_TempDirectory.Location, "Remote");
-            m_LocalRepositoryPath = Path.Combine(m_TempDirectory.Location, "Local");
+            m_RemoteRepositoryPath = Path.Combine(m_TempDirectory.Directory.Location, "Remote");
+            m_LocalRepositoryPath = Path.Combine(m_TempDirectory.Directory.Location, "Local");
 
             RepositoryInitHelper.InitializeRepository(m_RemoteRepositoryPath);
             m_RemoteRepository = new Repository(m_RemoteRepositoryPath);
@@ -59,7 +59,7 @@ namespace SyncTool.FileSystem.Git
         [Fact(DisplayName = nameof(RepositoryClone) + ": Constructor throws RepositoryCloneException if local repository is a clone of a different repository")]
         public void Constructor_throws_RepositoryCloneException_if_local_repository_if_not_a_clone_of_a_different_remote_repository()
         {
-            var remoteRepositoryPath2 = Path.Combine(m_TempDirectory.Location, "Remote2");
+            var remoteRepositoryPath2 = Path.Combine(m_TempDirectory.Directory.Location, "Remote2");
             
             RepositoryInitHelper.InitializeRepository(remoteRepositoryPath2);
 

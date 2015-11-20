@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 
 namespace SyncTool.FileSystem.Git
 {
@@ -17,74 +18,97 @@ namespace SyncTool.FileSystem.Git
         {
             var result = new FileSystemMapping();
             
-            VisitDynamic(directory, new Stack<string>(), new List<IDirectory>(),  new List<IFile>(), result);
+            ConvertDynamic(null, directory, result);
 
             return result;
         }
 
 
-        void Visit(IDirectory directory, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent, FileSystemMapping result)
-        {
-            // visit directories and files
 
-            directoryNames.Push(directory.Name);
-
-            var directories = new List<IDirectory>();
-            var files = new List<IFile>();
-            
-            foreach (var subDir in directory.Directories)
+        IDirectory Convert(IDirectory newParent, IDirectory toConvert, FileSystemMapping mapping)
+        {            
+            // determine name of new directory
+            var newDirectoryName = toConvert.Name;
+            foreach (var file in toConvert.Files)
             {
-                VisitDynamic(subDir, directoryNames, directories, files, result);
+                var name = GetDirectoryNameDynamic(file);
+                if (name != null)
+                {
+                    newDirectoryName = name;
+                    break;
+                }
+            }
+           
+            var newDirectory = new Directory(newParent, newDirectoryName);
+            mapping.AddMapping(toConvert, newDirectory);
+
+            foreach (var childDirectory in toConvert.Directories)
+            {
+                var newChildDirectory = (IDirectory) ConvertDynamic(newDirectory, childDirectory, mapping);
+                if (newChildDirectory != null)
+                {
+                    newDirectory.Add(_ => newChildDirectory);
+                }
+
+                
             }
 
-            foreach (var file in directory.Files)
+            foreach (var file in toConvert.Files)
             {
-                VisitDynamic(file, directoryNames, directories,  files, result);
+                var newFile = (IFile) ConvertDynamic(newDirectory, file, mapping);
+                if (newFile != null)
+                {
+                    newDirectory.Add(_ => newFile);
+                }
             }
 
-            // create a new directory to replace the current one
-            var newDir = new Directory(directoryNames.Pop());
 
-            // remove subdirectories from the stack
-            foreach (var dir in directories)
-            {
-                newDir.Add(dir);
-            }
-
-            // get all files from the stack
-            foreach (var file in files)
-            {
-                newDir.Add(file);
-            }
-
-            // push new directory to the stack
-            directoriesInParent.Add(newDir);
-            result.AddMapping(directory, newDir);
+            return newDirectory;
         }
 
-        void Visit(FilePropertiesFile file, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent , FileSystemMapping result)
+        IFile Convert(IDirectory newParent, FilePropertiesFile file,  FileSystemMapping mapping)
         {
-            // load file properties
-            filesInParent.Add(file.Content);
-            result.AddMapping(file, file.Content);
+            // load file properties            
+            var newFile = new File(newParent, file.Content.Name) { LastWriteTime =  file.Content.LastWriteTime, Length = file.Content.Length };
+            mapping.AddMapping(file, newFile);
+
+            return newFile;
         }
 
-        void Visit(DirectoryPropertiesFile file, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent, FileSystemMapping result)
+        IFile Convert(IDirectory newParent, DirectoryPropertiesFile file, FileSystemMapping mapping)
+        {          
+            // remove file from result
+            //mapping.AddMapping(file, null);
+            return null;
+        }
+
+        IFile Convert(IDirectory newParent, IFile file, FileSystemMapping mapping)
         {
-            // replace name of parent directory with the name from the properties file
-            directoryNames.Pop();
-            directoryNames.Push(file.Content.Name);
+            // ignore file instances that are not instances of FilePropertiesFile or DirectoryPropertiesFile
+            //mapping.AddMapping(file, null);
+            return null;
         }
 
-        void Visit(IFile file, Stack<string> directoryNames, List<IDirectory> directories, List<IFile> files, FileSystemMapping result)
+
+        string GetDirectoryName(IFile file)
         {
-            // ignore file instances that are not instances of FilePropertiesFile
+            return null;
         }
 
-        void VisitDynamic(dynamic arg, Stack<string> directoryNames, List<IDirectory> directoriesInParent, List<IFile> filesInParent,  FileSystemMapping result)
+        string GetDirectoryName(DirectoryPropertiesFile file)
         {
-            ((dynamic) this).Visit(arg, directoryNames, directoriesInParent, filesInParent, result);
+            return file.Content.Name;
         }
 
+        dynamic ConvertDynamic(IDirectory newParent, dynamic toConvert, FileSystemMapping mapping)
+        {
+            return ((dynamic) this).Convert(newParent, toConvert, mapping);
+        }
+
+
+        string GetDirectoryNameDynamic(dynamic file)
+        {
+            return ((dynamic)this).GetDirectoryName(file);
+        }
     }
 }

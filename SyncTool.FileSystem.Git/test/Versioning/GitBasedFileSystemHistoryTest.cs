@@ -66,12 +66,12 @@ namespace SyncTool.FileSystem.Git
         {            
             var directory1 = new Directory(s_Dir1)
             {
-                new EmptyFile(s_File1)
+                d => new EmptyFile(d, s_File1)
             };
 
             var directory2 = new Directory(s_Dir2)
             {
-                new EmptyFile(s_File2)
+                d => new EmptyFile(d, s_File2)
             };
 
             m_Instance.CreateSnapshot(directory1);
@@ -86,7 +86,7 @@ namespace SyncTool.FileSystem.Git
         {
             var directory = new Directory(s_Dir1)
             {
-                new EmptyFile(s_File1)
+                d => new EmptyFile(d, s_File1)
             };
 
             var snapshot = m_Instance.CreateSnapshot(directory);
@@ -102,12 +102,12 @@ namespace SyncTool.FileSystem.Git
 
             var state1 = new Directory(s_Dir1)
             {
-                new EmptyFile(s_File1) { LastWriteTime = dateTime1 }
+                dir1 => new EmptyFile(dir1, s_File1) { LastWriteTime = dateTime1 }
             };
 
             var state2 = new Directory(s_Dir1)
             {
-                new EmptyFile(s_File1) {LastWriteTime = dateTime2 }
+                dir1 => new EmptyFile(dir1, s_File1) {LastWriteTime = dateTime2 }
             };
 
             var commitCount = m_Repository.Commits.Count();
@@ -126,7 +126,7 @@ namespace SyncTool.FileSystem.Git
         {            
             var state = new Directory(s_Dir1)
             {
-                new EmptyFile(s_File1) { LastWriteTime = DateTime.Now, Length = 1234 }
+                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now, Length = 1234 }
             };
 
             var snapshot1 = m_Instance.CreateSnapshot(state);
@@ -147,12 +147,12 @@ namespace SyncTool.FileSystem.Git
 
             var directory1 = new Directory(s_Dir1)
             {
-                new EmptyFile(s_File1) 
+                d => new EmptyFile(d, s_File1) 
             };
 
             var directory2 = new Directory(s_Dir2)
             {
-                new EmptyFile(s_File1) 
+                d => new EmptyFile(d, s_File1) 
             };
 
             var snapshot1 = m_Instance.CreateSnapshot(directory1);
@@ -169,12 +169,12 @@ namespace SyncTool.FileSystem.Git
         {            
             var state1 = new Directory(s_Dir1)
             {
-                new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
+                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
             };
 
             var state2 = new Directory(s_Dir1)
             {
-                new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-1) }
+                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-1) }
             };
 
             var snapshot1 = m_Instance.CreateSnapshot(state1);
@@ -197,12 +197,19 @@ namespace SyncTool.FileSystem.Git
         [Fact(DisplayName = "GitBasedFileSystemHistory.CompareSnapshots() detects additions of files")]
         public void CompareSnapshots_detects_additions_of_files()
         {
-            var file1 = new EmptyFile(s_File1) {LastWriteTime = DateTime.Now.AddDays(-2)};
-            var file2 = new EmptyFile(s_File2) {LastWriteTime = DateTime.Now };            
-            var state1 = new Directory(s_Dir1) { file1 };
-            var state2 = new Directory(s_Dir1) { file1, file2 };
+            var writeTime1 = DateTime.Now.AddDays(-2);
+
+            var state1 = new Directory(s_Dir1)
+            {
+                d => new EmptyFile(d, s_File1) { LastWriteTime = writeTime1 }
+            };
+            var state2 = new Directory(s_Dir1)
+            {
+                d => new EmptyFile(d, s_File1) {LastWriteTime = writeTime1 },
+                d => new EmptyFile(d, s_File2) {LastWriteTime = DateTime.Now }
+            };
             
-            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot1 = m_Instance.CreateSnapshot(state1);            
             var snapshot2 = m_Instance.CreateSnapshot(state2);
 
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
@@ -216,14 +223,16 @@ namespace SyncTool.FileSystem.Git
             Assert.Equal(ChangeType.Added, diff.Changes.Single().Type);
 
             Assert.Null(diff.Changes.Single().FromFile);            
-            FileSystemAssert.FileEqual(file2, diff.Changes.Single().ToFile);
+            FileSystemAssert.FileEqual(state2.GetFile(s_File2), diff.Changes.Single().ToFile);
         }
 
         [Fact(DisplayName = "GitBasedFileSystemHistory.CompareSnapshots() detects deletions of files")]
         public void CompareSnapshots_detects_deletions_of_files()
         {
-            var file1 = new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) };            
-            var state1 = new Directory(s_Dir1) { file1 };
+            var state1 = new Directory(s_Dir1)
+            {
+                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
+            };
             var state2 = new Directory(s_Dir1);
 
             var snapshot1 = m_Instance.CreateSnapshot(state1);
@@ -240,7 +249,7 @@ namespace SyncTool.FileSystem.Git
             Assert.Equal(ChangeType.Deleted, diff.Changes.Single().Type);
 
             Assert.Null(diff.Changes.Single().ToFile);
-            FileSystemAssert.FileEqual(file1, diff.Changes.Single().FromFile);
+            FileSystemAssert.FileEqual(state1.GetFile(s_File1), diff.Changes.Single().FromFile);
         }
 
         #endregion

@@ -25,7 +25,7 @@ namespace SyncTool.FileSystem.Local
 
             using (temporaryDirectory)
             {
-                var localDirectory = new LocalDirectory(temporaryDirectory.Location);
+                var localDirectory = new LocalDirectory(null, temporaryDirectory.Directory.Location);
 
                 Assert.Equal(3, localDirectory.Files.Count());
                 Assert.Equal(0, localDirectory.Directories.Count());
@@ -46,7 +46,7 @@ namespace SyncTool.FileSystem.Local
 
             using (temporaryDirectory)
             {
-                var localDirectory = new LocalDirectory(temporaryDirectory.Location);
+                var localDirectory = new LocalDirectory(null, temporaryDirectory.Directory.Location);
 
                 Assert.Equal(0, localDirectory.Files.Count());
                 Assert.Equal(dirNames.Length, localDirectory.Directories.Count());
@@ -67,7 +67,7 @@ namespace SyncTool.FileSystem.Local
             var dirInfo = new DirectoryInfo(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
             dirInfo.Create();
 
-            var localDirectory = new LocalDirectory(dirInfo.FullName);
+            var localDirectory = new LocalDirectory(null, dirInfo.FullName);
             Assert.Equal(dirInfo.Name, localDirectory.Name);
 
             dirInfo.Delete(true);
@@ -84,12 +84,12 @@ namespace SyncTool.FileSystem.Local
 
             using (temporaryDirectory)
             {
-                var localDirectory = new LocalDirectory(temporaryDirectory.Location);
+                var localDirectory = new LocalDirectory(null, temporaryDirectory.Directory.Location);
 
                 Assert.Equal(fileNames.Length, localDirectory.Files.Count());
                 Assert.Equal(0, localDirectory.Directories.Count());
                 
-                NativeFile.Delete(Path.Combine(temporaryDirectory.Location, fileNames.First()));
+                NativeFile.Delete(Path.Combine(temporaryDirectory.Directory.Location, fileNames.First()));
 
                 Assert.Equal(fileNames.Length - 1 , localDirectory.Files.Count());
             }
@@ -104,13 +104,13 @@ namespace SyncTool.FileSystem.Local
 
             using (temporaryDirectory)
             {
-                var localDirectory = new LocalDirectory(temporaryDirectory.Location);
+                var localDirectory = new LocalDirectory(null, temporaryDirectory.Directory.Location);
 
                 Assert.Equal(0, localDirectory.Files.Count());
                 Assert.Equal(dirNames.Length, localDirectory.Directories.Count());
 
                 
-                NativeDirectory.Delete(Path.Combine(temporaryDirectory.Location, dirNames.First()));
+                NativeDirectory.Delete(Path.Combine(temporaryDirectory.Directory.Location, dirNames.First()));
 
                 Assert.Equal(0, localDirectory.Files.Count());
                 Assert.Equal(dirNames.Length - 1, localDirectory.Directories.Count());

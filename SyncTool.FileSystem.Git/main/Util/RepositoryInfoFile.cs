@@ -4,16 +4,15 @@
 // -----------------------------------------------------------------------------------------------------------
 using System;
 using System.IO;
+using System.Security.AccessControl;
 
 namespace SyncTool.FileSystem.Git
 {
-    public class RepositoryInfoFile : IReadableFile
+    public class RepositoryInfoFile : FileSystemItem, IReadableFile
     {
         public const string RepositoryInfoFileName = "SyncToolRepositoryInfo.json";
 
-
-        public string Name => RepositoryInfoFileName;
-
+        
         public DateTime LastWriteTime { get; }
 
         public long Length
@@ -24,13 +23,11 @@ namespace SyncTool.FileSystem.Git
         public RepositoryInfo Content { get; }
 
 
-
-        public RepositoryInfoFile()
+        public RepositoryInfoFile(IDirectory parent) : base(parent, RepositoryInfoFileName)
         {
             LastWriteTime = DateTime.Now;
             Content = new RepositoryInfo();
         }
-
 
 
         public Stream OpenRead()
@@ -42,6 +39,11 @@ namespace SyncTool.FileSystem.Git
 
                 return new MemoryStream(writeStream.ToArray());
             }
+        }
+
+        public IFile WithParent(IDirectory newParent)
+        {
+            return  new RepositoryInfoFile(newParent);
         }
     }
 }

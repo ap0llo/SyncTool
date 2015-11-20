@@ -6,23 +6,20 @@ using System;
 
 namespace SyncTool.FileSystem
 {
-    public class File : IFile
+    public class File : FileSystemItem, IFile
     {
-        
-        public string Name { get; set; }
-
         public DateTime LastWriteTime { get; set; }
 
-        public long Length { get; set; }        
+        public long Length { get; set; }
 
-        public File()
+        public virtual IFile WithParent(IDirectory newParent)
         {
-            
+            return new File(newParent, this.Name) { LastWriteTime =  this.LastWriteTime, Length =  this.Length};
         }
 
-        public File(string name)
+
+        public File(IDirectory parent , string name) : base(parent, name)
         {
-            this.Name = name;
         }
 
     }

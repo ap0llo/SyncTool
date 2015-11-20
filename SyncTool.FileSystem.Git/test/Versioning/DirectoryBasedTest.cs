@@ -11,7 +11,7 @@ namespace SyncTool.FileSystem.Git
     {
 
         readonly LocalItemCreator m_DirectoryCreator = new LocalItemCreator();
-        protected readonly TemporaryLocalDirectory m_TempDirectory;
+        protected readonly DisposableLocalDirectoryWrapper m_TempDirectory;
 
 
         protected DirectoryBasedTest()

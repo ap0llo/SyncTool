@@ -12,10 +12,10 @@ namespace SyncTool.FileSystem.Git
     {
         readonly LocalItemCreator m_LocalItemCreator = new LocalItemCreator();
         readonly Repository m_Repository;
-        readonly TemporaryLocalDirectory m_TempDirectory;
+        readonly DisposableLocalDirectoryWrapper m_TempDirectory;
         readonly string m_BranchName;
 
-        public string Location => m_TempDirectory.Location;
+        public string Location => m_TempDirectory.Directory.Location;
 
         public bool HasChanges => m_Repository.RetrieveStatus().IsDirty;
 
@@ -26,8 +26,8 @@ namespace SyncTool.FileSystem.Git
 
             m_BranchName = branchName;
 
-            Repository.Clone(sourceUrl, m_TempDirectory.Location, new CloneOptions {BranchName = branchName, Checkout = true});
-            m_Repository = new Repository(m_TempDirectory.Location);
+            Repository.Clone(sourceUrl, m_TempDirectory.Directory.Location, new CloneOptions {BranchName = branchName, Checkout = true});
+            m_Repository = new Repository(m_TempDirectory.Directory.Location);
         }
 
 

@@ -3,6 +3,7 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System;
+using System.ComponentModel;
 using System.IO;
 
 namespace SyncTool.FileSystem.Git
@@ -10,7 +11,7 @@ namespace SyncTool.FileSystem.Git
     /// <summary>
     /// Represents a file containing a serialized <see cref="FileProperties"/> instance
     /// </summary>
-    class FilePropertiesFile : IReadableFile
+    class FilePropertiesFile : FileSystemItem, IReadableFile
     {
         /// <summary>
         /// The suffix used to identify file properties files 
@@ -18,26 +19,28 @@ namespace SyncTool.FileSystem.Git
         public const string FileNameSuffix = ".SyncToolFileInfo.json";
         
 
-        private FilePropertiesFile(IFile file)
-        {
-            Name = file.Name + FileNameSuffix;
+        private FilePropertiesFile(IDirectory parent, IFile file) : base(parent, file.Name + FileNameSuffix)
+        {            
             Content = new FileProperties(file);
             LastWriteTime = DateTime.Now;
         }
 
-        private FilePropertiesFile(string name, DateTime lastWriteTime, FileProperties content)
+        private FilePropertiesFile(IDirectory parent, string name, DateTime lastWriteTime, FileProperties content)
+            : base(parent, name)
         {
-            Name = name;
             Content = content;
             LastWriteTime = lastWriteTime;
         }
-
-                
-        public string Name { get;  }
+        
         
         public DateTime LastWriteTime { get; }
 
         public long Length { get { throw new NotSupportedException();} }
+
+        public IFile WithParent(IDirectory newParent)
+        {
+            return new FilePropertiesFile(newParent, this.Name, this.LastWriteTime, this.Content);
+        }
 
         /// <summary>
         /// Gets the <see cref="FileProperties"/> this file contains
@@ -59,12 +62,12 @@ namespace SyncTool.FileSystem.Git
         /// <summary>
         /// Creates a new <see cref="FilePropertiesFile"/> encapsulating the properties of the specified file instance
         /// </summary>
-        public static FilePropertiesFile ForFile(IFile file) => new FilePropertiesFile(file);
+        public static FilePropertiesFile ForFile(IDirectory parent, IFile file) => new FilePropertiesFile(parent, file);
 
         /// <summary>
         /// Loads a <see cref="FilePropertiesFile"/> written out into a file 
         /// </summary>
-        public static FilePropertiesFile Load(IReadableFile file)
+        public static FilePropertiesFile Load(IDirectory parentDirectory, IReadableFile file)
         {
             if (file == null)
             {
@@ -78,7 +81,7 @@ namespace SyncTool.FileSystem.Git
 
             using (var stream = file.OpenRead())
             {
-                return new FilePropertiesFile(file.Name, file.LastWriteTime, stream.Deserialize<FileProperties>());
+                return new FilePropertiesFile(parentDirectory, file.Name, file.LastWriteTime, stream.Deserialize<FileProperties>());
             }            
         }
     }

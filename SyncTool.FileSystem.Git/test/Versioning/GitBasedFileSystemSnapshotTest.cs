@@ -33,13 +33,13 @@ namespace SyncTool.FileSystem.Git
         [InlineData(s_BranchName2)]
         public void Create_returns_a_new_snapshot_that_equals_the_original_directory(string branchName)
         {
-            var directory = new Directory("root")
+            var directory = new Directory(null, "root")
             {
-                new EmptyFile("file1") { LastWriteTime = DateTime.Now},
-                new Directory("dir1")
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Now},
+                root => new Directory(root, "dir1")
                 {
-                    new EmptyFile("file2") { LastWriteTime = DateTime.Now },
-                    new Directory("dir2")
+                    dir1 => new EmptyFile(dir1, "file2") { LastWriteTime = DateTime.Now },
+                    dir1 => new Directory(dir1, "dir2")
                 }
             };
 

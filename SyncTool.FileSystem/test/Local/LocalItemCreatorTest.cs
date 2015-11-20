@@ -35,11 +35,11 @@ namespace SyncTool.FileSystem.Local
 
             var directory = new Directory(rootName)
             {
-                new Directory(s_Dir1)
+                root => new Directory(root, s_Dir1)
                 {
-                    new EmptyFile(s_File1)
+                    dir1 => new EmptyFile(dir1, s_File1)
                 },
-                new Directory(s_Dir2)
+                root => new Directory(root, s_Dir2)
             };
 
 
@@ -59,7 +59,7 @@ namespace SyncTool.FileSystem.Local
 
             var directory = new Directory(rootName)
             {
-                new TestReadableFile(s_File1, fileContent)
+                root => new TestReadableFile(root, s_File1, fileContent)
             };
 
             m_Instance.CreateDirectory(directory, Path.GetTempPath());
@@ -94,20 +94,20 @@ namespace SyncTool.FileSystem.Local
         {
             var directory = new Directory(Path.GetRandomFileName())
             {
-                new Directory(s_Dir1),
-                new Directory(s_Dir2),
-                new EmptyFile(s_File1)
+                d => new Directory(d, s_Dir1),
+                d => new Directory(d, s_Dir2),
+                d => new EmptyFile(d, s_File1)
             };
 
             using (var temporaryDirectory = m_Instance.CreateTemporaryDirectory())
             {                
-                m_Instance.CreateDirectoryInPlace(directory, temporaryDirectory.Location);
+                m_Instance.CreateDirectoryInPlace(directory, temporaryDirectory.Directory.Location);
                 
-                Assert.NotEqual(temporaryDirectory.Name, directory.Name);
-                Assert.Equal(directory.Directories.Count(), temporaryDirectory.Directories.Count());
+                Assert.NotEqual(temporaryDirectory.Directory.Name, directory.Name);
+                Assert.Equal(directory.Directories.Count(), temporaryDirectory.Directory.Directories.Count());
                 Assert.True(directory.DirectoryExists(s_Dir1));
                 Assert.True(directory.DirectoryExists(s_Dir2));
-                Assert.Equal(directory.Files.Count(), temporaryDirectory.Files.Count());
+                Assert.Equal(directory.Files.Count(), temporaryDirectory.Directory.Files.Count());
                 Assert.True(directory.FileExists(s_File1));
             }
         }
@@ -116,11 +116,10 @@ namespace SyncTool.FileSystem.Local
         /// <summary>
         ///     Implementation of <see cref="IReadableFile" /> used for this test
         /// </summary>
-        class TestReadableFile : IReadableFile
+        class TestReadableFile : FileSystemItem, IReadableFile
         {
             readonly string m_Content;
 
-            public string Name { get; }
 
             public DateTime LastWriteTime
             {
@@ -132,19 +131,24 @@ namespace SyncTool.FileSystem.Local
                 get { throw new NotImplementedException(); }
             }
 
-            public TestReadableFile(string name, string content)
+
+            public TestReadableFile(IDirectory parent, string name, string content) : base(parent, name)
             {
                 if (content == null)
                 {
                     throw new ArgumentNullException(nameof(content));
                 }
-                m_Content = content;
-                Name = name;
+                m_Content = content;                
             }
 
             public Stream OpenRead()
             {
                 return new MemoryStream(Encoding.UTF8.GetBytes(m_Content));
+            }
+        
+            public IFile WithParent(IDirectory newParent)
+            {
+                throw new NotImplementedException();
             }
         }
     }

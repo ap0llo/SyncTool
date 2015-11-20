@@ -11,7 +11,7 @@ namespace SyncTool.FileSystem.Git
     /// <summary>
     /// Class that provides a simple way to store properties of a <see cref="IFile"/>.    
     /// </summary>
-    public class FileProperties : IEquatable<FileProperties>, IFile
+    public class FileProperties : IEquatable<FileProperties>
     {
 
         /// <summary>

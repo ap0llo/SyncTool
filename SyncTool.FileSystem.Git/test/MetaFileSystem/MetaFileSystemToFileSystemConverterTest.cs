@@ -21,23 +21,39 @@ namespace SyncTool.FileSystem.Git
         [Fact(DisplayName = nameof(MetaFileSystemToFileSystemConverter) + ".Convert()")]
         public void Convert()
         {
-            var file1 = new EmptyFile("file1") {LastWriteTime = DateTime.Now, Length = 1234};
-            var file2 = new EmptyFile("file2") {LastWriteTime = DateTime.Now, Length = 23456};
-            var file3 = new EmptyFile("file3") {LastWriteTime = DateTime.Now, Length = 789};
-            var file4 = new EmptyFile("file4") {LastWriteTime = DateTime.Now, Length = 1011};
+            IFile file1 = null;
+            IFile file2 = null;
+            IFile file3 = null;
+            IFile file4 = null;
 
             var expectedFileSystem = new Directory("root")
             {
-                new Directory(s_Dir1)
+                root => new Directory(root, s_Dir1)
                 {
-                    file2,
-                    file3                    
+                    dir1 =>
+                    {
+                        file2 = new EmptyFile(dir1, "file2") {LastWriteTime = DateTime.Now, Length = 23456};
+                        return file2;
+                    },
+                    dir1 =>
+                    {
+                        file3 = new EmptyFile(dir1, "file3") {LastWriteTime = DateTime.Now, Length = 789};
+                        return file3;
+                    }
                 },
-                new Directory(s_Dir2)
+                root => new Directory(root, s_Dir2)
                 {
-                    file4
+                    dir2 =>
+                    {
+                        file4 = new EmptyFile(dir2, "file4") {LastWriteTime = DateTime.Now, Length = 1011};
+                        return file4;
+                    }
                 },
-                file1                
+                root =>
+                {
+                    file1 = new EmptyFile(root, "file1") {LastWriteTime = DateTime.Now, Length = 1234};
+                    return file1;
+                }                
             };
 
             var metaFileSystem = m_FileSystemToMetaFileSystemConverter.CreateMetaDirectory(expectedFileSystem);
@@ -65,11 +81,11 @@ namespace SyncTool.FileSystem.Git
         {            
             var metaFileSystem = new Directory("root")
             {
-                new Directory(Path.GetRandomFileName())
+                root => new Directory(root, Path.GetRandomFileName())
                 {
-                    new DirectoryPropertiesFile(DateTime.Now, new DirectoryProperties() { Name = s_Dir2})
+                    d => new DirectoryPropertiesFile(d, DateTime.Now, new DirectoryProperties() { Name = s_Dir2})
                 },
-                new DirectoryPropertiesFile(DateTime.Now, new DirectoryProperties() { Name = s_Dir1})
+                root => new DirectoryPropertiesFile(root, DateTime.Now, new DirectoryProperties() { Name = s_Dir1})
             };
 
             var convertedFileSystem = m_Instance.Convert(metaFileSystem).GetMappedDirectory(metaFileSystem);

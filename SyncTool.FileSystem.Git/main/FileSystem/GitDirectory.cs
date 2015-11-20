@@ -22,11 +22,11 @@ namespace SyncTool.FileSystem.Git
         
 
 
-        public GitDirectory(string name, Commit commit) : this(name, commit.Author.When.DateTime, commit.Tree)
+        public GitDirectory(IDirectory parent, string name, Commit commit) : this(parent, name, commit.Author.When.DateTime, commit.Tree)
         {            
         }
 
-        public GitDirectory(string name, DateTime commitTime, Tree tree) : base(name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
+        public GitDirectory(IDirectory parent, string name, DateTime commitTime, Tree tree) : base(parent, name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
         {
             m_Name = name;
             m_CommitTime = commitTime;
@@ -50,16 +50,14 @@ namespace SyncTool.FileSystem.Git
                     {
                         case TreeEntryTargetType.Blob:
 
-                            var blob = (Blob) treeEntry.Target;
-                            var file = new GitFile(treeEntry.Name, m_CommitTime, blob);                        
-                            Add(file);
+                            var blob = (Blob) treeEntry.Target;                            
+                            Add(d => new GitFile(d, treeEntry.Name, m_CommitTime, blob));
                             break;
 
                         case TreeEntryTargetType.Tree:
-                            var subTree = (Tree)treeEntry.Target;                        
-                            var subDirectory = new GitDirectory(treeEntry.Name, m_CommitTime, subTree);
+                            var subTree = (Tree)treeEntry.Target;                                                    
 
-                            Add(subDirectory);                        
+                            Add(d => new GitDirectory(d, treeEntry.Name, m_CommitTime, subTree));                        
                             break;
                     }
                 }

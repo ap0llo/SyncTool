@@ -7,6 +7,6 @@ namespace SyncTool.FileSystem.Local
     public static class LocalDirectoryExtensions
     {
         
-        public static TemporaryLocalDirectory ToTemporaryDirectory(this ILocalDirectory directory) => new TemporaryLocalDirectory(directory);
+        public static DisposableLocalDirectoryWrapper ToTemporaryDirectory(this ILocalDirectory directory) => new DisposableLocalDirectoryWrapper(directory);
     }
 }

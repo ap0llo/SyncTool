@@ -12,7 +12,7 @@ namespace SyncTool.FileSystem.Git
 {
     public class RepositoryInitHelperTest : IDisposable
     {
-        readonly TemporaryLocalDirectory m_TemporaryDirectory;
+        readonly DisposableLocalDirectoryWrapper m_TemporaryDirectory;
 
         public RepositoryInitHelperTest()
         {
@@ -23,10 +23,10 @@ namespace SyncTool.FileSystem.Git
         [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() creates a bare repository")]
         public void InitializeRepository_Creates_a_bare_repository()
         {
-            RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Location);
+            RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Directory.Location);
 
             // test if we can open the repository
-            using (var repository = new Repository(m_TemporaryDirectory.Location))
+            using (var repository = new Repository(m_TemporaryDirectory.Directory.Location))
             {                
                 Assert.True(repository.Info.IsBare);
             }
@@ -35,7 +35,7 @@ namespace SyncTool.FileSystem.Git
         [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() creates an initial commit")]
         public void InitializeRepository_Creates_an_initial_commit()
         {
-            RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Location);
+            RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Directory.Location);
 
             // assert that a single commit has been created in the repository
             using (var repository = new Repository(m_TemporaryDirectory.Location))
@@ -73,7 +73,7 @@ namespace SyncTool.FileSystem.Git
             {
                 var initialCommit = repository.Commits.Single();
                 
-                var gitDirectory = new GitDirectory("Irrelevant", initialCommit);
+                var gitDirectory = new GitDirectory(null, "Irrelevant", initialCommit);
 
                 Assert.True(gitDirectory.FileExists(RepositoryInfoFile.RepositoryInfoFileName));
 

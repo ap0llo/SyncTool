@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -13,17 +14,31 @@ namespace SyncTool.FileSystem
 {
     public class InMemoryDirectoryTest
     {
-        readonly DerivedDirectory m_Dir1;
-        readonly DerivedDirectory m_Dir11;
-        readonly File m_File1 = new File("file1");
         readonly DerivedDirectory m_Root;
+        DerivedDirectory m_Dir1;
+        DerivedDirectory m_Dir11;
+        File m_File1;
 
 
         public InMemoryDirectoryTest()
         {
-            m_Dir11 = new DerivedDirectory("dir11");
-            m_Dir1 = new DerivedDirectory("dir1", new[] {m_Dir11}, new[] {m_File1});
-            m_Root = new DerivedDirectory("root", new[] {m_Dir1});
+            m_Root = new DerivedDirectory(null, "root")
+            {
+                root => new DerivedDirectory(root, "dir1")
+                {
+                    dir1 =>
+                    {
+                        m_Dir1 = (DerivedDirectory) dir1;
+                        m_Dir11 = new DerivedDirectory(dir1, "dir11");
+                        return m_Dir11;
+                    },
+                    dir1 =>
+                    {
+                        m_File1 = new File(dir1, "file1");
+                        return m_File1;
+                    }
+                }
+            };
         }
 
 
@@ -171,18 +186,28 @@ namespace SyncTool.FileSystem
         #endregion
         
 
-        class DerivedDirectory : InMemoryDirectory
+        class DerivedDirectory : InMemoryDirectory, IEnumerable<IFileSystemItem>
         {
-            public DerivedDirectory(string name) : base(name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
+            public DerivedDirectory(IDirectory parent, string name) 
+                : base(parent, name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
             {
             }
 
-            public DerivedDirectory(string name, IEnumerable<IDirectory> directories) : base(name, directories, Enumerable.Empty<IFile>())
+
+            // Make Add() method public
+            public new void Add(Func<IDirectory, IDirectory> createDirectory) => base.Add(createDirectory);
+
+            // Make Add() method public
+            new public void Add(Func<IDirectory, IFile> createFile) => base.Add(createFile);
+
+            public IEnumerator<IFileSystemItem> GetEnumerator()
             {
+                return Directories.Cast<IFileSystemItem>().Union(Files.Cast<IFileSystemItem>()).GetEnumerator();
             }
 
-            public DerivedDirectory(string name, IEnumerable<IDirectory> directories, IEnumerable<IFile> files) : base(name, directories, files)
+            IEnumerator IEnumerable.GetEnumerator()
             {
+                return GetEnumerator();
             }
         }       
     }

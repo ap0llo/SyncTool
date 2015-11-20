@@ -10,7 +10,7 @@ namespace SyncTool.FileSystem.Git
     /// <summary>
     /// Represents a file containing a serialized <see cref="FileProperties"/> instance
     /// </summary>
-    public class DirectoryPropertiesFile : IReadableFile
+    public class DirectoryPropertiesFile : FileSystemItem, IReadableFile
     {
 
         /// <summary>
@@ -19,14 +19,14 @@ namespace SyncTool.FileSystem.Git
         public const string FileName = "SyncToolDirectoryInfo.json";
 
 
-        private DirectoryPropertiesFile(IDirectory directory)
+        private DirectoryPropertiesFile(IDirectory parentDirectory, IDirectory directory) : base(parentDirectory, FileName)
         {            
             Content = new DirectoryProperties(directory);
             LastWriteTime = DateTime.Now;
         }
 
         // constructor needs to be internal because it is used by tests
-        internal DirectoryPropertiesFile(DateTime lastWriteTime, DirectoryProperties content)
+        internal DirectoryPropertiesFile(IDirectory parentDirectory, DateTime lastWriteTime, DirectoryProperties content) : base(parentDirectory, FileName)
         {            
             Content = content;
             LastWriteTime = lastWriteTime;
@@ -38,6 +38,11 @@ namespace SyncTool.FileSystem.Git
         public DateTime LastWriteTime { get; }
 
         public long Length { get { throw new NotSupportedException(); } }
+
+        public IFile WithParent(IDirectory newParent)
+        {
+            return new DirectoryPropertiesFile(newParent, this.LastWriteTime, this.Content);
+        }
 
         /// <summary>
         /// Gets the <see cref="DirectoryProperties"/> this file contains
@@ -59,12 +64,12 @@ namespace SyncTool.FileSystem.Git
         /// <summary>
         /// Creates a new <see cref="DirectoryPropertiesFile"/> encapsulating the properties of the specified directory instance
         /// </summary>
-        public static DirectoryPropertiesFile ForDirectory(IDirectory directory) => new DirectoryPropertiesFile(directory);
+        public static DirectoryPropertiesFile ForDirectory(IDirectory parentDirectory, IDirectory directory) => new DirectoryPropertiesFile(parentDirectory, directory);
 
         /// <summary>
         /// Loads a <see cref="DirectoryPropertiesFile"/> written out into a file 
         /// </summary>
-        public static DirectoryPropertiesFile Load(IReadableFile file)
+        public static DirectoryPropertiesFile Load(IDirectory parentDirectory, IReadableFile file)
         {
             if (file == null)
             {
@@ -78,7 +83,7 @@ namespace SyncTool.FileSystem.Git
 
             using (var stream = file.OpenRead())
             {
-                return new DirectoryPropertiesFile(file.LastWriteTime, stream.Deserialize<DirectoryProperties>());
+                return new DirectoryPropertiesFile(parentDirectory, file.LastWriteTime, stream.Deserialize<DirectoryProperties>());
             }
         }
 

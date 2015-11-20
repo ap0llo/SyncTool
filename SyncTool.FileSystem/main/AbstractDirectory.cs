@@ -9,11 +9,9 @@ using System.Linq;
 
 namespace SyncTool.FileSystem
 {
-    public abstract class AbstractDirectory : IDirectory
+    public abstract class AbstractDirectory : FileSystemItem, IDirectory
     {
-
-        public virtual string Name { get; }
-
+        
         public abstract IEnumerable<IDirectory> Directories { get; }
 
         public abstract IEnumerable<IFile> Files { get; }
@@ -31,9 +29,8 @@ namespace SyncTool.FileSystem
         }
 
 
-        protected AbstractDirectory(string name)
+        protected AbstractDirectory(IDirectory parent, string name) : base(parent, name)
         {
-            Name = name;            
         }
 
 

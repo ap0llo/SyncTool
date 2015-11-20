@@ -20,10 +20,10 @@ namespace SyncTool.FileSystem.Git
         [Fact(DisplayName = "FileSystemToMetaFileSystemConverter.CreateMetaDirectory() with a single file")]
         public void CreateMetaDirectory_with_a_single_file()
         {
-            var fileMock = CreateFileMock(s_File1, DateTime.Now, 1234);
+            var fileMock = CreateFileMock(s_File1, DateTime.Now, 1234);            
 
-            var directory = new Directory("root") { fileMock.Object };
-
+            var directory = new Directory(null, "root") { root => fileMock.Object };
+            fileMock.Setup(f => f.Parent).Returns(directory);
 
             var metaFileSystem = m_Instance.CreateMetaDirectory(directory);
 
@@ -42,10 +42,18 @@ namespace SyncTool.FileSystem.Git
 
             var directory = new Directory("root")
             {
-                fileMock1.Object,
-                new Directory(s_Dir1)
+                root =>
                 {
-                    fileMock2.Object
+                    fileMock1.Setup(f => f.Parent).Returns(root);
+                    return fileMock1.Object;
+                },
+                root => new Directory(root, s_Dir1)
+                {
+                    dir1 =>
+                    {
+                        fileMock2.Setup(f => f.Parent).Returns(dir1);
+                        return fileMock2.Object;
+                    }
                 }
             };
 

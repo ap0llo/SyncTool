@@ -21,7 +21,7 @@ namespace SyncTool.FileSystem
         
 
 
-        protected InMemoryDirectory(string name, IEnumerable<IDirectory> directories, IEnumerable<IFile> files) : base(name)
+        protected InMemoryDirectory(IDirectory parent, string name, IEnumerable<IDirectory> directories, IEnumerable<IFile> files) : base(parent, name)
         {            
             m_Directories = directories.ToDictionary(dir => dir.Name, StringComparer.InvariantCultureIgnoreCase);
             m_Files = files.ToDictionary(file => file.Name, StringComparer.InvariantCultureIgnoreCase);
@@ -37,8 +37,18 @@ namespace SyncTool.FileSystem
 
         protected override IDirectory GetDirectoryByName(string name) => m_Directories[name];
     
-        protected void Add(IDirectory directory) => m_Directories.Add(directory.Name, directory);
+        protected IDirectory Add(Func<IDirectory, IDirectory> createDirectory)
+        {
+            var directory = createDirectory(this);            
+            m_Directories.Add(directory.Name, directory);
+            return directory;
+        }
 
-        protected void Add(IFile file) => m_Files.Add(file.Name, file);
+        protected IFile Add(Func<IDirectory, IFile> createFile)
+        {
+            var file = createFile(this);
+            m_Files.Add(file.Name, file);
+            return file;
+        }
     }
 }

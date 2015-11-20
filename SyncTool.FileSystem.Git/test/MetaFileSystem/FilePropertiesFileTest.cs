@@ -18,7 +18,7 @@ namespace SyncTool.FileSystem.Git
         public void Open_returns_json_readable_stream()
         {
             var file = new EmptyFile("file1") { LastWriteTime = DateTime.Now, Length = 42};
-            var filePropertiesFile = FilePropertiesFile.ForFile(file);
+            var filePropertiesFile = FilePropertiesFile.ForFile(null, file);
 
             FileProperties properties;
             using (var jsonReader = new JsonTextReader(new StreamReader(filePropertiesFile.OpenRead())))

@@ -22,7 +22,7 @@ namespace SyncTool.FileSystem.Git
         public void Open_returns_json_readable_stream()
         {
             var directory = new Directory(s_Dir1);
-            var directoryPropertiesFile = DirectoryPropertiesFile.ForDirectory(directory);
+            var directoryPropertiesFile = DirectoryPropertiesFile.ForDirectory(null, directory);
 
             DirectoryProperties properties;
             using (var jsonReader = new JsonTextReader(new StreamReader(directoryPropertiesFile.OpenRead())))

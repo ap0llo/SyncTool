@@ -67,11 +67,11 @@ namespace SyncTool.FileSystem.Local
         }
 
 
-        public LocalDirectory(string path) : this(new DirectoryInfo(path))
+        public LocalDirectory(IDirectory parent, string path) : this(parent, new DirectoryInfo(path))
         {
         }
 
-        public LocalDirectory(DirectoryInfo directoryInfo) : base(directoryInfo.Name)
+        public LocalDirectory(IDirectory parent, DirectoryInfo directoryInfo) : base(parent, directoryInfo.Name)
         {
             if (directoryInfo == null)
             {
@@ -79,8 +79,8 @@ namespace SyncTool.FileSystem.Local
             }
             m_DirectoryInfo = directoryInfo;
 
-            m_DirectoryMapper = new CachingObjectMapper<DirectoryInfo, LocalDirectory>(dirInfo => new LocalDirectory(dirInfo), new NameOnlyFileSystemInfoEqualityComparer());
-            m_FileMapper = new CachingObjectMapper<FileInfo, LocalFile>(fileInfo => new LocalFile(fileInfo), new NameOnlyFileSystemInfoEqualityComparer());
+            m_DirectoryMapper = new CachingObjectMapper<DirectoryInfo, LocalDirectory>(dirInfo => new LocalDirectory(this, dirInfo), new NameOnlyFileSystemInfoEqualityComparer());
+            m_FileMapper = new CachingObjectMapper<FileInfo, LocalFile>(fileInfo => new LocalFile(this, fileInfo), new NameOnlyFileSystemInfoEqualityComparer());
         }
 
 

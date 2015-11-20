@@ -109,7 +109,7 @@ namespace SyncTool.FileSystem.Git
         {
             // load "raw" directory
             // name of root directory is irrelevant, will be overridden by directory properties file
-            m_GitDirectory = new GitDirectory("root", m_Commit);            
+            m_GitDirectory = new GitDirectory(null, "root", m_Commit);            
                         
             // convert to "meta" file system (replaces IFile instances in the tree with more specific implementation)
             m_MetaFileSystem = m_MetaFileSystemLoader.Convert(m_GitDirectory);

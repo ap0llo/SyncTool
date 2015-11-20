@@ -12,21 +12,53 @@ namespace SyncTool.FileSystem.Git
     /// </summary>
     public class MetaFileSystemLoader : FileSystemConverter
     {
-        public void Visit(IReadableFile file, Tuple<Stack<IDirectory>, Stack<IFile>> stacks)
+
+
+        public override IDirectory Convert(IDirectory newParent, IDirectory toConvert)
+        {
+            var newDirectory = new Directory(newParent, toConvert.Name);
+
+            foreach (var subDirectory in toConvert.Directories)
+            {
+                var newSubDirectory = (IDirectory) ConvertDynamic(newDirectory, subDirectory);
+                if (newSubDirectory != null)
+                {
+                    newDirectory.Add(_ => newSubDirectory);
+                }
+            }
+
+            foreach (var file in toConvert.Files)
+            {
+                var newFile = (IFile) ConvertDynamic(newDirectory, file);
+                if (newFile != null)
+                {
+                    newDirectory.Add(_ => newFile);
+                }
+            }
+
+            return newDirectory;
+        }
+
+        public override IFile Convert(IDirectory newParent, IFile toConvert)
+        {
+            return toConvert.WithParent(newParent);
+        }
+
+        public IFile Convert(IDirectory newParent, IReadableFile file)
         {
             // replace all files which's name ends with .SyncTool.json with a FilePropertiesFile
             if (file.Name.EndsWith(FilePropertiesFile.FileNameSuffix, StringComparison.InvariantCultureIgnoreCase))
             {
-                stacks.Item2.Push(FilePropertiesFile.Load(file));
-            }   
+                return FilePropertiesFile.Load(newParent, file);                
+            }
             else if (file.Name.Equals(DirectoryPropertiesFile.FileName, StringComparison.InvariantCultureIgnoreCase))
             {
-                stacks.Item2.Push(DirectoryPropertiesFile.Load(file));
-            }         
+                return DirectoryPropertiesFile.Load(newParent, file);
+            }
             else
             {
                 // leave other files unchanged
-                stacks.Item2.Push(file);
+                return file.WithParent(newParent);
             }
         }
     }

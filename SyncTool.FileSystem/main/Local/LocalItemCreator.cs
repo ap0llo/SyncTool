@@ -25,7 +25,7 @@ namespace SyncTool.FileSystem.Local
             }
 
             VisitDynamic(toCreate, createIn);
-            return new LocalDirectory(Path.Combine(createIn, toCreate.Name));
+            return new LocalDirectory(null, Path.Combine(createIn, toCreate.Name));
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SyncTool.FileSystem.Local
             }
 
             VisitDynamic(toCreate, createIn);
-            return new LocalFile(Path.Combine(createIn, toCreate.Name));
+            return new LocalFile(null, Path.Combine(createIn, toCreate.Name));
         }
 
 

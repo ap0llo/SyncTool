@@ -27,6 +27,7 @@
     <Compile Include="AbstractDirectory.cs" />
     <Compile Include="BaseVisitor.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="FileSystemItem.cs" />
     <Compile Include="Filtering\FilteringDirectoryDecorator.cs" />
     <Compile Include="InMemoryDirectory.cs" />
     <Compile Include="Local\CreateLocalDirectoryVisitorExtensions.cs" />
@@ -38,7 +39,7 @@
     <Compile Include="Local\LocalItemCreator.cs" />
     <Compile Include="Directory.cs" />
     <Compile Include="File.cs" />
-    <Compile Include="Local\TemporaryLocalDirectory.cs" />
+    <Compile Include="Local\DisposableLocalDirectoryWrapper.cs" />
     <Compile Include="IDirectory.cs" />
     <Compile Include="Local\ILocalDirectory.cs" />
     <Compile Include="IFile.cs" />

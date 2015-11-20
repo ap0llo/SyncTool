@@ -27,12 +27,12 @@ namespace SyncTool.FileSystem.Git
             // clone the repository, add initial commit and push the changes back to the actual repository
             using (var tempDirectory = directoryCreator.CreateTemporaryDirectory())
             {
-                var clonedRepoPath = Repository.Clone(location, tempDirectory.Location);
+                var clonedRepoPath = Repository.Clone(location, tempDirectory.Directory.Location);
 
-                var repositoryInfoFile = new RepositoryInfoFile();
+                var repositoryInfoFile = new RepositoryInfoFile(tempDirectory.Directory);
 
                 // add a empty file to the repository
-                directoryCreator.CreateFile(repositoryInfoFile, tempDirectory.Location);
+                directoryCreator.CreateFile(repositoryInfoFile, tempDirectory.Directory.Location);
 
                 // commit and push the file to the bare repository we created
                 using (var clonedRepo = new Repository(clonedRepoPath))

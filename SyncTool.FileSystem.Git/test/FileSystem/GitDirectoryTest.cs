@@ -19,7 +19,7 @@ namespace SyncTool.FileSystem.Git
         const string s_Dir2 = "dir2";
         const string s_File1 = "file1";
         const string s_File2 = "file2";
-        readonly TemporaryLocalDirectory m_Repository;
+        readonly DisposableLocalDirectoryWrapper m_Repository;
         readonly LocalItemCreator m_DirectoryCreator;
 
 
@@ -28,20 +28,20 @@ namespace SyncTool.FileSystem.Git
             m_DirectoryCreator = new LocalItemCreator();
             m_Repository = m_DirectoryCreator.CreateTemporaryDirectory();
             
-            RepositoryInitHelper.InitializeRepository(m_Repository.Location);            
+            RepositoryInitHelper.InitializeRepository(m_Repository.Directory.Location);            
         }
 
         
         [Fact(DisplayName = "GitDirectory: Repository with single commit and single file")]
         public void Repository_with_single_commit_and_single_file()
         {
-            using (var repo = new Repository(m_Repository.Location))
+            using (var repo = new Repository(m_Repository.Directory.Location))
             {
                 var commit = repo.Commits.Single();
 
-                var gitDirectory = new GitDirectory(m_Repository.Name, commit);
+                var gitDirectory = new GitDirectory(null, m_Repository.Directory.Name, commit);
 
-                Assert.Equal(m_Repository.Name, gitDirectory.Name);
+                Assert.Equal(m_Repository.Directory.Name, gitDirectory.Name);
                 Assert.Empty(gitDirectory.Directories);
                 Assert.Single(gitDirectory.Files);
                 Assert.True(gitDirectory.FileExists(RepositoryInfoFile.RepositoryInfoFileName));
@@ -53,18 +53,18 @@ namespace SyncTool.FileSystem.Git
         {
             // arrange
             string commitId;
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_Repository.Location, "master"))
+            using (var workingDirectory = new TemporaryWorkingDirectory(m_Repository.Directory.Location, "master"))
             {                
                 var directory = new Directory(Path.GetFileName(workingDirectory.Location))
                 {
-                    new Directory(s_Dir1)
+                    root => new Directory(root, s_Dir1)
                     {
-                        new EmptyFile(s_File1),
-                        new EmptyFile(s_File2)
+                        dir1 => new EmptyFile(dir1, s_File1),
+                        dir1 => new EmptyFile(dir1, s_File2)
                     },
-                    new Directory(s_Dir2)
+                    root => new Directory(root, s_Dir2)
                     {
-                        new EmptyFile(s_File1)
+                        dir2 => new EmptyFile(dir2, s_File1)
                     }
                 };
 
@@ -75,15 +75,15 @@ namespace SyncTool.FileSystem.Git
                 workingDirectory.Push();
             }
 
-            using (var repo = new Repository(m_Repository.Location))
+            using (var repo = new Repository(m_Repository.Directory.Location))
             {
                 // act
                 var commit = repo.Lookup<Commit>(commitId);
-                var gitDirectory = new GitDirectory(m_Repository.Name, commit);
+                var gitDirectory = new GitDirectory(null, m_Repository.Directory.Name, commit);
 
 
                 // assert
-                Assert.Equal(m_Repository.Name, gitDirectory.Name);
+                Assert.Equal(m_Repository.Directory.Name, gitDirectory.Name);
 
                 Assert.Equal(2, gitDirectory.Directories.Count());
                 Assert.Empty(gitDirectory.Files);
