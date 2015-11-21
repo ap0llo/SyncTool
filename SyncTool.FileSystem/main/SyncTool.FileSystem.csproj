@@ -28,7 +28,8 @@
     <Compile Include="BaseVisitor.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="FileSystemItem.cs" />
-    <Compile Include="Filtering\FilteringDirectoryDecorator.cs" />
+    <Compile Include="Filtering\FilteringConverter.cs" />
+    <Compile Include="Filtering\IFileSystemFilter.cs" />
     <Compile Include="InMemoryDirectory.cs" />
     <Compile Include="Local\CreateLocalDirectoryVisitorExtensions.cs" />
     <Compile Include="EmptyFile.cs" />

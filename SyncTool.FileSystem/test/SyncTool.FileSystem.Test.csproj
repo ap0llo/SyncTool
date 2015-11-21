@@ -43,6 +43,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filtering\FilteringConverterTest.cs" />
     <Compile Include="InMemoryDirectoryTest.cs" />
     <Compile Include="Local\LocalItemCreatorTest.cs" />
     <Compile Include="Local\LocalDirectoryTest.cs" />
