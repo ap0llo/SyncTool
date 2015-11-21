@@ -6,6 +6,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using SyncTool.Configuration.Model;
 using SyncTool.Configuration.Reader;
 using Xunit;
 
@@ -39,7 +40,15 @@ namespace SyncTool.Configuration.Test
                         ""localRepositoryPath"" : ""path2"",
                         ""folders"" : 
                         [
-                            { ""name"" : ""foo"", ""path"" : ""bar"" }
+                            { 
+                                ""name"" : ""foo"", 
+                                ""path"" : ""bar""                                 
+                            },
+                            {   
+                                ""name"" : ""foo2"", 
+                                ""path"" : ""bar2"",                                 
+                                ""readFilter"" : { ""type"" : ""microscopeQuery"" , ""query"" : ""test"" }
+                            }
                         ]
                     },
                     { 
@@ -54,12 +63,22 @@ namespace SyncTool.Configuration.Test
 
             Assert.Equal(2, syncGroups.Count);
 
-            Assert.Equal("dir1", syncGroups[0].Name);
-            Assert.Equal("path1", syncGroups[0].MasterRepositoryPath);
-            Assert.Equal("path2", syncGroups[0].LocalRepositoryPath);
-            Assert.Single(syncGroups[0].Folders);
-            Assert.Equal("foo", syncGroups[0].Folders.Single().Name);
-            Assert.Equal("bar", syncGroups[0].Folders.Single().Path);
+            var firstSyncGroup = syncGroups[0];
+
+            Assert.Equal("dir1", firstSyncGroup.Name);
+            Assert.Equal("path1", firstSyncGroup.MasterRepositoryPath);
+            Assert.Equal("path2", firstSyncGroup.LocalRepositoryPath);
+            Assert.Equal(2, firstSyncGroup.Folders.Count());
+
+            Assert.Equal("foo", firstSyncGroup.Folders.First().Name);
+            Assert.Equal("bar", firstSyncGroup.Folders.First().Path);
+            Assert.Null(firstSyncGroup.Folders.First().ReadFilter);
+
+            Assert.Equal("foo2", firstSyncGroup.Folders.Last().Name);
+            Assert.Equal("bar2", firstSyncGroup.Folders.Last().Path);
+            Assert.NotNull(firstSyncGroup.Folders.Last().ReadFilter);
+            Assert.Equal(FileSystemFilterType.MicroscopeQuery, firstSyncGroup.Folders.Last().ReadFilter.Type);
+            Assert.Equal("test", firstSyncGroup.Folders.Last().ReadFilter.Query);
 
             Assert.Equal("dir2", syncGroups[1].Name);
             Assert.Equal("path3", syncGroups[1].MasterRepositoryPath);

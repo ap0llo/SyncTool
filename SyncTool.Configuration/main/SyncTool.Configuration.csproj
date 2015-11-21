@@ -30,6 +30,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigurationNotFoundException.cs" />
+    <Compile Include="Model\FileSystemFilterType.cs" />
+    <Compile Include="Model\FileSystemFilterConfiguration.cs" />
     <Compile Include="Reader\IConfigurationReader.cs" />
     <Compile Include="Reader\JsonConfigurationReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

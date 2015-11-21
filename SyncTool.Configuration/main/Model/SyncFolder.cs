@@ -10,6 +10,8 @@ namespace SyncTool.Configuration.Model
         public string Name { get; set; }
       
         public string Path { get; set; }
+
+        public FileSystemFilterConfiguration ReadFilter { get; set; }
         
     }
 }
