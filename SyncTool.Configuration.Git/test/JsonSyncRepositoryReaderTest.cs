@@ -10,9 +10,9 @@ using SyncTool.Configuration.Model;
 using SyncTool.Configuration.Reader;
 using Xunit;
 
-namespace SyncTool.Configuration.Test
+namespace SyncTool.Configuration.Git.Test
 {
-    public class JsonConfigurationReaderTest : IDisposable
+    public class JsonSyncRepositoryReaderTest : IDisposable
     {        
         readonly JsonSyncRepositoryReader m_Instance = new JsonSyncRepositoryReader();
         readonly string m_SettingsFilePath = Path.Combine(Environment.CurrentDirectory, "SyncTool.Repositories.json");
@@ -26,7 +26,7 @@ namespace SyncTool.Configuration.Test
 
 
 
-        [Fact(DisplayName = nameof(JsonSyncFolderReader) + ".GetSyncFolders() successfully reads valid json file")]
+        [Fact(DisplayName = nameof(JsonSyncRepositoryReader) + ".GetSyncFolders() successfully reads valid json file")]
         public void GetSyncFolders_successfully_reads_valid_json_file()
         {
             
