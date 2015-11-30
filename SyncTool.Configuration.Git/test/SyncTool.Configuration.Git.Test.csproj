@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SyncTool.Configuration.Git</RootNamespace>
-    <AssemblyName>SyncTool.Configuration.Git</AssemblyName>
+    <AssemblyName>SyncTool.Configuration.Git.Test</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>

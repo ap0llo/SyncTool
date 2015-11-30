@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SyncTool.Configuration</RootNamespace>
-    <AssemblyName>SyncTool.Configuration</AssemblyName>
+    <AssemblyName>SyncTool.Configuration.Test</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
