@@ -8,24 +8,12 @@ using System.Linq;
 
 namespace SyncTool.Configuration.Model
 {
-    public class SyncGroup
+    public class SyncRepositorySettings
     {
-
-        IEnumerable<SyncFolder> m_Folders; 
-
-
-
-        public string Name { get; set; }
 
         public string MasterRepositoryPath { get; set; }
         
         public string LocalRepositoryPath { get; set; }
-
-        public IEnumerable<SyncFolder> Folders
-        {
-            get { return m_Folders ?? Enumerable.Empty<SyncFolder>(); }
-            set { m_Folders = value; }
-        }
     
     }
 }

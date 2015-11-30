@@ -4,11 +4,11 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)..\..\common\CommonProperties.properties" />
   <PropertyGroup>
-    <ProjectGuid>{3F0F54E2-C072-44C1-B723-1D7CD1996B1F}</ProjectGuid>
+    <ProjectGuid>{AAEA631B-BCE1-438B-A293-C74AF8996573}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.Configuration</RootNamespace>
-    <AssemblyName>SyncTool.Configuration</AssemblyName>
+    <RootNamespace>SyncTool.Configuration.Git</RootNamespace>
+    <AssemblyName>SyncTool.Configuration.Git</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -43,7 +43,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JsonSyncFolderReaderTest.cs" />
+    <Compile Include="JsonSyncRepositoryReaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -58,13 +58,13 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.Utilities\main\SyncTool.Utilities.csproj">
-      <Project>{8495C561-6553-45F8-BA04-72486273AE47}</Project>
-      <Name>SyncTool.Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\main\SyncTool.Configuration.csproj">
+    <ProjectReference Include="..\..\SyncTool.Configuration\main\SyncTool.Configuration.csproj">
       <Project>{4c4dfbc8-1dd7-4ea3-9ef5-c06693560784}</Project>
       <Name>SyncTool.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\main\SyncTool.Configuration.Git.csproj">
+      <Project>{f4bed2b8-095d-4cf0-a93c-dc7f2f5f72a5}</Project>
+      <Name>SyncTool.Configuration.Git</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

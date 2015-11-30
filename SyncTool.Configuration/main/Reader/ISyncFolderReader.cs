@@ -4,12 +4,13 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using SyncTool.Configuration.Model;
 
 namespace SyncTool.Configuration.Reader
 {
-    public interface IConfigurationReader
+    public interface ISyncFolderReader
     {
-        IEnumerable<SyncGroup> GetSyncGroups();
+        SyncFolder ReadSyncFolder(Stream stream);
     }
 }

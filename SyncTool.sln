@@ -46,6 +46,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Configuration", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Configuration.Test", "SyncTool.Configuration\test\SyncTool.Configuration.Test.csproj", "{3F0F54E2-C072-44C1-B723-1D7CD1996B1F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool.Configuration.Git", "SyncTool.Configuration.Git", "{B1616FE7-DD34-4099-B5FB-30B6DC42E709}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Configuration.Git", "SyncTool.Configuration.Git\main\SyncTool.Configuration.Git.csproj", "{F4BED2B8-095D-4CF0-A93C-DC7F2F5F72A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Configuration.Git.Test", "SyncTool.Configuration.Git\test\SyncTool.Configuration.Git.Test.csproj", "{AAEA631B-BCE1-438B-A293-C74AF8996573}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +106,14 @@ Global
 		{3F0F54E2-C072-44C1-B723-1D7CD1996B1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F0F54E2-C072-44C1-B723-1D7CD1996B1F}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{3F0F54E2-C072-44C1-B723-1D7CD1996B1F}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{F4BED2B8-095D-4CF0-A93C-DC7F2F5F72A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4BED2B8-095D-4CF0-A93C-DC7F2F5F72A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4BED2B8-095D-4CF0-A93C-DC7F2F5F72A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4BED2B8-095D-4CF0-A93C-DC7F2F5F72A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAEA631B-BCE1-438B-A293-C74AF8996573}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAEA631B-BCE1-438B-A293-C74AF8996573}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAEA631B-BCE1-438B-A293-C74AF8996573}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAEA631B-BCE1-438B-A293-C74AF8996573}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,5 +131,7 @@ Global
 		{C30BAFAC-DD15-4FC6-9B8B-334F9682290D} = {EB11C69D-FB63-4E45-9AF4-743DDED3415F}
 		{4C4DFBC8-1DD7-4EA3-9EF5-C06693560784} = {186937B9-6BE7-4A84-B62D-EEC0E48DF76F}
 		{3F0F54E2-C072-44C1-B723-1D7CD1996B1F} = {186937B9-6BE7-4A84-B62D-EEC0E48DF76F}
+		{F4BED2B8-095D-4CF0-A93C-DC7F2F5F72A5} = {B1616FE7-DD34-4099-B5FB-30B6DC42E709}
+		{AAEA631B-BCE1-438B-A293-C74AF8996573} = {B1616FE7-DD34-4099-B5FB-30B6DC42E709}
 	EndGlobalSection
 EndGlobal

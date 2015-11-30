@@ -11,14 +11,14 @@ using SyncTool.Configuration.Model;
 
 namespace SyncTool.Configuration.Reader
 {
-    public class JsonConfigurationReader : IConfigurationReader
+    public class JsonSyncRepositoryReader : ISyncRepositoryReader
     {
-        const string s_SettingsFileName = "SyncTool.settings.json";
+        const string s_SettingsFileName = "SyncTool.Repositories.json";
 
 
 
 
-        public IEnumerable<SyncGroup> GetSyncGroups()
+        public IEnumerable<SyncRepositorySettings> GetSyncRepositories()
         {
             var settingsFilePath = Path.Combine(Environment.CurrentDirectory, s_SettingsFileName);
 
@@ -27,7 +27,7 @@ namespace SyncTool.Configuration.Reader
                 throw new ConfigurationNotFoundException($"Configuration file '{s_SettingsFileName}' not found");
             }
 
-            return JsonConvert.DeserializeObject<SyncGroup[]>(File.ReadAllText(settingsFilePath));            
+            return JsonConvert.DeserializeObject<SyncRepositorySettings[]>(File.ReadAllText(settingsFilePath));            
         }
     }
 }
