@@ -23,10 +23,10 @@ namespace SyncTool.FileSystem.Git
         public RepositoryInfo Content { get; }
 
 
-        public RepositoryInfoFile(IDirectory parent) : base(parent, RepositoryInfoFileName)
+        public RepositoryInfoFile(IDirectory parent, string repositoryName = null) : base(parent, RepositoryInfoFileName)
         {
             LastWriteTime = DateTime.Now;
-            Content = new RepositoryInfo();
+            Content = repositoryName == null ? new RepositoryInfo() : new RepositoryInfo(repositoryName);
         }
 
 
@@ -43,7 +43,7 @@ namespace SyncTool.FileSystem.Git
 
         public IFile WithParent(IDirectory newParent)
         {
-            return  new RepositoryInfoFile(newParent);
+            return  new RepositoryInfoFile(newParent, this.Content.RepositoryName);
         }
     }
 }

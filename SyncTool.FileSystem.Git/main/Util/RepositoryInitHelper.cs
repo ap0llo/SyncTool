@@ -17,7 +17,7 @@ namespace SyncTool.FileSystem.Git
         /// Initializes a new bare repository at the specified location, adds a repository info file to the root directory
         /// and tags the initial commit with he value of <see cref="InitialCommitTagName"/>
         /// </summary>
-        public static void InitializeRepository(string location)
+        public static void InitializeRepository(string location, string repositoryName = null)
         {            
             // initialize a bare repository
             Repository.Init(location, true);
@@ -29,7 +29,7 @@ namespace SyncTool.FileSystem.Git
             {
                 var clonedRepoPath = Repository.Clone(location, tempDirectory.Directory.Location);
 
-                var repositoryInfoFile = new RepositoryInfoFile(tempDirectory.Directory);
+                var repositoryInfoFile = new RepositoryInfoFile(tempDirectory.Directory, repositoryName);
 
                 // add a empty file to the repository
                 directoryCreator.CreateFile(repositoryInfoFile, tempDirectory.Directory.Location);

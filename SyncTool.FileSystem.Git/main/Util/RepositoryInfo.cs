@@ -12,16 +12,30 @@ namespace SyncTool.FileSystem.Git
     public class RepositoryInfo
     {
 
+        public string RepositoryName { get; set; }
+
         public Version SyncToolVersion { get; set; }
 
 
-        public RepositoryInfo()
+        public RepositoryInfo(string repositoryName)
         {
+            if (repositoryName == null)
+            {
+                throw new ArgumentNullException(nameof(repositoryName));
+            }
+            
+            if (String.IsNullOrWhiteSpace(repositoryName))
+            {
+                throw new ArgumentException("Repository name must not be empty", nameof(repositoryName));
+            }
+
             SyncToolVersion = Assembly.GetExecutingAssembly().GetName().Version;
         }
 
+        public RepositoryInfo() : this($"Repository_{Guid.NewGuid()}")
+        {
+            
+        }
 
-
-     
     }
 }
