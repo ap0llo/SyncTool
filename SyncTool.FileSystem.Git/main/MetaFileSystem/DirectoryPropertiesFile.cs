@@ -31,9 +31,7 @@ namespace SyncTool.FileSystem.Git
             Content = content;
             LastWriteTime = lastWriteTime;
         }
-
-
-        public string Name => FileName;
+        
 
         public DateTime LastWriteTime { get; }
 
