@@ -46,17 +46,27 @@ namespace SyncTool.FileSystem.Git
         [InlineData(100)]
         public void CreateHistory_creates_a_new_branch_in_the_underlying_git_repository(int numberOfHistoriesToCreate)
         {
+            int initialBranchCount;
+            
+            // create the specified number of histories
             using (var historyRepository = GitBasedHistoryRepository.Create(m_TempDirectory.Location))
             {
-                
+                // get number of branches in the repository before creating the histories
+                using (var repo = new Repository(m_TempDirectory.Location))
+                {
+                    initialBranchCount = repo.Branches.Count();
+                }
+
                 for (int i = 0; i < numberOfHistoriesToCreate; i++)
                 {
                     historyRepository.CreateHistory($"history-{i}");
                 }           
             }
+
+            // Assert that the expected number of branches has been created
             using (var repo = new Repository(m_TempDirectory.Location))
             {
-                Assert.Equal(numberOfHistoriesToCreate + 1, repo.Branches.Count());                
+                Assert.Equal(numberOfHistoriesToCreate + initialBranchCount, repo.Branches.Count());                
             }
 
         }

@@ -43,8 +43,8 @@ namespace SyncTool.FileSystem.Git
 
             using (var localRepository = new Repository(m_LocalRepositoryPath))
             {
-                Assert.Equal(2, localRepository.Branches.Count(b => b.IsRemote == false));
-                Assert.Equal(m_RemoteRepository.Branches.Select(x => x.FriendlyName), localRepository.Branches.Where(b => b.IsRemote == false).Select(b => b.FriendlyName));
+                Assert.Equal(m_RemoteRepository.Branches.Count(), localRepository.GetLocalBranches().Count());
+                Assert.Equal(m_RemoteRepository.Branches.Select(x => x.FriendlyName), localRepository.GetLocalBranches().Select(b => b.FriendlyName));
             }
         }
 
@@ -88,13 +88,12 @@ namespace SyncTool.FileSystem.Git
             // create new branch in remote repository
             m_RemoteRepository.CreateBranch(s_Branch3, m_RemoteRepository.Commits.Single());
 
-
             clone = new RepositoryClone(m_RemoteRepositoryPath, m_LocalRepositoryPath);
 
             using (var localRepository = new Repository(m_LocalRepositoryPath))
             {
-                Assert.Equal(3, localRepository.Branches.Count(b => b.IsRemote == false));
-                Assert.Equal(m_RemoteRepository.Branches.Select(x => x.FriendlyName), localRepository.Branches.Where(b => b.IsRemote == false).Select(b => b.FriendlyName));
+                Assert.Equal(m_RemoteRepository.GetLocalBranches().Count(), localRepository.GetLocalBranches().Count());
+                Assert.Equal(m_RemoteRepository.GetLocalBranches().Select(x => x.FriendlyName), localRepository.GetLocalBranches().Select(b => b.FriendlyName));
             }
         }
 

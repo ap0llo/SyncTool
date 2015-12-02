@@ -16,5 +16,8 @@ namespace SyncTool.FileSystem.Git
             return commits;
         }
 
+        public static IEnumerable<Branch> GetRemoteBranches(this Repository repository) => repository.Branches.GetRemoteBranches();
+        public static IEnumerable<Branch> GetLocalBranches(this Repository repository) => repository.Branches.GetLocalBranches();
+
     }
 }
