@@ -2,6 +2,8 @@
 //  Copyright (c) 2015, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
+
+using System.Linq;
 using LibGit2Sharp;
 using SyncTool.FileSystem.Local;
 
@@ -10,8 +12,10 @@ namespace SyncTool.FileSystem.Git
     static class RepositoryInitHelper
     {
         
-
         public const string InitialCommitTagName = "InitialCommit";
+
+        public const string ConfigurationBranchName = "Configuration";
+
 
         /// <summary>
         /// Initializes a new bare repository at the specified location, adds a repository info file to the root directory
@@ -46,6 +50,12 @@ namespace SyncTool.FileSystem.Git
                     clonedRepo.Network.Push(clonedRepo.Network.Remotes["origin"], @"refs/heads/master");
                     clonedRepo.Network.Push(clonedRepo.Network.Remotes["origin"], @"refs/tags/" + InitialCommitTagName);
                 }
+            }
+
+            //create the configuration branch pointing to the initial commit
+            using (var repository = new Repository(location))
+            {
+                repository.CreateBranch(ConfigurationBranchName, repository.GetAllCommits().Single());
             }
         }
         

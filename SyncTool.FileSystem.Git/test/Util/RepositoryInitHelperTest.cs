@@ -52,7 +52,7 @@ namespace SyncTool.FileSystem.Git
             // assert that a single commit has been created in the repository
             using (var repository = new Repository(m_TemporaryDirectory.Location))
             {
-                var initialCommit = repository.Commits.Single();
+                var initialCommit = repository.GetAllCommits().Single();
 
                 Assert.Single(repository.Tags);
 
@@ -80,6 +80,24 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
+
+        [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() creates a configuration branch from the initial commit")]
+        public void InitializeRepository_Creates_a_configuration_branch()
+        {
+            RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Location);
+
+            // assert that the configuration branch has been created and points to the inital commit
+            using (var repository = new Repository(m_TemporaryDirectory.Location))
+            {
+                var configurationBranch = repository.Branches[RepositoryInitHelper.ConfigurationBranchName];
+                Assert.NotNull(configurationBranch);
+                Assert.Single(configurationBranch.Commits);
+
+                var initialCommitSha = repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
+                Assert.Equal(initialCommitSha, configurationBranch.Commits.Single().Sha);                
+            }
+
+        }
 
         public void Dispose()
         {
