@@ -7,11 +7,16 @@ using CommandLine;
 
 namespace SyncTool.Cli
 {
-    [Verb("Add-SyncGroup")]
-    public class AddSyncGroupOptions
+    [Verb("Add-SyncFolder"), ]
+    public class AddSyncFolderOptions
     {
         [Option(Required = true)]
+        public string Group { get; set; }
+
+        [Option(Required = true)]
         public string Name { get; set; }
-      
+        
+        [Option(Required = true)]
+        public string Path { get; set; }
     }
 }

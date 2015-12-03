@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigurationNotFoundException.cs" />
+    <Compile Include="DI\GitConfigurationModule.cs" />
     <Compile Include="GitBasedSyncGroup.cs" />
     <Compile Include="GitBasedSyncGroupManager.cs" />
     <Compile Include="Reader\ISyncRepositoryReader.cs" />

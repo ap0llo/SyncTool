@@ -29,6 +29,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cli\AddSyncFolderOptions.cs" />
     <Compile Include="Cli\AddSyncGroupOptions.cs" />
     <Compile Include="Cli\GetSyncGroupOptions.cs" />
     <Compile Include="Program.cs" />
@@ -42,6 +43,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SyncTool.Configuration.Git\main\SyncTool.Configuration.Git.csproj">
+      <Project>{f4bed2b8-095d-4cf0-a93c-dc7f2f5f72a5}</Project>
+      <Name>SyncTool.Configuration.Git</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SyncTool.Configuration\main\SyncTool.Configuration.csproj">
       <Project>{4c4dfbc8-1dd7-4ea3-9ef5-c06693560784}</Project>
       <Name>SyncTool.Configuration</Name>

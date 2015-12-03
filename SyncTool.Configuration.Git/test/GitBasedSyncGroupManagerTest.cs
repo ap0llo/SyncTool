@@ -56,6 +56,31 @@ namespace SyncTool.Configuration.Git
         }
 
 
+        [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ": Indexer throws SyncGroupNotFoundException")]
+        public void Indexer_throws_SyncGroupNotFoundException()
+        {
+            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            {
+                groupManager.AddSyncGroup("group1");
+
+                Assert.Throws<SyncGroupNotFoundException>(() => groupManager["someName"]);
+            }
+        }
+
+        [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ": Indexer returns expected SyncGroup")]
+        public void Indexer_returns_expected_SyncGroup()
+        {
+            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            {
+                var expected = groupManager.AddSyncGroup("group1");
+                var actual = groupManager["grOUp1"];
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+
+
         [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ".CreateSyncGroup() creates local repository")]
         public void CreateSyncGroup_creates_local_repository()
         {
@@ -63,7 +88,7 @@ namespace SyncTool.Configuration.Git
 
             using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
             {
-                groupManager.CreateSyncGroup(groupName);
+                groupManager.AddSyncGroup(groupName);
 
                 Assert.Single(groupManager.SyncGroups);
                 Assert.Contains(groupName, groupManager.SyncGroups.Select(x => x.Name));
@@ -79,8 +104,8 @@ namespace SyncTool.Configuration.Git
             
             using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
             {
-                groupManager.CreateSyncGroup(groupName);
-                Assert.Throws<DuplicateSyncGroupException>(() => groupManager.CreateSyncGroup(groupName.ToUpper()));
+                groupManager.AddSyncGroup(groupName);
+                Assert.Throws<DuplicateSyncGroupException>(() => groupManager.AddSyncGroup(groupName.ToUpper()));
             }
         }
 
@@ -94,7 +119,7 @@ namespace SyncTool.Configuration.Git
 
             using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
             {
-                Assert.Throws<ConfigurationException>(() => groupManager.CreateSyncGroup(groupName));
+                Assert.Throws<ConfigurationException>(() => groupManager.AddSyncGroup(groupName));
             }
         }
 
@@ -104,16 +129,16 @@ namespace SyncTool.Configuration.Git
         {
             using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
             {
-                groupManager.CreateSyncGroup("group1");
-                groupManager.CreateSyncGroup("group2");
+                groupManager.AddSyncGroup("group1");
+                groupManager.AddSyncGroup("group2");
 
                 Assert.Equal(2, groupManager.SyncGroups.Count());
 
-                groupManager.DeleteSyncGroup("group1");
+                groupManager.RemoveSyncGroup("group1");
                 Assert.Single(groupManager.SyncGroups);
                 Assert.False(Directory.Exists(Path.Combine(m_TempDirectory.Location, "group1")));
 
-                groupManager.DeleteSyncGroup("group2");
+                groupManager.RemoveSyncGroup("group2");
                 Assert.Empty(groupManager.SyncGroups);
                 Assert.False(Directory.Exists(Path.Combine(m_TempDirectory.Location, "group2")));
             }
@@ -125,7 +150,7 @@ namespace SyncTool.Configuration.Git
         {
             using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
             {
-                Assert.Throws<SyncGroupNotFoundException>(() => groupManager.DeleteSyncGroup("group1"));
+                Assert.Throws<SyncGroupNotFoundException>(() => groupManager.RemoveSyncGroup("group1"));
             }
         }
     }

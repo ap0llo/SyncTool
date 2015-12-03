@@ -11,8 +11,10 @@ namespace SyncTool.Configuration.Model
     {
         IEnumerable<ISyncGroup> SyncGroups { get; }
 
-        ISyncGroup CreateSyncGroup(string name);
+        ISyncGroup this[string name] { get; }
 
-        void DeleteSyncGroup(string name);
+        ISyncGroup AddSyncGroup(string name);
+
+        void RemoveSyncGroup(string name);
     }
 }

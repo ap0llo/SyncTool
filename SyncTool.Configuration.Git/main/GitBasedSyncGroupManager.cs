@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LibGit2Sharp;
+using Ninject;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem.Git;
 using SyncTool.Utilities;
@@ -31,6 +32,25 @@ namespace SyncTool.Configuration.Git
             }
         }
 
+        public ISyncGroup this[string name]
+        {
+            get
+            {
+                var result = this.SyncGroups.FirstOrDefault(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                if (result == null)
+                {
+                    throw new SyncGroupNotFoundException(name);
+                }
+                return result;
+            }
+        }
+
+
+        [Inject]
+        public GitBasedSyncGroupManager() : this(Environment.CurrentDirectory)
+        {
+            
+        }
 
         public GitBasedSyncGroupManager(string homeDirectory)
         {
@@ -50,7 +70,7 @@ namespace SyncTool.Configuration.Git
         }
 
 
-        public ISyncGroup CreateSyncGroup(string name)
+        public ISyncGroup AddSyncGroup(string name)
         {
             if (SyncGroups.Select(x => x.Name).Contains(name, StringComparer.CurrentCultureIgnoreCase))
             {
@@ -70,7 +90,7 @@ namespace SyncTool.Configuration.Git
             return m_Mapper.MapObject(directoryPath);
         }
 
-        public void DeleteSyncGroup(string name)
+        public void RemoveSyncGroup(string name)
         {
             if (SyncGroups.Select(x => x.Name).Contains(name, StringComparer.InvariantCultureIgnoreCase) == false)
             {

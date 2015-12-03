@@ -3,15 +3,16 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using CommandLine;
+using Ninject.Modules;
+using SyncTool.Configuration.Model;
 
-namespace SyncTool.Cli
+namespace SyncTool.Configuration.Git.DI
 {
-    [Verb("Add-SyncGroup")]
-    public class AddSyncGroupOptions
+    public class GitConfigurationModule : NinjectModule
     {
-        [Option(Required = true)]
-        public string Name { get; set; }
-      
+        public override void Load()
+        {
+            this.Bind<ISyncGroupManager>().To<GitBasedSyncGroupManager>().InSingletonScope();
+        }
     }
 }
