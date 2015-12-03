@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="ConfigurationNotFoundException.cs" />
     <Compile Include="GitBasedSyncGroup.cs" />
+    <Compile Include="GitBasedSyncGroupManager.cs" />
     <Compile Include="Reader\ISyncRepositoryReader.cs" />
     <Compile Include="Reader\JsonSyncRepositoryReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -59,6 +60,10 @@
     <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
       <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
       <Name>SyncTool.FileSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.Utilities\main\SyncTool.Utilities.csproj">
+      <Project>{8495C561-6553-45F8-BA04-72486273AE47}</Project>
+      <Name>SyncTool.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

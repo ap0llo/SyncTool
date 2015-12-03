@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace SyncTool.Utilities
 {
-    public class CachingObjectMapper<TSource, TTarget> : IObjectMapper<TSource, TTarget>
+    public class CachingObjectMapper<TSource, TTarget> : IObjectMapper<TSource, TTarget>, IDisposable
     {
         readonly Func<TSource, TTarget> m_MappingFunction;
         readonly IEqualityComparer<TSource> m_EqualityComparer;
@@ -56,17 +56,26 @@ namespace SyncTool.Utilities
         /// Removes cached values for all objects not present in the specified list from the cache
         /// </summary>
         /// <param name="currentItems"></param>
-        public void CleanCache(IEnumerable<TSource> currentItems)
+        public void CleanCache(IEnumerable<TSource> currentItems, bool disposeMappedObjects = true)
         {            
             var itemSet = new HashSet<TSource>(currentItems, m_EqualityComparer);
 
             var keysToRemove = m_Cache.Keys.Where(key => itemSet.Contains(key) == false).ToList();
             foreach (var key in keysToRemove)
             {
+                var value = m_Cache[key];
+                if (disposeMappedObjects && value is IDisposable)
+                {
+                    (value as IDisposable).Dispose();
+                }
                 m_Cache.Remove(key);
             }            
         }
 
-        
+
+        public void Dispose()
+        {
+            CleanCache(Enumerable.Empty<TSource>());
+        }
     }
 }

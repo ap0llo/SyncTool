@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using SyncTool.Utilities;
 
 namespace SyncTool.FileSystem.Local
 {
@@ -32,15 +33,7 @@ namespace SyncTool.FileSystem.Local
 
         public virtual void Dispose()
         {
-            var directoryInfo = new DirectoryInfo(Directory.Location);
-            // remove read-only flag from all files before deleting    
-            directoryInfo.Attributes = FileAttributes.Normal;
-            foreach (var info in directoryInfo.GetFileSystemInfos("*", SearchOption.AllDirectories))
-            {
-                info.Attributes = FileAttributes.Normal;
-            }
-
-            directoryInfo.Delete(true);
+            DirectoryHelper.DeleteRecursively(Directory.Location);
         }
 
     

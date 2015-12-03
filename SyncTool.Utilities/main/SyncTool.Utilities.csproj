@@ -21,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CachingObjectMapper.cs" />
+    <Compile Include="DirectoryHelper.cs" />
     <Compile Include="IObjectMapper.cs" />
     <Compile Include="IReversibleDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

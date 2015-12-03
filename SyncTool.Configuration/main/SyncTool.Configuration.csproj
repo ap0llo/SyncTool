@@ -29,8 +29,10 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigurationException.cs" />
-    <Compile Include="DuplicateSyncFolderException.cs" />
+    <Compile Include="Exceptions\ConfigurationException.cs" />
+    <Compile Include="Exceptions\DuplicateSyncFolderException.cs" />
+    <Compile Include="Exceptions\DuplicateSyncGroupException.cs" />
+    <Compile Include="Exceptions\SyncGroupNotFoundException.cs" />
     <Compile Include="Model\FileSystemFilterType.cs" />
     <Compile Include="Model\FileSystemFilterConfiguration.cs" />
     <Compile Include="Model\ISyncGroup.cs" />
