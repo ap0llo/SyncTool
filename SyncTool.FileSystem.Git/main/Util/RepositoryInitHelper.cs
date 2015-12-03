@@ -9,12 +9,13 @@ using SyncTool.FileSystem.Local;
 
 namespace SyncTool.FileSystem.Git
 {
-    static class RepositoryInitHelper
+    public static class RepositoryInitHelper
     {
         
+        // TODO: Move to RepositoryConstants or something similar
         public const string InitialCommitTagName = "InitialCommit";
-
         public const string ConfigurationBranchName = "Configuration";
+
 
 
         /// <summary>

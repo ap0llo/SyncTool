@@ -30,6 +30,7 @@ namespace SyncTool.FileSystem.Git
             }
 
             SyncToolVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            RepositoryName = repositoryName;
         }
 
         public RepositoryInfo() : this($"Repository_{Guid.NewGuid()}")

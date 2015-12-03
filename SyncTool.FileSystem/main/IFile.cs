@@ -17,6 +17,7 @@ namespace SyncTool.FileSystem
         /// The size of the file in bytes
         /// </summary>
         long Length { get; }
+        
 
 
         IFile WithParent(IDirectory newParent);

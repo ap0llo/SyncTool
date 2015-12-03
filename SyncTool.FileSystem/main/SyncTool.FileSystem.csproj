@@ -27,6 +27,7 @@
     <Compile Include="AbstractDirectory.cs" />
     <Compile Include="BaseVisitor.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="FileExtensions.cs" />
     <Compile Include="FileSystemItem.cs" />
     <Compile Include="Filtering\FilteringConverter.cs" />
     <Compile Include="Filtering\IFileSystemFilter.cs" />
