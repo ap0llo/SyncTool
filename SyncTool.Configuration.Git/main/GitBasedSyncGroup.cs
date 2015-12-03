@@ -13,6 +13,8 @@ using SyncTool.Configuration.Model;
 using SyncTool.Configuration.Reader;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Git;
+using NativeDirectory = System.IO.Directory;
+using NativeFile = System.IO.File;
 
 namespace SyncTool.Configuration.Git
 {
@@ -28,11 +30,44 @@ namespace SyncTool.Configuration.Git
 
 
 
-        public string Name { get; private set; }
+        public string Name
+        {
+            get
+            {
+                var infoFile = (IReadableFile)GetConfigurationRootDirectory().GetFile(RepositoryInfoFile.RepositoryInfoFileName);
+                using (var stream = infoFile.OpenRead())
+                {
+                    var repositoryInfo = stream.Deserialize<RepositoryInfo>();
+                    return repositoryInfo.RepositoryName;
+                }
+            }
+        }
 
-        public IEnumerable<SyncFolder> Folders => m_Folders.Values;
-     
+        public IEnumerable<SyncFolder> Folders
+        {
+            get
+            {
+                var directory = GetConfigurationRootDirectory();
+                if (directory.DirectoryExists(s_SyncFolders))
+                {
+                    var configFiles = directory.GetDirectory(s_SyncFolders).Files.Where(f => f.HasExtensions(s_Json)).Cast<IReadableFile>();
 
+                    return configFiles.Select(file =>
+                    {
+                        using (var stream = file.OpenRead())
+                        {
+                            return m_SyncFolderReader.ReadSyncFolder(stream);
+                        }
+                    }).ToList();
+                }
+                else
+                {
+                    return Enumerable.Empty<SyncFolder>();
+                }
+            }
+        }
+
+      
 
         public GitBasedSyncGroup(string repositoryPath)
         {
@@ -43,13 +78,37 @@ namespace SyncTool.Configuration.Git
             
             m_Repository = new Repository(repositoryPath);
 
-            var directory = new GitDirectory(null, "root", GetConfigurationCommit());
-            LoadGroupProperties(directory);
-            LoadSyncFolders(directory);
+            
 
         }
 
-        
+
+        public void AddSyncFolder(SyncFolder folder)
+        {
+            if (this.Folders.Any(f => f.Name.Equals(folder.Name, StringComparison.CurrentCultureIgnoreCase)))
+            {
+                throw new DuplicateSyncFolderException(folder.Name);
+            }            
+
+            using (var workingDirectory = new TemporaryWorkingDirectory(m_Repository.Info.Path, RepositoryInitHelper.ConfigurationBranchName))
+            {
+                var syncFoldersPath = Path.Combine(workingDirectory.Location, s_SyncFolders);
+
+                if (NativeDirectory.Exists(syncFoldersPath) == false)
+                {
+                    NativeDirectory.CreateDirectory(syncFoldersPath);
+                }
+
+                var filePath = Path.Combine(syncFoldersPath, $"{folder.Name}.{s_Json}");
+                using (var stream = NativeFile.Open(filePath, FileMode.CreateNew, FileAccess.Write))
+                {
+                    folder.WriteTo(stream);
+                }
+
+                workingDirectory.Commit($"Added SyncFolder '{folder.Name}'");
+                workingDirectory.Push();
+            }
+        }
 
         public void Dispose()
         {
@@ -58,38 +117,11 @@ namespace SyncTool.Configuration.Git
 
 
 
-        void LoadGroupProperties(GitDirectory directory)
-        {
-            var infoFile = (IReadableFile) directory.GetFile(RepositoryInfoFile.RepositoryInfoFileName) ;
-            using (var stream = infoFile.OpenRead())
-            {
-                var repositoryInfo = stream.Deserialize<RepositoryInfo>();
-                this.Name = repositoryInfo.RepositoryName;
-            }            
-        }
 
-
-        void LoadSyncFolders(GitDirectory directory)
-        {
-            if (directory.DirectoryExists(s_SyncFolders))
-            {                
-                var configFiles = directory.GetDirectory(s_SyncFolders).Files.Where(f => f.HasExtensions(s_Json)).Cast<IReadableFile>();
-
-                this.m_Folders = configFiles.Select(file =>
-                {
-                    using (var stream = file.OpenRead())
-                    {
-                        return m_SyncFolderReader.ReadSyncFolder(stream);
-                    }
-                }).ToDictionary(syncFolder => syncFolder.Name, StringComparer.InvariantCultureIgnoreCase);
-            }
-            else
-            {
-                m_Folders = new Dictionary<string, SyncFolder>(StringComparer.InvariantCultureIgnoreCase);
-            }
-        }
 
         Commit GetConfigurationCommit() => m_Repository.Branches[RepositoryInitHelper.ConfigurationBranchName].Tip;
+
+        GitDirectory GetConfigurationRootDirectory() => new GitDirectory(null, "root", GetConfigurationCommit());
 
     }
 }

@@ -3,16 +3,18 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
+using System;
 
-namespace SyncTool.Configuration.Model
+namespace SyncTool.Configuration
 {
-    public interface ISyncGroup
+    public class ConfigurationException : Exception
     {
-        string Name { get; } 
 
-        IEnumerable<SyncFolder> Folders { get; }
 
-        void AddSyncFolder(SyncFolder folder);
+        public ConfigurationException(string message) : base(message)
+        {
+            
+        }
+
     }
 }
