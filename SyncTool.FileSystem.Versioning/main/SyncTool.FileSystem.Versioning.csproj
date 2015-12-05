@@ -24,7 +24,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Change.cs" />
     <Compile Include="ChangeType.cs" />
+    <Compile Include="FileSystemDiff.cs" />
     <Compile Include="IChange.cs" />
     <Compile Include="IFileSystemDiff.cs" />
     <Compile Include="IFileSystemHistory.cs" />

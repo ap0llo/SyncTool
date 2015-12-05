@@ -97,28 +97,6 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-
-        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns True if a file properties file was modified")]
-        public void HasChanges_Returns_True_if_a_file_properties_file_was_modified()
-        {
-            var file1 = new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-2)};
-            var file2 = new EmptyFile(s_File1) { LastWriteTime = DateTime.Now.AddDays(-1)};
-            
-            using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
-            {                                
-                m_LocalItemCreator.CreateFile(FilePropertiesFile.ForFile(null, file1), instance.Location);
-                Assert.True(instance.HasChanges);
-
-                instance.Commit();                
-                Assert.False(instance.HasChanges);
-
-                //Thread.Sleep(1000);
-                m_LocalItemCreator.CreateFile(FilePropertiesFile.ForFile(null, file2), instance.Location);
-
-                Assert.True(instance.HasChanges);
-            }
-        }
-
         [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns True if a file was deleted")]
         public void HasChanges_Returns_True_if_a_file_was_deleted()
         {

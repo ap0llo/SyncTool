@@ -36,17 +36,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileSystemMapping.cs" />
-    <Compile Include="GitFileSystemModule.cs" />
     <Compile Include="IFileSystemMapping.cs" />
-    <Compile Include="MetaFileSystem\DirectoryProperties.cs" />
-    <Compile Include="MetaFileSystem\DirectoryPropertiesFile.cs" />
-    <Compile Include="MetaFileSystem\FileProperties.cs" />
-    <Compile Include="MetaFileSystem\FilePropertiesFile.cs" />
     <Compile Include="FileSystem\GitDirectory.cs" />
     <Compile Include="FileSystem\GitFile.cs" />
-    <Compile Include="MetaFileSystem\FileSystemToMetaFileSystemConverter.cs" />
-    <Compile Include="MetaFileSystem\MetaFileSystemLoader.cs" />
-    <Compile Include="MetaFileSystem\MetaFileSystemToFileSystemConverter.cs" />
     <Compile Include="Util\BranchCollectionExtensions.cs" />
     <Compile Include="Util\FileSystemConverter.cs" />
     <Compile Include="Util\RepositoryCloneException.cs" />
@@ -56,11 +48,6 @@
     <Compile Include="Util\RepositoryInfoFile.cs" />
     <Compile Include="Util\RepositoryInitHelper.cs" />
     <Compile Include="Util\SignatureHelper.cs" />
-    <Compile Include="Versioning\Change.cs" />
-    <Compile Include="Versioning\FileSystemDiff.cs" />
-    <Compile Include="Versioning\GitBasedFileSystemSnapshot.cs" />
-    <Compile Include="Versioning\GitBasedHistoryRepository.cs" />
-    <Compile Include="Versioning\GitBasedFileSystemHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\TemporaryWorkingDirectory.cs" />
   </ItemGroup>
@@ -84,6 +71,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
