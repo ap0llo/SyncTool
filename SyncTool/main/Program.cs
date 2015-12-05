@@ -42,7 +42,8 @@ namespace SyncTool
 
         int Run(string[] args)
         {
-            var result = CommandLine.Parser.Default.ParseArguments<AddSyncGroupOptions, GetSyncGroupOptions, AddSyncFolderOptions>(args);            
+            var parser = new Parser(opts => opts.CaseSensitive = false);
+            var result = parser.ParseArguments<AddSyncGroupOptions, GetSyncGroupOptions, AddSyncFolderOptions, GetSnapshotOptions>(args);            
 
             return result.MapResult(
                 (GetSyncGroupOptions opts) =>
@@ -54,7 +55,7 @@ namespace SyncTool
                     Console.WriteLine();
                     foreach (var group in groups)
                     {                        
-                        PrintSyncGroup(group);
+                        PrintSyncGroup(group, " ");
                         Console.WriteLine();
                     }
 
@@ -71,10 +72,21 @@ namespace SyncTool
                     syncGroup.AddSyncFolder(new SyncFolder() { Name = opts.Name, Path = opts.Path});
                     return 0;
                 },
-                errs => 1
+                (GetSnapshotOptions opts) =>
+                {
+                    PrintError("Not implemented", " ");
+                    return 1;
+                },
+                errs =>
+                {
+                    PrintError(" Unable to parse command line arguments");
+                    return 1;
+                }
                 );
         }
 
+
+        
 
         void PrintSyncGroup(ISyncGroup group, string prefix = "")
         {
@@ -98,6 +110,15 @@ namespace SyncTool
         void PrintSyncFolder(SyncFolder folder, string prefix = "")
         {
             Console.WriteLine($"{prefix}{folder.Name} --> {folder.Path}");
+        }
+
+
+        void PrintError(string error, string prefix = "")
+        {
+            var color = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(prefix + error);
+            Console.ForegroundColor = color;
         }
 
 

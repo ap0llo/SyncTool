@@ -31,6 +31,7 @@
   <ItemGroup>
     <Compile Include="Cli\AddSyncFolderOptions.cs" />
     <Compile Include="Cli\AddSyncGroupOptions.cs" />
+    <Compile Include="Cli\GetSnapshotOptions.cs" />
     <Compile Include="Cli\GetSyncGroupOptions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

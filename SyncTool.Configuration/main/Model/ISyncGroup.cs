@@ -13,6 +13,9 @@ namespace SyncTool.Configuration.Model
 
         IEnumerable<SyncFolder> Folders { get; }
 
+        SyncFolder this[string name] { get; }
+
+
         void AddSyncFolder(SyncFolder folder);
     }
 }

@@ -7,7 +7,7 @@ using CommandLine;
 
 namespace SyncTool.Cli
 {
-    [Verb("Add-SyncGroup")]
+    [Verb("Add-Group")]
     public class AddSyncGroupOptions
     {
         [Option(Required = true)]

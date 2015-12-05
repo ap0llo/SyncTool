@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileSystemMapping.cs" />
+    <Compile Include="GitFileSystemModule.cs" />
     <Compile Include="IFileSystemMapping.cs" />
     <Compile Include="MetaFileSystem\DirectoryProperties.cs" />
     <Compile Include="MetaFileSystem\DirectoryPropertiesFile.cs" />

@@ -3,20 +3,16 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using CommandLine;
+using Ninject.Modules;
+using SyncTool.FileSystem.Versioning;
 
-namespace SyncTool.Cli
+namespace SyncTool.FileSystem.Git
 {
-    [Verb("Add-Folder"), ]
-    public class AddSyncFolderOptions
+    public class GitFileSystemModule : NinjectModule
     {
-        [Option(Required = true)]
-        public string Group { get; set; }
-
-        [Option(Required = true)]
-        public string Name { get; set; }
-        
-        [Option(Required = true)]
-        public string Path { get; set; }
+        public override void Load()
+        {
+            this.Bind<IHistoryRepository>().To<GitBasedHistoryRepository>();
+        }
     }
 }

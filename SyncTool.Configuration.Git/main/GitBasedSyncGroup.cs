@@ -67,6 +67,8 @@ namespace SyncTool.Configuration.Git
             }
         }
 
+        public SyncFolder this[string name] => m_Folders[name];
+
       
 
         public GitBasedSyncGroup(string repositoryPath)
