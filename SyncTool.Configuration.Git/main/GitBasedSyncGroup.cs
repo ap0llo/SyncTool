@@ -7,12 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Management.Instrumentation;
 using LibGit2Sharp;
 using SyncTool.Configuration.Model;
 using SyncTool.Configuration.Reader;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Git;
+using SyncTool.FileSystem.Versioning;
+using SyncTool.FileSystem.Versioning.Git;
 using NativeDirectory = System.IO.Directory;
 using NativeFile = System.IO.File;
 
@@ -25,8 +26,7 @@ namespace SyncTool.Configuration.Git
 
         readonly Repository m_Repository;
         readonly ISyncFolderReader m_SyncFolderReader = new JsonSyncFolderReader();
-
-        IDictionary<string, SyncFolder> m_Folders;
+        readonly IHistoryRepository m_HistoryRepository; 
 
 
 
@@ -67,7 +67,7 @@ namespace SyncTool.Configuration.Git
             }
         }
 
-        public SyncFolder this[string name] => m_Folders[name];
+        public SyncFolder this[string name] => Folders.Single(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
 
       
 
@@ -79,7 +79,7 @@ namespace SyncTool.Configuration.Git
             }
             
             m_Repository = new Repository(repositoryPath);
-
+            m_HistoryRepository = new GitBasedHistoryRepository(repositoryPath);
             
 
         }
@@ -92,6 +92,7 @@ namespace SyncTool.Configuration.Git
                 throw new DuplicateSyncFolderException(folder.Name);
             }            
 
+            // add config file for the sync folder to the configuration directory
             using (var workingDirectory = new TemporaryWorkingDirectory(m_Repository.Info.Path, RepositoryInitHelper.ConfigurationBranchName))
             {
                 var syncFoldersPath = Path.Combine(workingDirectory.Location, s_SyncFolders);
@@ -110,6 +111,14 @@ namespace SyncTool.Configuration.Git
                 workingDirectory.Commit($"Added SyncFolder '{folder.Name}'");
                 workingDirectory.Push();
             }
+
+            // create a history for the sync folder
+            m_HistoryRepository.CreateHistory(folder.Name);
+        }
+
+        public IFileSystemHistory GetHistory(string syncFolderName)
+        {
+            return m_HistoryRepository.GetHistory(syncFolderName);
         }
 
         public void Dispose()

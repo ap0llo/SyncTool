@@ -13,5 +13,8 @@ namespace SyncTool.FileSystem.Versioning
 
         IFileSystemHistory CreateHistory(string name);
 
+        IFileSystemHistory GetHistory(string name);
+
+
     }
 }

@@ -10,6 +10,7 @@ using Ninject;
 using SyncTool.Cli;
 using SyncTool.Configuration.Git.DI;
 using SyncTool.Configuration.Model;
+using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool
 {
@@ -74,8 +75,13 @@ namespace SyncTool
                 },
                 (GetSnapshotOptions opts) =>
                 {
-                    PrintError("Not implemented", " ");
-                    return 1;
+                    var group = m_GroupManager[opts.Group];
+                    var history = group.GetHistory(opts.Folder);
+                    
+                    PrintSyncFolder(group[opts.Folder], " ");
+                    PrintHistory(history, " \t");
+
+                    return 0;
                 },
                 errs =>
                 {
@@ -110,6 +116,22 @@ namespace SyncTool
         void PrintSyncFolder(SyncFolder folder, string prefix = "")
         {
             Console.WriteLine($"{prefix}{folder.Name} --> {folder.Path}");
+        }
+
+        void PrintHistory(IFileSystemHistory history, string prefix)
+        {
+            if (history.Snapshots.Any())
+            {
+                foreach (var snapshot in history.Snapshots)
+                {
+                    Console.WriteLine($"{prefix}\t{snapshot.CreationTime}\t{snapshot.Id}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"{prefix}No snapshots found");
+            }
+         
         }
 
 

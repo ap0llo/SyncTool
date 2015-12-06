@@ -48,6 +48,11 @@ namespace SyncTool.FileSystem.Versioning.Git
             return newHistory;
         }
 
+        public IFileSystemHistory GetHistory(string name)
+        {
+            return Histories.Single(h => h.Id.Equals(s_BranchPrefix + name, StringComparison.InvariantCultureIgnoreCase));
+        }
+
         public void Dispose()
         {
             m_Repository.Dispose();

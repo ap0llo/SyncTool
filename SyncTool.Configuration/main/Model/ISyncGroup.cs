@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Configuration.Model
 {
@@ -17,5 +18,8 @@ namespace SyncTool.Configuration.Model
 
 
         void AddSyncFolder(SyncFolder folder);
+         
+        IFileSystemHistory GetHistory(string syncFolderName);
+
     }
 }
