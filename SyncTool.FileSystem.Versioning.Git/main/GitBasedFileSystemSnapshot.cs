@@ -49,7 +49,7 @@ namespace SyncTool.FileSystem.Versioning.Git
 
 
         
-        public static GitBasedFileSystemSnapshot Create(Repository repository, string branchName, Directory rootDirectory)
+        public static GitBasedFileSystemSnapshot Create(Repository repository, string branchName, IDirectory rootDirectory)
         {
             var directoryCreator = new LocalItemCreator();
             var metaFileSystemCreator = new FileSystemToMetaFileSystemConverter();

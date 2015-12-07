@@ -10,6 +10,7 @@ using Ninject;
 using SyncTool.Cli;
 using SyncTool.Configuration.Git.DI;
 using SyncTool.Configuration.Model;
+using SyncTool.FileSystem.Local;
 using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool
@@ -43,8 +44,13 @@ namespace SyncTool
 
         int Run(string[] args)
         {
-            var parser = new Parser(opts => opts.CaseSensitive = false);
-            var result = parser.ParseArguments<AddSyncGroupOptions, GetSyncGroupOptions, AddSyncFolderOptions, GetSnapshotOptions>(args);            
+            var parser = new Parser(opts =>
+            {
+                opts.CaseSensitive = false;
+                opts.HelpWriter = Parser.Default.Settings.HelpWriter;               
+            });
+
+            var result = parser.ParseArguments<AddSyncGroupOptions, GetSyncGroupOptions, AddSyncFolderOptions, GetSnapshotOptions, AddSnapshotOptions>(args);            
 
             return result.MapResult(
                 (GetSyncGroupOptions opts) =>
@@ -83,8 +89,22 @@ namespace SyncTool
 
                     return 0;
                 },
-                errs =>
+                (AddSnapshotOptions opts) =>
                 {
+                    var group = m_GroupManager[opts.Group];
+                    var folder = group[opts.Folder];
+                    var history = group.GetHistory(opts.Folder);
+
+                    var state = new LocalDirectory(null, folder.Path);
+
+                    //TODO: Apply filter
+
+                    history.CreateSnapshot(state);
+
+                    return 0;
+                },
+                errs =>
+                {                    
                     PrintError(" Unable to parse command line arguments");
                     return 1;
                 }

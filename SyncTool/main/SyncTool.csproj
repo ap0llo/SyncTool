@@ -29,6 +29,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cli\AddSnapshotOptions.cs" />
     <Compile Include="Cli\AddSyncFolderOptions.cs" />
     <Compile Include="Cli\AddSyncGroupOptions.cs" />
     <Compile Include="Cli\GetSnapshotOptions.cs" />

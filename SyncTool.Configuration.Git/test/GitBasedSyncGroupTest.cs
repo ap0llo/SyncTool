@@ -81,7 +81,6 @@ namespace SyncTool.Configuration.Git
             {
                 group.AddSyncFolder(syncFolder1);
                 Assert.Throws<DuplicateSyncFolderException>(() => group.AddSyncFolder(syncFolder2));
-
             }            
         }
 

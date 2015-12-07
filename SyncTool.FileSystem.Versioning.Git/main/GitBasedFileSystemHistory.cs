@@ -45,7 +45,7 @@ namespace SyncTool.FileSystem.Versioning.Git
         }
 
 
-        public IFileSystemSnapshot CreateSnapshot(Directory fileSystemState)
+        public IFileSystemSnapshot CreateSnapshot(IDirectory fileSystemState)
         {
             var snapshots = m_Snapshots.Value;
 

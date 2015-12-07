@@ -3,20 +3,19 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
+using CommandLine;
 
-namespace SyncTool.FileSystem.Versioning
+namespace SyncTool.Cli
 {
-    public interface IHistoryRepository : IDisposable
+    [Verb("Add-Snapshot")]
+    public class AddSnapshotOptions
     {
-                 
-        IEnumerable<IFileSystemHistory> Histories { get; }
 
-        IFileSystemHistory CreateHistory(string name);
+        [Option(Required = true)]
+        public string Group { get; set; }
 
-        IFileSystemHistory GetHistory(string name);
-
+        [Option(Required = true)]
+        public string Folder { get; set; }
 
     }
 }

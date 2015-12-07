@@ -124,6 +124,7 @@ namespace SyncTool.Configuration.Git
         public void Dispose()
         {
             m_Repository.Dispose();
+            m_HistoryRepository.Dispose();
         }
 
 

@@ -15,7 +15,7 @@ namespace SyncTool.FileSystem.Versioning
 
         IEnumerable<IFileSystemSnapshot> Snapshots { get; }
 
-        IFileSystemSnapshot CreateSnapshot(Directory fileSystemState);
+        IFileSystemSnapshot CreateSnapshot(IDirectory fileSystemState);
 
         IFileSystemDiff CompareSnapshots(string fromId, string toId);
     }
