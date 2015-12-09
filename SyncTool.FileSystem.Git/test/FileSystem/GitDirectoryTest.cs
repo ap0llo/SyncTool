@@ -12,7 +12,7 @@ using Xunit;
 
 namespace SyncTool.FileSystem.Git
 {
-    public class GitDirectoryTest : IDisposable
+    public sealed class GitDirectoryTest : IDisposable
     {
         const string s_DummyFileName = "dummy.txt";
         const string s_Dir1 = "dir1";

@@ -10,7 +10,7 @@ using SyncTool.Utilities;
 
 namespace SyncTool.FileSystem.Local
 {
-    public class LocalDirectory : AbstractDirectory, ILocalDirectory
+    public class LocalDirectory : AbstractDirectory, ILocalDirectory, IDisposable
     {
         readonly DirectoryInfo m_DirectoryInfo;
         readonly CachingObjectMapper<DirectoryInfo, LocalDirectory> m_DirectoryMapper;
@@ -111,5 +111,10 @@ namespace SyncTool.FileSystem.Local
             }
         }
 
+        public void Dispose()
+        {
+            m_DirectoryMapper.Dispose();
+            m_FileMapper.Dispose();
+        }
     }
 }

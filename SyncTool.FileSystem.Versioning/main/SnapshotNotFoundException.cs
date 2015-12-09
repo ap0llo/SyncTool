@@ -6,6 +6,7 @@ using System;
 
 namespace SyncTool.FileSystem.Versioning
 {
+    [Serializable]
     public class SnapshotNotFoundException : Exception
     {
 

@@ -8,7 +8,7 @@ using SyncTool.FileSystem.Local;
 
 namespace SyncTool.FileSystem.Git
 {
-    public class TemporaryWorkingDirectory : IDisposable
+    public sealed class TemporaryWorkingDirectory : IDisposable
     {
         readonly LocalItemCreator m_LocalItemCreator = new LocalItemCreator();
         readonly Repository m_Repository;

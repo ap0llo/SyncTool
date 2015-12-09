@@ -17,7 +17,7 @@ namespace SyncTool.FileSystem.Git
 
         public long Length
         {
-            get { throw new NotImplementedException(); }
+            get { throw new NotSupportedException(); }
         }
 
         public RepositoryInfo Content { get; }

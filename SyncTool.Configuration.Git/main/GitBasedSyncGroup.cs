@@ -19,7 +19,7 @@ using NativeFile = System.IO.File;
 
 namespace SyncTool.Configuration.Git
 {
-    public class GitBasedSyncGroup : ISyncGroup, IDisposable
+    public sealed class GitBasedSyncGroup : ISyncGroup, IDisposable
     {
         const string s_SyncFolders = "SyncFolders";
         const string s_Json = "json";

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SyncTool.FileSystem.Git.Util
 {
+    [Serializable]
     class RepositoryCloneException : Exception
     {
 

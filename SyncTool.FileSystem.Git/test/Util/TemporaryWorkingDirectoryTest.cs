@@ -22,7 +22,7 @@ namespace SyncTool.FileSystem.Git
     /// Test for <see cref="TemporaryWorkingDirectory"/>. 
     /// </summary>
     /// <remarks>Assumes git executable is on PATH</remarks>
-    public class TemporaryWorkingDirectoryTest : IDisposable
+    public sealed class TemporaryWorkingDirectoryTest : IDisposable
     {
         const string s_DummyFileName = "dummy.txt";
         const string s_File1 = "file1";

@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace SyncTool.Utilities
 {
-    public class CachingObjectMapper<TSource, TTarget> : IObjectMapper<TSource, TTarget>, IDisposable
+    public sealed class CachingObjectMapper<TSource, TTarget> : IObjectMapper<TSource, TTarget>, IDisposable
     {
         readonly Func<TSource, TTarget> m_MappingFunction;
         readonly IEqualityComparer<TSource> m_EqualityComparer;

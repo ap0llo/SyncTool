@@ -16,7 +16,7 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Configuration.Git
 {
-    public class GitBasedSyncGroupManager : ISyncGroupManager, IDisposable
+    public sealed class GitBasedSyncGroupManager : ISyncGroupManager, IDisposable
     {
         readonly CachingObjectMapper<string, GitBasedSyncGroup> m_Mapper;
         readonly string m_HomeDirectory;

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace SyncTool.FileSystem.Git
 {
-    public class RepositoryInitHelperTest : IDisposable
+    public sealed class RepositoryInitHelperTest : IDisposable
     {
         readonly DisposableLocalDirectoryWrapper m_TemporaryDirectory;
 

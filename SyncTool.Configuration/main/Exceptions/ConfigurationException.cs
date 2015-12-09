@@ -7,6 +7,7 @@ using System;
 
 namespace SyncTool.Configuration
 {
+    [Serializable]
     public class ConfigurationException : Exception
     {
 

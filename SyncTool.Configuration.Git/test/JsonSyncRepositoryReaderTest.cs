@@ -12,7 +12,7 @@ using Xunit;
 
 namespace SyncTool.Configuration.Git.Test
 {
-    public class JsonSyncRepositoryReaderTest : IDisposable
+    public sealed class JsonSyncRepositoryReaderTest : IDisposable
     {        
         readonly JsonSyncRepositoryReader m_Instance = new JsonSyncRepositoryReader();
         readonly string m_SettingsFilePath = Path.Combine(Environment.CurrentDirectory, "SyncTool.Repositories.json");
