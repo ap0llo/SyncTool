@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\SyncTool.Configuration.Git\main\SyncTool.Configuration.Git.csproj">
+      <Project>{f4bed2b8-095d-4cf0-a93c-dc7f2f5f72a5}</Project>
+      <Name>SyncTool.Configuration.Git</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\SyncTool.Configuration\main\SyncTool.Configuration.csproj">
+      <Project>{4c4dfbc8-1dd7-4ea3-9ef5-c06693560784}</Project>
+      <Name>SyncTool.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\SyncTool.FileSystem.Git\main\SyncTool.FileSystem.Git.csproj">
+      <Project>{142013ec-f091-4235-a5d1-04019e795146}</Project>
+      <Name>SyncTool.FileSystem.Git</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\SyncTool.FileSystem.Versioning\main\SyncTool.FileSystem.Versioning.csproj">
+      <Project>{70919335-5F89-4324-BCDB-8B41C7A2CA7E}</Project>
+      <Name>SyncTool.FileSystem.Versioning</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
+      <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
+      <Name>SyncTool.FileSystem</Name>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>

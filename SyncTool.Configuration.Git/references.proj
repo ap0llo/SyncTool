@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\SyncTool.Configuration\main\SyncTool.Configuration.csproj">
+      <Project>{4C4DFBC8-1DD7-4EA3-9EF5-C06693560784}</Project>
+      <Name>SyncTool.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\SyncTool.FileSystem.Git\main\SyncTool.FileSystem.Git.csproj">
+      <Project>{142013ec-f091-4235-a5d1-04019e795146}</Project>
+      <Name>SyncTool.FileSystem.Git</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
+      <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
+      <Name>SyncTool.FileSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\SyncTool.Utilities\main\SyncTool.Utilities.csproj">
+      <Project>{8495C561-6553-45F8-BA04-72486273AE47}</Project>
+      <Name>SyncTool.Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+
+
+</Project>

@@ -61,10 +61,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.Utilities\main\SyncTool.Utilities.csproj">
-      <Project>{8495c561-6553-45f8-ba04-72486273ae47}</Project>
-      <Name>SyncTool.Utilities</Name>
-    </ProjectReference>
+
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

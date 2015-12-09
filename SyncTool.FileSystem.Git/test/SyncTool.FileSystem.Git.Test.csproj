@@ -73,17 +73,9 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
-      <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
-      <Name>SyncTool.FileSystem</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SyncTool.FileSystem\test\SyncTool.FileSystem.Test.csproj">
       <Project>{7f7f158b-eb20-4354-89d9-c415cd8e3b21}</Project>
       <Name>SyncTool.FileSystem.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SyncTool.Utilities\main\SyncTool.Utilities.csproj">
-      <Project>{8495c561-6553-45f8-ba04-72486273ae47}</Project>
-      <Name>SyncTool.Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SyncTool.Utilities\test\SyncTool.Utilities.Test.csproj">
       <Project>{da54c484-4021-4628-bbf0-dfca543a585a}</Project>
