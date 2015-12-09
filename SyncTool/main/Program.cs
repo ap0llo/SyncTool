@@ -81,27 +81,29 @@ namespace SyncTool
                 },
                 (GetSnapshotOptions opts) =>
                 {
-                    var group = m_GroupManager[opts.Group];
-                    var history = group.GetHistory(opts.Folder);
-                    
-                    PrintSyncFolder(group[opts.Folder], " ");
-                    PrintHistory(history, " \t");
-
-                    return 0;
+                    throw new NotImplementedException();
+//                    var group = m_GroupManager[opts.Group];
+//                    var history = group.GetHistory(opts.Folder);
+//                    
+//                    PrintSyncFolder(group[opts.Folder], " ");
+//                    PrintHistory(history, " \t");
+//
+//                    return 0;
                 },
                 (AddSnapshotOptions opts) =>
                 {
-                    var group = m_GroupManager[opts.Group];
-                    var folder = group[opts.Folder];
-                    var history = group.GetHistory(opts.Folder);
-
-                    var state = new LocalDirectory(null, folder.Path);
-
-                    //TODO: Apply filter
-
-                    history.CreateSnapshot(state);
-
-                    return 0;
+                    throw new NotImplementedException();
+//                    var group = m_GroupManager[opts.Group];
+//                    var folder = group[opts.Folder];
+//                    var history = group.GetHistory(opts.Folder);
+//
+//                    var state = new LocalDirectory(null, folder.Path);
+//
+//                    //TODO: Apply filter
+//
+//                    history.CreateSnapshot(state);
+//
+//                    return 0;
                 },
                 errs =>
                 {                    

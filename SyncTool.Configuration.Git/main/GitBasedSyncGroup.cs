@@ -12,8 +12,6 @@ using SyncTool.Configuration.Model;
 using SyncTool.Configuration.Reader;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Git;
-using SyncTool.FileSystem.Versioning;
-using SyncTool.FileSystem.Versioning.Git;
 using NativeDirectory = System.IO.Directory;
 using NativeFile = System.IO.File;
 
@@ -26,7 +24,7 @@ namespace SyncTool.Configuration.Git
 
         readonly Repository m_Repository;
         readonly ISyncFolderReader m_SyncFolderReader = new JsonSyncFolderReader();
-        readonly IHistoryRepository m_HistoryRepository; 
+        
 
 
 
@@ -78,10 +76,7 @@ namespace SyncTool.Configuration.Git
                 throw new ArgumentNullException(nameof(repositoryPath));
             }
             
-            m_Repository = new Repository(repositoryPath);
-            m_HistoryRepository = new GitBasedHistoryRepository(repositoryPath);
-            
-
+            m_Repository = new Repository(repositoryPath);                     
         }
 
 
@@ -111,20 +106,13 @@ namespace SyncTool.Configuration.Git
                 workingDirectory.Commit($"Added SyncFolder '{folder.Name}'");
                 workingDirectory.Push();
             }
-
-            // create a history for the sync folder
-            m_HistoryRepository.CreateHistory(folder.Name);
+            
         }
-
-        public IFileSystemHistory GetHistory(string syncFolderName)
-        {
-            return m_HistoryRepository.GetHistory(syncFolderName);
-        }
+        
 
         public void Dispose()
         {
-            m_Repository.Dispose();
-            m_HistoryRepository.Dispose();
+            m_Repository.Dispose();        
         }
 
 

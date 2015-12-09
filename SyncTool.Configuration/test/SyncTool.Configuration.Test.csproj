@@ -66,6 +66,10 @@
       <Project>{8495C561-6553-45F8-BA04-72486273AE47}</Project>
       <Name>SyncTool.Utilities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.Utilities\test\SyncTool.Utilities.Test.csproj">
+      <Project>{da54c484-4021-4628-bbf0-dfca543a585a}</Project>
+      <Name>SyncTool.Utilities.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\main\SyncTool.Configuration.csproj">
       <Project>{4c4dfbc8-1dd7-4ea3-9ef5-c06693560784}</Project>
       <Name>SyncTool.Configuration</Name>

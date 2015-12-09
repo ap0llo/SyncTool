@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace SyncTool.FileSystem.Git.TestHelpers
+namespace SyncTool.FileSystem.TestHelpers
 {
     /// <summary>
     /// Provides assertions for SyncTool.FileSystem types 

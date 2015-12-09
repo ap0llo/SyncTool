@@ -73,8 +73,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.FileSystem.Git\main\SyncTool.FileSystem.Git.csproj">
-      <Project>{142013EC-F091-4235-A5D1-04019E795146}</Project>
+      <Project>{142013ec-f091-4235-a5d1-04019e795146}</Project>
       <Name>SyncTool.FileSystem.Git</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SyncTool.FileSystem.Git\test\SyncTool.FileSystem.Git.Test.csproj">
@@ -85,6 +88,10 @@
       <Project>{70919335-5f89-4324-bcdb-8b41c7a2ca7e}</Project>
       <Name>SyncTool.FileSystem.Versioning</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\test\SyncTool.FileSystem.Versioning.Test.csproj">
+      <Project>{c30bafac-dd15-4fc6-9b8b-334f9682290d}</Project>
+      <Name>SyncTool.FileSystem.Versioning.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
       <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
       <Name>SyncTool.FileSystem</Name>
@@ -93,13 +100,18 @@
       <Project>{7f7f158b-eb20-4354-89d9-c415cd8e3b21}</Project>
       <Name>SyncTool.FileSystem.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.Utilities\main\SyncTool.Utilities.csproj">
+      <Project>{8495c561-6553-45f8-ba04-72486273ae47}</Project>
+      <Name>SyncTool.Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.Utilities\test\SyncTool.Utilities.Test.csproj">
+      <Project>{da54c484-4021-4628-bbf0-dfca543a585a}</Project>
+      <Name>SyncTool.Utilities.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\main\SyncTool.FileSystem.Versioning.Git.csproj">
       <Project>{680b8656-c346-4fe7-8c79-cce3b535a476}</Project>
       <Name>SyncTool.FileSystem.Versioning.Git</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

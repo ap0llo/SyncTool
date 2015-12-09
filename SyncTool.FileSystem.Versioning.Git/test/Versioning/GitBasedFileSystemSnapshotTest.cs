@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using LibGit2Sharp;
 using SyncTool.FileSystem.Git;
-using SyncTool.FileSystem.Git.TestHelpers;
+using SyncTool.FileSystem.TestHelpers;
 using SyncTool.FileSystem.Local;
 using Xunit;
 

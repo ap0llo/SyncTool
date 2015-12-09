@@ -77,13 +77,13 @@
       <Project>{142013EC-F091-4235-A5D1-04019E795146}</Project>
       <Name>SyncTool.FileSystem.Git</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SyncTool.FileSystem.Git\test\SyncTool.FileSystem.Git.Test.csproj">
-      <Project>{4B588A94-AA4F-494E-BB35-283F09172745}</Project>
-      <Name>SyncTool.FileSystem.Git.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
       <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
       <Name>SyncTool.FileSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.FileSystem\test\SyncTool.FileSystem.Test.csproj">
+      <Project>{7F7F158B-EB20-4354-89D9-C415CD8E3B21}</Project>
+      <Name>SyncTool.FileSystem.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\main\SyncTool.Configuration.Git.csproj">
       <Project>{f4bed2b8-095d-4cf0-a93c-dc7f2f5f72a5}</Project>

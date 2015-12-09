@@ -52,6 +52,8 @@
     <Compile Include="Local\LocalItemCreatorTest.cs" />
     <Compile Include="Local\LocalDirectoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestHelpers\DirectoryBasedTest.cs" />
+    <Compile Include="TestHelpers\FileSystemAssert.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\common\common.licenseheader">
@@ -60,17 +62,21 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.Utilities\main\SyncTool.Utilities.csproj">
-      <Project>{8495C561-6553-45F8-BA04-72486273AE47}</Project>
-      <Name>SyncTool.Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\main\SyncTool.FileSystem.csproj">
-      <Project>{1E3E5912-B315-43A8-8415-91217892BEDA}</Project>
-      <Name>SyncTool.FileSystem</Name>
-    </ProjectReference>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+    <ProjectReference Include="..\..\SyncTool.Utilities\main\SyncTool.Utilities.csproj">
+      <Project>{8495c561-6553-45f8-ba04-72486273ae47}</Project>
+      <Name>SyncTool.Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.Utilities\test\SyncTool.Utilities.Test.csproj">
+      <Project>{da54c484-4021-4628-bbf0-dfca543a585a}</Project>
+      <Name>SyncTool.Utilities.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\main\SyncTool.FileSystem.csproj">
+      <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
+      <Name>SyncTool.FileSystem</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

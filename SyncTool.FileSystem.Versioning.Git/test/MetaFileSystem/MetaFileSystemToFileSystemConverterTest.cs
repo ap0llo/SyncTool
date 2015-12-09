@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using SyncTool.FileSystem.Git.TestHelpers;
+using SyncTool.FileSystem.TestHelpers;
 using Xunit;
 
 namespace SyncTool.FileSystem.Versioning.Git

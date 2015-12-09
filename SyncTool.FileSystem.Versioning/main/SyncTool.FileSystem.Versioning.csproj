@@ -37,16 +37,20 @@
     <Compile Include="SnapshotNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
-      <Project>{1E3E5912-B315-43A8-8415-91217892BEDA}</Project>
-      <Name>SyncTool.FileSystem</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\common\common.licenseheader">
       <Link>common.licenseheader</Link>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
+      <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
+      <Name>SyncTool.FileSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.Utilities\main\SyncTool.Utilities.csproj">
+      <Project>{8495c561-6553-45f8-ba04-72486273ae47}</Project>
+      <Name>SyncTool.Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
