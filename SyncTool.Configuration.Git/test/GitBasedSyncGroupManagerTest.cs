@@ -72,11 +72,11 @@ namespace SyncTool.Configuration.Git
         {
             using (var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location)))
             {
-                using (var expected = groupManager.AddSyncGroup("group1"))
+                groupManager.AddSyncGroup("group1");
                 using (var actual = groupManager.GetSyncGroup("grOUp1"))
                 {
                     Assert.NotNull(actual);
-                    Assert.Equal(expected.Name, actual.Name);                    
+                    Assert.Equal("group1", actual.Name);                    
                 }                                
             }
         }

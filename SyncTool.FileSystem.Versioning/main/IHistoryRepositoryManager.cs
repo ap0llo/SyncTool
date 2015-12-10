@@ -4,18 +4,19 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 
-namespace SyncTool.Configuration.Model
+namespace SyncTool.FileSystem.Versioning
 {
-    public interface ISyncGroupManager : IDisposable
+    public interface IHistoryRepositoryManager : IDisposable
     {
-        IEnumerable<string> SyncGroups { get; }
 
-        ISyncGroup GetSyncGroup(string name);
+        /// <summary>
+        /// Gets the specified history repository
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <exception cref="HistoryRepositoryNotFoundException"></exception>
+        IHistoryRepository GetHistoryRepository(string name);
 
-        void AddSyncGroup(string name);
-
-        void RemoveSyncGroup(string name);
     }
 }

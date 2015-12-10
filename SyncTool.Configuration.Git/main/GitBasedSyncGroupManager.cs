@@ -5,10 +5,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using LibGit2Sharp;
-using Ninject;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem.Git;
 using SyncTool.Utilities;
@@ -65,7 +62,7 @@ namespace SyncTool.Configuration.Git
         }
 
 
-        public ISyncGroup AddSyncGroup(string name)
+        public void AddSyncGroup(string name)
         {
             if (SyncGroups.Contains(name, StringComparer.CurrentCultureIgnoreCase))
             {
@@ -80,9 +77,7 @@ namespace SyncTool.Configuration.Git
             }
 
             NativeDirectory.CreateDirectory(directoryPath);
-            RepositoryInitHelper.InitializeRepository(directoryPath, name);
-
-            return new GitBasedSyncGroup(directoryPath);
+            RepositoryInitHelper.InitializeRepository(directoryPath, name);            
         }
 
         public void RemoveSyncGroup(string name)

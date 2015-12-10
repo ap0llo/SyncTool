@@ -12,7 +12,7 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.FileSystem.Versioning.Git
 {
-    public sealed class GitBasedHistoryRepository : IHistoryRepository, IDisposable
+    public sealed class GitBasedHistoryRepository : IHistoryRepository
     {
         const string s_BranchPrefix = "filesystemhistory/";
 
@@ -28,7 +28,6 @@ namespace SyncTool.FileSystem.Versioning.Git
             {
                 m_Histories.Add(history);
             }
-
         }
 
 
@@ -52,6 +51,7 @@ namespace SyncTool.FileSystem.Versioning.Git
         {
             return Histories.Single(h => h.Id.Equals(s_BranchPrefix + name, StringComparison.InvariantCultureIgnoreCase));
         }
+
 
         public void Dispose()
         {

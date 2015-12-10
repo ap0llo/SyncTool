@@ -35,6 +35,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DI\GitVersioningModule.cs" />
     <Compile Include="GitBasedFileSystemHistory.cs" />
     <Compile Include="GitBasedFileSystemSnapshot.cs" />
     <Compile Include="GitBasedHistoryRepository.cs" />
@@ -53,7 +54,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-   
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

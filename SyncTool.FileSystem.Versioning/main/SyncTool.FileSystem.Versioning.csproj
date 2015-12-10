@@ -33,6 +33,7 @@
     <Compile Include="IFileSystemSnapshot.cs" />
     <Compile Include="IGroupDiff.cs" />
     <Compile Include="IHistoryRepository.cs" />
+    <Compile Include="IHistoryRepositoryManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SnapshotNotFoundException.cs" />
   </ItemGroup>
@@ -43,7 +44,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-  
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

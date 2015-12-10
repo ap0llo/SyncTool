@@ -10,8 +10,11 @@ using Ninject;
 using SyncTool.Cli;
 using SyncTool.Configuration.Git.DI;
 using SyncTool.Configuration.Model;
+using SyncTool.FileSystem.Git.DI;
 using SyncTool.FileSystem.Local;
 using SyncTool.FileSystem.Versioning;
+using SyncTool.FileSystem.Versioning.Git;
+using SyncTool.FileSystem.Versioning.Git.DI;
 
 namespace SyncTool
 {
@@ -19,7 +22,7 @@ namespace SyncTool
     {
         static int Main(string[] args)
         {
-            var kernel = new StandardKernel(new GitConfigurationModule());
+            var kernel = new StandardKernel(new GitConfigurationModule(), new GitFileSystemModule(), new GitVersioningModule());
             using (var program = kernel.Get<Program>())
             {
                 return program.Run(args);
@@ -28,16 +31,22 @@ namespace SyncTool
 
 
         readonly ISyncGroupManager m_GroupManager;
+        readonly IHistoryRepositoryManager m_HistoryRepositoryManager;
 
 
-        public Program(ISyncGroupManager groupManager)
+        public Program(ISyncGroupManager groupManager, IHistoryRepositoryManager historyRepositoryManager)
         {
             if (groupManager == null)
             {
                 throw new ArgumentNullException(nameof(groupManager));
             }
+            if (historyRepositoryManager == null)
+            {
+                throw new ArgumentNullException(nameof(historyRepositoryManager));
+            }
 
             m_GroupManager = groupManager;
+            m_HistoryRepositoryManager = historyRepositoryManager;
         }
 
 
@@ -73,42 +82,48 @@ namespace SyncTool
                 },
                 (AddSyncGroupOptions opts) =>
                 {
-                    m_GroupManager.AddSyncGroup(opts.Name);
-                    return 0;
+                    m_GroupManager.AddSyncGroup(opts.Name);                                        
+                    return 0;                                            
                 },
                 (AddSyncFolderOptions opts) =>
                 {
                     using (var syncGroup = m_GroupManager.GetSyncGroup(opts.Group))
+                    using (var historyRepository = m_HistoryRepositoryManager.GetHistoryRepository(opts.Group))
                     {
                         syncGroup.AddSyncFolder(new SyncFolder() { Name = opts.Name, Path = opts.Path });
+                        historyRepository.CreateHistory(opts.Name);
                     }
                     return 0;
                 },
                 (GetSnapshotOptions opts) =>
                 {
-                    throw new NotImplementedException();
-//                    var group = m_GroupManager[opts.Group];
-//                    var history = group.GetHistory(opts.Folder);
-//                    
-//                    PrintSyncFolder(group[opts.Folder], " ");
-//                    PrintHistory(history, " \t");
-//
-//                    return 0;
+                    using (var group = m_GroupManager.GetSyncGroup(opts.Group))
+                    using (var historyRepository = m_HistoryRepositoryManager.GetHistoryRepository(opts.Group))
+                    {
+                        PrintSyncFolder(group[opts.Folder], " ");
+
+                        var history = historyRepository.GetHistory(opts.Folder);                           
+                        PrintHistory(history, " \t");
+
+                    }
+                    return 0;
                 },
                 (AddSnapshotOptions opts) =>
                 {
-                    throw new NotImplementedException();
-//                    var group = m_GroupManager[opts.Group];
-//                    var folder = group[opts.Folder];
-//                    var history = group.GetHistory(opts.Folder);
-//
-//                    var state = new LocalDirectory(null, folder.Path);
-//
-//                    //TODO: Apply filter
-//
-//                    history.CreateSnapshot(state);
-//
-//                    return 0;
+                    using (var group = m_GroupManager.GetSyncGroup(opts.Group))
+                    using (var historyRepository = m_HistoryRepositoryManager.GetHistoryRepository(opts.Group))
+                    {
+                        var folder = group[opts.Folder];
+                        var history = historyRepository.GetHistory(opts.Folder);                                                                      
+
+                        var state = new LocalDirectory(null, folder.Path);
+
+                       //TODO: Apply filter
+
+                       history.CreateSnapshot(state);
+
+                       return 0;
+                    }                 
                 },
                 errs =>
                 {                    
@@ -147,7 +162,7 @@ namespace SyncTool
 
         void PrintHistory(IFileSystemHistory history, string prefix)
         {
-            if (history.Snapshots.Any())
+            if (history != null && history.Snapshots.Any())
             {
                 foreach (var snapshot in history.Snapshots)
                 {
