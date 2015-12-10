@@ -40,8 +40,8 @@
   <ItemGroup>
     <Compile Include="ConfigurationNotFoundException.cs" />
     <Compile Include="DI\GitConfigurationModule.cs" />
-    <Compile Include="GitBasedSyncGroup.cs" />
-    <Compile Include="GitBasedSyncGroupManager.cs" />
+    <Compile Include="GitBasedConfigurationGroup.cs" />
+    <Compile Include="GitBasedConfigurationGroupManager.cs" />
     <Compile Include="Reader\ISyncRepositoryReader.cs" />
     <Compile Include="Reader\JsonSyncRepositoryReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -54,7 +54,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

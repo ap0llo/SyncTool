@@ -11,7 +11,7 @@ namespace SyncTool.FileSystem.Versioning.Git
     {
         public override void Load()
         {
-            this.Bind<IHistoryRepository>().To<GitBasedHistoryRepository>();
+            this.Bind<IHistoryGroup>().To<GitBasedHistoryGroup>();
         }
     }
 }

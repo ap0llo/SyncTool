@@ -27,13 +27,13 @@
     <Compile Include="Change.cs" />
     <Compile Include="ChangeType.cs" />
     <Compile Include="FileSystemDiff.cs" />
-    <Compile Include="HistoryRepositoryNotFoundException.cs" />
+    <Compile Include="HistoryGroupNotFoundException.cs" />
     <Compile Include="IChange.cs" />
     <Compile Include="IFileSystemDiff.cs" />
     <Compile Include="IFileSystemHistory.cs" />
     <Compile Include="IFileSystemSnapshot.cs" />
     <Compile Include="IGroupDiff.cs" />
-    <Compile Include="IHistoryRepository.cs" />
+    <Compile Include="IHistoryGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SnapshotNotFoundException.cs" />
   </ItemGroup>

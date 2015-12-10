@@ -30,23 +30,23 @@ namespace SyncTool
         }
 
 
-        readonly ISyncGroupManager m_GroupManager;
-        readonly IGroupManager<IHistoryRepository> m_HistoryRepositoryManager;
+        readonly IConfigurationGroupManager m_ConfigurationGroupManager;
+        readonly IGroupManager<IHistoryGroup> m_HistoryGroupManager;
 
 
-        public Program(ISyncGroupManager groupManager, IGroupManager<IHistoryRepository> historyRepositoryManager)
+        public Program(IConfigurationGroupManager configurationGroupManager, IGroupManager<IHistoryGroup> historyGroupManager)
         {
-            if (groupManager == null)
+            if (configurationGroupManager == null)
             {
-                throw new ArgumentNullException(nameof(groupManager));
+                throw new ArgumentNullException(nameof(configurationGroupManager));
             }
-            if (historyRepositoryManager == null)
+            if (historyGroupManager == null)
             {
-                throw new ArgumentNullException(nameof(historyRepositoryManager));
+                throw new ArgumentNullException(nameof(historyGroupManager));
             }
 
-            m_GroupManager = groupManager;
-            m_HistoryRepositoryManager = historyRepositoryManager;
+            m_ConfigurationGroupManager = configurationGroupManager;
+            m_HistoryGroupManager = historyGroupManager;
         }
 
 
@@ -65,11 +65,11 @@ namespace SyncTool
                 (GetSyncGroupOptions opts) =>
                 {
                     var groupNames = String.IsNullOrEmpty(opts.Name)
-                        ? m_GroupManager.Groups
-                        : m_GroupManager.Groups.Where(g => g.Equals(opts.Name, StringComparison.InvariantCultureIgnoreCase));
+                        ? m_ConfigurationGroupManager.Groups
+                        : m_ConfigurationGroupManager.Groups.Where(g => g.Equals(opts.Name, StringComparison.InvariantCultureIgnoreCase));
 
                     Console.WriteLine();
-                    foreach (var group in groupNames.Select(m_GroupManager.GetGroup))
+                    foreach (var group in groupNames.Select(m_ConfigurationGroupManager.GetGroup))
                     {
                         using (group)
                         {
@@ -82,13 +82,13 @@ namespace SyncTool
                 },
                 (AddSyncGroupOptions opts) =>
                 {
-                    m_GroupManager.AddSyncGroup(opts.Name);                                        
+                    m_ConfigurationGroupManager.AddSyncGroup(opts.Name);                                        
                     return 0;                                            
                 },
                 (AddSyncFolderOptions opts) =>
                 {
-                    using (var syncGroup = m_GroupManager.GetGroup(opts.Group))
-                    using (var historyRepository = m_HistoryRepositoryManager.GetGroup(opts.Group))
+                    using (var syncGroup = m_ConfigurationGroupManager.GetGroup(opts.Group))
+                    using (var historyRepository = m_HistoryGroupManager.GetGroup(opts.Group))
                     {
                         syncGroup.AddSyncFolder(new SyncFolder() { Name = opts.Name, Path = opts.Path });
                         historyRepository.CreateHistory(opts.Name);
@@ -97,8 +97,8 @@ namespace SyncTool
                 },
                 (GetSnapshotOptions opts) =>
                 {
-                    using (var group = m_GroupManager.GetGroup(opts.Group))
-                    using (var historyRepository = m_HistoryRepositoryManager.GetGroup(opts.Group))
+                    using (var group = m_ConfigurationGroupManager.GetGroup(opts.Group))
+                    using (var historyRepository = m_HistoryGroupManager.GetGroup(opts.Group))
                     {
                         PrintSyncFolder(group[opts.Folder], " ");
 
@@ -110,8 +110,8 @@ namespace SyncTool
                 },
                 (AddSnapshotOptions opts) =>
                 {
-                    using (var group = m_GroupManager.GetGroup(opts.Group))
-                    using (var historyRepository = m_HistoryRepositoryManager.GetGroup(opts.Group))
+                    using (var group = m_ConfigurationGroupManager.GetGroup(opts.Group))
+                    using (var historyRepository = m_HistoryGroupManager.GetGroup(opts.Group))
                     {
                         var folder = group[opts.Folder];
                         var history = historyRepository.GetHistory(opts.Folder);                                                                      
@@ -136,7 +136,7 @@ namespace SyncTool
 
         
 
-        void PrintSyncGroup(ISyncGroup group, string prefix = "")
+        void PrintSyncGroup(IConfigurationGroup group, string prefix = "")
         {
             Console.WriteLine($"{prefix}SyncGroup '{group.Name}'");
 

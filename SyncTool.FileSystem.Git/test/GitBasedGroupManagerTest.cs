@@ -6,6 +6,7 @@
 using System;
 using System.IO;
 using LibGit2Sharp;
+using SyncTool.Common;
 using SyncTool.FileSystem.TestHelpers;
 using Xunit;
 
@@ -13,33 +14,33 @@ namespace SyncTool.FileSystem.Git
 {
     public class GitBasedGroupManagerTest : DirectoryBasedTest
     {
-        [Fact(DisplayName = nameof(GitBasedGroupManager<string>) + ": Constructor throws ArgumentNullExcetopn if path provider is null")]
+        [Fact(DisplayName = nameof(GitBasedGroupManager<IGroup>) + ": Constructor throws ArgumentNullExcetopn if path provider is null")]
         public void Constructor_throws_ArgumentNullException_if_path_provider_is_null()
         {
-            Assert.Throws<ArgumentNullException>(() => new GroupManagerDerived(null));
+            Assert.Throws<ArgumentNullException>(() => new TestGroupManager(null));
         }
 
 
-        [Fact(DisplayName = nameof(GitBasedGroupManager<string>) + ".Groups is empty for empty directory")]
+        [Fact(DisplayName = nameof(GitBasedGroupManager<IGroup>) + ".Groups is empty for empty directory")]
         public void Groups_is_empty_for_empty_directory()
         {
-            var groupManager = new GroupManagerDerived(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
+            var groupManager = new TestGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
             Assert.Empty(groupManager.Groups);
         }
 
 
-        [Fact(DisplayName = nameof(GitBasedGroupManager<string>) + ".Groups: Non Git repositories are ignored")]
+        [Fact(DisplayName = nameof(GitBasedGroupManager<IGroup>) + ".Groups: Non Git repositories are ignored")]
         public void Groups_Non_Git_repositories_are_ignored()
         {
             System.IO.Directory.CreateDirectory(Path.Combine(m_TempDirectory.Location, "dir1"));
             System.IO.Directory.CreateDirectory(Path.Combine(m_TempDirectory.Location, "dir2"));
 
-            var groupManager = new GroupManagerDerived(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
+            var groupManager = new TestGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
             Assert.Empty(groupManager.Groups);
         }
 
 
-        [Fact(DisplayName = nameof(GitBasedGroupManager<string>) + ".Groups: Non Bare Repositories are ignored")]
+        [Fact(DisplayName = nameof(GitBasedGroupManager<IGroup>) + ".Groups: Non Bare Repositories are ignored")]
         public void Groups_Non_Bare_Repositories_are_ignored()
         {
             var dirPath = Path.Combine(m_TempDirectory.Location, "dir1");
@@ -47,19 +48,19 @@ namespace SyncTool.FileSystem.Git
 
             Repository.Init((dirPath));
 
-            var groupManager = new GroupManagerDerived(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
+            var groupManager = new TestGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
             Assert.Empty(groupManager.Groups);
         }
 
-        [Fact(DisplayName = nameof(GitBasedGroupManager<string>) + ".GetRepositoryPath() throws GroupNotFoundException")]
+        [Fact(DisplayName = nameof(GitBasedGroupManager<IGroup>) + ".GetRepositoryPath() throws GroupNotFoundException")]
         public void GetRepositoryPath_throws_GroupNotFoundException()
         {
-            var groupManager = new GroupManagerDerived(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
-            Assert.Throws<GroupNotFoundException>(() => groupManager.GetGroup("SomeName"));
+            var groupManager = new TestGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
+            Assert.Throws<GroupNotFoundException>(() => groupManager.GetRepositoryPath("SomeName"));
         }
 
 
-        [Fact(DisplayName = nameof(GitBasedGroupManager<string>) + ".GetRepositoryPath() returns expected path")]
+        [Fact(DisplayName = nameof(GitBasedGroupManager<IGroup>) + ".GetRepositoryPath() returns expected path")]
         public void GetRepositoryPath_returns_expected_path()
         {
             var expectedPath = Path.Combine(m_TempDirectory.Location, "dir1");
@@ -70,24 +71,28 @@ namespace SyncTool.FileSystem.Git
             RepositoryInitHelper.InitializeRepository(expectedPath, name);
 
 
-            var groupManager = new GroupManagerDerived(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
-            var actualPath = groupManager.GetGroup(name);
+            var groupManager = new TestGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
+            var actualPath = groupManager.GetRepositoryPath(name);
 
             Assert.Equal(expectedPath, actualPath);
         }
 
 
-        private class GroupManagerDerived : GitBasedGroupManager<string>
+
+      
+
+        private class TestGroupManager : GitBasedGroupManager<IGroup>
         {
-            public GroupManagerDerived(IRepositoryPathProvider pathProvider) : base(pathProvider)
+            public TestGroupManager(IRepositoryPathProvider pathProvider) : base(pathProvider)
             {
             }
 
-            public override string GetGroup(string name)
+            public override IGroup GetGroup(string name)
             {
-                return base.GetRepositoryPath(name);
+                throw new NotImplementedException();
             }
 
+            public new string GetRepositoryPath(string name) => base.GetRepositoryPath(name);
         }
 
     }

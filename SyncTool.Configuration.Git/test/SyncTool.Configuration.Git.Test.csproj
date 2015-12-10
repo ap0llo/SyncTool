@@ -52,8 +52,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GitBasedSyncGroupManagerTest.cs" />
-    <Compile Include="GitBasedSyncGroupTest.cs" />
+    <Compile Include="GitBasedConfigurationGroupManagerTest.cs" />
+    <Compile Include="GitBasedConfigurationGroupTest.cs" />
     <Compile Include="JsonSyncRepositoryReaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -39,8 +39,8 @@
     <Compile Include="Exceptions\SyncGroupNotFoundException.cs" />
     <Compile Include="Model\FileSystemFilterType.cs" />
     <Compile Include="Model\FileSystemFilterConfiguration.cs" />
-    <Compile Include="Model\ISyncGroup.cs" />
-    <Compile Include="Model\ISyncGroupManager.cs" />
+    <Compile Include="Model\IConfigurationGroup.cs" />
+    <Compile Include="Model\IConfigurationGroupManager.cs" />
     <Compile Include="Reader\ISyncFolderReader.cs" />
     <Compile Include="Reader\JsonSyncFolderReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

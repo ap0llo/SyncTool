@@ -8,10 +8,10 @@ using System;
 namespace SyncTool.FileSystem.Versioning
 {
     [Serializable]
-    public class HistoryRepositoryNotFoundException : Exception
+    public class HistoryGroupNotFoundException : Exception
     {
 
-        public HistoryRepositoryNotFoundException(string message, Exception innerException) : base(message, innerException)
+        public HistoryGroupNotFoundException(string message, Exception innerException) : base(message, innerException)
         {
             
         }

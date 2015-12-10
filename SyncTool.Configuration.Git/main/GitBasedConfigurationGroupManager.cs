@@ -14,7 +14,7 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Configuration.Git
 {
-    public sealed class GitBasedSyncGroupManager : GitBasedGroupManager<ISyncGroup>, ISyncGroupManager
+    public sealed class GitBasedConfigurationGroupManager : GitBasedGroupManager<IConfigurationGroup>, IConfigurationGroupManager
     {
         
 
@@ -24,7 +24,7 @@ namespace SyncTool.Configuration.Git
 
 
 
-        public GitBasedSyncGroupManager(IRepositoryPathProvider pathProvider) : base(pathProvider)
+        public GitBasedConfigurationGroupManager(IRepositoryPathProvider pathProvider) : base(pathProvider)
         {            
         }
 
@@ -60,13 +60,13 @@ namespace SyncTool.Configuration.Git
         }
 
         [Obsolete]
-        public ISyncGroup GetSyncGroup(string name) => GetGroup(name);
+        public IConfigurationGroup GetSyncGroup(string name) => GetGroup(name);
 
-        public override ISyncGroup GetGroup(string name)
+        public override IConfigurationGroup GetGroup(string name)
         {
             try
             {
-                return new GitBasedSyncGroup(GetRepositoryPath(name));
+                return new GitBasedConfigurationGroup(GetRepositoryPath(name));
             }
             catch (GroupNotFoundException ex)
             {

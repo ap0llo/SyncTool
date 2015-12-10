@@ -5,19 +5,15 @@
 
 using System;
 using System.Collections.Generic;
+using SyncTool.Common;
 
-namespace SyncTool.FileSystem.Versioning
+namespace SyncTool.Configuration.Model
 {
-    public interface IHistoryRepository : IDisposable
-    {        
-        string Name { get; }
+    public interface IConfigurationGroupManager : IGroupManager<IConfigurationGroup>
+    {
+    
+        void AddSyncGroup(string name);
 
-        IEnumerable<IFileSystemHistory> Histories { get; }
-
-        void CreateHistory(string name);
-
-        IFileSystemHistory GetHistory(string name);
-
-
+        void RemoveSyncGroup(string name);
     }
 }

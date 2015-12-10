@@ -7,13 +7,17 @@ using System;
 using System.Collections.Generic;
 using SyncTool.Common;
 
-namespace SyncTool.Configuration.Model
+namespace SyncTool.FileSystem.Versioning
 {
-    public interface ISyncGroupManager : IGroupManager<ISyncGroup>
-    {
-    
-        void AddSyncGroup(string name);
+    public interface IHistoryGroup : IGroup, IDisposable
+    {        
+        
+        IEnumerable<IFileSystemHistory> Histories { get; }
 
-        void RemoveSyncGroup(string name);
+        void CreateHistory(string name);
+
+        IFileSystemHistory GetHistory(string name);
+
+
     }
 }

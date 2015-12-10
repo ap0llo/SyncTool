@@ -12,7 +12,7 @@ namespace SyncTool.Configuration.Git.DI
     {
         public override void Load()
         {
-            this.Bind<ISyncGroupManager>().To<GitBasedSyncGroupManager>().InSingletonScope();
+            this.Bind<IConfigurationGroupManager>().To<GitBasedConfigurationGroupManager>().InSingletonScope();
         }
     }
 }

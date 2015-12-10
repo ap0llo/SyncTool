@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace SyncTool.Common
 {
-    public interface IGroupManager<T>
+    public interface IGroupManager<T> where T : IGroup
     {
         IEnumerable<string> Groups { get; }
 

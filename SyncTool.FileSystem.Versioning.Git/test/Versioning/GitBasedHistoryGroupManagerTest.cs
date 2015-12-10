@@ -11,7 +11,7 @@ using Xunit;
 
 namespace SyncTool.FileSystem.Versioning.Git
 {
-    public class GitBasedHistoryRepositoryManagerTest : DirectoryBasedTest
+    public class GitBasedHistoryGroupManagerTest : DirectoryBasedTest
     {
 
 
@@ -47,11 +47,11 @@ namespace SyncTool.FileSystem.Versioning.Git
         }
 
 
-        [Fact(DisplayName = nameof(GitBasedHistoryRepositoryManager) + ".GetHistoryRepository() throws " + nameof(HistoryRepositoryNotFoundException))]
+        [Fact(DisplayName = nameof(GitBasedHistoryRepositoryManager) + ".GetHistoryRepository() throws " + nameof(HistoryGroupNotFoundException))]
         public void GetSyncGroup_throws_SyncGroupNotFoundException()
         {
             var groupManager = new GitBasedHistoryRepositoryManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));            
-            Assert.Throws<HistoryRepositoryNotFoundException>(() => groupManager.GetGroup("someName"));
+            Assert.Throws<HistoryGroupNotFoundException>(() => groupManager.GetGroup("someName"));
         }
 
      

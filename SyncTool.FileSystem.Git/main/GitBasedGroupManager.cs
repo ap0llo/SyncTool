@@ -9,7 +9,7 @@ using SyncTool.Common;
 
 namespace SyncTool.FileSystem.Git
 {
-    public abstract class GitBasedGroupManager<T> : IGroupManager<T>
+    public abstract class GitBasedGroupManager<T> : IGroupManager<T> where T : IGroup
     {
         protected readonly IRepositoryPathProvider m_PathProvider;
 

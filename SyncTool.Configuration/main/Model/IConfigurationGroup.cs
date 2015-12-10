@@ -3,17 +3,19 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using Ninject.Modules;
+using System;
+using System.Collections.Generic;
 using SyncTool.Common;
 
-namespace SyncTool.FileSystem.Versioning.Git.DI
+namespace SyncTool.Configuration.Model
 {
-    public class GitVersioningModule : NinjectModule
+    public interface IConfigurationGroup : IGroup, IDisposable
     {
-        public override void Load()
-        {
+        IEnumerable<SyncFolder> Folders { get; }
 
-            Bind<IGroupManager<IHistoryGroup>>().To<GitBasedHistoryRepositoryManager>();
-        }
+        SyncFolder this[string name] { get; }
+
+        void AddSyncFolder(SyncFolder folder);                
+
     }
 }

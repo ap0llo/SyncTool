@@ -9,7 +9,7 @@ using SyncTool.FileSystem.Git;
 
 namespace SyncTool.FileSystem.Versioning.Git
 {
-    public class GitBasedHistoryRepositoryManager : GitBasedGroupManager<IHistoryRepository>
+    public class GitBasedHistoryRepositoryManager : GitBasedGroupManager<IHistoryGroup>
     {
         [Obsolete]
         public IEnumerable<string> HistoryRepositories => Groups;
@@ -22,18 +22,18 @@ namespace SyncTool.FileSystem.Versioning.Git
 
 
         [Obsolete]
-        public IHistoryRepository GetHistoryRepository(string name) => GetGroup(name);
+        public IHistoryGroup GetHistoryRepository(string name) => GetGroup(name);
  
 
-        public override IHistoryRepository GetGroup(string name)
+        public override IHistoryGroup GetGroup(string name)
         {
             try
             {
-                return new GitBasedHistoryRepository(GetRepositoryPath(name));
+                return new GitBasedHistoryGroup(GetRepositoryPath(name));
             }
             catch (GroupNotFoundException ex)
             {
-                throw new HistoryRepositoryNotFoundException($"HistoryRepository '{name}' not found", ex);
+                throw new HistoryGroupNotFoundException($"HistoryRepository '{name}' not found", ex);
             }
         }
       

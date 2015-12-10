@@ -17,7 +17,7 @@ using NativeFile = System.IO.File;
 
 namespace SyncTool.Configuration.Git
 {
-    public sealed class GitBasedSyncGroup : GitBasedGroup, ISyncGroup
+    public sealed class GitBasedConfigurationGroup : GitBasedGroup, IConfigurationGroup
     {
         const string s_SyncFolders = "SyncFolders";
         const string s_Json = "json";
@@ -56,7 +56,7 @@ namespace SyncTool.Configuration.Git
 
       
 
-        public GitBasedSyncGroup(string repositoryPath) : base(repositoryPath)
+        public GitBasedConfigurationGroup(string repositoryPath) : base(repositoryPath)
         {            
         }
 

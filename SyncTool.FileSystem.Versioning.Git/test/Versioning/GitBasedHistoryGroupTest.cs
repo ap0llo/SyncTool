@@ -10,14 +10,14 @@ using Xunit;
 
 namespace SyncTool.FileSystem.Versioning.Git
 {
-    public class GitBasedHistoryRepositoryTest : DirectoryBasedTest
+    public class GitBasedHistoryGroupTest : DirectoryBasedTest
     {
 
 
         [Fact(DisplayName= "GitBasedHistoryRepository.Create() can create a new repository")]
         public void Create_can_create_a_new_repository()
         {
-            using (var historyRepository = GitBasedHistoryRepository.Create(m_TempDirectory.Location))
+            using (var historyRepository = GitBasedHistoryGroup.Create(m_TempDirectory.Location))
             {
                 Assert.Empty(historyRepository.Histories);                
             }
@@ -29,7 +29,7 @@ namespace SyncTool.FileSystem.Versioning.Git
         {
             var historyNames = new[] {"history1", "histroy2"};
 
-            using (var historyRepository = GitBasedHistoryRepository.Create(m_TempDirectory.Location))
+            using (var historyRepository = GitBasedHistoryGroup.Create(m_TempDirectory.Location))
             {
 
                 foreach (var name in historyNames)
@@ -50,7 +50,7 @@ namespace SyncTool.FileSystem.Versioning.Git
             int initialBranchCount;
             
             // create the specified number of histories
-            using (var historyRepository = GitBasedHistoryRepository.Create(m_TempDirectory.Location))
+            using (var historyRepository = GitBasedHistoryGroup.Create(m_TempDirectory.Location))
             {
                 // get number of branches in the repository before creating the histories
                 using (var repo = new Repository(m_TempDirectory.Location))

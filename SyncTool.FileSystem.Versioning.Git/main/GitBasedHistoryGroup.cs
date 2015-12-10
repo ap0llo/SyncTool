@@ -12,14 +12,14 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.FileSystem.Versioning.Git
 {
-    public sealed class GitBasedHistoryRepository : GitBasedGroup, IHistoryRepository
+    public sealed class GitBasedHistoryGroup : GitBasedGroup, IHistoryGroup
     {
         const string s_BranchPrefix = "filesystemhistory/";
         
         
 
 
-        public GitBasedHistoryRepository(string repositoryPath) : base(repositoryPath)
+        public GitBasedHistoryGroup(string repositoryPath) : base(repositoryPath)
         {
             
         }
@@ -62,7 +62,7 @@ namespace SyncTool.FileSystem.Versioning.Git
 
  
 
-        public static GitBasedHistoryRepository Create(string repositoryLocation)
+        public static GitBasedHistoryGroup Create(string repositoryLocation)
         {
             if (!NativeDirectory.Exists(repositoryLocation))
             {
@@ -71,7 +71,7 @@ namespace SyncTool.FileSystem.Versioning.Git
 
             RepositoryInitHelper.InitializeRepository(repositoryLocation);
 
-            return new GitBasedHistoryRepository(repositoryLocation);
+            return new GitBasedHistoryGroup(repositoryLocation);
         }
 
 

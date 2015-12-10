@@ -13,15 +13,15 @@ using Xunit;
 
 namespace SyncTool.Configuration.Git
 {
-    public class GitBasedSyncGroupTest : DirectoryBasedTest
+    public class GitBasedConfigurationGroupTest : DirectoryBasedTest
     {
 
-        [Fact(DisplayName = nameof(GitBasedSyncGroup) + ".Folders is empty for new directory")]
+        [Fact(DisplayName = nameof(GitBasedConfigurationGroup) + ".Folders is empty for new directory")]
         public void Folders_is_empty_for_new_directory()
         {            
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");
 
-            using (var syncGroup = new GitBasedSyncGroup(m_TempDirectory.Location))
+            using (var syncGroup = new GitBasedConfigurationGroup(m_TempDirectory.Location))
             {
                 Assert.Empty(syncGroup.Folders);
             }
@@ -29,7 +29,7 @@ namespace SyncTool.Configuration.Git
 
 
 
-        [Fact(DisplayName = nameof(GitBasedSyncGroup) + ".AddSyncGroup creates a new commit in the underlying repository")]
+        [Fact(DisplayName = nameof(GitBasedConfigurationGroup) + ".AddSyncGroup creates a new commit in the underlying repository")]
         public void AddSyncGroup_creates_a_new_commit_in_the_underlying_repository()
         {
 
@@ -43,7 +43,7 @@ namespace SyncTool.Configuration.Git
             
             var syncFolder = new SyncFolder() { Name = "folder1", Path = "foo", ReadFilter = null };
 
-            using (var group = new GitBasedSyncGroup(m_TempDirectory.Location))
+            using (var group = new GitBasedConfigurationGroup(m_TempDirectory.Location))
             {
                 group.AddSyncFolder(syncFolder);
 
@@ -58,7 +58,7 @@ namespace SyncTool.Configuration.Git
 
         }
 
-        [Fact(DisplayName = nameof(GitBasedSyncGroup) + ".AddSyncGroup throws " + nameof(DuplicateSyncFolderException))]
+        [Fact(DisplayName = nameof(GitBasedConfigurationGroup) + ".AddSyncGroup throws " + nameof(DuplicateSyncFolderException))]
         public void AddSyncGroup_throws_DuplicateSyncFolderException()
         {
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");            
@@ -66,7 +66,7 @@ namespace SyncTool.Configuration.Git
             var syncFolder1 = new SyncFolder() { Name = "folder1", Path = "foo", ReadFilter = null };
             var syncFolder2 = new SyncFolder() { Name = "folder1", Path = "bar", ReadFilter = null };
 
-            using (var group = new GitBasedSyncGroup(m_TempDirectory.Location))
+            using (var group = new GitBasedConfigurationGroup(m_TempDirectory.Location))
             {
                 group.AddSyncFolder(syncFolder1);
                 Assert.Throws<DuplicateSyncFolderException>(() => group.AddSyncFolder(syncFolder2));

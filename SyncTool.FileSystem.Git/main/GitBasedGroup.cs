@@ -5,10 +5,11 @@
 
 using System;
 using LibGit2Sharp;
+using SyncTool.Common;
 
 namespace SyncTool.FileSystem.Git
 {
-    public class GitBasedGroup : IDisposable
+    public class GitBasedGroup : IGroup, IDisposable
     {
         protected readonly Repository m_Repository;
 
