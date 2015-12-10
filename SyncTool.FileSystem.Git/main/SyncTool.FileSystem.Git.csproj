@@ -35,10 +35,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CurrentDirectoryRepositoryPathProvider.cs" />
+    <Compile Include="DI\GitFileSystemModule.cs" />
     <Compile Include="FileSystemMapping.cs" />
     <Compile Include="IFileSystemMapping.cs" />
     <Compile Include="FileSystem\GitDirectory.cs" />
     <Compile Include="FileSystem\GitFile.cs" />
+    <Compile Include="IRepositoryPathProvider.cs" />
+    <Compile Include="SingleDirectoryRepositoryPathProvider.cs" />
     <Compile Include="Util\BranchCollectionExtensions.cs" />
     <Compile Include="Util\FileSystemConverter.cs" />
     <Compile Include="Util\RepositoryCloneException.cs" />
@@ -58,7 +62,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

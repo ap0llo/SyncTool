@@ -18,16 +18,14 @@ namespace SyncTool.Configuration.Git
 {
     public sealed class GitBasedSyncGroupManager : ISyncGroupManager
     {
+        readonly IRepositoryPathProvider m_PathProvider;
+
         
-        readonly string m_HomeDirectory;
-
-
         public IEnumerable<string> SyncGroups
         {
             get
             {
-                var directories = GetRepositoryDirectories();
-                foreach (var dir in directories)
+                foreach (var dir in m_PathProvider.RepositoryPaths)
                 {                    
                     using (var group = new GitBasedSyncGroup(dir))
                     {
@@ -39,7 +37,7 @@ namespace SyncTool.Configuration.Git
 
         public ISyncGroup GetSyncGroup(string name)
         {
-            var directories = GetRepositoryDirectories();
+            var directories = m_PathProvider.RepositoryPaths;
             foreach (var dir in directories)
             {
                 var group = new GitBasedSyncGroup(dir);
@@ -56,27 +54,14 @@ namespace SyncTool.Configuration.Git
             throw new SyncGroupNotFoundException(name);            
         }
 
-
-        [Inject]
-        public GitBasedSyncGroupManager() : this(Environment.CurrentDirectory)
+        
+        public GitBasedSyncGroupManager(IRepositoryPathProvider pathProvider)
         {
-            
-        }
-
-        public GitBasedSyncGroupManager(string homeDirectory)
-        {
-            if (homeDirectory == null)
+            if (pathProvider == null)
             {
-                throw new ArgumentNullException(nameof(homeDirectory));
+                throw new ArgumentNullException(nameof(pathProvider));
             }
-
-            if (NativeDirectory.Exists(homeDirectory) == false)
-            {
-                throw new DirectoryNotFoundException($"The directory '{homeDirectory}' does not exist");
-            }
-
-            m_HomeDirectory = homeDirectory;                        
-            
+            m_PathProvider = pathProvider;                        
         }
 
 
@@ -87,7 +72,7 @@ namespace SyncTool.Configuration.Git
                 throw new DuplicateSyncGroupException(name);
             }
 
-            var directoryPath = Path.Combine(m_HomeDirectory, name);
+            var directoryPath = m_PathProvider.GetRepositoryPath(name);
 
             if (NativeDirectory.Exists(directoryPath))
             {
@@ -106,8 +91,8 @@ namespace SyncTool.Configuration.Git
             {
                 throw new SyncGroupNotFoundException(name);
             }
-            
-            var directoryPath = Path.Combine(m_HomeDirectory, name);            
+
+            var directoryPath = m_PathProvider.GetRepositoryPath(name);         
             DirectoryHelper.DeleteRecursively(directoryPath);      
         }
       
@@ -118,22 +103,7 @@ namespace SyncTool.Configuration.Git
 
 
 
-        string[] GetRepositoryDirectories() => NativeDirectory.GetDirectories(m_HomeDirectory).Where(IsGitRepository).ToArray();
 
-        bool IsGitRepository(string path)
-        {
-            try
-            {
-                using (var repository = new Repository(path))
-                {
-                    return repository.Info.IsBare;
-                }
-            }
-            catch (RepositoryNotFoundException)
-            {
-                return false;
-            }
-        }
 
 
     }

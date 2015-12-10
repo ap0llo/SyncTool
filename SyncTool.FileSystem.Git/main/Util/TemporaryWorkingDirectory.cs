@@ -15,8 +15,14 @@ namespace SyncTool.FileSystem.Git
         readonly DisposableLocalDirectoryWrapper m_TempDirectory;
         readonly string m_BranchName;
 
+        /// <summary>
+        /// Gets the location of the working directory in the file system
+        /// </summary>
         public string Location => m_TempDirectory.Directory.Location;
 
+        /// <summary>
+        /// Gets whether there are any changes in the working directory 
+        /// </summary>
         public bool HasChanges => m_Repository.RetrieveStatus().IsDirty;
 
 
@@ -31,6 +37,9 @@ namespace SyncTool.FileSystem.Git
         }
 
 
+        /// <summary>
+        /// Commits all changes in the working directory to the git repository
+        /// </summary>
         public string Commit(string commitMessage = "SyncTool Commit")
         {
             StageAllChanges();
@@ -41,11 +50,18 @@ namespace SyncTool.FileSystem.Git
             return commit.Sha;
         }
 
+        /// <summary>
+        /// Pushes all changes to the repository the temporary working directory was cloned from
+        /// </summary>
         public void Push()
         {            
             m_Repository.Network.Push(m_Repository.Branches[m_BranchName]);
         }
 
+        /// <summary>
+        /// Disposes the temporary working directory
+        /// This will delete the directory. All Changes that were not commited and pushed will be lost
+        /// </summary>
         public void Dispose()
         {
             m_Repository.Dispose();

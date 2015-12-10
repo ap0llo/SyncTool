@@ -18,13 +18,13 @@ namespace SyncTool.Configuration.Git
         [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ": Constructor throws DirectoryNotFoundException if home directory does not exist")]
         public void Constructor_throws_DirectoryNotFoundException_if_home_directory_does_not_exist()
         {
-            Assert.Throws<DirectoryNotFoundException>(() => new GitBasedSyncGroupManager(Path.Combine(m_TempDirectory.Location, "dir1")));
+            Assert.Throws<DirectoryNotFoundException>(() => new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(Path.Combine(m_TempDirectory.Location, "dir1"))));
         }
 
         [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ".SyncGroups is empty for empty home directory")]
         public void SyncGroups_is_empty_for_empty_home_directory()
         {
-            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            using (var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location)))
             {
                 Assert.Empty(groupManager.SyncGroups);
             }
@@ -36,7 +36,7 @@ namespace SyncTool.Configuration.Git
             Directory.CreateDirectory(Path.Combine(m_TempDirectory.Location, "dir1"));
             Directory.CreateDirectory(Path.Combine(m_TempDirectory.Location, "dir2"));
 
-            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            using (var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location)))
             {
                 Assert.Empty(groupManager.SyncGroups);
             }
@@ -50,7 +50,7 @@ namespace SyncTool.Configuration.Git
 
             Repository.Init((dirPath));
 
-            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            using (var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location)))
             {
                 Assert.Empty(groupManager.SyncGroups);
             }
@@ -60,7 +60,7 @@ namespace SyncTool.Configuration.Git
         [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ".GetSyncGroup() throws SyncGroupNotFoundException")]
         public void GetSyncGroup_throws_SyncGroupNotFoundException()
         {
-            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            using (var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location)))
             {
                 groupManager.AddSyncGroup("group1");
                 Assert.Throws<SyncGroupNotFoundException>(() => groupManager.GetSyncGroup("someName"));
@@ -70,7 +70,7 @@ namespace SyncTool.Configuration.Git
         [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ".GetSyncGroup() returns SyncGroup instance")]
         public void GetSyncGroup_returns_expected_SyncGroup()
         {
-            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            using (var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location)))
             {
                 using (var expected = groupManager.AddSyncGroup("group1"))
                 using (var actual = groupManager.GetSyncGroup("grOUp1"))
@@ -88,7 +88,7 @@ namespace SyncTool.Configuration.Git
         {
             var groupName = "group1";
 
-            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            using (var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location)))
             {
                 groupManager.AddSyncGroup(groupName);
 
@@ -104,7 +104,7 @@ namespace SyncTool.Configuration.Git
         {
             var groupName = "group1";
             
-            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            using (var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location)))
             {
                 groupManager.AddSyncGroup(groupName);
                 Assert.Throws<DuplicateSyncGroupException>(() => groupManager.AddSyncGroup(groupName.ToUpper()));
@@ -119,7 +119,7 @@ namespace SyncTool.Configuration.Git
             var dirPath = Path.Combine(m_TempDirectory.Location, groupName);
             Directory.CreateDirectory(dirPath);
 
-            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            using (var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location)))
             {
                 Assert.Throws<ConfigurationException>(() => groupManager.AddSyncGroup(groupName));
             }
@@ -129,7 +129,7 @@ namespace SyncTool.Configuration.Git
         [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ".DeleteSyncGroup() removes SyncGroup")]
         public void DeleteSyncGroup_removes_SyncGroup()
         {
-            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            using (var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location)))
             {
                 groupManager.AddSyncGroup("group1");
                 groupManager.AddSyncGroup("group2");
@@ -150,7 +150,7 @@ namespace SyncTool.Configuration.Git
         [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ".DeleteSyncGroup() throws SyncGroupNotFoundException")]
         public void DeleteSyncGroup_throws_SyncGroupNotFoundException()
         {
-            using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
+            using (var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location)))
             {
                 Assert.Throws<SyncGroupNotFoundException>(() => groupManager.RemoveSyncGroup("group1"));
             }
