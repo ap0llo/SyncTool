@@ -19,7 +19,7 @@ namespace SyncTool.FileSystem.Versioning.Git
         {
             using (var historyRepository = GitBasedHistoryGroup.Create(m_TempDirectory.Location))
             {
-                Assert.Empty(historyRepository.Histories);                
+                Assert.Empty(historyRepository.Items);                
             }
         }
 
@@ -37,7 +37,7 @@ namespace SyncTool.FileSystem.Versioning.Git
                     historyRepository.CreateHistory(name);
                 }
 
-                Assert.Equal(historyNames.Length, historyRepository.Histories.Count());
+                Assert.Equal(historyNames.Length, historyRepository.Items.Count());
             }
         }
 

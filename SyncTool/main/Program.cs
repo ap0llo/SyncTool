@@ -140,10 +140,10 @@ namespace SyncTool
         {
             Console.WriteLine($"{prefix}SyncGroup '{group.Name}'");
 
-            if (group.Folders.Any())
+            if (group.Items.Any())
             {
                 Console.WriteLine($"{prefix}\tFolders:");
-                foreach (var folder in group.Folders)
+                foreach (var folder in group.Items)
                 {
                     PrintSyncFolder(folder, $"{prefix}\t\t");
                 }

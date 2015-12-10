@@ -9,10 +9,8 @@ using SyncTool.Common;
 
 namespace SyncTool.Configuration.Model
 {
-    public interface IConfigurationGroup : IGroup, IDisposable
-    {
-        IEnumerable<SyncFolder> Folders { get; }
-
+    public interface IConfigurationGroup : IGroup<SyncFolder>, IDisposable
+    {        
         SyncFolder this[string name] { get; }
 
         void AddSyncFolder(SyncFolder folder);                

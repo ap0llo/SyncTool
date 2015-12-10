@@ -26,7 +26,7 @@ namespace SyncTool.FileSystem.Versioning.Git
 
 
 
-        public IEnumerable<IFileSystemHistory> Histories
+        public IEnumerable<IFileSystemHistory> Items
         {
             get
             {

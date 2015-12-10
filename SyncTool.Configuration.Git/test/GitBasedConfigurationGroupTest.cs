@@ -23,7 +23,7 @@ namespace SyncTool.Configuration.Git
 
             using (var syncGroup = new GitBasedConfigurationGroup(m_TempDirectory.Location))
             {
-                Assert.Empty(syncGroup.Folders);
+                Assert.Empty(syncGroup.Items);
             }
         }
 
@@ -47,8 +47,8 @@ namespace SyncTool.Configuration.Git
             {
                 group.AddSyncFolder(syncFolder);
 
-                Assert.Single(group.Folders);
-                Assert.Equal(syncFolder, group.Folders.Single());
+                Assert.Single(group.Items);
+                Assert.Equal(syncFolder, group.Items.Single());
             }
 
             using (var repo = new Repository(m_TempDirectory.Location))

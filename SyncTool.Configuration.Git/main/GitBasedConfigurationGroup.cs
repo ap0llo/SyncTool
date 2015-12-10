@@ -28,7 +28,7 @@ namespace SyncTool.Configuration.Git
 
       
 
-        public IEnumerable<SyncFolder> Folders
+        public IEnumerable<SyncFolder> Items
         {
             get
             {
@@ -52,7 +52,7 @@ namespace SyncTool.Configuration.Git
             }
         }
 
-        public SyncFolder this[string name] => Folders.Single(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+        public SyncFolder this[string name] => Items.Single(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
 
       
 
@@ -63,7 +63,7 @@ namespace SyncTool.Configuration.Git
 
         public void AddSyncFolder(SyncFolder folder)
         {
-            if (this.Folders.Any(f => f.Name.Equals(folder.Name, StringComparison.CurrentCultureIgnoreCase)))
+            if (this.Items.Any(f => f.Name.Equals(folder.Name, StringComparison.CurrentCultureIgnoreCase)))
             {
                 throw new DuplicateSyncFolderException(folder.Name);
             }            

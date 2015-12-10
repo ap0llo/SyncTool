@@ -9,15 +9,12 @@ using SyncTool.Common;
 
 namespace SyncTool.FileSystem.Versioning
 {
-    public interface IHistoryGroup : IGroup, IDisposable
+    public interface IHistoryGroup : IGroup<IFileSystemHistory>, IDisposable
     {        
         
-        IEnumerable<IFileSystemHistory> Histories { get; }
-
         void CreateHistory(string name);
 
         IFileSystemHistory GetHistory(string name);
-
 
     }
 }
