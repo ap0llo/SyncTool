@@ -37,14 +37,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{D09F19
 		common\GlobalAssemblyInfo.cs = common\GlobalAssemblyInfo.cs
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool.Utilities", "SyncTool.Utilities", "{72F683F1-2F75-4541-AA3D-F07A86441025}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool.Common", "SyncTool.Common", "{72F683F1-2F75-4541-AA3D-F07A86441025}"
 	ProjectSection(SolutionItems) = preProject
-		SyncTool.Utilities\references.proj = SyncTool.Utilities\references.proj
+		SyncTool.Common\references.proj = SyncTool.Common\references.proj
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Utilities", "SyncTool.Utilities\main\SyncTool.Utilities.csproj", "{8495C561-6553-45F8-BA04-72486273AE47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Common", "SyncTool.Common\main\SyncTool.Common.csproj", "{8495C561-6553-45F8-BA04-72486273AE47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Utilities.Test", "SyncTool.Utilities\test\SyncTool.Utilities.Test.csproj", "{DA54C484-4021-4628-BBF0-DFCA543A585A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTool.Common.Test", "SyncTool.Common\test\SyncTool.Common.Test.csproj", "{DA54C484-4021-4628-BBF0-DFCA543A585A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool.FileSystem.Versioning", "SyncTool.FileSystem.Versioning", "{EB11C69D-FB63-4E45-9AF4-743DDED3415F}"
 	ProjectSection(SolutionItems) = preProject

@@ -80,9 +80,9 @@
       <Project>{7f7f158b-eb20-4354-89d9-c415cd8e3b21}</Project>
       <Name>SyncTool.FileSystem.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SyncTool.Utilities\test\SyncTool.Utilities.Test.csproj">
+    <ProjectReference Include="..\..\SyncTool.Common\test\SyncTool.Common.Test.csproj">
       <Project>{da54c484-4021-4628-bbf0-dfca543a585a}</Project>
-      <Name>SyncTool.Utilities.Test</Name>
+      <Name>SyncTool.Common.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\main\SyncTool.FileSystem.Git.csproj">
       <Project>{142013ec-f091-4235-a5d1-04019e795146}</Project>

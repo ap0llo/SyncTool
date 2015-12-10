@@ -7,8 +7,8 @@
     <ProjectGuid>{DA54C484-4021-4628-BBF0-DFCA543A585A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.Utilities</RootNamespace>
-    <AssemblyName>SyncTool.Utilities.Test</AssemblyName>
+    <RootNamespace>SyncTool.Common</RootNamespace>
+    <AssemblyName>SyncTool.Common.Test</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -57,9 +57,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\main\SyncTool.Utilities.csproj">
+    <ProjectReference Include="..\main\SyncTool.Common.csproj">
       <Project>{8495c561-6553-45f8-ba04-72486273ae47}</Project>
-      <Name>SyncTool.Utilities</Name>
+      <Name>SyncTool.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -6,8 +6,8 @@
     <ProjectGuid>{8495C561-6553-45F8-BA04-72486273AE47}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.Utilities</RootNamespace>
-    <AssemblyName>SyncTool.Utilities</AssemblyName>
+    <RootNamespace>SyncTool.Common</RootNamespace>
+    <AssemblyName>SyncTool.Common</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">

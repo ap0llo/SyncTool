@@ -62,9 +62,9 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.Utilities\test\SyncTool.Utilities.Test.csproj">
+    <ProjectReference Include="..\..\SyncTool.Common\test\SyncTool.Common.Test.csproj">
       <Project>{da54c484-4021-4628-bbf0-dfca543a585a}</Project>
-      <Name>SyncTool.Utilities.Test</Name>
+      <Name>SyncTool.Common.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\main\SyncTool.Configuration.csproj">
       <Project>{4c4dfbc8-1dd7-4ea3-9ef5-c06693560784}</Project>
