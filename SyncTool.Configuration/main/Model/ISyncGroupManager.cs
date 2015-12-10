@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace SyncTool.Configuration.Model
 {
-    public interface ISyncGroupManager : IDisposable
+    public interface ISyncGroupManager
     {
         IEnumerable<string> SyncGroups { get; }
 

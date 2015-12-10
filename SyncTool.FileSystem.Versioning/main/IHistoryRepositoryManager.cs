@@ -4,11 +4,15 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 
 namespace SyncTool.FileSystem.Versioning
 {
-    public interface IHistoryRepositoryManager : IDisposable
+    public interface IHistoryRepositoryManager
     {
+
+
+        IEnumerable<string> HistoryRepositories { get; }
 
         /// <summary>
         /// Gets the specified history repository

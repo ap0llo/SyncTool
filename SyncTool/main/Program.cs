@@ -13,7 +13,6 @@ using SyncTool.Configuration.Model;
 using SyncTool.FileSystem.Git.DI;
 using SyncTool.FileSystem.Local;
 using SyncTool.FileSystem.Versioning;
-using SyncTool.FileSystem.Versioning.Git;
 using SyncTool.FileSystem.Versioning.Git.DI;
 
 namespace SyncTool
@@ -189,7 +188,7 @@ namespace SyncTool
 
         public void Dispose()
         {
-            m_GroupManager.Dispose();
+            
         }
     }
 }

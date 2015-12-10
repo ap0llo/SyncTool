@@ -12,52 +12,55 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.FileSystem.Versioning.Git
 {
-    public sealed class GitBasedHistoryRepository : IHistoryRepository
+    public sealed class GitBasedHistoryRepository : GitBasedGroup, IHistoryRepository
     {
         const string s_BranchPrefix = "filesystemhistory/";
+        
+        
 
-        readonly Repository m_Repository;
-        readonly ISet<GitBasedFileSystemHistory> m_Histories = new HashSet<GitBasedFileSystemHistory>(); 
 
-
-        public GitBasedHistoryRepository(string repositoryPath)
+        public GitBasedHistoryRepository(string repositoryPath) : base(repositoryPath)
         {
-            m_Repository = new Repository(repositoryPath);
-
-            foreach (var history in LoadHistories())
-            {
-                m_Histories.Add(history);
-            }
+            
         }
 
 
-        public IEnumerable<IFileSystemHistory> Histories => m_Histories;
 
-        public IFileSystemHistory CreateHistory(string name)
+        public IEnumerable<IFileSystemHistory> Histories
+        {
+            get
+            {
+                return m_Repository.Branches.GetLocalBranches()
+                 .Where(b => b.FriendlyName.StartsWith(s_BranchPrefix))
+                 .Select(b => new GitBasedFileSystemHistory(m_Repository, b.FriendlyName));
+            }
+        }
+
+        public void CreateHistory(string name)
         {
             var branchName = s_BranchPrefix + name;
             var parentCommitId = m_Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
             var parentCommit = m_Repository.Lookup<Commit>(parentCommitId);            
             
-            m_Repository.CreateBranch(branchName, parentCommit);
-
-            var newHistory = new GitBasedFileSystemHistory(m_Repository, branchName);
-            m_Histories.Add(newHistory);
-
-            return newHistory;
+            m_Repository.CreateBranch(branchName, parentCommit);            
         }
 
         public IFileSystemHistory GetHistory(string name)
         {
-            return Histories.Single(h => h.Id.Equals(s_BranchPrefix + name, StringComparison.InvariantCultureIgnoreCase));
+            var branchName = s_BranchPrefix + name;
+            var branch = m_Repository.GetLocalBranches().FirstOrDefault(b => b.FriendlyName.Equals(branchName, StringComparison.InvariantCultureIgnoreCase));
+
+            if (branch == null)
+            {
+                //TODO: throw more appropriate exception
+                throw new Exception();
+            }
+            
+            return new GitBasedFileSystemHistory(m_Repository, branchName);
         }
 
 
-        public void Dispose()
-        {
-            m_Repository.Dispose();
-        }
-
+ 
 
         public static GitBasedHistoryRepository Create(string repositoryLocation)
         {
@@ -71,14 +74,6 @@ namespace SyncTool.FileSystem.Versioning.Git
             return new GitBasedHistoryRepository(repositoryLocation);
         }
 
-
-        
-        IEnumerable<GitBasedFileSystemHistory> LoadHistories()
-        {
-            return m_Repository.Branches.GetLocalBranches()
-                .Where(b => b.FriendlyName.StartsWith(s_BranchPrefix))
-                .Select(b => new GitBasedFileSystemHistory(m_Repository, b.FriendlyName));            
-        } 
 
     }
 }

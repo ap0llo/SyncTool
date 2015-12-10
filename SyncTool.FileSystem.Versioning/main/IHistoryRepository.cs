@@ -9,11 +9,12 @@ using System.Collections.Generic;
 namespace SyncTool.FileSystem.Versioning
 {
     public interface IHistoryRepository : IDisposable
-    {
-                 
+    {        
+        string Name { get; }
+
         IEnumerable<IFileSystemHistory> Histories { get; }
 
-        IFileSystemHistory CreateHistory(string name);
+        void CreateHistory(string name);
 
         IFileSystemHistory GetHistory(string name);
 

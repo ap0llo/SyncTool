@@ -27,6 +27,7 @@
     <Compile Include="Change.cs" />
     <Compile Include="ChangeType.cs" />
     <Compile Include="FileSystemDiff.cs" />
+    <Compile Include="HistoryRepositoryNotFoundException.cs" />
     <Compile Include="IChange.cs" />
     <Compile Include="IFileSystemDiff.cs" />
     <Compile Include="IFileSystemHistory.cs" />

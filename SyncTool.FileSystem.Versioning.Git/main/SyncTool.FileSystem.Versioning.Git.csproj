@@ -39,6 +39,7 @@
     <Compile Include="GitBasedFileSystemHistory.cs" />
     <Compile Include="GitBasedFileSystemSnapshot.cs" />
     <Compile Include="GitBasedHistoryRepository.cs" />
+    <Compile Include="GitBasedHistoryRepositoryManager.cs" />
     <Compile Include="GitFileSystemVersioningModule.cs" />
     <Compile Include="MetaFileSystem\DirectoryProperties.cs" />
     <Compile Include="MetaFileSystem\DirectoryPropertiesFile.cs" />

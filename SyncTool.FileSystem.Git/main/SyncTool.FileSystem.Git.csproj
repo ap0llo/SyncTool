@@ -38,6 +38,9 @@
     <Compile Include="CurrentDirectoryRepositoryPathProvider.cs" />
     <Compile Include="DI\GitFileSystemModule.cs" />
     <Compile Include="FileSystemMapping.cs" />
+    <Compile Include="GitBasedGroup.cs" />
+    <Compile Include="GitBasedGroupManager.cs" />
+    <Compile Include="GroupNotFoundException.cs" />
     <Compile Include="IFileSystemMapping.cs" />
     <Compile Include="FileSystem\GitDirectory.cs" />
     <Compile Include="FileSystem\GitFile.cs" />

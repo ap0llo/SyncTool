@@ -13,7 +13,7 @@ namespace SyncTool.FileSystem.Git
 {
     public class SingleDirectoryRepositoryPathProvider : IRepositoryPathProvider
     {
-        string m_Directory;
+        readonly string m_Directory;
        
 
         public IEnumerable<string> RepositoryPaths => System.IO.Directory.GetDirectories(m_Directory).Where(IsGitRepository).ToArray();

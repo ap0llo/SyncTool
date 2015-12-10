@@ -7,6 +7,7 @@ using System;
 
 namespace SyncTool.Configuration
 {
+    //TODO: Rename and move to different package
     [Serializable]
     public class DuplicateSyncGroupException : ConfigurationException
     {

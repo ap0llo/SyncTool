@@ -5,18 +5,13 @@
 
 using System;
 
-namespace SyncTool.Configuration
+namespace SyncTool.FileSystem.Versioning
 {
     [Serializable]
-    public class ConfigurationException : Exception
+    public class HistoryRepositoryNotFoundException : Exception
     {
-        public ConfigurationException(string message, Exception innerException) : base(message, innerException)
-        {
-            
-        }
 
-
-        public ConfigurationException(string message) : base(message)
+        public HistoryRepositoryNotFoundException(string message, Exception innerException) : base(message, innerException)
         {
             
         }

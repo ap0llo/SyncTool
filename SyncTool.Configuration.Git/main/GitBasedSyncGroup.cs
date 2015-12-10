@@ -17,28 +17,16 @@ using NativeFile = System.IO.File;
 
 namespace SyncTool.Configuration.Git
 {
-    public sealed class GitBasedSyncGroup : ISyncGroup
+    public sealed class GitBasedSyncGroup : GitBasedGroup, ISyncGroup
     {
         const string s_SyncFolders = "SyncFolders";
         const string s_Json = "json";
 
-        readonly Repository m_Repository;
+        
         readonly ISyncFolderReader m_SyncFolderReader = new JsonSyncFolderReader();
                 
 
-
-        public string Name
-        {
-            get
-            {
-                var infoFile = (IReadableFile)GetConfigurationRootDirectory().GetFile(RepositoryInfoFile.RepositoryInfoFileName);
-                using (var stream = infoFile.OpenRead())
-                {
-                    var repositoryInfo = stream.Deserialize<RepositoryInfo>();
-                    return repositoryInfo.RepositoryName;
-                }
-            }
-        }
+      
 
         public IEnumerable<SyncFolder> Folders
         {
@@ -68,14 +56,8 @@ namespace SyncTool.Configuration.Git
 
       
 
-        public GitBasedSyncGroup(string repositoryPath)
-        {
-            if (repositoryPath == null)
-            {
-                throw new ArgumentNullException(nameof(repositoryPath));
-            }
-            
-            m_Repository = new Repository(repositoryPath);                     
+        public GitBasedSyncGroup(string repositoryPath) : base(repositoryPath)
+        {            
         }
 
 
@@ -109,18 +91,6 @@ namespace SyncTool.Configuration.Git
         }
         
 
-        public void Dispose()
-        {
-            m_Repository.Dispose();        
-        }
-
-
-
-
-
-        Commit GetConfigurationCommit() => m_Repository.Branches[RepositoryInitHelper.ConfigurationBranchName].Tip;
-
-        GitDirectory GetConfigurationRootDirectory() => new GitDirectory(null, "root", GetConfigurationCommit());
 
     }
 }

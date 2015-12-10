@@ -5,21 +5,13 @@
 
 using System;
 
-namespace SyncTool.Configuration
+namespace SyncTool.FileSystem.Git
 {
     [Serializable]
-    public class ConfigurationException : Exception
+    public class GroupNotFoundException : Exception
     {
-        public ConfigurationException(string message, Exception innerException) : base(message, innerException)
+        public GroupNotFoundException(string name) : base($"The Group '{name}' could not be found")
         {
-            
         }
-
-
-        public ConfigurationException(string message) : base(message)
-        {
-            
-        }
-
     }
 }

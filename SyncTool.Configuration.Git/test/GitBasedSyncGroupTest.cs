@@ -27,18 +27,7 @@ namespace SyncTool.Configuration.Git
             }
         }
 
-        [Fact(DisplayName = nameof(GitBasedSyncGroup) + ".Name returns name specified in RepositoryInfo file")]
-        public void Name_returns_name_specified_in_RepositoryInfo_file()
-        {
-            var name = Guid.NewGuid().ToString();
 
-            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, name);
-
-            using (var syncGroup = new GitBasedSyncGroup(m_TempDirectory.Location))
-            {
-                Assert.Equal(name, syncGroup.Name);
-            }
-        }
 
         [Fact(DisplayName = nameof(GitBasedSyncGroup) + ".AddSyncGroup creates a new commit in the underlying repository")]
         public void AddSyncGroup_creates_a_new_commit_in_the_underlying_repository()

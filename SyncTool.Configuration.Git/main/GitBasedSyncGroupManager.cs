@@ -7,61 +7,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SyncTool.Configuration.Model;
+using SyncTool.FileSystem;
 using SyncTool.FileSystem.Git;
 using SyncTool.Utilities;
 using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Configuration.Git
 {
-    public sealed class GitBasedSyncGroupManager : ISyncGroupManager
+    public sealed class GitBasedSyncGroupManager : GitBasedGroupManager, ISyncGroupManager
     {
-        readonly IRepositoryPathProvider m_PathProvider;
-
         
-        public IEnumerable<string> SyncGroups
-        {
-            get
-            {
-                foreach (var dir in m_PathProvider.RepositoryPaths)
-                {                    
-                    using (var group = new GitBasedSyncGroup(dir))
-                    {
-                        yield return group.Name; 
-                    }
-                }                
-            }
-        }
+
+        public IEnumerable<string> SyncGroups => Groups;
+        
 
         public ISyncGroup GetSyncGroup(string name)
         {
-            var directories = m_PathProvider.RepositoryPaths;
-            foreach (var dir in directories)
+            try
             {
-                var group = new GitBasedSyncGroup(dir);
-                if (group.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return group;
-                }
-                else
-                {
-                    group.Dispose();
-                }
+                return new GitBasedSyncGroup(GetRepositoryPath(name));
             }
-
-            throw new SyncGroupNotFoundException(name);            
-        }
-
-        
-        public GitBasedSyncGroupManager(IRepositoryPathProvider pathProvider)
-        {
-            if (pathProvider == null)
-            {
-                throw new ArgumentNullException(nameof(pathProvider));
+            catch (GroupNotFoundException ex)
+            {                
+                throw new SyncGroupNotFoundException(name, ex);
             }
-            m_PathProvider = pathProvider;                        
         }
 
 
+        public GitBasedSyncGroupManager(IRepositoryPathProvider pathProvider) : base(pathProvider)
+        {            
+        }
+
+
+        //TODO: Move to base class
         public void AddSyncGroup(string name)
         {
             if (SyncGroups.Contains(name, StringComparer.CurrentCultureIgnoreCase))
@@ -91,11 +69,6 @@ namespace SyncTool.Configuration.Git
             DirectoryHelper.DeleteRecursively(directoryPath);      
         }
       
-
-        public void Dispose()
-        {            
-        }
-
 
 
 

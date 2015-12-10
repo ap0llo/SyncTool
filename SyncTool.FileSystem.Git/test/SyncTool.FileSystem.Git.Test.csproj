@@ -56,6 +56,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GitBasedGroupManagerTest.cs" />
+    <Compile Include="GitBasedGroupTest.cs" />
+    <Compile Include="SingleDirectoryRepositoryPathProviderTest.cs" />
     <Compile Include="Util\RepositoryCloneTest.cs" />
     <Compile Include="Util\RepositoryInfoTest.cs" />
     <Compile Include="FileSystem\GitDirectoryTest.cs" />

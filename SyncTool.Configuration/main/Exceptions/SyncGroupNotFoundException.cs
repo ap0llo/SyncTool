@@ -10,7 +10,13 @@ namespace SyncTool.Configuration
     [Serializable]
     public class SyncGroupNotFoundException : ConfigurationException
     {
-        public SyncGroupNotFoundException(string name) : base($"The SyncGroup '{name}' could not be found")
+
+        public SyncGroupNotFoundException(string name) : this(name, null)
+        {
+            
+        } 
+
+        public SyncGroupNotFoundException(string name, Exception innerException) : base($"The SyncGroup '{name}' could not be found", innerException)
         {
         }
     }
