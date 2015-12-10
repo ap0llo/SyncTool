@@ -17,5 +17,7 @@ namespace SyncTool.Common
     public interface IGroup<T> : IGroup
     {        
         IEnumerable<T> Items { get; }
+
+        T GetItem(string name);
     }
 }

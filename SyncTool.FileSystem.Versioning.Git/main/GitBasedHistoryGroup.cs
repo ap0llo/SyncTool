@@ -45,7 +45,7 @@ namespace SyncTool.FileSystem.Versioning.Git
             m_Repository.CreateBranch(branchName, parentCommit);            
         }
 
-        public IFileSystemHistory GetHistory(string name)
+        public IFileSystemHistory GetItem(string name)
         {
             var branchName = s_BranchPrefix + name;
             var branch = m_Repository.GetLocalBranches().FirstOrDefault(b => b.FriendlyName.Equals(branchName, StringComparison.InvariantCultureIgnoreCase));

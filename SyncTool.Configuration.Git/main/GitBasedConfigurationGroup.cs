@@ -52,7 +52,7 @@ namespace SyncTool.Configuration.Git
             }
         }
 
-        public SyncFolder this[string name] => Items.Single(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+        public SyncFolder GetItem(string name) => Items.Single(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
 
       
 

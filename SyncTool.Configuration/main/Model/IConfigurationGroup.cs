@@ -11,7 +11,6 @@ namespace SyncTool.Configuration.Model
 {
     public interface IConfigurationGroup : IGroup<SyncFolder>, IDisposable
     {        
-        SyncFolder this[string name] { get; }
 
         void AddSyncFolder(SyncFolder folder);                
 

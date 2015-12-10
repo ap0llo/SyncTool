@@ -100,9 +100,9 @@ namespace SyncTool
                     using (var group = m_ConfigurationGroupManager.GetGroup(opts.Group))
                     using (var historyRepository = m_HistoryGroupManager.GetGroup(opts.Group))
                     {
-                        PrintSyncFolder(group[opts.Folder], " ");
+                        PrintSyncFolder(group.GetItem(opts.Folder), " ");
 
-                        var history = historyRepository.GetHistory(opts.Folder);                           
+                        var history = historyRepository.GetItem(opts.Folder);                           
                         PrintHistory(history, " \t");
 
                     }
@@ -113,8 +113,8 @@ namespace SyncTool
                     using (var group = m_ConfigurationGroupManager.GetGroup(opts.Group))
                     using (var historyRepository = m_HistoryGroupManager.GetGroup(opts.Group))
                     {
-                        var folder = group[opts.Folder];
-                        var history = historyRepository.GetHistory(opts.Folder);                                                                      
+                        var folder = group.GetItem(opts.Folder);
+                        var history = historyRepository.GetItem(opts.Folder);                                                                      
 
                         var state = new LocalDirectory(null, folder.Path);
 
