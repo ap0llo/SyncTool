@@ -15,13 +15,13 @@ using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool
 {
-    class Program
+    class Program : IDisposable
     {
         static int Main(string[] args)
         {
-            using (var kernel = new StandardKernel(new GitConfigurationModule()))
+            var kernel = new StandardKernel(new GitConfigurationModule());
+            using (var program = kernel.Get<Program>())
             {
-                var program = kernel.Get<Program>();
                 return program.Run(args);
             }
         }
@@ -55,15 +55,18 @@ namespace SyncTool
             return result.MapResult(
                 (GetSyncGroupOptions opts) =>
                 {
-                    var groups = String.IsNullOrEmpty(opts.Name)
+                    var groupNames = String.IsNullOrEmpty(opts.Name)
                         ? m_GroupManager.SyncGroups
-                        : m_GroupManager.SyncGroups.Where(g => g.Name.Equals(opts.Name, StringComparison.InvariantCultureIgnoreCase));
+                        : m_GroupManager.SyncGroups.Where(g => g.Equals(opts.Name, StringComparison.InvariantCultureIgnoreCase));
 
                     Console.WriteLine();
-                    foreach (var group in groups)
-                    {                        
-                        PrintSyncGroup(group, " ");
-                        Console.WriteLine();
+                    foreach (var group in groupNames.Select(m_GroupManager.GetSyncGroup))
+                    {
+                        using (group)
+                        {
+                            PrintSyncGroup(group, " ");
+                            Console.WriteLine();                            
+                        }
                     }
 
                     return 0;
@@ -75,8 +78,10 @@ namespace SyncTool
                 },
                 (AddSyncFolderOptions opts) =>
                 {
-                    var syncGroup = m_GroupManager[opts.Group];
-                    syncGroup.AddSyncFolder(new SyncFolder() { Name = opts.Name, Path = opts.Path});
+                    using (var syncGroup = m_GroupManager.GetSyncGroup(opts.Group))
+                    {
+                        syncGroup.AddSyncFolder(new SyncFolder() { Name = opts.Name, Path = opts.Path });
+                    }
                     return 0;
                 },
                 (GetSnapshotOptions opts) =>
@@ -167,5 +172,9 @@ namespace SyncTool
 
 
 
+        public void Dispose()
+        {
+            m_GroupManager.Dispose();
+        }
     }
 }

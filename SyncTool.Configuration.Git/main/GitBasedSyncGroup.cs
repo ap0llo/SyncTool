@@ -17,15 +17,14 @@ using NativeFile = System.IO.File;
 
 namespace SyncTool.Configuration.Git
 {
-    public sealed class GitBasedSyncGroup : ISyncGroup, IDisposable
+    public sealed class GitBasedSyncGroup : ISyncGroup
     {
         const string s_SyncFolders = "SyncFolders";
         const string s_Json = "json";
 
         readonly Repository m_Repository;
         readonly ISyncFolderReader m_SyncFolderReader = new JsonSyncFolderReader();
-        
-
+                
 
 
         public string Name

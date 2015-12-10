@@ -3,18 +3,18 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 
 namespace SyncTool.Configuration.Model
 {
-    public interface ISyncGroup
+    public interface ISyncGroup : IDisposable
     {
         string Name { get; } 
 
         IEnumerable<SyncFolder> Folders { get; }
 
         SyncFolder this[string name] { get; }
-
 
         void AddSyncFolder(SyncFolder folder);                
 

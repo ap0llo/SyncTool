@@ -3,15 +3,16 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 
 namespace SyncTool.Configuration.Model
 {
-    public interface ISyncGroupManager
+    public interface ISyncGroupManager : IDisposable
     {
-        IEnumerable<ISyncGroup> SyncGroups { get; }
+        IEnumerable<string> SyncGroups { get; }
 
-        ISyncGroup this[string name] { get; }
+        ISyncGroup GetSyncGroup(string name);
 
         ISyncGroup AddSyncGroup(string name);
 

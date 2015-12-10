@@ -57,26 +57,27 @@ namespace SyncTool.Configuration.Git
         }
 
 
-        [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ": Indexer throws SyncGroupNotFoundException")]
-        public void Indexer_throws_SyncGroupNotFoundException()
+        [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ".GetSyncGroup() throws SyncGroupNotFoundException")]
+        public void GetSyncGroup_throws_SyncGroupNotFoundException()
         {
             using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
             {
                 groupManager.AddSyncGroup("group1");
-
-                Assert.Throws<SyncGroupNotFoundException>(() => groupManager["someName"]);
+                Assert.Throws<SyncGroupNotFoundException>(() => groupManager.GetSyncGroup("someName"));
             }
         }
 
-        [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ": Indexer returns expected SyncGroup")]
-        public void Indexer_returns_expected_SyncGroup()
+        [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ".GetSyncGroup() returns SyncGroup instance")]
+        public void GetSyncGroup_returns_expected_SyncGroup()
         {
             using (var groupManager = new GitBasedSyncGroupManager(m_TempDirectory.Location))
             {
-                var expected = groupManager.AddSyncGroup("group1");
-                var actual = groupManager["grOUp1"];
-
-                Assert.Equal(expected, actual);
+                using (var expected = groupManager.AddSyncGroup("group1"))
+                using (var actual = groupManager.GetSyncGroup("grOUp1"))
+                {
+                    Assert.NotNull(actual);
+                    Assert.Equal(expected.Name, actual.Name);                    
+                }                                
             }
         }
 
@@ -92,7 +93,7 @@ namespace SyncTool.Configuration.Git
                 groupManager.AddSyncGroup(groupName);
 
                 Assert.Single(groupManager.SyncGroups);
-                Assert.Contains(groupName, groupManager.SyncGroups.Select(x => x.Name));
+                Assert.Contains(groupName, groupManager.SyncGroups);
                 Assert.True(Directory.Exists(Path.Combine(m_TempDirectory.Location, groupName)));
             }
 

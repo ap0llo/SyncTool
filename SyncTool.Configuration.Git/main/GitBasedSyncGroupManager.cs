@@ -16,33 +16,44 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Configuration.Git
 {
-    public sealed class GitBasedSyncGroupManager : ISyncGroupManager, IDisposable
+    public sealed class GitBasedSyncGroupManager : ISyncGroupManager
     {
-        readonly CachingObjectMapper<string, GitBasedSyncGroup> m_Mapper;
+        
         readonly string m_HomeDirectory;
 
 
-        public IEnumerable<ISyncGroup> SyncGroups
+        public IEnumerable<string> SyncGroups
         {
             get
             {
                 var directories = GetRepositoryDirectories();
-                m_Mapper.CleanCache(directories);
-                return directories.Select(m_Mapper.MapObject).ToList();
+                foreach (var dir in directories)
+                {                    
+                    using (var group = new GitBasedSyncGroup(dir))
+                    {
+                        yield return group.Name; 
+                    }
+                }                
             }
         }
 
-        public ISyncGroup this[string name]
+        public ISyncGroup GetSyncGroup(string name)
         {
-            get
+            var directories = GetRepositoryDirectories();
+            foreach (var dir in directories)
             {
-                var result = this.SyncGroups.FirstOrDefault(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                if (result == null)
+                var group = new GitBasedSyncGroup(dir);
+                if (group.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    throw new SyncGroupNotFoundException(name);
+                    return group;
                 }
-                return result;
+                else
+                {
+                    group.Dispose();
+                }
             }
+
+            throw new SyncGroupNotFoundException(name);            
         }
 
 
@@ -65,14 +76,13 @@ namespace SyncTool.Configuration.Git
             }
 
             m_HomeDirectory = homeDirectory;                        
-            m_Mapper = new CachingObjectMapper<string, GitBasedSyncGroup>((string path) => new GitBasedSyncGroup(path), StringComparer.InvariantCultureIgnoreCase);
-
+            
         }
 
 
         public ISyncGroup AddSyncGroup(string name)
         {
-            if (SyncGroups.Select(x => x.Name).Contains(name, StringComparer.CurrentCultureIgnoreCase))
+            if (SyncGroups.Contains(name, StringComparer.CurrentCultureIgnoreCase))
             {
                 throw new DuplicateSyncGroupException(name);
             }
@@ -87,29 +97,23 @@ namespace SyncTool.Configuration.Git
             NativeDirectory.CreateDirectory(directoryPath);
             RepositoryInitHelper.InitializeRepository(directoryPath, name);
 
-            return m_Mapper.MapObject(directoryPath);
+            return new GitBasedSyncGroup(directoryPath);
         }
 
         public void RemoveSyncGroup(string name)
         {
-            if (SyncGroups.Select(x => x.Name).Contains(name, StringComparer.InvariantCultureIgnoreCase) == false)
+            if (SyncGroups.Contains(name, StringComparer.InvariantCultureIgnoreCase) == false)
             {
                 throw new SyncGroupNotFoundException(name);
             }
             
-            var directoryPath = Path.Combine(m_HomeDirectory, name);
-            
-            // dispose group, so we can delete the directory
-            m_Mapper.MapObject(directoryPath).Dispose();
-
-            DirectoryHelper.DeleteRecursively(directoryPath);            
-            m_Mapper.CleanCache(GetRepositoryDirectories(), false);
+            var directoryPath = Path.Combine(m_HomeDirectory, name);            
+            DirectoryHelper.DeleteRecursively(directoryPath);      
         }
       
 
         public void Dispose()
-        {
-            m_Mapper.Dispose();
+        {            
         }
 
 
