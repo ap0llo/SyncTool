@@ -13,7 +13,7 @@ namespace SyncTool.FileSystem.Versioning.Git.DI
         public override void Load()
         {
 
-            Bind<IGroupManager<IHistoryGroup>>().To<GitBasedHistoryRepositoryManager>();
+            Bind<IGroupManager<IHistoryGroup>>().To<GitBasedHistoryGroupManager>();
         }
     }
 }

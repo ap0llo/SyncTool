@@ -12,5 +12,9 @@ namespace SyncTool.Common
         IEnumerable<string> Groups { get; }
 
         T GetGroup(string name);
+
+        void AddGroup(string name);
+
+        void RemoveGroup(string name);
     }
 }

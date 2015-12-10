@@ -30,11 +30,11 @@ namespace SyncTool
         }
 
 
-        readonly IConfigurationGroupManager m_ConfigurationGroupManager;
+        readonly IGroupManager<IConfigurationGroup> m_ConfigurationGroupManager;
         readonly IGroupManager<IHistoryGroup> m_HistoryGroupManager;
 
 
-        public Program(IConfigurationGroupManager configurationGroupManager, IGroupManager<IHistoryGroup> historyGroupManager)
+        public Program(IGroupManager<IConfigurationGroup> configurationGroupManager, IGroupManager<IHistoryGroup> historyGroupManager)
         {
             if (configurationGroupManager == null)
             {
@@ -82,7 +82,7 @@ namespace SyncTool
                 },
                 (AddSyncGroupOptions opts) =>
                 {
-                    m_ConfigurationGroupManager.AddSyncGroup(opts.Name);                                        
+                    m_ConfigurationGroupManager.AddGroup(opts.Name);                                        
                     return 0;                                            
                 },
                 (AddSyncFolderOptions opts) =>

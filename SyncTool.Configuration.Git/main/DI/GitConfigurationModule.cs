@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using Ninject.Modules;
+using SyncTool.Common;
 using SyncTool.Configuration.Model;
 
 namespace SyncTool.Configuration.Git.DI
@@ -12,7 +13,7 @@ namespace SyncTool.Configuration.Git.DI
     {
         public override void Load()
         {
-            this.Bind<IConfigurationGroupManager>().To<GitBasedConfigurationGroupManager>().InSingletonScope();
+            this.Bind<IGroupManager<IConfigurationGroup>>().To<GitBasedConfigurationGroupManager>().InSingletonScope();
         }
     }
 }

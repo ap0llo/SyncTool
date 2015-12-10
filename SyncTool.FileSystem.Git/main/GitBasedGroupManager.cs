@@ -5,7 +5,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
 using SyncTool.Common;
+using SyncTool.Common.Utilities;
+using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.FileSystem.Git
 {
@@ -30,7 +34,7 @@ namespace SyncTool.FileSystem.Git
 
         
        
-        public GitBasedGroupManager(IRepositoryPathProvider pathProvider)
+        protected GitBasedGroupManager(IRepositoryPathProvider pathProvider)
         {
             if (pathProvider == null)
             {
@@ -43,6 +47,35 @@ namespace SyncTool.FileSystem.Git
 
         public abstract T GetGroup(string name);
 
+        public void AddGroup(string name)
+        {
+            if (Groups.Contains(name, StringComparer.CurrentCultureIgnoreCase))
+            {
+                throw new DuplicateGroupException(name);
+            }
+
+            var directoryPath = m_PathProvider.GetRepositoryPath(name);
+
+            if (NativeDirectory.Exists(directoryPath))
+            {
+                throw new GroupManagerException($"Cannot create repository for SyncGroup '{name}'. Directory already exists");
+            }
+
+            NativeDirectory.CreateDirectory(directoryPath);
+            RepositoryInitHelper.InitializeRepository(directoryPath, name);
+        }
+
+
+        public void RemoveGroup(string name)
+        {
+            if (Groups.Contains(name, StringComparer.InvariantCultureIgnoreCase) == false)
+            {
+                throw new GroupNotFoundException(name);
+            }
+
+            var directoryPath = m_PathProvider.GetRepositoryPath(name);
+            DirectoryHelper.DeleteRecursively(directoryPath);
+        }
 
         protected string GetRepositoryPath(string name)
         {

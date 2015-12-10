@@ -5,18 +5,13 @@
 
 using System;
 
-namespace SyncTool.Configuration
+namespace SyncTool.Common
 {
+    //TODO: Rename and move to different package
     [Serializable]
-    public class SyncGroupNotFoundException : ConfigurationException
+    public class DuplicateGroupException : GroupManagerException
     {
-
-        public SyncGroupNotFoundException(string name) : this(name, null)
-        {
-            
-        } 
-
-        public SyncGroupNotFoundException(string name, Exception innerException) : base($"The SyncGroup '{name}' could not be found", innerException)
+        public DuplicateGroupException(string name) : base($"A SyncGroup called '{name}' already exists")
         {
         }
     }

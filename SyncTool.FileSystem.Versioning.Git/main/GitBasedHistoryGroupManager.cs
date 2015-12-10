@@ -9,13 +9,13 @@ using SyncTool.FileSystem.Git;
 
 namespace SyncTool.FileSystem.Versioning.Git
 {
-    public class GitBasedHistoryRepositoryManager : GitBasedGroupManager<IHistoryGroup>
+    public class GitBasedHistoryGroupManager : GitBasedGroupManager<IHistoryGroup>
     {
         [Obsolete]
         public IEnumerable<string> HistoryRepositories => Groups;
         
 
-        public GitBasedHistoryRepositoryManager(IRepositoryPathProvider pathProvider) : base(pathProvider)
+        public GitBasedHistoryGroupManager(IRepositoryPathProvider pathProvider) : base(pathProvider)
         {
            
         }

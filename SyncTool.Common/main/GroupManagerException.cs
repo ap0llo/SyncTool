@@ -5,14 +5,19 @@
 
 using System;
 
-namespace SyncTool.Configuration
+namespace SyncTool.Common
 {
-    //TODO: Rename and move to different package
-    [Serializable]
-    public class DuplicateSyncGroupException : ConfigurationException
+    public class GroupManagerException : Exception
     {
-        public DuplicateSyncGroupException(string name) : base($"A SyncGroup called '{name}' already exists")
+        public GroupManagerException(string message, Exception innerException) : base(message, innerException)
         {
+
+        }
+
+
+        public GroupManagerException(string message) : base(message)
+        {
+
         }
     }
 }

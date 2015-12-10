@@ -14,66 +14,16 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Configuration.Git
 {
-    public sealed class GitBasedConfigurationGroupManager : GitBasedGroupManager<IConfigurationGroup>, IConfigurationGroupManager
+    public sealed class GitBasedConfigurationGroupManager : GitBasedGroupManager<IConfigurationGroup>
     {
         
-
-        public IEnumerable<string> SyncGroups => Groups;
-        
-
-
-
-
         public GitBasedConfigurationGroupManager(IRepositoryPathProvider pathProvider) : base(pathProvider)
         {            
         }
 
 
-        //TODO: Move to base class
-        public void AddSyncGroup(string name)
-        {
-            if (SyncGroups.Contains(name, StringComparer.CurrentCultureIgnoreCase))
-            {
-                throw new DuplicateSyncGroupException(name);
-            }
 
-            var directoryPath = m_PathProvider.GetRepositoryPath(name);
-
-            if (NativeDirectory.Exists(directoryPath))
-            {
-                throw new ConfigurationException($"Cannot create repository for SyncGroup '{name}'. Directory already exists");
-            }
-
-            NativeDirectory.CreateDirectory(directoryPath);
-            RepositoryInitHelper.InitializeRepository(directoryPath, name);            
-        }
-
-        public void RemoveSyncGroup(string name)
-        {
-            if (SyncGroups.Contains(name, StringComparer.InvariantCultureIgnoreCase) == false)
-            {
-                throw new SyncGroupNotFoundException(name);
-            }
-
-            var directoryPath = m_PathProvider.GetRepositoryPath(name);         
-            DirectoryHelper.DeleteRecursively(directoryPath);      
-        }
-
-        [Obsolete]
-        public IConfigurationGroup GetSyncGroup(string name) => GetGroup(name);
-
-        public override IConfigurationGroup GetGroup(string name)
-        {
-            try
-            {
-                return new GitBasedConfigurationGroup(GetRepositoryPath(name));
-            }
-            catch (GroupNotFoundException ex)
-            {
-                throw new SyncGroupNotFoundException(name, ex);
-            }
-        }
-
+        public override IConfigurationGroup GetGroup(string name) => new GitBasedConfigurationGroup(GetRepositoryPath(name));
 
     }
 }

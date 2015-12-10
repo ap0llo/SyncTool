@@ -24,6 +24,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DuplicateGroupException.cs" />
+    <Compile Include="GroupManagerException.cs" />
     <Compile Include="IGroup.cs" />
     <Compile Include="IGroupManager.cs" />
     <Compile Include="Utilities\CachingObjectMapper.cs" />
