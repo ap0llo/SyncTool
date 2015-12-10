@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SyncTool.Utilities;
+using SyncTool.Common.Utilities;
 
 namespace SyncTool.FileSystem.Local
 {

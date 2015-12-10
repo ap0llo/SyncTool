@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SyncTool.Utilities
+namespace SyncTool.Common
 {
     public static class StringExtensions
     {

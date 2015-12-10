@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SyncTool.Utilities
+namespace SyncTool.Common.Utilities
 {
     public sealed class CachingObjectMapper<TSource, TTarget> : IObjectMapper<TSource, TTarget>, IDisposable
     {

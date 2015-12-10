@@ -6,9 +6,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using SyncTool.Common;
 using SyncTool.Configuration.Model;
 using SyncTool.Configuration.Reader;
-using SyncTool.Utilities;
 using Xunit;
 
 namespace SyncTool.Configuration.Test

@@ -2,11 +2,12 @@
 //  Copyright (c) 2015, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace SyncTool.Utilities
+namespace SyncTool.Common.Utilities
 {
 
 	public class ReversibleDictionary<TKey, TValue> : IReversibleDictionary<TKey, TValue>

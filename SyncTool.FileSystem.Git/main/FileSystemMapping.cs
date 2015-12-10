@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SyncTool.Utilities;
+using SyncTool.Common.Utilities;
 
 namespace SyncTool.FileSystem.Git
 {

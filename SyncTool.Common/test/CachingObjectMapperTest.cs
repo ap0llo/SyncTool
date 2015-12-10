@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using SyncTool.Common.Utilities;
 using Xunit;
 
 namespace SyncTool.Utilities

@@ -5,7 +5,7 @@
 
 using System.IO;
 
-namespace SyncTool.Utilities
+namespace SyncTool.Common.Utilities
 {
     public class DirectoryHelper
     {

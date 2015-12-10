@@ -5,11 +5,13 @@
 
 using System.Collections.Generic;
 
-namespace SyncTool.Utilities
+namespace SyncTool.Common.Utilities
 {
-    public interface IObjectMapper<TSource, TTarget>
+    public interface IReversibleDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        TTarget MapObject(TSource item);
-      
+        /// <summary>
+        ///     Gets the reversed dictionary that contains the same items but with key and value swapped
+        /// </summary>
+        IReversibleDictionary<TValue, TKey> ReversedDictionary { get; }
     }
 }

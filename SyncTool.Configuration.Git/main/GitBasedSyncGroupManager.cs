@@ -6,10 +6,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SyncTool.Common.Utilities;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Git;
-using SyncTool.Utilities;
 using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Configuration.Git
