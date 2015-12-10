@@ -5,10 +5,11 @@
 
 using System;
 using System.Collections.Generic;
+using SyncTool.Common;
 
 namespace SyncTool.FileSystem.Git
 {
-    public class GitBasedGroupManager
+    public abstract class GitBasedGroupManager<T> : IGroupManager<T>
     {
         protected readonly IRepositoryPathProvider m_PathProvider;
 
@@ -27,8 +28,8 @@ namespace SyncTool.FileSystem.Git
             }
         }
 
-
-
+        
+       
         public GitBasedGroupManager(IRepositoryPathProvider pathProvider)
         {
             if (pathProvider == null)
@@ -38,6 +39,9 @@ namespace SyncTool.FileSystem.Git
             m_PathProvider = pathProvider;
         }
 
+
+
+        public abstract T GetGroup(string name);
 
 
         protected string GetRepositoryPath(string name)

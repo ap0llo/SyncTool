@@ -33,6 +33,11 @@
       <Name>SyncTool.FileSystem.Versioning.Git</Name>	  
     </ProjectReference>
 	
+	<ProjectReference Include="$(MsBuildThisFileDirectory)\..\SyncTool.Common\main\SyncTool.Common.csproj">
+      <Project>{8495c561-6553-45f8-ba04-72486273ae47}</Project>
+      <Name>SyncTool.Common</Name>
+    </ProjectReference>
+	
   </ItemGroup>
 
 </Project>

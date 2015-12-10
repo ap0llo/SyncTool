@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using Ninject.Modules;
+using SyncTool.Common;
 
 namespace SyncTool.FileSystem.Versioning.Git.DI
 {
@@ -11,7 +12,8 @@ namespace SyncTool.FileSystem.Versioning.Git.DI
     {
         public override void Load()
         {
-            
+
+            Bind<IGroupManager<IHistoryRepository>>().To<GitBasedHistoryRepositoryManager>();
         }
     }
 }

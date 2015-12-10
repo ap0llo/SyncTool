@@ -24,6 +24,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IGroupManager.cs" />
     <Compile Include="Utilities\CachingObjectMapper.cs" />
     <Compile Include="Utilities\DirectoryHelper.cs" />
     <Compile Include="Utilities\IObjectMapper.cs" />

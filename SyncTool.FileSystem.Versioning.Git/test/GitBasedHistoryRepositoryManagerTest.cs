@@ -21,7 +21,7 @@ namespace SyncTool.FileSystem.Versioning.Git
         public void SyncGroups_is_empty_for_empty_home_directory()
         {
             var groupManager = new GitBasedHistoryRepositoryManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
-            Assert.Empty(groupManager.HistoryRepositories);
+            Assert.Empty(groupManager.Groups);
         }
 
         [Fact(DisplayName = nameof(GitBasedHistoryRepositoryManager) + ".HistoryRepositories: Non Git repositories are ignored")]
@@ -31,7 +31,7 @@ namespace SyncTool.FileSystem.Versioning.Git
             System.IO.Directory.CreateDirectory(Path.Combine(m_TempDirectory.Location, "dir2"));
 
             var groupManager = new GitBasedHistoryRepositoryManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
-            Assert.Empty(groupManager.HistoryRepositories);
+            Assert.Empty(groupManager.Groups);
         }
 
         [Fact(DisplayName = nameof(GitBasedHistoryRepositoryManager) + ".HistoryRepositories: Non Bare Repositories are ignored")]
@@ -43,7 +43,7 @@ namespace SyncTool.FileSystem.Versioning.Git
             Repository.Init((dirPath));
 
             var groupManager = new GitBasedHistoryRepositoryManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
-            Assert.Empty(groupManager.HistoryRepositories);
+            Assert.Empty(groupManager.Groups);
         }
 
 
@@ -51,7 +51,7 @@ namespace SyncTool.FileSystem.Versioning.Git
         public void GetSyncGroup_throws_SyncGroupNotFoundException()
         {
             var groupManager = new GitBasedHistoryRepositoryManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));            
-            Assert.Throws<HistoryRepositoryNotFoundException>(() => groupManager.GetHistoryRepository("someName"));
+            Assert.Throws<HistoryRepositoryNotFoundException>(() => groupManager.GetGroup("someName"));
         }
 
      

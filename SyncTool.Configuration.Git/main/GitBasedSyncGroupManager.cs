@@ -14,24 +14,14 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Configuration.Git
 {
-    public sealed class GitBasedSyncGroupManager : GitBasedGroupManager, ISyncGroupManager
+    public sealed class GitBasedSyncGroupManager : GitBasedGroupManager<ISyncGroup>, ISyncGroupManager
     {
         
 
         public IEnumerable<string> SyncGroups => Groups;
         
 
-        public ISyncGroup GetSyncGroup(string name)
-        {
-            try
-            {
-                return new GitBasedSyncGroup(GetRepositoryPath(name));
-            }
-            catch (GroupNotFoundException ex)
-            {                
-                throw new SyncGroupNotFoundException(name, ex);
-            }
-        }
+
 
 
         public GitBasedSyncGroupManager(IRepositoryPathProvider pathProvider) : base(pathProvider)
@@ -68,10 +58,21 @@ namespace SyncTool.Configuration.Git
             var directoryPath = m_PathProvider.GetRepositoryPath(name);         
             DirectoryHelper.DeleteRecursively(directoryPath);      
         }
-      
 
+        [Obsolete]
+        public ISyncGroup GetSyncGroup(string name) => GetGroup(name);
 
-
+        public override ISyncGroup GetGroup(string name)
+        {
+            try
+            {
+                return new GitBasedSyncGroup(GetRepositoryPath(name));
+            }
+            catch (GroupNotFoundException ex)
+            {
+                throw new SyncGroupNotFoundException(name, ex);
+            }
+        }
 
 
     }

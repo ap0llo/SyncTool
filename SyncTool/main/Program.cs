@@ -8,6 +8,7 @@ using System.Linq;
 using CommandLine;
 using Ninject;
 using SyncTool.Cli;
+using SyncTool.Common;
 using SyncTool.Configuration.Git.DI;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem.Git.DI;
@@ -30,10 +31,10 @@ namespace SyncTool
 
 
         readonly ISyncGroupManager m_GroupManager;
-        readonly IHistoryRepositoryManager m_HistoryRepositoryManager;
+        readonly IGroupManager<IHistoryRepository> m_HistoryRepositoryManager;
 
 
-        public Program(ISyncGroupManager groupManager, IHistoryRepositoryManager historyRepositoryManager)
+        public Program(ISyncGroupManager groupManager, IGroupManager<IHistoryRepository> historyRepositoryManager)
         {
             if (groupManager == null)
             {
@@ -64,11 +65,11 @@ namespace SyncTool
                 (GetSyncGroupOptions opts) =>
                 {
                     var groupNames = String.IsNullOrEmpty(opts.Name)
-                        ? m_GroupManager.SyncGroups
-                        : m_GroupManager.SyncGroups.Where(g => g.Equals(opts.Name, StringComparison.InvariantCultureIgnoreCase));
+                        ? m_GroupManager.Groups
+                        : m_GroupManager.Groups.Where(g => g.Equals(opts.Name, StringComparison.InvariantCultureIgnoreCase));
 
                     Console.WriteLine();
-                    foreach (var group in groupNames.Select(m_GroupManager.GetSyncGroup))
+                    foreach (var group in groupNames.Select(m_GroupManager.GetGroup))
                     {
                         using (group)
                         {
@@ -86,8 +87,8 @@ namespace SyncTool
                 },
                 (AddSyncFolderOptions opts) =>
                 {
-                    using (var syncGroup = m_GroupManager.GetSyncGroup(opts.Group))
-                    using (var historyRepository = m_HistoryRepositoryManager.GetHistoryRepository(opts.Group))
+                    using (var syncGroup = m_GroupManager.GetGroup(opts.Group))
+                    using (var historyRepository = m_HistoryRepositoryManager.GetGroup(opts.Group))
                     {
                         syncGroup.AddSyncFolder(new SyncFolder() { Name = opts.Name, Path = opts.Path });
                         historyRepository.CreateHistory(opts.Name);
@@ -96,8 +97,8 @@ namespace SyncTool
                 },
                 (GetSnapshotOptions opts) =>
                 {
-                    using (var group = m_GroupManager.GetSyncGroup(opts.Group))
-                    using (var historyRepository = m_HistoryRepositoryManager.GetHistoryRepository(opts.Group))
+                    using (var group = m_GroupManager.GetGroup(opts.Group))
+                    using (var historyRepository = m_HistoryRepositoryManager.GetGroup(opts.Group))
                     {
                         PrintSyncFolder(group[opts.Folder], " ");
 
@@ -109,8 +110,8 @@ namespace SyncTool
                 },
                 (AddSnapshotOptions opts) =>
                 {
-                    using (var group = m_GroupManager.GetSyncGroup(opts.Group))
-                    using (var historyRepository = m_HistoryRepositoryManager.GetHistoryRepository(opts.Group))
+                    using (var group = m_GroupManager.GetGroup(opts.Group))
+                    using (var historyRepository = m_HistoryRepositoryManager.GetGroup(opts.Group))
                     {
                         var folder = group[opts.Folder];
                         var history = historyRepository.GetHistory(opts.Folder);                                                                      

@@ -51,7 +51,7 @@ namespace SyncTool.Configuration.Git
         {
             var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
             groupManager.AddSyncGroup("group1");
-            Assert.Throws<SyncGroupNotFoundException>(() => groupManager.GetSyncGroup("someName"));
+            Assert.Throws<SyncGroupNotFoundException>(() => groupManager.GetGroup("someName"));
         }
 
         [Fact(DisplayName = nameof(GitBasedSyncGroupManager) + ".GetSyncGroup() returns SyncGroup instance")]
@@ -60,7 +60,7 @@ namespace SyncTool.Configuration.Git
             var groupManager = new GitBasedSyncGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));
             groupManager.AddSyncGroup("group1");
 
-            using (var actual = groupManager.GetSyncGroup("grOUp1"))
+            using (var actual = groupManager.GetGroup("grOUp1"))
             {
                 Assert.NotNull(actual);
                 Assert.Equal("group1", actual.Name);
