@@ -11,18 +11,12 @@ namespace SyncTool.FileSystem.Versioning.Git
 {
     public class GitBasedHistoryGroupManager : GitBasedGroupManager<IHistoryGroup>
     {
-        [Obsolete]
-        public IEnumerable<string> HistoryRepositories => Groups;
         
 
         public GitBasedHistoryGroupManager(IRepositoryPathProvider pathProvider) : base(pathProvider)
         {
            
         }
-
-
-        [Obsolete]
-        public IHistoryGroup GetHistoryRepository(string name) => GetGroup(name);
  
 
         public override IHistoryGroup GetGroup(string name)
