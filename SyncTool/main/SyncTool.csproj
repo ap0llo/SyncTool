@@ -7,7 +7,7 @@
     <ProjectGuid>{7BA544F9-AE57-4D3B-8DCD-74BBFAC64AE8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool</RootNamespace>
+    <RootNamespace>SyncTool.Cli</RootNamespace>
     <AssemblyName>SyncTool</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
@@ -29,11 +29,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cli\AddSnapshotOptions.cs" />
-    <Compile Include="Cli\AddSyncFolderOptions.cs" />
-    <Compile Include="Cli\AddSyncGroupOptions.cs" />
-    <Compile Include="Cli\GetSnapshotOptions.cs" />
-    <Compile Include="Cli\GetSyncGroupOptions.cs" />
+    <Compile Include="Commands\AddFolderCommand.cs" />
+    <Compile Include="Commands\AddGroupCommand.cs" />
+    <Compile Include="Commands\AddSnapshotCommand.cs" />
+    <Compile Include="Commands\GetGroupCommand.cs" />
+    <Compile Include="Commands\GetSnapshotCommand.cs" />
+    <Compile Include="DI\CliModule.cs" />
+    <Compile Include="Framework\AbstractCommandLoader.cs" />
+    <Compile Include="Framework\Application.cs" />
+    <Compile Include="Framework\CommandDescription.cs" />
+    <Compile Include="Framework\CurrentAssemblyCommandLoader.cs" />
+    <Compile Include="Framework\ICommand.cs" />
+    <Compile Include="Framework\ICommandFactory.cs" />
+    <Compile Include="Framework\ICommandLoader.cs" />
+    <Compile Include="DI\NinjectCommandFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -43,6 +52,6 @@
     </None>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>  
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
