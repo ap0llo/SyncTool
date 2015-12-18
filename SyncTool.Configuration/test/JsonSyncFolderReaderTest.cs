@@ -35,7 +35,7 @@ namespace SyncTool.Configuration.Test
                             {   
                                 ""name"" : ""foo2"", 
                                 ""path"" : ""bar2"",                                 
-                                ""readFilter"" : { ""type"" : ""microscopeQuery"" , ""query"" : ""test"" }
+                                ""filter"" : { ""type"" : ""microscopeQuery"" , ""query"" : ""test"" }
                             }                
                         ";
 
@@ -55,13 +55,13 @@ namespace SyncTool.Configuration.Test
 
             Assert.Equal("foo", syncFolder1.Name);
             Assert.Equal("bar", syncFolder1.Path);
-            Assert.Null(syncFolder1.ReadFilter);
+            Assert.Null(syncFolder1.Filter);
 
             Assert.Equal("foo2", syncFolder2.Name);
             Assert.Equal("bar2", syncFolder2.Path);
-            Assert.NotNull(syncFolder2.ReadFilter);
-            Assert.Equal(FileSystemFilterType.MicroscopeQuery, syncFolder2.ReadFilter.Type);
-            Assert.Equal("test", syncFolder2.ReadFilter.Query);
+            Assert.NotNull(syncFolder2.Filter);
+            Assert.Equal(FileSystemFilterType.MicroscopeQuery, syncFolder2.Filter.Type);
+            Assert.Equal("test", syncFolder2.Filter.Query);
 
         }
 

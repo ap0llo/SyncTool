@@ -10,6 +10,7 @@ using SyncTool.Cli;
 using SyncTool.Cli.Framework;
 using SyncTool.Common;
 using SyncTool.Configuration.Model;
+using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Cli.Commands
@@ -17,7 +18,7 @@ namespace SyncTool.Cli.Commands
     [Verb("Get-Group")]
     public class GetGroupOptions
     {
-        [Option(Required = false)]
+        [Option('n', "name", Required = false)]
         public string Name { get; set; }
     }
 
@@ -79,6 +80,11 @@ namespace SyncTool.Cli.Commands
         void PrintSyncFolder(SyncFolder folder, string prefix = "")
         {
             Console.WriteLine($"{prefix}{folder.Name} --> {folder.Path}");
+            if (folder.Filter != null)
+            {
+                Console.WriteLine($"{prefix}Filter:");
+                Console.WriteLine($"{prefix}\t{folder.Filter.Query}");
+            }
         }
     }
 

@@ -17,10 +17,10 @@ namespace SyncTool.Cli.Commands
     public class AddSnapshotOptions
     {
 
-        [Option(Required = true)]
+        [Option('g', "group", Required = true)]
         public string Group { get; set; }
 
-        [Option(Required = true)]
+        [Option('f', "folder", Required = true)]
         public string Folder { get; set; }
 
     }

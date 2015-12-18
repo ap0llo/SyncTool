@@ -15,7 +15,7 @@ namespace SyncTool.Configuration.Model
       
         public string Path { get; set; }
 
-        public FileSystemFilterConfiguration ReadFilter { get; set; }
+        public FileSystemFilterConfiguration Filter { get; set; }
 
 
         public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(this.Name);
@@ -32,7 +32,7 @@ namespace SyncTool.Configuration.Model
             var comparer = StringComparer.InvariantCultureIgnoreCase;
 
             return comparer.Equals(this.Name, other.Name) && comparer.Equals(this.Path, other.Path) &&
-                   (Object.ReferenceEquals(this.ReadFilter, other.ReadFilter) || (this.ReadFilter != null && this.ReadFilter.Equals(other.ReadFilter)));
+                   (Object.ReferenceEquals(this.Filter, other.Filter) || (this.Filter != null && this.Filter.Equals(other.Filter)));
         }
     }
 }

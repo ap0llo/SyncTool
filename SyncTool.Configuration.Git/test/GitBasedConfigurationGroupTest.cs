@@ -41,7 +41,7 @@ namespace SyncTool.Configuration.Git
                 previousCommitCount = repo.GetAllCommits().Count();
             }
             
-            var syncFolder = new SyncFolder() { Name = "folder1", Path = "foo", ReadFilter = null };
+            var syncFolder = new SyncFolder() { Name = "folder1", Path = "foo", Filter = null };
 
             using (var group = new GitBasedConfigurationGroup(m_TempDirectory.Location))
             {
@@ -63,8 +63,8 @@ namespace SyncTool.Configuration.Git
         {
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");            
 
-            var syncFolder1 = new SyncFolder() { Name = "folder1", Path = "foo", ReadFilter = null };
-            var syncFolder2 = new SyncFolder() { Name = "folder1", Path = "bar", ReadFilter = null };
+            var syncFolder1 = new SyncFolder() { Name = "folder1", Path = "foo", Filter = null };
+            var syncFolder2 = new SyncFolder() { Name = "folder1", Path = "bar", Filter = null };
 
             using (var group = new GitBasedConfigurationGroup(m_TempDirectory.Location))
             {

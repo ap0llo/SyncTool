@@ -16,7 +16,7 @@ namespace SyncTool.Cli.Commands
     [Verb("Add-Group")]
     public class AddGroupOptions
     {
-        [Option(Required = true)]
+        [Option('n', "name", Required = true)]
         public string Name { get; set; }
     }
 
