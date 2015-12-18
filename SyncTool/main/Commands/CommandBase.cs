@@ -3,20 +3,25 @@
 // //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // // -----------------------------------------------------------------------------------------------------------
 
+using System;
 using Ninject;
-using Ninject.Modules;
-using SyncTool.Cli.Framework;
 using SyncTool.Cli.Output;
 
-namespace SyncTool.Cli.DI
+namespace SyncTool.Cli.Commands
 {
-    public class CliModule : NinjectModule
-    {
-        public override void Load()
+    public abstract class CommandBase
+    {        
+        public IOutputWriter OutputWriter { get; }
+
+
+        protected CommandBase(IOutputWriter outputWriter)
         {
-            Bind<ICommandFactory>().To<NinjectCommandFactory>().WithConstructorArgument(typeof(IKernel), this.Kernel);
-            Bind<ICommandLoader>().To<CurrentAssemblyCommandLoader>();
-            Bind<IOutputWriter>().To<ConsoleOutputWriter>();
+            if (outputWriter == null)
+            {
+                throw new ArgumentNullException(nameof(outputWriter));
+            }
+            this.OutputWriter = outputWriter;
         }
+
     }
 }

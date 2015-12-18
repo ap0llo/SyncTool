@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using CommandLine;
 using SyncTool.Cli.Framework;
+using SyncTool.Cli.Output;
 using SyncTool.Common;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem.Versioning;
@@ -25,13 +26,21 @@ namespace SyncTool.Cli.Commands
     }
 
 
-    public class GetSnapshotCommand : ICommand<GetSnapshotOptions>
+    public class GetSnapshotCommand : CommandBase, ICommand<GetSnapshotOptions>
     {
         readonly IGroupManager<IConfigurationGroup> m_ConfigurationGroupManager;
         readonly IGroupManager<IHistoryGroup> m_HistoryGroupManager;
 
-        public GetSnapshotCommand(IGroupManager<IHistoryGroup> historyGroupManager, IGroupManager<IConfigurationGroup> configurationGroupManager)
+        public GetSnapshotCommand(IOutputWriter outputWriter, IGroupManager<IHistoryGroup> historyGroupManager, IGroupManager<IConfigurationGroup> configurationGroupManager) : base(outputWriter)
         {
+            if (historyGroupManager == null)
+            {
+                throw new ArgumentNullException(nameof(historyGroupManager));
+            }
+            if (configurationGroupManager == null)
+            {
+                throw new ArgumentNullException(nameof(configurationGroupManager));
+            }
             m_HistoryGroupManager = historyGroupManager;
             m_ConfigurationGroupManager = configurationGroupManager;
         }
@@ -57,7 +66,7 @@ namespace SyncTool.Cli.Commands
 
         void PrintSyncFolder(SyncFolder folder, string prefix = "")
         {
-            Console.WriteLine($"{prefix}{folder.Name} --> {folder.Path}");
+            OutputWriter.WriteLine($"{prefix}{folder.Name} --> {folder.Path}");
         }
 
         void PrintHistory(IFileSystemHistory history, string prefix)
@@ -66,12 +75,12 @@ namespace SyncTool.Cli.Commands
             {
                 foreach (var snapshot in history.Snapshots)
                 {
-                    Console.WriteLine($"{prefix}\t{snapshot.CreationTime}\t{snapshot.Id}");
+                    OutputWriter.WriteLine($"{prefix}\t{snapshot.CreationTime}\t{snapshot.Id}");
                 }
             }
             else
             {
-                Console.WriteLine($"{prefix}No snapshots found");
+                OutputWriter.WriteLine($"{prefix}No snapshots found");
             }
 
         }

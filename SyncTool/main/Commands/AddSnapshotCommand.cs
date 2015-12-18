@@ -6,6 +6,7 @@
 using System;
 using CommandLine;
 using SyncTool.Cli.Framework;
+using SyncTool.Cli.Output;
 using SyncTool.Common;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem.Local;
@@ -25,12 +26,12 @@ namespace SyncTool.Cli.Commands
 
     }
 
-    public class AddSnapshotCommand : ICommand<AddSnapshotOptions>
+    public class AddSnapshotCommand : CommandBase, ICommand<AddSnapshotOptions>
     {
         readonly IGroupManager<IConfigurationGroup> m_ConfigurationGroupManager;
         readonly IGroupManager<IHistoryGroup> m_HistoryGroupManager;
 
-        public AddSnapshotCommand(IGroupManager<IConfigurationGroup> configurationGroupManager, IGroupManager<IHistoryGroup> historyGroupManager)
+        public AddSnapshotCommand(IOutputWriter outputWriter, IGroupManager<IConfigurationGroup> configurationGroupManager, IGroupManager<IHistoryGroup> historyGroupManager) : base(outputWriter)
         {
             if (configurationGroupManager == null)
             {

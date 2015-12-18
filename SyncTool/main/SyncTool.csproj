@@ -32,6 +32,7 @@
     <Compile Include="Commands\AddFolderCommand.cs" />
     <Compile Include="Commands\AddGroupCommand.cs" />
     <Compile Include="Commands\AddSnapshotCommand.cs" />
+    <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\GetGroupCommand.cs" />
     <Compile Include="Commands\GetSnapshotCommand.cs" />
     <Compile Include="DI\CliModule.cs" />
@@ -43,6 +44,8 @@
     <Compile Include="Framework\ICommandFactory.cs" />
     <Compile Include="Framework\ICommandLoader.cs" />
     <Compile Include="DI\NinjectCommandFactory.cs" />
+    <Compile Include="Output\ConsoleOutputWriter.cs" />
+    <Compile Include="Output\IOutputWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

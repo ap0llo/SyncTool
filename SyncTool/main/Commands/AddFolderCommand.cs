@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using CommandLine;
 using SyncTool.Cli.Framework;
+using SyncTool.Cli.Output;
 using SyncTool.Common;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem.Versioning;
@@ -34,13 +35,12 @@ namespace SyncTool.Cli.Commands
 
 
 
-    public class AddFolderCommand : ICommand<AddFolderOptions>
+    public class AddFolderCommand : CommandBase, ICommand<AddFolderOptions>
     {
         readonly IGroupManager<IConfigurationGroup> m_ConfigurationGroupManager;
-        readonly IGroupManager<IHistoryGroup> m_HistoryGroupManager;
+        readonly IGroupManager<IHistoryGroup> m_HistoryGroupManager;        
 
-
-        public AddFolderCommand(IGroupManager<IConfigurationGroup> configurationGroupManager, IGroupManager<IHistoryGroup> historyGroupManager)
+        public AddFolderCommand(IOutputWriter outputWriter, IGroupManager<IConfigurationGroup> configurationGroupManager, IGroupManager<IHistoryGroup> historyGroupManager) : base(outputWriter)
         {
             if (configurationGroupManager == null)
             {
@@ -75,7 +75,7 @@ namespace SyncTool.Cli.Commands
                 {
                     if (!File.Exists(opts.FilterFilePath))
                     {
-                        Console.WriteLine($"Error: File '{opts.FilterFilePath}' not found");
+                        OutputWriter.WriteErrorLine($"File '{opts.FilterFilePath}' not found");
                         return 1;
                     }
 

@@ -8,6 +8,7 @@ using System.Linq;
 using CommandLine;
 using SyncTool.Cli;
 using SyncTool.Cli.Framework;
+using SyncTool.Cli.Output;
 using SyncTool.Common;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
@@ -23,12 +24,12 @@ namespace SyncTool.Cli.Commands
     }
 
 
-    public class GetGroupCommand : ICommand<GetGroupOptions>
+    public class GetGroupCommand : CommandBase, ICommand<GetGroupOptions>
     {
         readonly IGroupManager<IConfigurationGroup> m_ConfigurationGroupManager;        
 
 
-        public GetGroupCommand(IGroupManager<IConfigurationGroup> configurationGroupManager)
+        public GetGroupCommand(IOutputWriter outputWriter, IGroupManager<IConfigurationGroup> configurationGroupManager) : base(outputWriter)
         {
             if (configurationGroupManager == null)
             {
@@ -61,11 +62,11 @@ namespace SyncTool.Cli.Commands
 
         void PrintSyncGroup(IConfigurationGroup group, string prefix = "")
         {
-            Console.WriteLine($"{prefix}SyncGroup '{group.Name}'");
+            OutputWriter.WriteLine($"{prefix}SyncGroup '{group.Name}'");
 
             if (group.Items.Any())
             {
-                Console.WriteLine($"{prefix}\tFolders:");
+                OutputWriter.WriteLine($"{prefix}\tFolders:");
                 foreach (var folder in group.Items)
                 {
                     PrintSyncFolder(folder, $"{prefix}\t\t");
@@ -73,17 +74,17 @@ namespace SyncTool.Cli.Commands
             }
             else
             {
-                Console.WriteLine(" \tNo folders in this sync group");
+                OutputWriter.WriteLine(" \tNo folders in this sync group");
             }
         }
 
         void PrintSyncFolder(SyncFolder folder, string prefix = "")
         {
-            Console.WriteLine($"{prefix}{folder.Name} --> {folder.Path}");
+            OutputWriter.WriteLine($"{prefix}{folder.Name} --> {folder.Path}");
             if (folder.Filter != null)
             {
-                Console.WriteLine($"{prefix}Filter:");
-                Console.WriteLine($"{prefix}\t{folder.Filter.Query}");
+                OutputWriter.WriteLine($"{prefix}Filter:");
+                OutputWriter.WriteLine($"{prefix}\t{folder.Filter.Query}");
             }
         }
     }

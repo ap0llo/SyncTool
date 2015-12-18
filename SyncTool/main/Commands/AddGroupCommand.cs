@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using CommandLine;
 using SyncTool.Cli.Framework;
+using SyncTool.Cli.Output;
 using SyncTool.Common;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem.Versioning;
@@ -21,11 +22,11 @@ namespace SyncTool.Cli.Commands
     }
 
 
-    public class AddGroupCommand : ICommand<AddGroupOptions>
+    public class AddGroupCommand : CommandBase, ICommand<AddGroupOptions>
     {
         readonly IGroupManager<IConfigurationGroup> m_ConfigurationGroupManager;
 
-        public AddGroupCommand(IGroupManager<IConfigurationGroup> configurationGroupManager)
+        public AddGroupCommand(IOutputWriter outputWriter, IGroupManager<IConfigurationGroup> configurationGroupManager)  : base(outputWriter)
         {
             m_ConfigurationGroupManager = configurationGroupManager;
         }
