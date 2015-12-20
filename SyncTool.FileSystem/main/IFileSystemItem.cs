@@ -8,6 +8,8 @@ namespace SyncTool.FileSystem
     {
         string Name { get; } 
 
+        string Path { get; }
+
         IDirectory Parent { get; }
     }
 }

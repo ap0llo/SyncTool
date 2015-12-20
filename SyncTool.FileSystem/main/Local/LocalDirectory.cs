@@ -44,12 +44,12 @@ namespace SyncTool.FileSystem.Local
 
         protected override bool FileExistsByName(string name)
         {
-            return System.IO.File.Exists(Path.Combine(m_DirectoryInfo.FullName, name));
+            return System.IO.File.Exists(System.IO.Path.Combine(m_DirectoryInfo.FullName, name));
         }
 
         protected override bool DirectoryExistsByName(string name)
         {
-            return System.IO.Directory.Exists(Path.Combine(m_DirectoryInfo.FullName, name));
+            return System.IO.Directory.Exists(System.IO.Path.Combine(m_DirectoryInfo.FullName, name));
         }
 
         protected override IFile GetFileByName(string name)

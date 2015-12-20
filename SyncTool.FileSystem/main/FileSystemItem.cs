@@ -11,6 +11,21 @@ namespace SyncTool.FileSystem
     {
         public virtual string Name { get;  }
 
+        public string Path
+        {
+            get
+            {                
+                if (Parent == null)
+                {
+                    return Name;
+                }
+                else
+                {
+                    return Parent.Path + "/" + Name;
+                }
+            }
+        }
+
         public IDirectory Parent { get; }
 
 
