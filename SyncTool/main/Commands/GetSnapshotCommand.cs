@@ -46,44 +46,45 @@ namespace SyncTool.Cli.Commands
         }
 
 
-
         public int Run(GetSnapshotOptions opts)
         {
             using (var group = m_ConfigurationGroupManager.GetGroup(opts.Group))
             using (var historyRepository = m_HistoryGroupManager.GetGroup(opts.Group))
             {
-                PrintSyncFolder(group.GetItem(opts.Folder), " ");
-
+                var folder = group.GetItem(opts.Folder);
                 var history = historyRepository.GetItem(opts.Folder);
-                PrintHistory(history, " \t");
 
+                OutputWriter.WriteLine($"SyncGroup '{group.Name}', Folder '{folder.Name}'");                
+                OutputWriter.WriteLine();
+                PrintHistory(history);
             }
             return 0;
 
 
         }
+        
 
-
-        void PrintSyncFolder(SyncFolder folder, string prefix = "")
-        {
-            OutputWriter.WriteLine($"{prefix}{folder.Name} --> {folder.Path}");
-        }
-
-        void PrintHistory(IFileSystemHistory history, string prefix)
+        void PrintHistory(IFileSystemHistory history)
         {
             if (history != null && history.Snapshots.Any())
             {
-                foreach (var snapshot in history.Snapshots)
-                {
-                    OutputWriter.WriteLine($"{prefix}\t{snapshot.CreationTime}\t{snapshot.Id}");
-                }
+                OutputWriter.WriteTable(
+                    new[]
+                    {
+                        "Id",
+                        "CreationTime"
+                    }, 
+                    new []
+                    {
+                        history.Snapshots.Select(x => x.Id),
+                        history.Snapshots.Select(x => x.CreationTime.ToString())
+                    });                
             }
             else
             {
-                OutputWriter.WriteLine($"{prefix}No snapshots found");
+                OutputWriter.WriteLine("\tNo snapshots found");
             }
+        }        
 
-        }
-        
     }
 }

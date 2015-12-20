@@ -6,13 +6,10 @@
 using System;
 using System.Linq;
 using CommandLine;
-using SyncTool.Cli;
 using SyncTool.Cli.Framework;
 using SyncTool.Cli.Output;
 using SyncTool.Common;
 using SyncTool.Configuration.Model;
-using SyncTool.FileSystem;
-using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Cli.Commands
 {
@@ -46,13 +43,11 @@ namespace SyncTool.Cli.Commands
                     ? m_ConfigurationGroupManager.Groups
                     : m_ConfigurationGroupManager.Groups.Where(g => g.Equals(opts.Name, StringComparison.InvariantCultureIgnoreCase));
 
-            Console.WriteLine();
             foreach (var group in groupNames.Select(m_ConfigurationGroupManager.GetGroup))
             {
                 using (group)
                 {
-                    PrintSyncGroup(group, " ");
-                    Console.WriteLine();
+                    PrintSyncGroup(group);
                 }
             }
 
@@ -60,33 +55,33 @@ namespace SyncTool.Cli.Commands
         }
 
 
-        void PrintSyncGroup(IConfigurationGroup group, string prefix = "")
-        {
-            OutputWriter.WriteLine($"{prefix}SyncGroup '{group.Name}'");
+        void PrintSyncGroup(IConfigurationGroup group)
+        {                       
+            OutputWriter.WriteLine($"SyncGroup '{group.Name}'");
+            OutputWriter.WriteLine();
 
             if (group.Items.Any())
             {
-                OutputWriter.WriteLine($"{prefix}\tFolders:");
-                foreach (var folder in group.Items)
-                {
-                    PrintSyncFolder(folder, $"{prefix}\t\t");
-                }
+                OutputWriter.WriteTable(
+                    new []
+                    {
+                        "Folder",
+                        "Path",
+                        "Filter"
+                    },
+                    new []
+                    {
+                        group.Items.Select(x => x.Name).ToArray(),
+                        group.Items.Select(x => x.Path).ToArray(),
+                        group.Items.Select(x => x.Filter?.Query).Select(x => x ?? "").ToArray(),
+                    });
             }
             else
-            {
-                OutputWriter.WriteLine(" \tNo folders in this sync group");
+            {                
+                OutputWriter.WriteLine(" \tNo folders in this sync group");                
             }
         }
-
-        void PrintSyncFolder(SyncFolder folder, string prefix = "")
-        {
-            OutputWriter.WriteLine($"{prefix}{folder.Name} --> {folder.Path}");
-            if (folder.Filter != null)
-            {
-                OutputWriter.WriteLine($"{prefix}Filter:");
-                OutputWriter.WriteLine($"{prefix}\t{folder.Filter.Query}");
-            }
-        }
+        
     }
 
 

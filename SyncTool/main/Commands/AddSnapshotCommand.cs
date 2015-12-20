@@ -61,10 +61,8 @@ namespace SyncTool.Cli.Commands
 
                 history.CreateSnapshot(state);
 
-                return 0;
-
+                return 0;            
             }
-
         }
     }
 }
