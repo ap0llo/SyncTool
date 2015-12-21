@@ -13,29 +13,29 @@ namespace SyncTool.Synchronization
     class GroupedChange
     {
 
-        public string FilePath => GlobalChange?.Path ?? LocalChange.Path;
+        public string FilePath => LeftChange?.Path ?? RightChange.Path;
 
-        public IChange GlobalChange { get; }
+        public IChange LeftChange { get; }
 
-        public IChange LocalChange { get; }
+        public IChange RightChange { get; }
 
 
-        public GroupedChange(IChange globalChange, IChange localChange)
+        public GroupedChange(IChange leftChange, IChange rightChange)
         {
-            if (globalChange == null && localChange == null)
+            if (leftChange == null && rightChange == null)
             {
-                throw new ArgumentNullException($"{nameof(globalChange)} and {nameof(localChange)} can't both be null");
+                throw new ArgumentNullException($"{nameof(leftChange)} and {nameof(rightChange)} can't both be null");
             }
 
-            if (globalChange != null && localChange != null)
+            if (leftChange != null && rightChange != null)
             {
-                if (!StringComparer.InvariantCultureIgnoreCase.Equals(localChange.Path, globalChange.Path))
+                if (!StringComparer.InvariantCultureIgnoreCase.Equals(rightChange.Path, leftChange.Path))
                 {
-                    throw new ArgumentException($"Paths of {nameof(globalChange)} and {nameof(localChange)} do not match");
+                    throw new ArgumentException($"Paths of {nameof(leftChange)} and {nameof(rightChange)} do not match");
                 }
             }
-            GlobalChange = globalChange;
-            LocalChange = localChange;
+            LeftChange = leftChange;
+            RightChange = rightChange;
         }
              
     }

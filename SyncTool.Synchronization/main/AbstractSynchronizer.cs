@@ -25,64 +25,64 @@ namespace SyncTool.Synchronization
         }
 
 
-        public void Synchronize(IFileSystemDiff globalChanges, IFileSystemDiff localChanges)
+        public void Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges)
         {
-            if (globalChanges == null)
+            if (leftChanges == null)
             {
-                throw new ArgumentNullException(nameof(globalChanges));
+                throw new ArgumentNullException(nameof(leftChanges));
             }
-            if (localChanges == null)
+            if (rightChanges == null)
             {
-                throw new ArgumentNullException(nameof(localChanges));
+                throw new ArgumentNullException(nameof(rightChanges));
             }
 
-            globalChanges = new FilteredFileSystemDiff(globalChanges, m_FileComparer);
-            localChanges = new FilteredFileSystemDiff(localChanges, m_FileComparer);
+            leftChanges = new FilteredFileSystemDiff(leftChanges, m_FileComparer);
+            rightChanges = new FilteredFileSystemDiff(rightChanges, m_FileComparer);
 
-            var combinedChanges = CombineChanges(globalChanges, localChanges).ToList();
+            var combinedChanges = CombineChanges(leftChanges, rightChanges).ToList();
             foreach (var change in combinedChanges)
             {
-                ProcessChange(globalChanges, localChanges, change);
+                ProcessChange(leftChanges, rightChanges, change);
             }            
         }
 
 
 
 
-        IEnumerable<GroupedChange> CombineChanges(IFileSystemDiff globalChanges, IFileSystemDiff localChanges)
+        IEnumerable<GroupedChange> CombineChanges(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges)
         {
-            var allChanges = globalChanges.Changes
-                .Select(c => new {IsGlobalChange = true, Change = c})
-                .Union(localChanges.Changes
-                            .Select(c => new {IsGlobalChange = false, Change = c}));
+            var allChanges = leftChanges.Changes
+                .Select(c => new {IsLeftChange = true, Change = c})
+                .Union(rightChanges.Changes
+                            .Select(c => new {IsLeftChange = false, Change = c}));
 
             var groupedChanges = allChanges
                 .GroupBy(change => change.Change.Path)
                 .Select(group => 
                     new GroupedChange(
-                        group.SingleOrDefault(c => c.IsGlobalChange)?.Change,
-                        group.SingleOrDefault(c => c.IsGlobalChange == false)?.Change));
+                        group.SingleOrDefault(c => c.IsLeftChange)?.Change,
+                        group.SingleOrDefault(c => c.IsLeftChange == false)?.Change));
 
             return groupedChanges;
         }
         
 
-        void ProcessChange(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {            
             // case 1: local change only
-            if (change.GlobalChange == null && change.LocalChange != null)
+            if (change.LeftChange == null && change.RightChange != null)
             {
-                ProcessLocalOnlyChange(globalChanges, localChanges, change);
+                ProcessRightOnlyChange(leftChanges, rightChanges, change);
             }
             // case 2: global change only
-            else if (change.GlobalChange != null && change.LocalChange != null)
+            else if (change.LeftChange != null && change.RightChange != null)
             {
-                ProcessGlobalOnlyChange(globalChanges, localChanges, change);       
+                ProcessLeftOnlyChange(leftChanges, rightChanges, change);       
             }
             // case 3: local and global change
-            else if (change.GlobalChange != null && change.LocalChange != null)
+            else if (change.LeftChange != null && change.RightChange != null)
             {
-                ProcessDoubleChange(globalChanges, localChanges, change);
+                ProcessDoubleChange(leftChanges, rightChanges, change);
             }
             else
             {
@@ -91,25 +91,25 @@ namespace SyncTool.Synchronization
         }
 
 
-        void ProcessLocalOnlyChange(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessRightOnlyChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             // file changed only in the local state
 
-            switch (change.LocalChange.Type)
+            switch (change.RightChange.Type)
             {
                 // case 1: file was added locally
                 case ChangeType.Added:
-                    ProcessLocalOnlyAddition(globalChanges, localChanges, change);
+                    ProcessRightOnlyAddition(leftChanges, rightChanges, change);
                     break;
 
                 // file was deleted locally
                 case ChangeType.Deleted:
-                    ProcessLocalOnlyDeletion(globalChanges, localChanges, change);
+                    ProcessRightOnlyDeletion(leftChanges, rightChanges, change);
                     break;
                 
                 // case 3: file was modified locally
                 case ChangeType.Modified:
-                    ProcessLocalOnlyModification(globalChanges, localChanges, change);
+                    ProcessRightOnlyModification(leftChanges, rightChanges, change);
                     break;
 
                 default:
@@ -117,9 +117,9 @@ namespace SyncTool.Synchronization
             }
         }
 
-        void ProcessLocalOnlyModification(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessRightOnlyModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
-            var globalState = globalChanges.ToSnapshot.RootDirectory;
+            var globalState = leftChanges.ToSnapshot.RootDirectory;
 
             // case 1: file does not exist in the global state
             // => if this happens, something is seriously wrong
@@ -131,14 +131,14 @@ namespace SyncTool.Synchronization
             var globalFile = globalState.GetFile(change.FilePath);
 
             // case 2: file now matches the file in the global state 
-            if (m_FileComparer.Equals(globalFile, change.LocalChange.ToFile))
+            if (m_FileComparer.Equals(globalFile, change.RightChange.ToFile))
             {
                 // => nothing to do, we're in sync
                 return;
             }
 
             // case 3: file matched the global state prior to modification and was modified 
-            if (m_FileComparer.Equals(globalFile, change.LocalChange.FromFile))
+            if (m_FileComparer.Equals(globalFile, change.RightChange.FromFile))
             {
                 // => apply local modification to global state
                 throw new NotImplementedException();
@@ -153,16 +153,16 @@ namespace SyncTool.Synchronization
         }
 
 
-        void ProcessLocalOnlyAddition(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessRightOnlyAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {            
-            var globalState = globalChanges.ToSnapshot.RootDirectory;
+            var globalState = leftChanges.ToSnapshot.RootDirectory;
 
             // case 1: file also exists in the global state
             if (globalState.FileExists(change.FilePath))
             {
                 var globalFile = globalState.GetFile(change.FilePath);
                 // case 1.1: file in global state is identical to local file
-                if(m_FileComparer.Equals(globalFile, change.LocalChange.ToFile))
+                if(m_FileComparer.Equals(globalFile, change.RightChange.ToFile))
                 {
                     throw new NotImplementedException();                    
                 }
@@ -181,9 +181,9 @@ namespace SyncTool.Synchronization
             }            
         }
 
-        void ProcessLocalOnlyDeletion(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessRightOnlyDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
-            var globalState = globalChanges.ToSnapshot.RootDirectory;
+            var globalState = leftChanges.ToSnapshot.RootDirectory;
 
             // case 1: file does not exist in the global state 
             if (!globalState.FileExists(change.FilePath))
@@ -196,7 +196,7 @@ namespace SyncTool.Synchronization
             {
                 var globalFile = globalState.GetFile(change.FilePath);                
                 // case 2.1: file was identical to global state prior to deletion
-                if (m_FileComparer.Equals(globalFile, change.LocalChange.FromFile))
+                if (m_FileComparer.Equals(globalFile, change.RightChange.FromFile))
                 {
                     // => apply local change to global state
                     throw new NotImplementedException();                    
@@ -211,27 +211,27 @@ namespace SyncTool.Synchronization
         }
 
 
-        void ProcessGlobalOnlyChange(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessLeftOnlyChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
-            switch (change.GlobalChange.Type)
+            switch (change.LeftChange.Type)
             {
                 case ChangeType.Added:
-                    ProcessGlobalOnlyAddition(globalChanges, localChanges, change);
+                    ProcessLeftOnlyAddition(leftChanges, rightChanges, change);
                     break;
                 case ChangeType.Deleted:
-                    ProcessGlobalOnlyDeletion(globalChanges, localChanges, change);
+                    ProcessLeftOnlyDeletion(leftChanges, rightChanges, change);
                     break;
                 case ChangeType.Modified:
-                    ProcessGlobalOnlyModification(globalChanges, localChanges, change);
+                    ProcessLeftOnlyModification(leftChanges, rightChanges, change);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        void ProcessGlobalOnlyModification(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessLeftOnlyModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
-            var localState = localChanges.ToSnapshot.RootDirectory;
+            var localState = rightChanges.ToSnapshot.RootDirectory;
 
             // case 1: file does not exist locally
             if (!localState.FileExists(change.FilePath))
@@ -243,14 +243,14 @@ namespace SyncTool.Synchronization
             var localFile = localState.GetFile(change.FilePath);
 
             // case 2: local file exists that matches the global file after the modification
-            if (m_FileComparer.Equals(localFile, change.GlobalChange.ToFile))
+            if (m_FileComparer.Equals(localFile, change.LeftChange.ToFile))
             {
                 // => nothing to do
                 return;
             }
 
             // case 3: local file exists that matches the global file prior to the modification
-            if (m_FileComparer.Equals(localFile, change.GlobalChange.FromFile))
+            if (m_FileComparer.Equals(localFile, change.LeftChange.FromFile))
             {
                 // => apply global change to local state
                 throw new NotImplementedException();
@@ -263,7 +263,7 @@ namespace SyncTool.Synchronization
             }            
         }
 
-        void ProcessGlobalOnlyAddition(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessLeftOnlyAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             // case 1: identical file is also present locally
 
@@ -276,7 +276,7 @@ namespace SyncTool.Synchronization
             throw new NotImplementedException();
         }
 
-        void ProcessGlobalOnlyDeletion(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessLeftOnlyDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             // case 1: file does not exist locally
 
@@ -290,58 +290,58 @@ namespace SyncTool.Synchronization
         }
 
 
-        void ProcessDoubleChange(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessDoubleChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
-            if (change.GlobalChange.Type == ChangeType.Added && change.LocalChange.Type == ChangeType.Added)
+            if (change.LeftChange.Type == ChangeType.Added && change.RightChange.Type == ChangeType.Added)
             {
-                ProcessDoubleAddition(globalChanges, localChanges, change);
+                ProcessDoubleAddition(leftChanges, rightChanges, change);
             }
 
-            if (change.GlobalChange.Type == ChangeType.Added && change.LocalChange.Type == ChangeType.Modified)
+            if (change.LeftChange.Type == ChangeType.Added && change.RightChange.Type == ChangeType.Modified)
             {
-                ProcessAdditionAndModification(globalChanges, localChanges, change);
+                ProcessAdditionAndModification(leftChanges, rightChanges, change);
             }
 
-            if (change.GlobalChange.Type == ChangeType.Added && change.LocalChange.Type == ChangeType.Deleted)
+            if (change.LeftChange.Type == ChangeType.Added && change.RightChange.Type == ChangeType.Deleted)
             {
-                ProcessAdditionAndDeletion(globalChanges, localChanges, change);
+                ProcessAdditionAndDeletion(leftChanges, rightChanges, change);
             }
 
-            if (change.GlobalChange.Type == ChangeType.Modified && change.LocalChange.Type == ChangeType.Added)
+            if (change.LeftChange.Type == ChangeType.Modified && change.RightChange.Type == ChangeType.Added)
             {
-                ProcessModificationAndAddition(globalChanges, localChanges, change);
+                ProcessModificationAndAddition(leftChanges, rightChanges, change);
             }
 
-            if (change.GlobalChange.Type == ChangeType.Modified && change.LocalChange.Type == ChangeType.Modified)
+            if (change.LeftChange.Type == ChangeType.Modified && change.RightChange.Type == ChangeType.Modified)
             {
-                ProcessDoubleModification(globalChanges, localChanges, change);
+                ProcessDoubleModification(leftChanges, rightChanges, change);
             }
 
-            if (change.GlobalChange.Type == ChangeType.Modified && change.LocalChange.Type == ChangeType.Deleted)
+            if (change.LeftChange.Type == ChangeType.Modified && change.RightChange.Type == ChangeType.Deleted)
             {
-                ProcessModificationAndDeletion(globalChanges, localChanges, change);
+                ProcessModificationAndDeletion(leftChanges, rightChanges, change);
             }
 
-            if (change.GlobalChange.Type == ChangeType.Deleted && change.LocalChange.Type == ChangeType.Added)
+            if (change.LeftChange.Type == ChangeType.Deleted && change.RightChange.Type == ChangeType.Added)
             {
-                ProcessDeletionAndAddition(globalChanges, localChanges, change);
+                ProcessDeletionAndAddition(leftChanges, rightChanges, change);
             }
 
-            if (change.GlobalChange.Type == ChangeType.Deleted && change.LocalChange.Type == ChangeType.Modified)
+            if (change.LeftChange.Type == ChangeType.Deleted && change.RightChange.Type == ChangeType.Modified)
             {
-                ProcessDeletionAndModification(globalChanges, localChanges, change);
+                ProcessDeletionAndModification(leftChanges, rightChanges, change);
             }
 
-            if (change.GlobalChange.Type == ChangeType.Deleted && change.LocalChange.Type == ChangeType.Deleted)
+            if (change.LeftChange.Type == ChangeType.Deleted && change.RightChange.Type == ChangeType.Deleted)
             {
-                ProcessDoubleDeletion(globalChanges, localChanges, change);
+                ProcessDoubleDeletion(leftChanges, rightChanges, change);
             }
         }
 
-        void ProcessDoubleAddition(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessDoubleAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             // case 1: the same file was added to both global and local states
-            if (m_FileComparer.Equals(change.GlobalChange.ToFile, change.LocalChange.ToFile))
+            if (m_FileComparer.Equals(change.LeftChange.ToFile, change.RightChange.ToFile))
             {
                 // nothing to do, states are in sync
             }
@@ -352,42 +352,42 @@ namespace SyncTool.Synchronization
             }
         }
 
-        void ProcessAdditionAndModification(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessAdditionAndModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        void ProcessAdditionAndDeletion(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessAdditionAndDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        void ProcessModificationAndAddition(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessModificationAndAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        void ProcessDoubleModification(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessDoubleModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        void ProcessModificationAndDeletion(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessModificationAndDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        void ProcessDeletionAndAddition(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessDeletionAndAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        void ProcessDeletionAndModification(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessDeletionAndModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        void ProcessDoubleDeletion(IFileSystemDiff globalChanges, IFileSystemDiff localChanges, GroupedChange change)
+        void ProcessDoubleDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             // file is gone from both local and global states => nothing to do   
         }
