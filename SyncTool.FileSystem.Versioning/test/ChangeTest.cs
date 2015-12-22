@@ -6,6 +6,7 @@
 using System;
 using System.Reflection;
 using Moq;
+using SyncTool.FileSystem.TestHelpers;
 using Xunit;
 
 namespace SyncTool.FileSystem.Versioning
@@ -16,42 +17,32 @@ namespace SyncTool.FileSystem.Versioning
         public void Constructor_checks_validity_of_file_parameters_for_change_type()
         {
             Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Added, null, null));   
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Added, GetFileMock(), GetFileMock()));   
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Added, GetFileMock(), null));
-            new Change(ChangeType.Added, null, GetFileMock());
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Added, MockingHelper.GetMockedFile(), MockingHelper.GetMockedFile()));   
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Added, MockingHelper.GetMockedFile(), null));
+            new Change(ChangeType.Added, null, MockingHelper.GetMockedFile());
 
             Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Deleted, null, null));
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Deleted, GetFileMock(), GetFileMock()));
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Deleted, null, GetFileMock()));
-            new Change(ChangeType.Deleted, GetFileMock(), null);
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Deleted, MockingHelper.GetMockedFile(), MockingHelper.GetMockedFile()));
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Deleted, null, MockingHelper.GetMockedFile()));
+            new Change(ChangeType.Deleted, MockingHelper.GetMockedFile(), null);
 
             Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, null, null));
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, GetFileMock(), null));
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, null, GetFileMock()));
-            new Change(ChangeType.Modified, GetFileMock(), GetFileMock());
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, MockingHelper.GetMockedFile(), null));
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, null, MockingHelper.GetMockedFile()));
+            new Change(ChangeType.Modified, MockingHelper.GetMockedFile(), MockingHelper.GetMockedFile());
 
         }
 
         [Fact(DisplayName = nameof(Change) + ": Constructor checks that paths of file parameters match")]
         public void Constructor_checks_that_paths_of_file_parameters_match()
         {
-            Assert.Throws<ArgumentException>(() => new Change(ChangeType.Modified, GetFileMock("path1"), GetFileMock("path2")));
-            new Change(ChangeType.Modified, GetFileMock("path1"), GetFileMock("pATh1"));
+            Assert.Throws<ArgumentException>(() => new Change(ChangeType.Modified, MockingHelper.GetMockedFile("path1"), MockingHelper.GetMockedFile("path2")));
+            new Change(ChangeType.Modified, MockingHelper.GetMockedFile("path1"), MockingHelper.GetMockedFile("pATh1"));
         }
 
 
 
-        IFile GetFileMock()
-        {
-            return new Mock<IFile>().Object;
-        }
-
-        IFile GetFileMock(string path)
-        {
-            var mock = new Mock<IFile>(MockBehavior.Strict);
-            mock.Setup(m => m.Path).Returns(path);
-            return mock.Object;
-        }
+       
 
     }
 }

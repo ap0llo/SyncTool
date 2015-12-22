@@ -26,10 +26,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractSynchronizer.cs" />
+    <Compile Include="ConflictSyncAction.cs" />
     <Compile Include="FilteredFileSystemDiff.cs" />
     <Compile Include="GroupedChange.cs" />
     <Compile Include="ISynchronizer.cs" />
+    <Compile Include="NullDirectory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResolvedSyncAction.cs" />
+    <Compile Include="SyncAction.cs" />
+    <Compile Include="SyncActionType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
