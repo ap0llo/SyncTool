@@ -11,14 +11,14 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public class ConflictSyncAction : SyncAction
+    public sealed class ConflictSyncAction : SyncAction
     {
          
         public IEnumerable<IFile> ConflictedFiles { get; set; }
 
 
 
-        public ConflictSyncAction(params IFile[] conflictedFiles) : base(SyncActionType.ResolveConflict)
+        public ConflictSyncAction(params IFile[] conflictedFiles)
         {
             if (conflictedFiles == null)
             {
@@ -31,6 +31,11 @@ namespace SyncTool.Synchronization
             }
 
             this.ConflictedFiles = conflictedFiles;
+        }
+
+        public override void Accept(ISyncActionVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

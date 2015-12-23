@@ -72,7 +72,7 @@
     <Compile Include="ConflictSyncActionTest.cs" />
     <Compile Include="GroupedChangeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ResolvedSyncActionTest.cs" />
+    <Compile Include="ReplaceFileSyncActionTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

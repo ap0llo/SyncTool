@@ -155,10 +155,9 @@ namespace SyncTool.Synchronization
             if (m_FileComparer.Equals(unchangedFile, change.FromFile))
             {
                 // => apply local modification to global state
-                yield return new ResolvedSyncAction(
-                    type: SyncActionType.ReplaceFile,
-                    newValue: change.ToFile.WithParent(new NullDirectory(change.ToFile.Parent)),
-                    oldValue: unchangedFile.WithParent(new NullDirectory(unchangedFile.Parent)));
+                yield return new ReplaceFileSyncAction(                    
+                    newVersion: change.ToFile.WithParent(new NullDirectory(change.ToFile.Parent)),
+                    oldVersion: unchangedFile.WithParent(new NullDirectory(unchangedFile.Parent)));
             }           
             // case 4: file was different from global state prior to modification and is different from global state now
             // => conflict                
