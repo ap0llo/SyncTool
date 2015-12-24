@@ -6,7 +6,9 @@ namespace SyncTool.Synchronization
 {
     public interface ISyncActionVisitor
     {
-        void Visit(ConflictSyncAction action);
+        void Visit(MultipleVersionConflictSyncAction action);
+
+        void Visit(ModificationDeletionConflictSyncAction action);
 
         void Visit(ReplaceFileSyncAction action);
 

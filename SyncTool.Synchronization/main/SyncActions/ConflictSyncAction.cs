@@ -11,33 +11,10 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public sealed class ConflictSyncAction : SyncAction
+    public abstract class ConflictSyncAction : SyncAction
     {
-         
-        public IEnumerable<IFile> ConflictedFiles { get; }
-
+        
         public string Description { get; set; }
 
-
-        public ConflictSyncAction(params IFile[] conflictedFiles) 
-        {
-            if (conflictedFiles == null)
-            {
-                throw new ArgumentNullException(nameof(conflictedFiles));
-            }
-
-            if (!conflictedFiles.Any())
-            {
-                throw new ArgumentException("Enumeration of conflicted files must not be empty", nameof(conflictedFiles));
-            }
-
-            this.ConflictedFiles = conflictedFiles;
-        }
-
-
-        public override void Accept(ISyncActionVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
     }
 }

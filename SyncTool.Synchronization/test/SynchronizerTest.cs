@@ -229,9 +229,9 @@ namespace SyncTool.Synchronization
              .ToList();
 
             Assert.Single(syncActions);
-            Assert.IsType<ConflictSyncAction>(syncActions.Single());
+            Assert.IsType<MultipleVersionConflictSyncAction>(syncActions.Single());
 
-            var action = (ConflictSyncAction) syncActions.Single();
+            var action = (MultipleVersionConflictSyncAction) syncActions.Single();
             Assert.True(action.ConflictedFiles.All(f => f.Name == "file1"));
             Assert.True(action.ConflictedFiles.SingleOrDefault(f => f.LastWriteTime == rightDirectoryAfter.GetFile("file1").LastWriteTime) != null);
             Assert.True(action.ConflictedFiles.SingleOrDefault(f => f.LastWriteTime == leftDirectoryAfter.GetFile("file1").LastWriteTime) != null);        
@@ -379,11 +379,11 @@ namespace SyncTool.Synchronization
 
             Assert.Single(syncActions);
             var action = syncActions.Single();
-            Assert.IsType<ConflictSyncAction>(action);
+            Assert.IsType<MultipleVersionConflictSyncAction>(action);
         }
 
         [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize() Addition and Deletion throws " + nameof(InvalidOperationException))]
-        public void Synchronize_Addition_and_deletion_throws_InvalidOperationException()
+        public void Synchronize_Addition_and_Deletion_throws_InvalidOperationException()
         {
             var leftChanges = new IChange[] {new Change(ChangeType.Added, null, MockingHelper.GetMockedFile("file"))};
             var rightChanges = new IChange[] { new Change(ChangeType.Deleted, MockingHelper.GetMockedFile("file"), null) };
@@ -395,10 +395,121 @@ namespace SyncTool.Synchronization
             Assert.Throws<InvalidOperationException>(() => m_Instance.Synchronize(rightDiff, leftDiff));
         }
 
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): Modification and Deletion Conflict")]
+        public void Synchronize_Modification_and_Deletion_Conflict()
+        {
+            // modification in left directory
+            var leftDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1990")}
+            };
+            var leftDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1991") }
+            };
+
+            var leftChange = new Change(ChangeType.Modified, leftDirectoryBefore.GetFile("file1"), leftDirectoryAfter.GetFile("file1"));
+
+            // deletion in right directory
+            var rightDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = DateTime.Parse("01.01.1990")}
+            };
+            var rightDirectoryAfter = new Directory("root");
+            var rightChange = new Change(ChangeType.Deleted, rightDirectoryBefore.GetFile("file1"), null);
+
+            var syncActions = m_Instance.Synchronize(
+                GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChange).Object,
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object)
+                .ToList();
 
 
+            Assert.Single(syncActions);
+            Assert.IsType<ModificationDeletionConflictSyncAction>(syncActions.Single());
+            var action = (ModificationDeletionConflictSyncAction) syncActions.Single();
 
-        Mock<IFileSystemDiff> GetMockedFileSystemDiff(IDirectory fromSnapshot, IDirectory toSnapshot, IChange[] changes)
+
+            Assert.Equal("file1", action.DeletedFile.Name);
+            Assert.Equal(DateTime.Parse("01.01.1990"), action.DeletedFile.LastWriteTime);
+
+            Assert.Equal("file1", action.ModifiedFile.Name);
+            Assert.Equal(DateTime.Parse("01.01.1991"), action.ModifiedFile.LastWriteTime);
+        }
+
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): Modification and Deletion of modified file is handled by deleting the modified file")]
+        public void Synchronize_Modification_and_Deletion_of_modified_file_is_handled_by_deleting_the_modified_file()
+        {
+            // scenario:
+            // a file exists in both directories (2 differnet version)
+            // in the left directory, the file is replaced by the version in the right directory
+            // while the version in the right directory is deleted
+            // expected outcome: delete the file in the left directory as well
+            
+            // modification in left directory
+            var leftDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1990")}
+            };
+            var leftDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1991") }
+            };
+
+            var leftChange = new Change(ChangeType.Modified, leftDirectoryBefore.GetFile("file1"), leftDirectoryAfter.GetFile("file1"));
+
+            // deletion in right directory
+            var rightDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = DateTime.Parse("01.01.1991")}
+            };
+            var rightDirectoryAfter = new Directory("root");
+            var rightChange = new Change(ChangeType.Deleted, rightDirectoryBefore.GetFile("file1"), null);
+
+            var syncActions = m_Instance.Synchronize(
+                GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChange).Object,
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object)
+                .ToList();
+
+            Assert.Single(syncActions);
+            Assert.IsType<RemoveFileSyncAction>(syncActions.Single());
+
+            var action = (RemoveFileSyncAction) syncActions.Single();
+            Assert.Equal(SyncParticipant.Left, action.Target);
+            Assert.Equal("file1", action.RemovedFile.Name);
+            Assert.Equal(DateTime.Parse("01.01.1991"), action.RemovedFile.LastWriteTime);
+
+        }
+     
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): Modification and Deletion throws InvalidOperationException if neither modified or unmodified file was deleted")]
+        public void Synchronize_Modification_and_Deletion_throws_InvalidOperationException_if_neither_modified_or_unmodified_file_was_deleted()
+        {
+            var leftDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1990")}
+            };
+            var leftDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1991") }
+            };
+
+            var leftChange = new Change(ChangeType.Modified, leftDirectoryBefore.GetFile("file1"), leftDirectoryAfter.GetFile("file1"));
+
+            // deletion in right directory
+            var rightDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = DateTime.Parse("01.01.1992")}
+            };
+            var rightDirectoryAfter = new Directory("root");
+            var rightChange = new Change(ChangeType.Deleted, rightDirectoryBefore.GetFile("file1"), null);
+
+            Assert.Throws<InvalidOperationException>(() =>
+                m_Instance.Synchronize(
+                    GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChange).Object,
+                    GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object)
+                );
+        }
+
+        Mock<IFileSystemDiff> GetMockedFileSystemDiff(IDirectory fromSnapshot, IDirectory toSnapshot, params IChange[] changes)
         {
             var mock = new Mock<IFileSystemDiff>(MockBehavior.Strict);
 

@@ -9,19 +9,19 @@ using Xunit;
 
 namespace SyncTool.Synchronization
 {
-    public class ConflictSyncActionTest
+    public class MultipleVersionConflictSyncActionTest
     {
         [Fact]
         public void Constructor_checks_parameter_for_null()
         {
-            Assert.Throws<ArgumentNullException>(() => new ConflictSyncAction(null));
+            Assert.Throws<ArgumentNullException>(() => new MultipleVersionConflictSyncAction(null));
         }
 
         [Fact]
         public void Constructor_throws_ArgumentException_if_list_of_conflicted_files_is_empty()
         {
-            Assert.Throws<ArgumentException>(() => new ConflictSyncAction());
-            Assert.Throws<ArgumentException>(() => new ConflictSyncAction(new IFile[0]));
+            Assert.Throws<ArgumentException>(() => new MultipleVersionConflictSyncAction());
+            Assert.Throws<ArgumentException>(() => new MultipleVersionConflictSyncAction(new IFile[0]));
         }
     }
 }

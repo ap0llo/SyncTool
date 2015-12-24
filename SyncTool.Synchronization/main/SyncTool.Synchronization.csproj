@@ -26,6 +26,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FilePropertiesComparer.cs" />
+    <Compile Include="SyncActions\ModificationDeletionConflictSyncAction.cs" />
+    <Compile Include="SyncActions\MultipleVersionConflictSyncAction.cs" />
     <Compile Include="Synchronizer.cs" />
     <Compile Include="SyncActions\AddFileSyncAction.cs" />
     <Compile Include="SyncActions\ConflictSyncAction.cs" />

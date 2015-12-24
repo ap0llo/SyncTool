@@ -138,7 +138,7 @@ namespace SyncTool.Synchronization
             }           
             // case 4: file was different from other directory prior to modification and is different from the other directory now
             // => conflict                
-            return new ConflictSyncAction(unchangedFile, change.ToFile)
+            return new MultipleVersionConflictSyncAction(unchangedFile, change.ToFile)
             {
                 Description = $"A file exists in {changedParticipant.Invert()}, but a different version of the file was modified in {changedParticipant}"
             };
@@ -161,7 +161,7 @@ namespace SyncTool.Synchronization
                 else
                 {
                     // => conflict
-                    return new ConflictSyncAction(
+                    return new MultipleVersionConflictSyncAction(
                         ExtractFileFromTree(unchangedFile),
                         ExtractFileFromTree(change.ToFile))
                     {
@@ -200,7 +200,7 @@ namespace SyncTool.Synchronization
                 else
                 {
                     // => conflict
-                    return new ConflictSyncAction(
+                    return new MultipleVersionConflictSyncAction(
                         ExtractFileFromTree(unchangedFile),
                         ExtractFileFromTree(change.FromFile))
                     {
@@ -240,7 +240,9 @@ namespace SyncTool.Synchronization
             }
             else if (change.LeftChange.Type == ChangeType.Modified && change.RightChange.Type == ChangeType.Deleted)
             {
-                return ProcessModificationAndDeletion(leftChanges, rightChanges, change);
+                return ProcessModificationAndDeletion(
+                    change.LeftChange, SyncParticipant.Left,
+                    change.RightChange, SyncParticipant.Right);
             }
             else if (change.LeftChange.Type == ChangeType.Deleted && change.RightChange.Type == ChangeType.Added)
             {
@@ -248,7 +250,9 @@ namespace SyncTool.Synchronization
             }
             else if (change.LeftChange.Type == ChangeType.Deleted && change.RightChange.Type == ChangeType.Modified)
             {
-                return ProcessDeletionAndModification(leftChanges, rightChanges, change);
+                return ProcessModificationAndDeletion(
+                    change.RightChange, SyncParticipant.Right,
+                    change.LeftChange, SyncParticipant.Left);
             }
             else if (change.LeftChange.Type == ChangeType.Deleted && change.RightChange.Type == ChangeType.Deleted)
             {
@@ -271,7 +275,7 @@ namespace SyncTool.Synchronization
             // case 2: different files were added   
             else
             {
-                return new ConflictSyncAction(
+                return new MultipleVersionConflictSyncAction(
                     ExtractFileFromTree(change.LeftChange.ToFile),
                     ExtractFileFromTree(change.RightChange.ToFile))
                 {
@@ -297,7 +301,7 @@ namespace SyncTool.Synchronization
             }
             else
             {
-                return new ConflictSyncAction(
+                return new MultipleVersionConflictSyncAction(
                     ExtractFileFromTree(addition.ToFile),
                     ExtractFileFromTree(modification.ToFile))
                 {
@@ -311,16 +315,31 @@ namespace SyncTool.Synchronization
             throw new NotImplementedException();
         }
 
-        SyncAction ProcessModificationAndDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessModificationAndDeletion(IChange modification, SyncParticipant modifiedOn, IChange deletion, SyncParticipant deletedOn)
         {
-            throw new NotImplementedException();
+            // case 1: the version of the file that was deleted on one side was deleted on the other
+            if (m_FileComparer.Equals(modification.FromFile, deletion.FromFile))
+            {
+                // conflict: we need to either delete the modified file or add the modified version to the side where the previous version was deleted
+                return new ModificationDeletionConflictSyncAction(modification.ToFile, deletion.FromFile)
+                {
+                    Description = $"File was deleted on {deletedOn} but modified on {modifiedOn}"
+                };
+            }
+            // case 2: version that was deleted on one side matches the modified version from the other
+            else if (m_FileComparer.Equals(modification.ToFile, deletion.FromFile))
+            {
+                // => apply deletion to other directory
+                return new RemoveFileSyncAction(modifiedOn, modification.ToFile);
+            }
+            else
+            {
+                // other cases: this should never happen, if it does, something is wrong
+                throw new InvalidOperationException($"Modification and deletion of file '{modification.Path}' with no common version");
+            }           
         }
 
-        SyncAction ProcessDeletionAndModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         SyncAction ProcessDoubleDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             // file is gone from both local and global states => nothing to do  
