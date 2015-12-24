@@ -220,7 +220,9 @@ namespace SyncTool.Synchronization
             }
             else if (change.LeftChange.Type == ChangeType.Added && change.RightChange.Type == ChangeType.Modified)
             {
-                return ProcessAdditionAndModification(leftChanges, rightChanges, change);
+                return ProcessAdditionAndModification(
+                    change.LeftChange, SyncParticipant.Left,
+                    change.RightChange, SyncParticipant.Right);
             }
             else if (change.LeftChange.Type == ChangeType.Added && change.RightChange.Type == ChangeType.Deleted)
             {
@@ -228,7 +230,9 @@ namespace SyncTool.Synchronization
             }
             else if (change.LeftChange.Type == ChangeType.Modified && change.RightChange.Type == ChangeType.Added)
             {
-                return ProcessModificationAndAddition(leftChanges, rightChanges, change);
+                return ProcessAdditionAndModification(
+                    change.RightChange, SyncParticipant.Right,
+                    change.LeftChange, SyncParticipant.Left);
             }
             else if (change.LeftChange.Type == ChangeType.Modified && change.RightChange.Type == ChangeType.Modified)
             {
@@ -276,17 +280,33 @@ namespace SyncTool.Synchronization
             }
         }
 
-        SyncAction  ProcessAdditionAndModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction  ProcessAdditionAndModification(IChange addition, SyncParticipant addedOn, IChange modification, SyncParticipant modifiedOn)
         {
-            throw new NotImplementedException();
+            // if files on both sides are identical now, everthing's fine, nothing to do
+            if (m_FileComparer.Equals(addition.ToFile, modification.ToFile))
+            {
+                return null;
+            }
+            else if (m_FileComparer.Equals(addition.ToFile, modification.FromFile))
+            {
+                // previous version of the file was added to one of the folder while the file was modified in the other
+                // => apply the modification to the other folder as well
+                return new ReplaceFileSyncAction(addedOn,
+                    ExtractFileFromTree(addition.ToFile),
+                    ExtractFileFromTree(modification.ToFile));                
+            }
+            else
+            {
+                return new ConflictSyncAction(
+                    ExtractFileFromTree(addition.ToFile),
+                    ExtractFileFromTree(modification.ToFile))
+                {
+                    Description = $"File was added on {addedOn} but was modified on {modifiedOn}"
+                };
+            }            
         }
 
         SyncAction ProcessAdditionAndDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
-        {
-            throw new NotImplementedException();
-        }
-
-        SyncAction ProcessModificationAndAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }

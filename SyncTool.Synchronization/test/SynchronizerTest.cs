@@ -192,6 +192,134 @@ namespace SyncTool.Synchronization
             Assert.Equal("dir1/file1", rightSyncAction.NewFile.Path);
         }
 
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): 'Addition and modification': Conflict")]
+        public void Synchronize_Addition_and_modification_Conflict()
+        {
+            // add file to left directory
+            var leftDirectoryBefore = new Directory("root");
+            var leftDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1990") }
+            };
+
+            var leftChanges = new IChange[] { new Change(ChangeType.Added, null, leftDirectoryAfter.GetFile("file1")) };
+
+            //the right directory contained the same file that was added on the left side before the modification
+            var rightDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1991") }
+            };
+            var rightDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1992") }
+            };
+
+            var rightChanges = new IChange[]
+            {
+                new Change(ChangeType.Modified,
+                           rightDirectoryBefore.GetFile("file1"),
+                           rightDirectoryAfter.GetFile("file1"))
+            };
+
+            var syncActions = m_Instance.Synchronize(
+             GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChanges).Object,
+             GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChanges).Object)
+             .ToList();
+
+            Assert.Single(syncActions);
+            Assert.IsType<ConflictSyncAction>(syncActions.Single());
+
+            var action = (ConflictSyncAction) syncActions.Single();
+            Assert.True(action.ConflictedFiles.All(f => f.Name == "file1"));
+            Assert.True(action.ConflictedFiles.SingleOrDefault(f => f.LastWriteTime == rightDirectoryAfter.GetFile("file1").LastWriteTime) != null);
+            Assert.True(action.ConflictedFiles.SingleOrDefault(f => f.LastWriteTime == leftDirectoryAfter.GetFile("file1").LastWriteTime) != null);        
+        }
+
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): 'Addition and Modification ': Modification of file added to the other directory")]
+        public void Synchronize_Addition_and_Modification_Modification_of_file_added_to_the_other_directory()
+        {
+            // add file to left directory
+            var leftDirectoryBefore = new Directory("root");
+            var leftDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1990") }
+            };
+
+            var leftChanges = new IChange[] { new Change(ChangeType.Added, null, leftDirectoryAfter.GetFile("file1")) };
+
+            //the right directory contained the same file that was added on the left side before the modification
+            var rightDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1990") }
+            };
+            var rightDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1991") }
+            };
+
+            var rightChanges = new IChange[]
+            {
+                new Change(ChangeType.Modified,
+                           rightDirectoryBefore.GetFile("file1"),
+                           rightDirectoryAfter.GetFile("file1"))
+            };
+
+            var syncActions = m_Instance.Synchronize(
+               GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChanges).Object,
+               GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChanges).Object)
+               .ToList();
+
+            // expected result: The file added on the left is the older version of the same file from the right directory
+            // replace the file on the left with the new version from the right
+
+            Assert.Single(syncActions);
+
+            var action = (ReplaceFileSyncAction) syncActions.Single();
+            Assert.Equal(SyncParticipant.Left, action.Target);
+            Assert.Equal("file1", action.OldVersion.Name);
+            Assert.Equal(rightDirectoryBefore.GetFile("file1").LastWriteTime, action.OldVersion.LastWriteTime);
+            Assert.Equal("file1", action.NewVersion.Name);
+            Assert.Equal(rightDirectoryAfter.GetFile("file1").LastWriteTime, action.NewVersion.LastWriteTime);
+
+        }
+
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): Addition and Modification results in consistent state")]
+        public void Synchronize_Addition_and_Modification_results_in_consistent_state()
+        {
+            // add file to left directory
+            var leftDirectoryBefore = new Directory("root");
+            var leftDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Now }
+            };
+
+            var leftChanges = new IChange[] {new Change(ChangeType.Added, null, leftDirectoryAfter.GetFile("file1"))};
+
+            //modify file in right directory so it matches the file added in the left directory
+            var rightDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Parse("01.01.1990") }
+            };
+            var rightDirectoryAfter = new Directory("root")
+            {
+                root => leftDirectoryAfter.GetFile("file1").WithParent(root)
+            };
+
+            var rightChanges = new IChange[]
+            {
+                new Change(ChangeType.Modified, 
+                           rightDirectoryBefore.GetFile("file1"),
+                           rightDirectoryAfter.GetFile("file1"))
+            };
+
+            var syncActions = m_Instance.Synchronize(
+                GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChanges).Object,
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChanges).Object);
+
+            Assert.Empty(syncActions);
+
+        }
+
 
         Mock<IFileSystemDiff> GetMockedFileSystemDiff(IDirectory fromSnapshot, IDirectory toSnapshot, IChange[] changes)
         {
