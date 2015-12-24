@@ -236,7 +236,7 @@ namespace SyncTool.Synchronization
             }
             else if (change.LeftChange.Type == ChangeType.Modified && change.RightChange.Type == ChangeType.Modified)
             {
-                return ProcessDoubleModification(leftChanges, rightChanges, change);
+                return ProcessDoubleModification(change);
             }
             else if (change.LeftChange.Type == ChangeType.Modified && change.RightChange.Type == ChangeType.Deleted)
             {
@@ -256,7 +256,7 @@ namespace SyncTool.Synchronization
             }
             else if (change.LeftChange.Type == ChangeType.Deleted && change.RightChange.Type == ChangeType.Deleted)
             {
-                return ProcessDoubleDeletion(leftChanges, rightChanges, change);
+                return ProcessDoubleDeletion(change);
             }
             else
             {
@@ -310,9 +310,41 @@ namespace SyncTool.Synchronization
             }            
         }
 
-        SyncAction ProcessDoubleModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessDoubleModification(GroupedChange change)
         {
-            throw new NotImplementedException();
+            // case 1: modification resulted in consistent state => nothing to do
+            if (m_FileComparer.Equals(change.LeftChange.ToFile, change.RightChange.ToFile))
+            {
+                return null;
+            }
+            // case 2: one modification modifies the result of the other modification
+            // in this case, the newer modification can be applied to the other side as well
+            // case 2.1  Left.FromFile -> Left.ToFile / Right.FromFile -> Right.ToFile
+            else if (m_FileComparer.Equals(change.LeftChange.ToFile, change.RightChange.FromFile))
+            {
+                return new ReplaceFileSyncAction(SyncParticipant.Left,
+                    ExtractFileFromTree(change.RightChange.FromFile),
+                    ExtractFileFromTree(change.RightChange.ToFile));
+            }
+            // case 2.2  Right.FromFile -> Right.ToFile / Left.FromFile -> Left.ToFile
+            else if (m_FileComparer.Equals(change.RightChange.ToFile, change.LeftChange.FromFile))
+            {
+                return new ReplaceFileSyncAction(SyncParticipant.Right,
+                    ExtractFileFromTree(change.LeftChange.FromFile),
+                    ExtractFileFromTree(change.LeftChange.ToFile));
+            }
+            // case 3: "FromFile" is identical for both changes 
+            else if(m_FileComparer.Equals(change.LeftChange.FromFile, change.RightChange.FromFile))
+            {
+                // => conflicting modifications
+                return new MultipleVersionConflictSyncAction(
+                    ExtractFileFromTree(change.LeftChange.ToFile),
+                    ExtractFileFromTree(change.RightChange.ToFile));
+            }
+            else
+            {
+                throw new InvalidOperationException($"Double modification without common base version ({change.FilePath})");
+            }            
         }
 
         SyncAction ProcessModificationAndDeletion(IChange modification, SyncParticipant modifiedOn, IChange deletion, SyncParticipant deletedOn)
@@ -340,7 +372,7 @@ namespace SyncTool.Synchronization
         }
 
         
-        SyncAction ProcessDoubleDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessDoubleDeletion(GroupedChange change)
         {
             // file is gone from both local and global states => nothing to do  
             return null;

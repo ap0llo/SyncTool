@@ -509,6 +509,197 @@ namespace SyncTool.Synchronization
                 );
         }
 
+
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): Double Modification: Modifications that result in a consistent state yields empty result")]
+        public void Synchronize_Double_Modification_Modifications_that_result_in_a_consistent_state_yields_empty_result()
+        {
+            var lastWriteTime = DateTime.Now;
+
+            var leftDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = DateTime.Parse("01.01.1989")}
+            };
+            var leftDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = lastWriteTime }
+            };
+            var leftChange = new Change(ChangeType.Modified, leftDirectoryBefore.GetFile("file1"), leftDirectoryAfter.GetFile("file1"));
+
+            var rightDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = DateTime.Parse("01.01.1990")}
+            };
+            var rightDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = lastWriteTime}
+            };
+            var rightChange = new Change(ChangeType.Modified, rightDirectoryBefore.GetFile("file1"), rightDirectoryAfter.GetFile("file1"));
+
+            Assert.Empty(m_Instance.Synchronize(
+                GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChange).Object,
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object));
+        }
+
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): Double Modification: Modifications not based on each other yield conflict")]
+        public void Synchronize_Double_Modification_Modifications_not_based_on_each_other_yield_conflict()
+        {
+            var lastWriteTime = DateTime.Now;
+
+            var leftDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = DateTime.Parse("01.01.1990")}
+            };
+            var leftDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = lastWriteTime }
+            };
+            var leftChange = new Change(ChangeType.Modified, leftDirectoryBefore.GetFile("file1"), leftDirectoryAfter.GetFile("file1"));
+
+            var rightDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = DateTime.Parse("01.01.1990")}
+            };
+            var rightDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = lastWriteTime.AddHours(2)}
+            };
+            var rightChange = new Change(ChangeType.Modified, rightDirectoryBefore.GetFile("file1"), rightDirectoryAfter.GetFile("file1"));
+
+            var syncActions = m_Instance.Synchronize(
+                GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChange).Object,
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object)
+                .ToList();
+
+            Assert.Single(syncActions);
+            Assert.IsType<MultipleVersionConflictSyncAction>(syncActions.Single());
+            var action = (MultipleVersionConflictSyncAction) syncActions.Single();
+            Assert.True(action.ConflictedFiles.All(f => f.Name == "file1"));
+            Assert.True(action.ConflictedFiles.SingleOrDefault(f => f.LastWriteTime == rightDirectoryAfter.GetFile("file1").LastWriteTime) != null);
+            Assert.True(action.ConflictedFiles.SingleOrDefault(f => f.LastWriteTime == leftDirectoryAfter.GetFile("file1").LastWriteTime) != null);
+
+        }
+
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): Double Modification: Conflicts between modifications based on each other can be resolved (1)")]
+        public void Synchronize_Double_Modification_Conflicts_between_modifications_based_on_each_other_can_be_resolved_1()
+        {
+            var lastWriteTime = DateTime.Now;
+
+            // left directory: file version 1 -> 2
+            var leftDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = lastWriteTime.AddHours(1)} // version 1
+            };
+            var leftDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = lastWriteTime.AddHours(2) } // version 2
+            };
+            var leftChange = new Change(ChangeType.Modified, leftDirectoryBefore.GetFile("file1"), leftDirectoryAfter.GetFile("file1"));
+
+            // right directory: file version 2 -> 3
+            var rightDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = lastWriteTime.AddHours(2) } // version 2
+            };
+            var rightDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = lastWriteTime.AddHours(3) } // version 3
+            };
+            var rightChange = new Change(ChangeType.Modified, rightDirectoryBefore.GetFile("file1"), rightDirectoryAfter.GetFile("file1"));
+
+            var syncActions = m_Instance.Synchronize(
+                GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChange).Object,
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object)
+                .ToList();
+
+            // expected result: replace version 2 in left directory with version 3 from right directory
+
+            Assert.Single(syncActions);
+            Assert.IsType<ReplaceFileSyncAction>(syncActions.Single());
+            var action = (ReplaceFileSyncAction)syncActions.Single();
+
+            Assert.Equal(SyncParticipant.Left, action.Target);
+            Assert.Equal(lastWriteTime.AddHours(2), action.OldVersion.LastWriteTime); // version 2
+            Assert.Equal(lastWriteTime.AddHours(3), action.NewVersion.LastWriteTime); // version 3
+
+        }
+
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): Double Modification: Conflicts between modifications based on each other can be resolved (2)")]
+        public void Synchronize_Double_Modification_Conflicts_between_modifications_based_on_each_other_can_be_resolved_2()
+        {
+            var lastWriteTime = DateTime.Now;
+
+            // left directory: file version 2 -> 3
+            var leftDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = lastWriteTime.AddHours(2)} // version 2
+            };
+            var leftDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = lastWriteTime.AddHours(3) } // version 3
+            };
+            var leftChange = new Change(ChangeType.Modified, leftDirectoryBefore.GetFile("file1"), leftDirectoryAfter.GetFile("file1"));
+
+            // right directory: file version 1 -> 2
+            var rightDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = lastWriteTime.AddHours(1) } // version 1
+            };
+            var rightDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = lastWriteTime.AddHours(2) } // version 2
+            };
+            var rightChange = new Change(ChangeType.Modified, rightDirectoryBefore.GetFile("file1"), rightDirectoryAfter.GetFile("file1"));
+
+            var syncActions = m_Instance.Synchronize(
+                GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChange).Object,
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object)
+                .ToList();
+
+            // expected result: replace version 2 in left directory with version 3 from right directory
+
+            Assert.Single(syncActions);
+            Assert.IsType<ReplaceFileSyncAction>(syncActions.Single());
+            var action = (ReplaceFileSyncAction)syncActions.Single();
+
+            Assert.Equal(SyncParticipant.Right, action.Target);
+            Assert.Equal(lastWriteTime.AddHours(2), action.OldVersion.LastWriteTime); // version 2
+            Assert.Equal(lastWriteTime.AddHours(3), action.NewVersion.LastWriteTime); // version 3
+        }
+
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): Double Modification: InvalidOperationException is thrown if there is no common base version")]
+        public void Synchronize_Double_Modification_InvalidOperationException_is_thrown_if_there_is_no_common_base_version()
+        {
+            var lastWriteTime = DateTime.Now;
+
+            // left directory: file version 1 -> 2
+            var leftDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = lastWriteTime.AddHours(1)} // version 1
+            };
+            var leftDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = lastWriteTime.AddHours(2) } // version 2
+            };
+            var leftChange = new Change(ChangeType.Modified, leftDirectoryBefore.GetFile("file1"), leftDirectoryAfter.GetFile("file1"));
+
+            // right directory: file version 3 -> 4
+            var rightDirectoryBefore = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = lastWriteTime.AddHours(3) } // version 3
+            };
+            var rightDirectoryAfter = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") { LastWriteTime = lastWriteTime.AddHours(4) } // version 4
+            };
+            var rightChange = new Change(ChangeType.Modified, rightDirectoryBefore.GetFile("file1"), rightDirectoryAfter.GetFile("file1"));
+
+            Assert.Throws<InvalidOperationException>(() => m_Instance.Synchronize(
+                GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChange).Object,
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object));                
+        }
+
+
+
         Mock<IFileSystemDiff> GetMockedFileSystemDiff(IDirectory fromSnapshot, IDirectory toSnapshot, params IChange[] changes)
         {
             var mock = new Mock<IFileSystemDiff>(MockBehavior.Strict);
