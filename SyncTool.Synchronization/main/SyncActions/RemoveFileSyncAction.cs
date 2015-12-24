@@ -8,11 +8,11 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public sealed class RemoveFileSyncAction : SyncAction
+    public sealed class RemoveFileSyncAction : ResolvedSyncAction
     {
         public IFile RemovedFile { get; }
 
-        public RemoveFileSyncAction(IFile removedFile)
+        public RemoveFileSyncAction(SyncParticipant target, IFile removedFile) : base(target)
         {
             if (removedFile == null)
             {

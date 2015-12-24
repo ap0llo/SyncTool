@@ -14,11 +14,12 @@ namespace SyncTool.Synchronization
     public sealed class ConflictSyncAction : SyncAction
     {
          
-        public IEnumerable<IFile> ConflictedFiles { get; set; }
+        public IEnumerable<IFile> ConflictedFiles { get; }
+
+        public string Description { get; set; }
 
 
-
-        public ConflictSyncAction(params IFile[] conflictedFiles)
+        public ConflictSyncAction(params IFile[] conflictedFiles) 
         {
             if (conflictedFiles == null)
             {
@@ -32,6 +33,7 @@ namespace SyncTool.Synchronization
 
             this.ConflictedFiles = conflictedFiles;
         }
+
 
         public override void Accept(ISyncActionVisitor visitor)
         {

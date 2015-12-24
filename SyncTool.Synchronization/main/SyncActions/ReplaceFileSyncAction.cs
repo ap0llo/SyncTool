@@ -8,7 +8,7 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public sealed class ReplaceFileSyncAction : SyncAction
+    public sealed class ReplaceFileSyncAction : ResolvedSyncAction
     {
 
         public IFile OldVersion { get; }
@@ -16,7 +16,7 @@ namespace SyncTool.Synchronization
         public IFile NewVersion { get; }
 
 
-        public ReplaceFileSyncAction(IFile oldVersion, IFile newVersion)
+        public ReplaceFileSyncAction(SyncParticipant target, IFile oldVersion, IFile newVersion) : base(target)
         {
             if (oldVersion == null)
             {

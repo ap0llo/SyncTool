@@ -17,11 +17,19 @@ namespace SyncTool.FileSystem
             {                
                 if (Parent == null)
                 {
-                    return Name;
+                    return "";
                 }
                 else
                 {
-                    return Parent.Path + "/" + Name;
+                    var parentPath = Parent.Path;
+                    if (String.IsNullOrEmpty(parentPath))
+                    {
+                        return Name;
+                    }
+                    else
+                    {
+                        return parentPath + "/" + Name;                        
+                    }
                 }
             }
         }

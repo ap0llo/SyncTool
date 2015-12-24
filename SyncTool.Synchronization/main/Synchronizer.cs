@@ -11,11 +11,11 @@ using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Synchronization
 {
-    public abstract class AbstractSynchronizer : ISynchronizer
+    public class Synchronizer : ISynchronizer
     {
         readonly IEqualityComparer<IFile> m_FileComparer;
 
-        protected AbstractSynchronizer(IEqualityComparer<IFile> fileComparer)
+        public Synchronizer(IEqualityComparer<IFile> fileComparer)
         {
             if (fileComparer == null)
             {
@@ -25,7 +25,7 @@ namespace SyncTool.Synchronization
         }
 
 
-        public void Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges)
+        public IEnumerable<SyncAction> Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges)
         {
             if (leftChanges == null)
             {
@@ -39,12 +39,11 @@ namespace SyncTool.Synchronization
             leftChanges = new FilteredFileSystemDiff(leftChanges, m_FileComparer);
             rightChanges = new FilteredFileSystemDiff(rightChanges, m_FileComparer);
 
-
             var combinedChanges = CombineChanges(leftChanges, rightChanges).ToList();
-            foreach (var change in combinedChanges)
-            {
-                ProcessChange(leftChanges, rightChanges, change);
-            }
+
+            return combinedChanges.Select(change => ProcessChange(leftChanges, rightChanges, change))
+                                  .Where(action => action != null)
+                                  .ToList();
         }
 
 
@@ -67,19 +66,19 @@ namespace SyncTool.Synchronization
         }
 
 
-        IEnumerable<SyncAction> ProcessChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
-            // case 1: local change only
+            // case 1: right change only
             if (change.LeftChange == null && change.RightChange != null)
             {
-                return ProcessRightOnlyChange(leftChanges, rightChanges, change);
+                return ProcessSingleChange(leftChanges.ToSnapshot.RootDirectory, change.RightChange, SyncParticipant.Right);
             }
-            // case 2: global change only
-            else if (change.LeftChange != null && change.RightChange != null)
+            // case 2: left change only
+            else if (change.LeftChange != null && change.RightChange == null)
             {
-                return ProcessLeftOnlyChange(leftChanges, rightChanges, change);
+                return ProcessSingleChange(rightChanges.ToSnapshot.RootDirectory, change.LeftChange, SyncParticipant.Left);
             }
-            // case 3: local and global change
+            // case 3: right and left change
             else if (change.LeftChange != null && change.RightChange != null)
             {
                 return ProcessDoubleChange(leftChanges, rightChanges, change);
@@ -88,52 +87,30 @@ namespace SyncTool.Synchronization
             {
                 throw new InvalidOperationException($"Encounted {nameof(GroupedChange)} in invalid state");
             }
-        }
+        }        
 
 
-        IEnumerable<SyncAction> ProcessLeftOnlyChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessSingleChange(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
-            switch (change.LeftChange.Type)
+            // file changed only on left or right side only
+
+            switch (change.Type)
             {
                 case ChangeType.Added:
-                    return ProcessSingleAddition(rightChanges.ToSnapshot.RootDirectory, change.LeftChange);
-                    
+                    return ProcessSingleAddition(unchangedDirectory, change, changedParticipant);
+
                 case ChangeType.Deleted:
-                    return ProcessSingleDeletion(rightChanges.ToSnapshot.RootDirectory, change.LeftChange);
-                    
+                    return ProcessSingleDeletion(unchangedDirectory, change, changedParticipant);
+
                 case ChangeType.Modified:
-                    return ProcessSingleModification(rightChanges.ToSnapshot.RootDirectory, change.LeftChange);
-                    
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        IEnumerable<SyncAction> ProcessRightOnlyChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
-        {
-            // file changed only in the local state
-
-            switch (change.RightChange.Type)
-            {
-                // case 1: file was added locally
-                case ChangeType.Added:
-                    return ProcessSingleAddition(leftChanges.ToSnapshot.RootDirectory, change.RightChange);                    
-
-                // file was deleted locally
-                case ChangeType.Deleted:
-                    return ProcessSingleDeletion(leftChanges.ToSnapshot.RootDirectory, change.RightChange);                    
-
-                // case 3: file was modified locally
-                case ChangeType.Modified:
-                    return ProcessSingleModification(leftChanges.ToSnapshot.RootDirectory, change.RightChange);                    
+                    return ProcessSingleModification(unchangedDirectory, change, changedParticipant);
 
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-
-        IEnumerable<SyncAction> ProcessSingleModification(IDirectory unchangedDirectory, IChange change)
+    
+        SyncAction ProcessSingleModification(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
             // case 1: file does not exist in the other directory
             // => if this happens, something is seriously wrong because if the file is a new file it should be an addition, not a modification
@@ -148,24 +125,27 @@ namespace SyncTool.Synchronization
             if (m_FileComparer.Equals(unchangedFile, change.ToFile))
             {
                 // => nothing to do, we're in sync                
-                yield break;
+                return null;
             }
 
             // case 3: changed file matched the file from the unchanged directory prior to modification and was modified 
             if (m_FileComparer.Equals(unchangedFile, change.FromFile))
             {
-                // => apply local modification to global state
-                yield return new ReplaceFileSyncAction(                    
-                    newVersion: change.ToFile.WithParent(new NullDirectory(change.ToFile.Parent)),
-                    oldVersion: unchangedFile.WithParent(new NullDirectory(unchangedFile.Parent)));
+                // => apply local modification to the other directory
+                return new ReplaceFileSyncAction(target: changedParticipant.Invert(),
+                    oldVersion: ExtractFileFromTree(unchangedFile),
+                    newVersion: ExtractFileFromTree(change.ToFile));
             }           
-            // case 4: file was different from global state prior to modification and is different from global state now
+            // case 4: file was different from other directory prior to modification and is different from the other directory now
             // => conflict                
-            yield return new ConflictSyncAction(unchangedFile, change.ToFile);
+            return new ConflictSyncAction(unchangedFile, change.ToFile)
+            {
+                Description = $"A file exists in {changedParticipant.Invert()}, but a different version of the file was modified in {changedParticipant}"
+            };
            
         }
 
-        IEnumerable<SyncAction> ProcessSingleAddition(IDirectory unchangedDirectory, IChange change)
+        SyncAction ProcessSingleAddition(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
             // case 1: file also exists in the unchanged directory
             if (unchangedDirectory.FileExists(change.Path))
@@ -174,24 +154,36 @@ namespace SyncTool.Synchronization
                 // case 1.1: file in the other directory is identical to the added file
                 if (m_FileComparer.Equals(unchangedFile, change.ToFile))
                 {
-                    throw new NotImplementedException();
+                    // => nothing to do
+                    return null;
                 }
-                    // case 1.2: different file exists in the other directory
-                // => conflict
-                throw new NotImplementedException();
+                // case 1.2: different file exists in the other directory
+                else
+                {
+                    // => conflict
+                    return new ConflictSyncAction(
+                        ExtractFileFromTree(unchangedFile),
+                        ExtractFileFromTree(change.ToFile))
+                    {
+                        Description = $"A file was added to '{changedParticipant}' but a different file is already present in {changedParticipant.Invert()}"
+                    };
+                }
             }
-                // case 2: file is not present in the other directory
-            // => add file to global state
-            throw new NotImplementedException();
+            // case 2: file is not present in the other directory
+            else
+            {
+                // => add file to the other directory
+                return new AddFileSyncAction(changedParticipant.Invert(), ExtractFileFromTree(change.ToFile));
+            }            
         }
 
-        IEnumerable<SyncAction> ProcessSingleDeletion(IDirectory unchangedDirectory, IChange change)
+        SyncAction ProcessSingleDeletion(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
             // case 1: file does not exist in the unchanged directory
             if (!unchangedDirectory.FileExists(change.Path))
             {
                 // => nothing to do
-                return Enumerable.Empty<SyncAction>();
+                return null;
             }
             // case 2: file exists in the other directory
             else
@@ -201,22 +193,30 @@ namespace SyncTool.Synchronization
                 // case 2.1: deleted file was identical to file in the unchanged directory prior to deletion
                 if (m_FileComparer.Equals(unchangedFile, change.FromFile))
                 {
-                    // => apply local change to global state
-                    throw new NotImplementedException();
+                    // => apply change to the other directory
+                    return new RemoveFileSyncAction(changedParticipant.Invert(), ExtractFileFromTree(unchangedFile));                    
                 }
-                    // case 2.2: a file different from the deleted file is present in the other directory state
-                // => conflict
-                throw new NotImplementedException();
+                // case 2.2: a file different from the deleted file is present in the other directory state
+                else
+                {
+                    // => conflict
+                    return new ConflictSyncAction(
+                        ExtractFileFromTree(unchangedFile),
+                        ExtractFileFromTree(change.FromFile))
+                    {
+                        Description = $"File was deleted from {changedParticipant} but the version in  {changedParticipant.Invert()} is different from the deleted version"
+                    };                    
+                }
             }
         }
 
 
 
-        IEnumerable<SyncAction> ProcessDoubleChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessDoubleChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             if (change.LeftChange.Type == ChangeType.Added && change.RightChange.Type == ChangeType.Added)
             {
-                return ProcessDoubleAddition(leftChanges, rightChanges, change);
+                return ProcessDoubleAddition(change);
             }
             else if (change.LeftChange.Type == ChangeType.Added && change.RightChange.Type == ChangeType.Modified)
             {
@@ -256,60 +256,72 @@ namespace SyncTool.Synchronization
             }
         }
 
-        IEnumerable<SyncAction> ProcessDoubleAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessDoubleAddition(GroupedChange change)
         {
             // case 1: the same file was added to both global and local states
             if (m_FileComparer.Equals(change.LeftChange.ToFile, change.RightChange.ToFile))
             {
                 // nothing to do, states are in sync
-                return Enumerable.Empty<SyncAction>();
+                return null;
             }
             // case 2: different files were added   
             else
             {
-                throw new NotImplementedException();
+                return new ConflictSyncAction(
+                    ExtractFileFromTree(change.LeftChange.ToFile),
+                    ExtractFileFromTree(change.RightChange.ToFile))
+                {
+                    Description = "Different with the same name were added on both sync participants"
+                };
             }
         }
 
-        IEnumerable<SyncAction>  ProcessAdditionAndModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction  ProcessAdditionAndModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        IEnumerable<SyncAction> ProcessAdditionAndDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessAdditionAndDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        IEnumerable<SyncAction> ProcessModificationAndAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessModificationAndAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        IEnumerable<SyncAction> ProcessDoubleModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessDoubleModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        IEnumerable<SyncAction> ProcessModificationAndDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessModificationAndDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        IEnumerable<SyncAction> ProcessDeletionAndAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessDeletionAndAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        IEnumerable<SyncAction> ProcessDeletionAndModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessDeletionAndModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
-        IEnumerable<SyncAction> ProcessDoubleDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        SyncAction ProcessDoubleDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             // file is gone from both local and global states => nothing to do  
-            return Enumerable.Empty<SyncAction>();
+            return null;
         }
+
+
+        IFile ExtractFileFromTree(IFile file)
+        {
+            return file.WithParent(new NullDirectory(file.Parent));
+        }
+
     }
 }

@@ -11,6 +11,6 @@ namespace SyncTool.Synchronization
 {
     public interface ISynchronizer
     {
-        void Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges);
+        IEnumerable<SyncAction> Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges);
     }
 }

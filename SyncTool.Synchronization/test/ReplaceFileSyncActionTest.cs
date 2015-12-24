@@ -17,7 +17,8 @@ namespace SyncTool.Synchronization
         public void Constructor_throws_ArgumentException_if_file_paths_differ()
         {
             Assert.Throws<ArgumentException>(
-                () => new ReplaceFileSyncAction(                            
+                () => new ReplaceFileSyncAction(
+                            SyncParticipant.Left,   // irrelevant
                             MockingHelper.GetMockedFile("path1"), 
                             MockingHelper.GetMockedFile("path2")));
         }

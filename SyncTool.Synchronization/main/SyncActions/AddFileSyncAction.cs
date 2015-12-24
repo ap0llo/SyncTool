@@ -8,12 +8,12 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public sealed class AddFileSyncAction : SyncAction
+    public sealed class AddFileSyncAction : ResolvedSyncAction
     {
 
         public IFile NewFile { get; }
 
-        public AddFileSyncAction(IFile newFile)
+        public AddFileSyncAction(SyncParticipant target, IFile newFile) : base(target)
         {
             if (newFile == null)
             {
