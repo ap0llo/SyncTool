@@ -26,7 +26,7 @@ namespace SyncTool.Synchronization
         }
 
 
-        public IEnumerable<SyncAction> Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges)
+        public SyncActionSet Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges)
         {
             if (leftChanges == null)
             {
@@ -42,10 +42,17 @@ namespace SyncTool.Synchronization
 
             var combinedChanges = CombineChanges(leftChanges, rightChanges).ToList();
 
-            return combinedChanges.Select(change => ProcessChange(leftChanges, rightChanges, change))
-                                  .Where(opt => opt.HasValue)  
-                                  .Select(opt => opt.Value)                       
-                                  .ToList();
+            var actionSet = new SyncActionSet();
+            foreach (var change in combinedChanges)
+            {
+                var actionOption = ProcessChange(leftChanges, rightChanges, change);
+                if (actionOption.HasValue)
+                {
+                    actionSet.Add(actionOption.Value);
+                }
+            }
+
+            return actionSet;
         }
 
 

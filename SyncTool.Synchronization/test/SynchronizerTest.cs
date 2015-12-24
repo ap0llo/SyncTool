@@ -56,8 +56,8 @@ namespace SyncTool.Synchronization
 
             var result = m_Instance.Synchronize(
                 GetMockedFileSystemDiff(null, leftDirectory, leftChanges).Object,
-                GetMockedFileSystemDiff(rightDirectory, rightDirectory, Array.Empty<IChange>()).Object)
-                .ToList();
+                GetMockedFileSystemDiff(rightDirectory, rightDirectory, Array.Empty<IChange>()).Object);
+                
 
             Assert.Single(result);
             Assert.IsType<AddFileSyncAction>(result.Single());
@@ -89,8 +89,7 @@ namespace SyncTool.Synchronization
 
             var result = m_Instance.Synchronize(
                 GetMockedFileSystemDiff(null, leftDirectory, leftChanges).Object,
-                GetMockedFileSystemDiff(rightDirectory, rightDirectory, Array.Empty<IChange>()).Object)
-                .ToList();
+                GetMockedFileSystemDiff(rightDirectory, rightDirectory, Array.Empty<IChange>()).Object);
 
             Assert.Single(result);
             Assert.IsType<ReplaceFileSyncAction>(result.Single());
@@ -121,8 +120,9 @@ namespace SyncTool.Synchronization
 
             var result = m_Instance.Synchronize(
                 GetMockedFileSystemDiff(leftDirectoryBeforeChange, null, leftChanges).Object,
-                GetMockedFileSystemDiff(rightDirectory, rightDirectory, Array.Empty<IChange>()).Object)
-                .ToList();
+                GetMockedFileSystemDiff(rightDirectory, rightDirectory, Array.Empty<IChange>()).Object);
+            
+                
 
             Assert.Single(result);
             Assert.IsType<RemoveFileSyncAction>(result.Single());
@@ -149,8 +149,8 @@ namespace SyncTool.Synchronization
 
             var result = m_Instance.Synchronize(
                 GetMockedFileSystemDiff(null, null, leftChanges).Object,
-                GetMockedFileSystemDiff(rightDirectory, rightDirectory, Array.Empty<IChange>()).Object)
-                .ToList();
+                GetMockedFileSystemDiff(rightDirectory, rightDirectory, Array.Empty<IChange>()).Object);
+                
             Assert.Empty(result);
         }
 
@@ -182,8 +182,8 @@ namespace SyncTool.Synchronization
             var syncActions = m_Instance.Synchronize(
                 GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChanges).Object,
                 GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChanges).Object)
-                .Cast<AddFileSyncAction>()
-                .ToList();
+                .Cast<AddFileSyncAction>();
+
 
             Assert.Equal(2, syncActions.Count());
 
@@ -224,9 +224,9 @@ namespace SyncTool.Synchronization
             };
 
             var syncActions = m_Instance.Synchronize(
-             GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChanges).Object,
-             GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChanges).Object)
-             .ToList();
+                GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChanges).Object,
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChanges).Object);
+             
 
             Assert.Single(syncActions);
             Assert.IsType<MultipleVersionConflictSyncAction>(syncActions.Single());
@@ -268,9 +268,8 @@ namespace SyncTool.Synchronization
 
             var syncActions = m_Instance.Synchronize(
                GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChanges).Object,
-               GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChanges).Object)
-               .ToList();
-
+               GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChanges).Object);
+               
             // expected result: The file added on the left is the older version of the same file from the right directory
             // replace the file on the left with the new version from the right
 
@@ -374,8 +373,8 @@ namespace SyncTool.Synchronization
 
             var syncActions = m_Instance.Synchronize(
                 GetMockedFileSystemDiff(null, new Directory("root"), leftChanges).Object,
-                GetMockedFileSystemDiff(null, new Directory("root"), rightChanges).Object)
-                .ToList();
+                GetMockedFileSystemDiff(null, new Directory("root"), rightChanges).Object);
+                
 
             Assert.Single(syncActions);
             var action = syncActions.Single();
@@ -420,9 +419,8 @@ namespace SyncTool.Synchronization
 
             var syncActions = m_Instance.Synchronize(
                 GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChange).Object,
-                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object)
-                .ToList();
-
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object);
+                
 
             Assert.Single(syncActions);
             Assert.IsType<ModificationDeletionConflictSyncAction>(syncActions.Single());
@@ -467,8 +465,8 @@ namespace SyncTool.Synchronization
 
             var syncActions = m_Instance.Synchronize(
                 GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChange).Object,
-                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object)
-                .ToList();
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object);
+                
 
             Assert.Single(syncActions);
             Assert.IsType<RemoveFileSyncAction>(syncActions.Single());
@@ -567,8 +565,8 @@ namespace SyncTool.Synchronization
 
             var syncActions = m_Instance.Synchronize(
                 GetMockedFileSystemDiff(leftDirectoryBefore, leftDirectoryAfter, leftChange).Object,
-                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object)
-                .ToList();
+                GetMockedFileSystemDiff(rightDirectoryBefore, rightDirectoryAfter, rightChange).Object);
+                
 
             Assert.Single(syncActions);
             Assert.IsType<MultipleVersionConflictSyncAction>(syncActions.Single());

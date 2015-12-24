@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SyncTool.Synchronization.AddFileSyncAction" Collapsed="true">
+    <Position X="9.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyncActions\AddFileSyncAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SyncTool.Synchronization.ConflictSyncAction" Collapsed="true">
+    <Position X="6" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyncActions\ConflictSyncAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SyncTool.Synchronization.ModificationDeletionConflictSyncAction" Collapsed="true">
+    <Position X="4.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>SyncActions\ModificationDeletionConflictSyncAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SyncTool.Synchronization.MultipleVersionConflictSyncAction" Collapsed="true">
+    <Position X="7" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyncActions\MultipleVersionConflictSyncAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SyncTool.Synchronization.RemoveFileSyncAction" Collapsed="true">
+    <Position X="13.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>SyncActions\RemoveFileSyncAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SyncTool.Synchronization.ReplaceFileSyncAction" Collapsed="true">
+    <Position X="11.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>SyncActions\ReplaceFileSyncAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SyncTool.Synchronization.ResolvedSyncAction" Collapsed="true">
+    <Position X="11.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyncActions\ResolvedSyncAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SyncTool.Synchronization.SyncAction" Collapsed="true">
+    <Position X="9.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyncActions\SyncAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
