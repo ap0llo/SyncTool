@@ -4,9 +4,11 @@
 // // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Data;
 using System.Linq;
 using Moq;
 using SyncTool.FileSystem;
+using SyncTool.FileSystem.TestHelpers;
 using SyncTool.FileSystem.Versioning;
 using Xunit;
 
@@ -319,6 +321,81 @@ namespace SyncTool.Synchronization
             Assert.Empty(syncActions);
 
         }
+
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): Double Addition results in consistent state")]
+        public void Synchronize_Double_Addition_results_in_consistent_state()
+        {
+            var lastWriteTime = DateTime.Parse("01.01.1990");
+            var leftChanges = new IChange[]
+            {
+                new Change(ChangeType.Added, null, MockingHelper.GetMockedFile("file", lastWriteTime, 23))
+            };
+            var rightChanges = new IChange[]
+            {
+                new Change(ChangeType.Added, null,MockingHelper.GetMockedFile("file", lastWriteTime, 23))
+            };
+
+            var syncActions = m_Instance.Synchronize(
+                GetMockedFileSystemDiff(null, null, leftChanges).Object,
+                GetMockedFileSystemDiff(null, null, rightChanges).Object);
+
+            Assert.Empty(syncActions);
+        }
+
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize(): Double Addition results in conflict")]
+        public void Synchronize_Double_Addition_results_in_conflict()
+        {
+            var lastWriteTime = DateTime.Parse("01.01.1990");
+            var leftChanges = new IChange[]
+            {
+                new Change(
+                    ChangeType.Added, 
+                    null, 
+                    MockingHelper.GetFileMock()
+                    .Named("file1")
+                    .WithLastWriteTime(lastWriteTime)
+                    .WithLength(23)
+                    .WithParentNamed("dir1")
+                    .Object)
+            };
+            var rightChanges = new IChange[]
+            {
+                new Change(
+                    ChangeType.Added, 
+                    null,                     
+                    MockingHelper.GetFileMock()
+                    .Named("file1")
+                    .WithLastWriteTime(lastWriteTime.AddHours(1))
+                    .WithLength(23)
+                    .WithParentNamed("dir1")
+                    .Object)
+            };
+
+
+            var syncActions = m_Instance.Synchronize(
+                GetMockedFileSystemDiff(null, new Directory("root"), leftChanges).Object,
+                GetMockedFileSystemDiff(null, new Directory("root"), rightChanges).Object)
+                .ToList();
+
+            Assert.Single(syncActions);
+            var action = syncActions.Single();
+            Assert.IsType<ConflictSyncAction>(action);
+        }
+
+        [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize() Addition and Deletion throws " + nameof(InvalidOperationException))]
+        public void Synchronize_Addition_and_deletion_throws_InvalidOperationException()
+        {
+            var leftChanges = new IChange[] {new Change(ChangeType.Added, null, MockingHelper.GetMockedFile("file"))};
+            var rightChanges = new IChange[] { new Change(ChangeType.Deleted, MockingHelper.GetMockedFile("file"), null) };
+
+            var leftDiff = GetMockedFileSystemDiff(null, null, leftChanges).Object;
+            var rightDiff = GetMockedFileSystemDiff(null, null, rightChanges).Object;
+
+            Assert.Throws<InvalidOperationException>(() => m_Instance.Synchronize(leftDiff, rightDiff));
+            Assert.Throws<InvalidOperationException>(() => m_Instance.Synchronize(rightDiff, leftDiff));
+        }
+
+
 
 
         Mock<IFileSystemDiff> GetMockedFileSystemDiff(IDirectory fromSnapshot, IDirectory toSnapshot, IChange[] changes)

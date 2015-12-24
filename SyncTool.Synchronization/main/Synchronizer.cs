@@ -226,7 +226,7 @@ namespace SyncTool.Synchronization
             }
             else if (change.LeftChange.Type == ChangeType.Added && change.RightChange.Type == ChangeType.Deleted)
             {
-                return ProcessAdditionAndDeletion(leftChanges, rightChanges, change);
+                throw new InvalidOperationException($"Addition and Deletion should is not a valid change combination (File {change.FilePath})");                
             }
             else if (change.LeftChange.Type == ChangeType.Modified && change.RightChange.Type == ChangeType.Added)
             {
@@ -244,7 +244,7 @@ namespace SyncTool.Synchronization
             }
             else if (change.LeftChange.Type == ChangeType.Deleted && change.RightChange.Type == ChangeType.Added)
             {
-                return ProcessDeletionAndAddition(leftChanges, rightChanges, change);
+                throw new InvalidOperationException($"Addition and Deletion should is not a valid change combination (File {change.FilePath})");
             }
             else if (change.LeftChange.Type == ChangeType.Deleted && change.RightChange.Type == ChangeType.Modified)
             {
@@ -306,22 +306,12 @@ namespace SyncTool.Synchronization
             }            
         }
 
-        SyncAction ProcessAdditionAndDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
-        {
-            throw new NotImplementedException();
-        }
-
         SyncAction ProcessDoubleModification(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }
 
         SyncAction ProcessModificationAndDeletion(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
-        {
-            throw new NotImplementedException();
-        }
-
-        SyncAction ProcessDeletionAndAddition(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             throw new NotImplementedException();
         }

@@ -29,7 +29,7 @@ namespace SyncTool.FileSystem.Versioning
             Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, null, null));
             Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, MockingHelper.GetMockedFile(), null));
             Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, null, MockingHelper.GetMockedFile()));
-            new Change(ChangeType.Modified, MockingHelper.GetMockedFile(), MockingHelper.GetMockedFile());
+            new Change(ChangeType.Modified, MockingHelper.GetMockedFile("path1"), MockingHelper.GetMockedFile("path1"));
 
         }
 
