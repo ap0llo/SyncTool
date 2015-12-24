@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Functional.Option;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 
@@ -42,7 +43,8 @@ namespace SyncTool.Synchronization
             var combinedChanges = CombineChanges(leftChanges, rightChanges).ToList();
 
             return combinedChanges.Select(change => ProcessChange(leftChanges, rightChanges, change))
-                                  .Where(action => action != null)
+                                  .Where(opt => opt.HasValue)  
+                                  .Select(opt => opt.Value)                       
                                   .ToList();
         }
 
@@ -66,7 +68,7 @@ namespace SyncTool.Synchronization
         }
 
 
-        SyncAction ProcessChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        Option<SyncAction> ProcessChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             // case 1: right change only
             if (change.LeftChange == null && change.RightChange != null)
@@ -87,10 +89,10 @@ namespace SyncTool.Synchronization
             {
                 throw new InvalidOperationException($"Encounted {nameof(GroupedChange)} in invalid state");
             }
-        }        
+        }
 
 
-        SyncAction ProcessSingleChange(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
+        Option<SyncAction> ProcessSingleChange(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
             // file changed only on left or right side only
 
@@ -109,8 +111,8 @@ namespace SyncTool.Synchronization
                     throw new ArgumentOutOfRangeException();
             }
         }
-    
-        SyncAction ProcessSingleModification(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
+
+        Option<SyncAction> ProcessSingleModification(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
             // case 1: file does not exist in the other directory
             // => if this happens, something is seriously wrong because if the file is a new file it should be an addition, not a modification
@@ -125,7 +127,7 @@ namespace SyncTool.Synchronization
             if (m_FileComparer.Equals(unchangedFile, change.ToFile))
             {
                 // => nothing to do, we're in sync                
-                return null;
+                return Option.None;
             }
 
             // case 3: changed file matched the file from the unchanged directory prior to modification and was modified 
@@ -145,7 +147,7 @@ namespace SyncTool.Synchronization
            
         }
 
-        SyncAction ProcessSingleAddition(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
+        Option<SyncAction> ProcessSingleAddition(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
             // case 1: file also exists in the unchanged directory
             if (unchangedDirectory.FileExists(change.Path))
@@ -155,7 +157,7 @@ namespace SyncTool.Synchronization
                 if (m_FileComparer.Equals(unchangedFile, change.ToFile))
                 {
                     // => nothing to do
-                    return null;
+                    return Option.None;
                 }
                 // case 1.2: different file exists in the other directory
                 else
@@ -177,13 +179,13 @@ namespace SyncTool.Synchronization
             }            
         }
 
-        SyncAction ProcessSingleDeletion(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
+        Option<SyncAction> ProcessSingleDeletion(IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
             // case 1: file does not exist in the unchanged directory
             if (!unchangedDirectory.FileExists(change.Path))
             {
                 // => nothing to do
-                return null;
+                return Option.None;
             }
             // case 2: file exists in the other directory
             else
@@ -212,7 +214,7 @@ namespace SyncTool.Synchronization
 
 
 
-        SyncAction ProcessDoubleChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        Option<SyncAction> ProcessDoubleChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             if (change.LeftChange.Type == ChangeType.Added && change.RightChange.Type == ChangeType.Added)
             {
@@ -264,13 +266,13 @@ namespace SyncTool.Synchronization
             }
         }
 
-        SyncAction ProcessDoubleAddition(GroupedChange change)
+        Option<SyncAction> ProcessDoubleAddition(GroupedChange change)
         {
             // case 1: the same file was added to both global and local states
             if (m_FileComparer.Equals(change.LeftChange.ToFile, change.RightChange.ToFile))
             {
                 // nothing to do, states are in sync
-                return null;
+                return Option.None;
             }
             // case 2: different files were added   
             else
@@ -284,12 +286,12 @@ namespace SyncTool.Synchronization
             }
         }
 
-        SyncAction  ProcessAdditionAndModification(IChange addition, SyncParticipant addedOn, IChange modification, SyncParticipant modifiedOn)
+        Option<SyncAction> ProcessAdditionAndModification(IChange addition, SyncParticipant addedOn, IChange modification, SyncParticipant modifiedOn)
         {
             // if files on both sides are identical now, everthing's fine, nothing to do
             if (m_FileComparer.Equals(addition.ToFile, modification.ToFile))
             {
-                return null;
+                return Option.None;
             }
             else if (m_FileComparer.Equals(addition.ToFile, modification.FromFile))
             {
@@ -310,12 +312,12 @@ namespace SyncTool.Synchronization
             }            
         }
 
-        SyncAction ProcessDoubleModification(GroupedChange change)
+        Option<SyncAction> ProcessDoubleModification(GroupedChange change)
         {
             // case 1: modification resulted in consistent state => nothing to do
             if (m_FileComparer.Equals(change.LeftChange.ToFile, change.RightChange.ToFile))
             {
-                return null;
+                return Option.None;
             }
             // case 2: one modification modifies the result of the other modification
             // in this case, the newer modification can be applied to the other side as well
@@ -347,7 +349,7 @@ namespace SyncTool.Synchronization
             }            
         }
 
-        SyncAction ProcessModificationAndDeletion(IChange modification, SyncParticipant modifiedOn, IChange deletion, SyncParticipant deletedOn)
+        Option<SyncAction> ProcessModificationAndDeletion(IChange modification, SyncParticipant modifiedOn, IChange deletion, SyncParticipant deletedOn)
         {
             // case 1: the version of the file that was deleted on one side was deleted on the other
             if (m_FileComparer.Equals(modification.FromFile, deletion.FromFile))
@@ -371,11 +373,11 @@ namespace SyncTool.Synchronization
             }           
         }
 
-        
-        SyncAction ProcessDoubleDeletion(GroupedChange change)
+
+        Option<SyncAction> ProcessDoubleDeletion(GroupedChange change)
         {
             // file is gone from both local and global states => nothing to do  
-            return null;
+            return Option.None;
         }
 
 

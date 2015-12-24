@@ -10,6 +10,10 @@
     <AssemblyName>SyncTool.Synchronization</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Option, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Option.3.0.1\lib\Net35\Option.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -23,6 +27,7 @@
     <None Include="..\..\common\common.licenseheader">
       <Link>common.licenseheader</Link>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FilePropertiesComparer.cs" />
