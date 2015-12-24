@@ -82,9 +82,13 @@ namespace SyncTool.FileSystem
             {
                 return FileExistsByName(localName);
             }
-            else
+            else if(DirectoryExistsByName(localName))
             {
                 return GetDirectoryByName(localName).FileExists(remainingPath);
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -103,9 +107,13 @@ namespace SyncTool.FileSystem
             {
                 return DirectoryExistsByName(localName);                
             }
-            else
+            else if (DirectoryExistsByName(localName))
             {
                 return GetDirectoryByName(localName).DirectoryExists(remainingPath);
+            }
+            else
+            {
+                return false;
             }
         }
 

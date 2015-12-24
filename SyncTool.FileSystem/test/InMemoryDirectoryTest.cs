@@ -107,9 +107,11 @@ namespace SyncTool.FileSystem
         {
             Assert.False(m_Root.FileExists("someFileName"));
             Assert.False(m_Root.FileExists("file1"));
+            Assert.False(m_Root.FileExists("someDir/someFile"));         
 
             Assert.True(m_Root.FileExists("dir1/file1"));
-            Assert.True(m_Dir1.FileExists("file1"));            
+            Assert.True(m_Dir1.FileExists("file1"));   
+            
         }
 
         #endregion
@@ -181,6 +183,7 @@ namespace SyncTool.FileSystem
             Assert.True(m_Root.DirectoryExists("dir1/dir11"));
 
             Assert.False(m_Root.DirectoryExists("someName"));
+            Assert.False(m_Root.DirectoryExists("someDir/someSubDir"));
         }
 
         #endregion
