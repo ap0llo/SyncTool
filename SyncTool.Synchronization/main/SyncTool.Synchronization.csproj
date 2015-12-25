@@ -31,7 +31,12 @@
     <None Include="SyncActions\SyncActions.cd" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DirectoryExtensions.cs" />
     <Compile Include="FilePropertiesComparer.cs" />
+    <Compile Include="MutableDirectory.cs" />
+    <Compile Include="MutableDirectoryExtensions.cs" />
+    <Compile Include="NotApplicableException.cs" />
+    <Compile Include="SyncActions\ISyncActionSet.cs" />
     <Compile Include="SyncActions\ModificationDeletionConflictSyncAction.cs" />
     <Compile Include="SyncActions\MultipleVersionConflictSyncAction.cs" />
     <Compile Include="SyncActions\SyncActionSet.cs" />

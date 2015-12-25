@@ -9,11 +9,9 @@ using SyncTool.FileSystem;
 namespace SyncTool.Synchronization
 {
     public abstract class SyncAction
-    {
-
+    {        
+        public abstract string FilePath { get; }
         
-
-        
-        public abstract void Accept(ISyncActionVisitor visitor);        
+        public abstract void Accept<T>(ISyncActionVisitor<T> visitor, T parameter);        
     }
 }

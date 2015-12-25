@@ -5,12 +5,13 @@
 
 using System.Collections.Generic;
 using SyncTool.FileSystem;
-using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Synchronization
 {
-    public interface ISynchronizer
+    public interface ISyncActionSet : IEnumerable<SyncAction>
     {
-        ISyncActionSet Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges);
+        void Add(SyncAction action);
+
+        IDirectory ApplyTo(IDirectory directory);
     }
 }

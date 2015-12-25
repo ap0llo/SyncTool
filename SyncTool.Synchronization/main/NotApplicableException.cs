@@ -3,14 +3,15 @@
 // //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // // -----------------------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using SyncTool.FileSystem;
-using SyncTool.FileSystem.Versioning;
+using System;
 
 namespace SyncTool.Synchronization
 {
-    public interface ISynchronizer
+    [Serializable]
+    public class NotApplicableException : Exception
     {
-        ISyncActionSet Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges);
+        public NotApplicableException(string message) : base(message)
+        {           
+        }
     }
 }

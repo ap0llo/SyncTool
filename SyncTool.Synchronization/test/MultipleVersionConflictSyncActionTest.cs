@@ -18,10 +18,11 @@ namespace SyncTool.Synchronization
         }
 
         [Fact]
-        public void Constructor_throws_ArgumentException_if_list_of_conflicted_files_is_empty()
+        public void Constructor_throws_ArgumentException_if_list_of_conflicted_files_contains_less_than_two_items()
         {
             Assert.Throws<ArgumentException>(() => new MultipleVersionConflictSyncAction());
             Assert.Throws<ArgumentException>(() => new MultipleVersionConflictSyncAction(new IFile[0]));
+            Assert.Throws<ArgumentException>(() => new MultipleVersionConflictSyncAction(new IFile[1]));
         }
     }
 }

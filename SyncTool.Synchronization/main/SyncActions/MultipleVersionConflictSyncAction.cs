@@ -12,6 +12,8 @@ namespace SyncTool.Synchronization
 {
     public sealed class MultipleVersionConflictSyncAction : ConflictSyncAction
     {
+        public override string FilePath => ConflictedFiles.First().Path;
+
         public IEnumerable<IFile> ConflictedFiles { get; }
 
 
@@ -21,19 +23,20 @@ namespace SyncTool.Synchronization
             {
                 throw new ArgumentNullException(nameof(conflictedFiles));
             }
-
-            if (!conflictedFiles.Any())
+            if (conflictedFiles.Length < 2)
             {
-                throw new ArgumentException("Enumeration of conflicted files must not be empty", nameof(conflictedFiles));
+                throw new ArgumentException("Enumeration of conflicted files must at least contain two items", nameof(conflictedFiles));
             }
+
+            // TODO: Check that all conflicts have the same path
 
             this.ConflictedFiles = conflictedFiles;
         }
 
 
-        public override void Accept(ISyncActionVisitor visitor)
+        public override void Accept<T>(ISyncActionVisitor<T> visitor, T parameter)
         {
-            visitor.Visit(this);
+            visitor.Visit(this, parameter);
         }
     }
 }

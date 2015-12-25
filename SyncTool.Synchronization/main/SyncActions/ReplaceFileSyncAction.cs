@@ -10,6 +10,7 @@ namespace SyncTool.Synchronization
 {
     public sealed class ReplaceFileSyncAction : ResolvedSyncAction
     {
+        public override string FilePath => OldVersion.Path;
 
         public IFile OldVersion { get; }
 
@@ -36,9 +37,9 @@ namespace SyncTool.Synchronization
 
         }
 
-        public override void Accept(ISyncActionVisitor visitor)
+        public override void Accept<T>(ISyncActionVisitor<T> visitor, T parameter)
         {
-            visitor.Visit(this);
+            visitor.Visit(this, parameter);
         }
     }
 }

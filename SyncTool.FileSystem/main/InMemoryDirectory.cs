@@ -50,5 +50,11 @@ namespace SyncTool.FileSystem
             m_Files.Add(file.Name, file);
             return file;
         }
+        
+
+        protected void RemoveFileByName(string name)
+        {
+            m_Files.Remove(name);
+        }
     }
 }

@@ -26,7 +26,7 @@ namespace SyncTool.Synchronization
         }
 
 
-        public SyncActionSet Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges)
+        public ISyncActionSet Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges)
         {
             if (leftChanges == null)
             {
@@ -42,7 +42,7 @@ namespace SyncTool.Synchronization
 
             var combinedChanges = CombineChanges(leftChanges, rightChanges).ToList();
 
-            var actionSet = new SyncActionSet();
+            var actionSet = new SyncActionSet(m_FileComparer);
             foreach (var change in combinedChanges)
             {
                 var actionOption = ProcessChange(leftChanges, rightChanges, change);
@@ -90,7 +90,7 @@ namespace SyncTool.Synchronization
             // case 3: right and left change
             else if (change.LeftChange != null && change.RightChange != null)
             {
-                return ProcessDoubleChange(leftChanges, rightChanges, change);
+                return ProcessDoubleChange(change);
             }
             else
             {
@@ -221,7 +221,7 @@ namespace SyncTool.Synchronization
 
 
 
-        Option<SyncAction> ProcessDoubleChange(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        Option<SyncAction> ProcessDoubleChange(GroupedChange change)
         {
             if (change.LeftChange.Type == ChangeType.Added && change.RightChange.Type == ChangeType.Added)
             {

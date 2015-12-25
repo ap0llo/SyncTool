@@ -10,7 +10,10 @@ namespace SyncTool.Synchronization
 {
     public sealed class RemoveFileSyncAction : ResolvedSyncAction
     {
+        public override string FilePath => RemovedFile.Path;
+
         public IFile RemovedFile { get; }
+
 
         public RemoveFileSyncAction(SyncParticipant target, IFile removedFile) : base(target)
         {
@@ -21,9 +24,10 @@ namespace SyncTool.Synchronization
             this.RemovedFile = removedFile;
         }
 
-        public override void Accept(ISyncActionVisitor visitor)
+
+        public override void Accept<T>(ISyncActionVisitor<T> visitor, T parameter)
         {
-            visitor.Visit(this);
+            visitor.Visit(this, parameter);
         }
     }
 }

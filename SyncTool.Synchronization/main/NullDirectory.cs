@@ -36,7 +36,21 @@ namespace SyncTool.Synchronization
             this.Name = directory.Name;
             this.Path = directory.Path;
         }
-        
+
+        public NullDirectory(string path, string name)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+            this.Path = path;
+            this.Name = name;
+        }
+
 
         public IDirectory GetDirectory(string path)
         {

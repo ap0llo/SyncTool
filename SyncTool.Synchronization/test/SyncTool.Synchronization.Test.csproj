@@ -73,6 +73,7 @@
     <Compile Include="GroupedChangeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplaceFileSyncActionTest.cs" />
+    <Compile Include="SyncActionSetTest.cs" />
     <Compile Include="SynchronizerTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

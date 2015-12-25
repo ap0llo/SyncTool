@@ -11,6 +11,8 @@ namespace SyncTool.Synchronization
     public sealed class AddFileSyncAction : ResolvedSyncAction
     {
 
+        public override string FilePath => NewFile.Path;
+
         public IFile NewFile { get; }
 
         public AddFileSyncAction(SyncParticipant target, IFile newFile) : base(target)
@@ -22,9 +24,9 @@ namespace SyncTool.Synchronization
             this.NewFile = newFile;
         }
 
-        public override void Accept(ISyncActionVisitor visitor)
+        public override void Accept<T>(ISyncActionVisitor<T> visitor, T parameter)
         {
-            visitor.Visit(this);
+            visitor.Visit(this, parameter);
         }
     }
 }

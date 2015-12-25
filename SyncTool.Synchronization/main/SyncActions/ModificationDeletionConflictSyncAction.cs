@@ -8,8 +8,10 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public class ModificationDeletionConflictSyncAction : ConflictSyncAction
+    public sealed class ModificationDeletionConflictSyncAction : ConflictSyncAction
     {
+
+        public override string FilePath => ModifiedFile.Path;
 
         public IFile ModifiedFile { get; }
 
@@ -26,13 +28,18 @@ namespace SyncTool.Synchronization
             {
                 throw new ArgumentNullException(nameof(deletedFile));
             }
+            if (!StringComparer.InvariantCultureIgnoreCase.Equals(modifiedFile.Path, deletedFile.Path))
+            {
+                throw new ArgumentException($"The paths of {nameof(modifiedFile)} and {nameof(deletedFile)} differ");
+            }
+
             this.ModifiedFile = modifiedFile;
             this.DeletedFile = deletedFile;
         }
 
-        public override void Accept(ISyncActionVisitor visitor)
+        public override void Accept<T>(ISyncActionVisitor<T> visitor, T parameter)
         {
-            visitor.Visit(this);
+            visitor.Visit(this, parameter);
         }
     }
 }

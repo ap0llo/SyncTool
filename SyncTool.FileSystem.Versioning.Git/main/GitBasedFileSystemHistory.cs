@@ -115,8 +115,13 @@ namespace SyncTool.FileSystem.Versioning.Git
         }
 
 
-        IDictionary<string, GitBasedFileSystemSnapshot> LoadSnapshots() => m_Repository.Branches[m_BranchName].Commits.Where(GitBasedFileSystemSnapshot.IsSnapshot).Select(commit => new GitBasedFileSystemSnapshot(commit)).ToDictionary(snapshot => snapshot.Id, StringComparer.InvariantCultureIgnoreCase);
-
+        IDictionary<string, GitBasedFileSystemSnapshot> LoadSnapshots()
+        {
+            return m_Repository.Branches[m_BranchName].Commits
+                               .Where(GitBasedFileSystemSnapshot.IsSnapshot)
+                               .Select(commit => new GitBasedFileSystemSnapshot(commit))
+                               .ToDictionary(snapshot => snapshot.Id, StringComparer.InvariantCultureIgnoreCase);
+        }
 
         GitBasedFileSystemSnapshot GetSnapshot(string id)
         {

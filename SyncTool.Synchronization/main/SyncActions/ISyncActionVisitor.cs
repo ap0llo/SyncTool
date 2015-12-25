@@ -4,17 +4,17 @@
 // // -----------------------------------------------------------------------------------------------------------
 namespace SyncTool.Synchronization
 {
-    public interface ISyncActionVisitor
+    public interface ISyncActionVisitor<T>
     {
-        void Visit(MultipleVersionConflictSyncAction action);
+        void Visit(MultipleVersionConflictSyncAction action, T parameter);
 
-        void Visit(ModificationDeletionConflictSyncAction action);
+        void Visit(ModificationDeletionConflictSyncAction action, T parameter);
 
-        void Visit(ReplaceFileSyncAction action);
+        void Visit(ReplaceFileSyncAction action, T parameter);
 
-        void Visit(AddFileSyncAction action);
+        void Visit(AddFileSyncAction action, T parameter);
 
-        void Visit(RemoveFileSyncAction action);
+        void Visit(RemoveFileSyncAction action, T parameter);
 
     }
 }

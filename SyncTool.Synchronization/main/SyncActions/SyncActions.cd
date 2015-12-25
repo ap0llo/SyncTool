@@ -3,7 +3,7 @@
   <Class Name="SyncTool.Synchronization.AddFileSyncAction" Collapsed="true">
     <Position X="9.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAABAAAAAAAA=</HashCode>
       <FileName>SyncActions\AddFileSyncAction.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -17,28 +17,28 @@
   <Class Name="SyncTool.Synchronization.ModificationDeletionConflictSyncAction" Collapsed="true">
     <Position X="4.75" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAABAgAAAAAA=</HashCode>
       <FileName>SyncActions\ModificationDeletionConflictSyncAction.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="SyncTool.Synchronization.MultipleVersionConflictSyncAction" Collapsed="true">
     <Position X="7" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAABAAAAAAAA=</HashCode>
       <FileName>SyncActions\MultipleVersionConflictSyncAction.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="SyncTool.Synchronization.RemoveFileSyncAction" Collapsed="true">
     <Position X="13.75" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAABAAAAAAAA=</HashCode>
       <FileName>SyncActions\RemoveFileSyncAction.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="SyncTool.Synchronization.ReplaceFileSyncAction" Collapsed="true">
     <Position X="11.5" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAABABAAAAAA=</HashCode>
       <FileName>SyncActions\ReplaceFileSyncAction.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -52,7 +52,7 @@
   <Class Name="SyncTool.Synchronization.SyncAction" Collapsed="true">
     <Position X="9.25" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
       <FileName>SyncActions\SyncAction.cs</FileName>
     </TypeIdentifier>
   </Class>
