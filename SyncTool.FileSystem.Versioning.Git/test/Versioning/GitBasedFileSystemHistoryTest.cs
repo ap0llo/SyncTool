@@ -254,6 +254,81 @@ namespace SyncTool.FileSystem.Versioning.Git
             FileSystemAssert.FileEqual(state1.GetFile(s_File1), diff.Changes.Single().FromFile);
         }
 
+
+        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".CompareSnapshots() ignores Additions of empty directories")]
+        public void CompareSnapshots_ignores_Additions_of_empty_directories()
+        {
+
+            var state1 = new Directory(s_Dir1);
+
+            var state2 = new Directory(s_Dir1)
+            {
+                dir1 => new Directory(dir1, s_Dir2)
+            };       
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            Assert.NotEqual(snapshot1.Id, snapshot2.Id);
+
+            var diff = m_Instance.CompareSnapshots(snapshot1.Id, snapshot2.Id);
+
+            Assert.Empty(diff.Changes);
+
+        }
+
+        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".CompareSnapshots() ignores Deletions of empty directories")]
+        public void CompareSnapshots_ignores_Deletions_of_empty_directories()
+        {            
+            var state1 = new Directory(s_Dir1)
+            {
+                dir1 => new Directory(dir1, s_Dir2)
+            };
+
+            var state2 = new Directory(s_Dir1);
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            Assert.NotEqual(snapshot1.Id, snapshot2.Id);
+
+            var diff = m_Instance.CompareSnapshots(snapshot1.Id, snapshot2.Id);
+
+            Assert.Empty(diff.Changes);
+
+        }
+
+        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".CompareSnapshots() ignores changes outside of the Snapshot directory")]
+        public void CompareSnapshots_ignores_Changes_outside_of_the_Snapshot_directory()
+        {
+            var state1 = new Directory(s_Dir1);
+            var state2 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1")
+            };
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+
+            // create unrelated change between two snapshots
+            using (var workingDirectory = new TemporaryWorkingDirectory(m_Repository.Info.Path, m_Instance.Id))
+            {
+                NativeFile.WriteAllText(Path.Combine(workingDirectory.Location, "foo"), "Hello World");
+                workingDirectory.Commit();
+                workingDirectory.Push();
+            }
+
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            Assert.NotEqual(snapshot1.Id, snapshot2.Id);
+
+            var diff = m_Instance.CompareSnapshots(snapshot1.Id, snapshot2.Id);
+
+            // there should only be a single change (the addition of 'file1')
+            Assert.Single(diff.Changes);
+
+        }
+
+
         #endregion
 
 

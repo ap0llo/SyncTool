@@ -14,7 +14,7 @@ namespace SyncTool.FileSystem.Versioning.Git
 {
     public class GitBasedFileSystemSnapshot : IFileSystemSnapshot
     {
-        const string s_SnapshotDirectoryName = "Snapshot";
+        public const string SnapshotDirectoryName = "Snapshot";
         
         readonly MetaFileSystemLoader m_MetaFileSystemLoader = new MetaFileSystemLoader();
         readonly MetaFileSystemToFileSystemConverter m_MetaFileSystemConverter = new MetaFileSystemToFileSystemConverter();        
@@ -57,7 +57,7 @@ namespace SyncTool.FileSystem.Versioning.Git
             string commitId;
             using (var workingRepository = new TemporaryWorkingDirectory(repository.Info.Path, branchName))
             {                 
-                var snapshotDirectoryPath = Path.Combine(workingRepository.Location, s_SnapshotDirectoryName);
+                var snapshotDirectoryPath = Path.Combine(workingRepository.Location, SnapshotDirectoryName);
                 if (NativeDirectory.Exists(snapshotDirectoryPath))
                 {
                     NativeDirectory.Delete(path: snapshotDirectoryPath, recursive:true);
@@ -93,7 +93,7 @@ namespace SyncTool.FileSystem.Versioning.Git
             
        }
 
-        public static bool IsSnapshot(Commit commit) => commit.Tree[s_SnapshotDirectoryName] != null;
+        public static bool IsSnapshot(Commit commit) => commit.Tree[SnapshotDirectoryName] != null;
 
 
         internal IFile GetFileForGitRelativePath(string relativePath)
@@ -116,9 +116,9 @@ namespace SyncTool.FileSystem.Versioning.Git
             m_MetaFileSystem = m_MetaFileSystemLoader.Convert(m_GitDirectory);
 
             // convert to the originally stored file system (load file and directory properties files in the meta file system)
-            m_MetaFileSystemMapping = m_MetaFileSystemConverter.Convert(m_MetaFileSystem.GetDirectory(s_SnapshotDirectoryName));
+            m_MetaFileSystemMapping = m_MetaFileSystemConverter.Convert(m_MetaFileSystem.GetDirectory(SnapshotDirectoryName));
 
-            RootDirectory = m_MetaFileSystemMapping.GetMappedDirectory(m_MetaFileSystem.GetDirectory(s_SnapshotDirectoryName));
+            RootDirectory = m_MetaFileSystemMapping.GetMappedDirectory(m_MetaFileSystem.GetDirectory(SnapshotDirectoryName));
         }
 
     }
