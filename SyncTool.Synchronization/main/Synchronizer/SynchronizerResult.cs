@@ -11,19 +11,19 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    internal class SyncActionSet : ISyncActionSet, ISyncActionVisitor<MutableDirectory>
+    internal class SynchronizerResult : ISynchronizerResult, ISyncActionVisitor<MutableDirectory>
     {
         readonly IEqualityComparer<IFile> m_FileComparer; 
-        readonly LinkedList<ResolvedSyncAction> m_Actions = new LinkedList<ResolvedSyncAction>();
-        readonly LinkedList<ConflictSyncAction> m_Conflicts = new LinkedList<ConflictSyncAction>();
+        readonly LinkedList<SyncAction> m_Actions = new LinkedList<SyncAction>();
+        readonly LinkedList<SyncConflict> m_Conflicts = new LinkedList<SyncConflict>();
 
 
-        public IEnumerable<ResolvedSyncAction> Actions => m_Actions;
+        public IEnumerable<SyncAction> Actions => m_Actions;
 
-        public IEnumerable<ConflictSyncAction> Conflicts => m_Conflicts; 
+        public IEnumerable<SyncConflict> Conflicts => m_Conflicts; 
 
 
-        public SyncActionSet(IEqualityComparer<IFile> fileComparer)
+        public SynchronizerResult(IEqualityComparer<IFile> fileComparer)
         {
             if (fileComparer == null)
             {
@@ -33,25 +33,22 @@ namespace SyncTool.Synchronization
         }
 
 
-        public void Add(ResolvedSyncAction action)
+        public void Add(SyncAction action)
         {
             m_Actions.AddLast(action);
         }
 
-        public void Add(ConflictSyncAction conflict)
+        public void Add(SyncConflict conflict)
         {
             m_Conflicts.AddLast(conflict);
         } 
-
-        public IEnumerator<SyncAction> GetEnumerator() => m_Actions.Union(m_Conflicts.Cast<SyncAction>()).GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        
 
         public IDirectory ApplyTo(IDirectory directory)
         {
             if (m_Conflicts.Any())
             {
-                throw new InvalidOperationException("Cannot apply SyncActionSet to directory because it contains conflicts");
+                throw new InvalidOperationException("Cannot apply SynchronizerResult to directory because it contains conflicts");
             }
             
             var newDirectory = directory.ToMutableDirectory();
@@ -64,17 +61,7 @@ namespace SyncTool.Synchronization
         }
         
 
-
-        public void Visit(MultipleVersionConflictSyncAction action, MutableDirectory rootDirectory)
-        {
-            throw new InvalidOperationException();
-        }
-
-        public void Visit(ModificationDeletionConflictSyncAction action, MutableDirectory rootDirectory)
-        {
-            throw new InvalidOperationException();
-        }
-
+        
         public void Visit(ReplaceFileSyncAction action, MutableDirectory rootDirectory)
         {
             // replace can be mapped to remove + add

@@ -8,7 +8,7 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public sealed class RemoveFileSyncAction : ResolvedSyncAction
+    public sealed class RemoveFileSyncAction : SyncAction
     {
         public override string FilePath => RemovedFile.Path;
 

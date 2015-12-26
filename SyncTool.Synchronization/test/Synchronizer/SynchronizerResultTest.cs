@@ -13,20 +13,20 @@ using Xunit;
 
 namespace SyncTool.Synchronization
 {
-    public class SyncActionSetTest
+    public class SynchronizerResultTest
     {
-        readonly SyncActionSet m_Instance;
+        readonly SynchronizerResult m_Instance;
 
-        public SyncActionSetTest()
+        public SynchronizerResultTest()
         {
-            m_Instance = new SyncActionSet(new FilePropertiesComparer());
+            m_Instance = new SynchronizerResult(new FilePropertiesComparer());
         }
 
 
         [Fact]
         public void ApplyTo_throws_InvalidOperationException_if_set_contains_conflicts()
         {            
-            m_Instance.Add(new MultipleVersionConflictSyncAction(MockingHelper.GetMockedFile("file1"), MockingHelper.GetMockedFile("file1")));
+            m_Instance.Add(new MultipleVersionSyncConflict(MockingHelper.GetMockedFile("file1"), MockingHelper.GetMockedFile("file1")));
 
             Assert.Throws<InvalidOperationException>(() => m_Instance.ApplyTo(new Directory("root")));
 

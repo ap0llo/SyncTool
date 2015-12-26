@@ -11,7 +11,15 @@ namespace SyncTool.Synchronization
     public abstract class SyncAction
     {        
         public abstract string FilePath { get; }
-        
+
+        public SyncParticipant Target { get; }
+
+        protected SyncAction(SyncParticipant target)
+        {
+            this.Target = target;
+        }
+
+
         public abstract void Accept<T>(ISyncActionVisitor<T> visitor, T parameter);        
     }
 }

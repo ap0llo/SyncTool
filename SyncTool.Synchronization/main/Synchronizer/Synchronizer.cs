@@ -26,7 +26,7 @@ namespace SyncTool.Synchronization
         }
 
 
-        public ISyncActionSet Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges)
+        public ISynchronizerResult Synchronize(IFileSystemDiff leftChanges, IFileSystemDiff rightChanges)
         {
             if (leftChanges == null)
             {
@@ -42,7 +42,7 @@ namespace SyncTool.Synchronization
 
             var combinedChanges = CombineChanges(leftChanges, rightChanges).ToList();
 
-            var actionSet = new SyncActionSet(m_FileComparer);
+            var actionSet = new SynchronizerResult(m_FileComparer);
             foreach (var change in combinedChanges)
             {
                 ProcessChange(actionSet, leftChanges, rightChanges, change);
@@ -72,7 +72,7 @@ namespace SyncTool.Synchronization
         }
 
 
-        void ProcessChange(SyncActionSet resultSet, IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
+        void ProcessChange(SynchronizerResult resultSet, IFileSystemDiff leftChanges, IFileSystemDiff rightChanges, GroupedChange change)
         {
             // case 1: right change only
             if (change.LeftChange == null && change.RightChange != null)
@@ -96,7 +96,7 @@ namespace SyncTool.Synchronization
         }
 
 
-        void ProcessSingleChange(SyncActionSet resultSet, IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
+        void ProcessSingleChange(SynchronizerResult resultSet, IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
             // file changed only on left or right side only
 
@@ -119,7 +119,7 @@ namespace SyncTool.Synchronization
             }
         }
 
-        void ProcessSingleModification(SyncActionSet resultSet, IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
+        void ProcessSingleModification(SynchronizerResult resultSet, IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
             // case 1: file does not exist in the other directory
             // => if this happens, something is seriously wrong because if the file is a new file it should be an addition, not a modification
@@ -149,14 +149,14 @@ namespace SyncTool.Synchronization
             else
             {                
                 // => conflict   
-                resultSet.Add(new MultipleVersionConflictSyncAction(unchangedFile, change.ToFile)
+                resultSet.Add(new MultipleVersionSyncConflict(unchangedFile, change.ToFile)
                 {
                     Description = $"A file exists in {changedParticipant.Invert()}, but a different version of the file was modified in {changedParticipant}"
                 });           
             }
         }
 
-        void ProcessSingleAddition(SyncActionSet resultSet, IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
+        void ProcessSingleAddition(SynchronizerResult resultSet, IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
             // case 1: file also exists in the unchanged directory
             if (unchangedDirectory.FileExists(change.Path))
@@ -172,7 +172,7 @@ namespace SyncTool.Synchronization
                 else
                 {
                     // => conflict
-                    resultSet.Add(new MultipleVersionConflictSyncAction(
+                    resultSet.Add(new MultipleVersionSyncConflict(
                         ExtractFileFromTree(unchangedFile),
                         ExtractFileFromTree(change.ToFile))
                     {
@@ -188,7 +188,7 @@ namespace SyncTool.Synchronization
             }            
         }
 
-        void ProcessSingleDeletion(SyncActionSet resultSet, IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
+        void ProcessSingleDeletion(SynchronizerResult resultSet, IDirectory unchangedDirectory, IChange change, SyncParticipant changedParticipant)
         {
             // case 1: file does not exist in the unchanged directory
             if (!unchangedDirectory.FileExists(change.Path))
@@ -211,7 +211,7 @@ namespace SyncTool.Synchronization
                 else
                 {
                     // => conflict
-                    resultSet.Add(new MultipleVersionConflictSyncAction(
+                    resultSet.Add(new MultipleVersionSyncConflict(
                         ExtractFileFromTree(unchangedFile),
                         ExtractFileFromTree(change.FromFile))
                     {
@@ -223,7 +223,7 @@ namespace SyncTool.Synchronization
 
 
 
-        void ProcessDoubleChange(SyncActionSet resultSet, GroupedChange change)
+        void ProcessDoubleChange(SynchronizerResult resultSet, GroupedChange change)
         {
             if (change.LeftChange.Type == ChangeType.Added && change.RightChange.Type == ChangeType.Added)
             {
@@ -279,7 +279,7 @@ namespace SyncTool.Synchronization
             }
         }
 
-        void ProcessDoubleAddition(SyncActionSet resultSet, GroupedChange change)
+        void ProcessDoubleAddition(SynchronizerResult resultSet, GroupedChange change)
         {
             // case 1: the same file was added to both global and local states
             if (m_FileComparer.Equals(change.LeftChange.ToFile, change.RightChange.ToFile))
@@ -290,7 +290,7 @@ namespace SyncTool.Synchronization
             // case 2: different files were added   
             else
             {
-                resultSet.Add(new MultipleVersionConflictSyncAction(
+                resultSet.Add(new MultipleVersionSyncConflict(
                     ExtractFileFromTree(change.LeftChange.ToFile),
                     ExtractFileFromTree(change.RightChange.ToFile))
                 {
@@ -299,7 +299,7 @@ namespace SyncTool.Synchronization
             }
         }
 
-        void ProcessAdditionAndModification(SyncActionSet resultSet, IChange addition, SyncParticipant addedOn, IChange modification, SyncParticipant modifiedOn)
+        void ProcessAdditionAndModification(SynchronizerResult resultSet, IChange addition, SyncParticipant addedOn, IChange modification, SyncParticipant modifiedOn)
         {
             // if files on both sides are identical now, everthing's fine, nothing to do
             if (m_FileComparer.Equals(addition.ToFile, modification.ToFile))
@@ -316,7 +316,7 @@ namespace SyncTool.Synchronization
             }
             else
             {
-                resultSet.Add(new MultipleVersionConflictSyncAction(
+                resultSet.Add(new MultipleVersionSyncConflict(
                     ExtractFileFromTree(addition.ToFile),
                     ExtractFileFromTree(modification.ToFile))
                 {
@@ -325,7 +325,7 @@ namespace SyncTool.Synchronization
             }            
         }
 
-        void ProcessDoubleModification(SyncActionSet resultSet, GroupedChange change)
+        void ProcessDoubleModification(SynchronizerResult resultSet, GroupedChange change)
         {
             // case 1: modification resulted in consistent state => nothing to do
             if (m_FileComparer.Equals(change.LeftChange.ToFile, change.RightChange.ToFile))
@@ -352,7 +352,7 @@ namespace SyncTool.Synchronization
             else if(m_FileComparer.Equals(change.LeftChange.FromFile, change.RightChange.FromFile))
             {
                 // => conflicting modifications
-                resultSet.Add(new MultipleVersionConflictSyncAction(
+                resultSet.Add(new MultipleVersionSyncConflict(
                     ExtractFileFromTree(change.LeftChange.ToFile),
                     ExtractFileFromTree(change.RightChange.ToFile)));
             }
@@ -362,13 +362,13 @@ namespace SyncTool.Synchronization
             }            
         }
 
-        void ProcessModificationAndDeletion(SyncActionSet resultSet, IChange modification, SyncParticipant modifiedOn, IChange deletion, SyncParticipant deletedOn)
+        void ProcessModificationAndDeletion(SynchronizerResult resultSet, IChange modification, SyncParticipant modifiedOn, IChange deletion, SyncParticipant deletedOn)
         {
             // case 1: the version of the file that was deleted on one side was deleted on the other
             if (m_FileComparer.Equals(modification.FromFile, deletion.FromFile))
             {
                 // conflict: we need to either delete the modified file or add the modified version to the side where the previous version was deleted
-                resultSet.Add(new ModificationDeletionConflictSyncAction(modification.ToFile, deletion.FromFile)
+                resultSet.Add(new ModificationDeletionSyncConflict(modification.ToFile, deletion.FromFile)
                 {
                     Description = $"File was deleted on {deletedOn} but modified on {modifiedOn}"
                 });
@@ -387,7 +387,7 @@ namespace SyncTool.Synchronization
         }
 
 
-        void ProcessDoubleDeletion(SyncActionSet resultSet, GroupedChange change)
+        void ProcessDoubleDeletion(SynchronizerResult resultSet, GroupedChange change)
         {
             // file is gone from both local and global states => nothing to do              
         }

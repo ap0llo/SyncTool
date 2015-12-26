@@ -10,14 +10,14 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public sealed class MultipleVersionConflictSyncAction : ConflictSyncAction
+    public sealed class MultipleVersionSyncConflict : SyncConflict
     {
         public override string FilePath => ConflictedFiles.First().Path;
 
         public IEnumerable<IFile> ConflictedFiles { get; }
 
 
-        public MultipleVersionConflictSyncAction(params IFile[] conflictedFiles)
+        public MultipleVersionSyncConflict(params IFile[] conflictedFiles)
         {
             if (conflictedFiles == null)
             {
@@ -34,9 +34,6 @@ namespace SyncTool.Synchronization
         }
 
 
-        public override void Accept<T>(ISyncActionVisitor<T> visitor, T parameter)
-        {
-            visitor.Visit(this, parameter);
-        }
+    
     }
 }

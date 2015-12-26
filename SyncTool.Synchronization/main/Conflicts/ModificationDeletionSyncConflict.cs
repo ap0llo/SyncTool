@@ -8,7 +8,7 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public sealed class ModificationDeletionConflictSyncAction : ConflictSyncAction
+    public sealed class ModificationDeletionSyncConflict : SyncConflict
     {
 
         public override string FilePath => ModifiedFile.Path;
@@ -18,7 +18,7 @@ namespace SyncTool.Synchronization
         public IFile DeletedFile { get; }
 
 
-        public ModificationDeletionConflictSyncAction(IFile modifiedFile, IFile deletedFile)
+        public ModificationDeletionSyncConflict(IFile modifiedFile, IFile deletedFile)
         {
             if (modifiedFile == null)
             {
@@ -37,9 +37,6 @@ namespace SyncTool.Synchronization
             this.DeletedFile = deletedFile;
         }
 
-        public override void Accept<T>(ISyncActionVisitor<T> visitor, T parameter)
-        {
-            visitor.Visit(this, parameter);
-        }
+        
     }
 }

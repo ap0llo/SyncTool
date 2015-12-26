@@ -8,7 +8,7 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public sealed class ReplaceFileSyncAction : ResolvedSyncAction
+    public sealed class ReplaceFileSyncAction : SyncAction
     {
         public override string FilePath => OldVersion.Path;
 

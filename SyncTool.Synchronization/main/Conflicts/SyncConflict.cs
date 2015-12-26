@@ -3,17 +3,20 @@
 // //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // // -----------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public interface ISyncActionSet : IEnumerable<SyncAction>
+    public abstract class SyncConflict
     {
-        IEnumerable<ResolvedSyncAction> Actions { get; }
+        
+        public abstract string FilePath { get; }
 
-        IEnumerable<ConflictSyncAction> Conflicts { get; }
+        public string Description { get; set; }
 
-        IDirectory ApplyTo(IDirectory directory);
     }
 }

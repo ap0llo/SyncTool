@@ -8,7 +8,7 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization
 {
-    public sealed class AddFileSyncAction : ResolvedSyncAction
+    public sealed class AddFileSyncAction : SyncAction
     {
 
         public override string FilePath => NewFile.Path;
