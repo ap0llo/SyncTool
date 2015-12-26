@@ -10,7 +10,6 @@ namespace SyncTool.Synchronization
 {
     public interface ISyncActionSet : IEnumerable<SyncAction>
     {
-        void Add(SyncAction action);
 
         IDirectory ApplyTo(IDirectory directory);
     }
