@@ -4,9 +4,10 @@
 // -----------------------------------------------------------------------------------------------------------
 using System;
 using System.Linq;
+using SyncTool.FileSystem;
 using Xunit;
 
-namespace SyncTool.FileSystem.TestHelpers
+namespace SyncTool.TestHelpers
 {
     /// <summary>
     /// Provides assertions for SyncTool.FileSystem types 

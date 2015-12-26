@@ -6,7 +6,7 @@
     <ProjectGuid>{1E3E5912-B315-43A8-8415-91217892BEDA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.FileSystem</RootNamespace>
+    <RootNamespace>SyncTool</RootNamespace>
     <AssemblyName>SyncTool.FileSystem</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
@@ -28,40 +28,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractDirectory.cs" />
-    <Compile Include="BaseVisitor.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="FileExtensions.cs" />
-    <Compile Include="FileSystemItem.cs" />
-    <Compile Include="Filtering\FilteringConverter.cs" />
-    <Compile Include="Filtering\IFileSystemFilter.cs" />
-    <Compile Include="InMemoryDirectory.cs" />
-    <Compile Include="Local\CreateLocalDirectoryVisitorExtensions.cs" />
-    <Compile Include="EmptyFile.cs" />
-    <Compile Include="Local\LocalDirectoryExtensions.cs" />
-    <Compile Include="Local\ILocalFile.cs" />
-    <Compile Include="Local\LocalDirectory.cs" />
-    <Compile Include="Local\LocalFile.cs" />
-    <Compile Include="Local\LocalItemCreator.cs" />
-    <Compile Include="Directory.cs" />
-    <Compile Include="File.cs" />
-    <Compile Include="Local\DisposableLocalDirectoryWrapper.cs" />
-    <Compile Include="IDirectory.cs" />
-    <Compile Include="Local\ILocalDirectory.cs" />
-    <Compile Include="IFile.cs" />
-    <Compile Include="IFileSystemItem.cs" />
-    <Compile Include="IReadableFile.cs" />
+    <Compile Include="FileSystem\AbstractDirectory.cs" />
+    <Compile Include="FileSystem\BaseVisitor.cs" />
+    <Compile Include="FileSystem\Constants.cs" />
+    <Compile Include="FileSystem\FileExtensions.cs" />
+    <Compile Include="FileSystem\FileSystemItem.cs" />
+    <Compile Include="FileSystem\Filtering\FilteringConverter.cs" />
+    <Compile Include="FileSystem\Filtering\IFileSystemFilter.cs" />
+    <Compile Include="FileSystem\InMemoryDirectory.cs" />
+    <Compile Include="FileSystem\Local\CreateLocalDirectoryVisitorExtensions.cs" />
+    <Compile Include="FileSystem\EmptyFile.cs" />
+    <Compile Include="FileSystem\Local\LocalDirectoryExtensions.cs" />
+    <Compile Include="FileSystem\Local\ILocalFile.cs" />
+    <Compile Include="FileSystem\Local\LocalDirectory.cs" />
+    <Compile Include="FileSystem\Local\LocalFile.cs" />
+    <Compile Include="FileSystem\Local\LocalItemCreator.cs" />
+    <Compile Include="FileSystem\Directory.cs" />
+    <Compile Include="FileSystem\File.cs" />
+    <Compile Include="FileSystem\Local\DisposableLocalDirectoryWrapper.cs" />
+    <Compile Include="FileSystem\IDirectory.cs" />
+    <Compile Include="FileSystem\Local\ILocalDirectory.cs" />
+    <Compile Include="FileSystem\IFile.cs" />
+    <Compile Include="FileSystem\IFileSystemItem.cs" />
+    <Compile Include="FileSystem\IReadableFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SeralizationExtensions.cs" />
+    <Compile Include="FileSystem\SeralizationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\common\common.licenseheader">
-      <Link>common.licenseheader</Link>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

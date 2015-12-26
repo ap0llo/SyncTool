@@ -5,8 +5,9 @@
 
 using System;
 using Moq;
+using SyncTool.FileSystem;
 
-namespace SyncTool.FileSystem.TestHelpers
+namespace SyncTool.TestHelpers
 {
     public static class MockingHelper
     {

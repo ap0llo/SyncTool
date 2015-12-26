@@ -5,7 +5,7 @@
 using System;
 using SyncTool.FileSystem.Local;
 
-namespace SyncTool.FileSystem.TestHelpers
+namespace SyncTool.TestHelpers
 {
     public abstract class DirectoryBasedTest : IDisposable
     {

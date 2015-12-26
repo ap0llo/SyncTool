@@ -7,7 +7,7 @@
     <ProjectGuid>{7BA544F9-AE57-4D3B-8DCD-74BBFAC64AE8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.Cli</RootNamespace>
+    <RootNamespace>SyncTool</RootNamespace>
     <AssemblyName>SyncTool</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
@@ -29,30 +29,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\AddFolderCommand.cs" />
-    <Compile Include="Commands\AddGroupCommand.cs" />
-    <Compile Include="Commands\AddSnapshotCommand.cs" />
-    <Compile Include="Commands\CommandBase.cs" />
-    <Compile Include="Commands\GetGroupCommand.cs" />
-    <Compile Include="Commands\GetSnapshotCommand.cs" />
-    <Compile Include="DI\CliModule.cs" />
-    <Compile Include="Framework\AbstractCommandLoader.cs" />
-    <Compile Include="Framework\Application.cs" />
-    <Compile Include="Framework\CommandDescription.cs" />
-    <Compile Include="Framework\CurrentAssemblyCommandLoader.cs" />
-    <Compile Include="Framework\ICommand.cs" />
-    <Compile Include="Framework\ICommandFactory.cs" />
-    <Compile Include="Framework\ICommandLoader.cs" />
-    <Compile Include="DI\NinjectCommandFactory.cs" />
-    <Compile Include="Output\ConsoleOutputWriter.cs" />
-    <Compile Include="Output\IOutputWriter.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Cli\Commands\AddFolderCommand.cs" />
+    <Compile Include="Cli\Commands\AddGroupCommand.cs" />
+    <Compile Include="Cli\Commands\AddSnapshotCommand.cs" />
+    <Compile Include="Cli\Commands\CommandBase.cs" />
+    <Compile Include="Cli\Commands\GetGroupCommand.cs" />
+    <Compile Include="Cli\Commands\GetSnapshotCommand.cs" />
+    <Compile Include="Cli\DI\CliModule.cs" />
+    <Compile Include="Cli\Framework\AbstractCommandLoader.cs" />
+    <Compile Include="Cli\Framework\Application.cs" />
+    <Compile Include="Cli\Framework\CommandDescription.cs" />
+    <Compile Include="Cli\Framework\CurrentAssemblyCommandLoader.cs" />
+    <Compile Include="Cli\Framework\ICommand.cs" />
+    <Compile Include="Cli\Framework\ICommandFactory.cs" />
+    <Compile Include="Cli\Framework\ICommandLoader.cs" />
+    <Compile Include="Cli\DI\NinjectCommandFactory.cs" />
+    <Compile Include="Cli\Output\ConsoleOutputWriter.cs" />
+    <Compile Include="Cli\Output\IOutputWriter.cs" />
+    <Compile Include="Cli\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\common\common.licenseheader">
-      <Link>common.licenseheader</Link>
-    </None>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>

@@ -7,7 +7,7 @@ using System;
 using SyncTool.FileSystem;
 using Directory = SyncTool.FileSystem.Directory;
 
-namespace SyncTool.Synchronization
+namespace SyncTool.FileSystem
 {
     internal static class DirectoryExtensions
     {

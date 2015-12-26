@@ -7,7 +7,7 @@
     <ProjectGuid>{F4BED2B8-095D-4CF0-A93C-DC7F2F5F72A5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.Configuration.Git</RootNamespace>
+    <RootNamespace>SyncTool</RootNamespace>
     <AssemblyName>SyncTool.Configuration.Git</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -38,19 +38,16 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigurationNotFoundException.cs" />
-    <Compile Include="DI\GitConfigurationModule.cs" />
-    <Compile Include="GitBasedConfigurationGroup.cs" />
-    <Compile Include="GitBasedConfigurationGroupManager.cs" />
-    <Compile Include="Reader\ISyncRepositoryReader.cs" />
-    <Compile Include="Reader\JsonSyncRepositoryReader.cs" />
+    <Compile Include="Configuration\ConfigurationNotFoundException.cs" />
+    <Compile Include="Configuration\Git\DI\GitConfigurationModule.cs" />
+    <Compile Include="Configuration\Git\GitBasedConfigurationGroup.cs" />
+    <Compile Include="Configuration\Git\GitBasedConfigurationGroupManager.cs" />
+    <Compile Include="Configuration\Git\Reader\ISyncRepositoryReader.cs" />
+    <Compile Include="Configuration\Git\Reader\JsonSyncRepositoryReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Model\SyncRepositorySettings.cs" />
+    <Compile Include="Configuration\Git\Model\SyncRepositorySettings.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\common\common.licenseheader">
-      <Link>common.licenseheader</Link>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

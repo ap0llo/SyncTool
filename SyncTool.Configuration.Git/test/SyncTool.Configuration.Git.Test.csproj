@@ -8,7 +8,7 @@
     <ProjectGuid>{AAEA631B-BCE1-438B-A293-C74AF8996573}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.Configuration.Git</RootNamespace>
+    <RootNamespace>SyncTool</RootNamespace>
     <AssemblyName>SyncTool.Configuration.Git.Test</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -52,15 +52,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GitBasedConfigurationGroupManagerTest.cs" />
-    <Compile Include="GitBasedConfigurationGroupTest.cs" />
-    <Compile Include="JsonSyncRepositoryReaderTest.cs" />
+    <Compile Include="Configuration\Git\GitBasedConfigurationGroupManagerTest.cs" />
+    <Compile Include="Configuration\Git\GitBasedConfigurationGroupTest.cs" />
+    <Compile Include="Configuration\Git\Reader\JsonSyncRepositoryReaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\common\common.licenseheader">
-      <Link>common.licenseheader</Link>
-    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -78,6 +75,7 @@
       <Name>SyncTool.Configuration.Git</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

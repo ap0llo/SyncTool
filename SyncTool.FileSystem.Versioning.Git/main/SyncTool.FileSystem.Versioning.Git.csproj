@@ -7,7 +7,7 @@
     <ProjectGuid>{680B8656-C346-4FE7-8C79-CCE3B535A476}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.FileSystem.Versioning.Git</RootNamespace>
+    <RootNamespace>SyncTool</RootNamespace>
     <AssemblyName>SyncTool.FileSystem.Versioning.Git</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -39,27 +39,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DI\GitVersioningModule.cs" />
-    <Compile Include="GitBasedFileSystemHistory.cs" />
-    <Compile Include="GitBasedFileSystemSnapshot.cs" />
-    <Compile Include="GitBasedHistoryGroup.cs" />
-    <Compile Include="GitBasedHistoryGroupManager.cs" />
-    <Compile Include="GitFileSystemVersioningModule.cs" />
-    <Compile Include="MetaFileSystem\DirectoryProperties.cs" />
-    <Compile Include="MetaFileSystem\DirectoryPropertiesFile.cs" />
-    <Compile Include="MetaFileSystem\FileProperties.cs" />
-    <Compile Include="MetaFileSystem\FilePropertiesFile.cs" />
-    <Compile Include="MetaFileSystem\FileSystemToMetaFileSystemConverter.cs" />
-    <Compile Include="MetaFileSystem\MetaFileSystemLoader.cs" />
-    <Compile Include="MetaFileSystem\MetaFileSystemToFileSystemConverter.cs" />
+    <Compile Include="FileSystem\Versioning\Git\DI\GitVersioningModule.cs" />
+    <Compile Include="FileSystem\Versioning\Git\GitBasedFileSystemHistory.cs" />
+    <Compile Include="FileSystem\Versioning\Git\GitBasedFileSystemSnapshot.cs" />
+    <Compile Include="FileSystem\Versioning\Git\GitBasedHistoryGroup.cs" />
+    <Compile Include="FileSystem\Versioning\Git\GitBasedHistoryGroupManager.cs" />
+    <Compile Include="FileSystem\Versioning\Git\GitFileSystemVersioningModule.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\DirectoryProperties.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\DirectoryPropertiesFile.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\FileProperties.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\FilePropertiesFile.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\FileSystemToMetaFileSystemConverter.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\MetaFileSystemLoader.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\MetaFileSystemToFileSystemConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="..\..\common\common.licenseheader">
-      <Link>common.licenseheader</Link>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

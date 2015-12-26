@@ -6,7 +6,7 @@
     <ProjectGuid>{AA841AD1-C845-4C68-8AA8-B0572061868C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.Synchronization</RootNamespace>
+    <RootNamespace>SyncTool</RootNamespace>
     <AssemblyName>SyncTool.Synchronization</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
@@ -24,9 +24,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\common\common.licenseheader">
-      <Link>common.licenseheader</Link>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -34,24 +31,24 @@
     <Compile Include="FileSystem\FilePropertiesComparer.cs" />
     <Compile Include="FileSystem\MutableDirectory.cs" />
     <Compile Include="FileSystem\MutableDirectoryExtensions.cs" />
-    <Compile Include="Synchronizer\NotApplicableException.cs" />
-    <Compile Include="Synchronizer\ISynchronizerResult.cs" />
-    <Compile Include="Conflicts\ModificationDeletionSyncConflict.cs" />
-    <Compile Include="Conflicts\MultipleVersionSyncConflict.cs" />
-    <Compile Include="Synchronizer\SynchronizerResult.cs" />
-    <Compile Include="Synchronizer\Synchronizer.cs" />
-    <Compile Include="SyncActions\AddFileSyncAction.cs" />
-    <Compile Include="Conflicts\SyncConflict.cs" />
+    <Compile Include="Synchronization\NotApplicableException.cs" />
+    <Compile Include="Synchronization\ISynchronizerResult.cs" />
+    <Compile Include="Synchronization\Conflicts\ModificationDeletionSyncConflict.cs" />
+    <Compile Include="Synchronization\Conflicts\MultipleVersionSyncConflict.cs" />
+    <Compile Include="Synchronization\SynchronizerResult.cs" />
+    <Compile Include="Synchronization\Synchronizer.cs" />
+    <Compile Include="Synchronization\SyncActions\AddFileSyncAction.cs" />
+    <Compile Include="Synchronization\Conflicts\SyncConflict.cs" />
     <Compile Include="FileSystem\Versioning\FilteredFileSystemDiff.cs" />
-    <Compile Include="Synchronizer\GroupedChange.cs" />
-    <Compile Include="Synchronizer\ISynchronizer.cs" />
+    <Compile Include="Synchronization\GroupedChange.cs" />
+    <Compile Include="Synchronization\ISynchronizer.cs" />
     <Compile Include="FileSystem\NullDirectory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SyncActions\ISyncActionVisitor.cs" />
-    <Compile Include="SyncActions\RemoveFileSyncAction.cs" />
-    <Compile Include="SyncActions\ReplaceFileSyncAction.cs" />
-    <Compile Include="SyncActions\SyncAction.cs" />
-    <Compile Include="SyncActions\SyncParticipant.cs" />
+    <Compile Include="Synchronization\SyncActions\ISyncActionVisitor.cs" />
+    <Compile Include="Synchronization\SyncActions\RemoveFileSyncAction.cs" />
+    <Compile Include="Synchronization\SyncActions\ReplaceFileSyncAction.cs" />
+    <Compile Include="Synchronization\SyncActions\SyncAction.cs" />
+    <Compile Include="Synchronization\SyncActions\SyncParticipant.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

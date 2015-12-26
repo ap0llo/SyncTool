@@ -8,7 +8,7 @@
     <ProjectGuid>{4B588A94-AA4F-494E-BB35-283F09172745}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.FileSystem.Git</RootNamespace>
+    <RootNamespace>SyncTool</RootNamespace>
     <AssemblyName>SyncTool.FileSystem.Git.Test</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -56,20 +56,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GitBasedGroupManagerTest.cs" />
-    <Compile Include="GitBasedGroupTest.cs" />
-    <Compile Include="SingleDirectoryRepositoryPathProviderTest.cs" />
-    <Compile Include="Util\RepositoryCloneTest.cs" />
-    <Compile Include="Util\RepositoryInfoTest.cs" />
-    <Compile Include="FileSystem\GitDirectoryTest.cs" />
+    <Compile Include="FileSystem\Git\GitBasedGroupManagerTest.cs" />
+    <Compile Include="FileSystem\Git\GitBasedGroupTest.cs" />
+    <Compile Include="FileSystem\Git\SingleDirectoryRepositoryPathProviderTest.cs" />
+    <Compile Include="FileSystem\Git\Utilities\RepositoryCloneTest.cs" />
+    <Compile Include="FileSystem\Git\Utilities\RepositoryInfoTest.cs" />
+    <Compile Include="FileSystem\Git\GitDirectoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\RepositoryInitHelperTest.cs" />
-    <Compile Include="Util\TemporaryWorkingDirectoryTest.cs" />
+    <Compile Include="FileSystem\Git\Utilities\RepositoryInitHelperTest.cs" />
+    <Compile Include="FileSystem\Git\Utilities\TemporaryWorkingDirectoryTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\common\common.licenseheader">
-      <Link>common.licenseheader</Link>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

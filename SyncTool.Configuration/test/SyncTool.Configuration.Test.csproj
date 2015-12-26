@@ -47,13 +47,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JsonSyncFolderReaderTest.cs" />
+    <Compile Include="Configuration\Reader\JsonSyncFolderReaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\common\common.licenseheader">
-      <Link>common.licenseheader</Link>
-    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -70,7 +67,7 @@
       <Project>{4c4dfbc8-1dd7-4ea3-9ef5-c06693560784}</Project>
       <Name>SyncTool.Configuration</Name>
     </ProjectReference>
-  </ItemGroup>  
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

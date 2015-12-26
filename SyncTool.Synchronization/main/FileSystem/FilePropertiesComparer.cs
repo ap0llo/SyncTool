@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using SyncTool.FileSystem;
 
-namespace SyncTool.Synchronization
+namespace SyncTool.FileSystem
 {
     public class FilePropertiesComparer : IEqualityComparer<IFile>
     {

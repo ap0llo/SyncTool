@@ -4,13 +4,10 @@
 // // -----------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using SyncTool.FileSystem;
-using SyncTool.FileSystem.Versioning;
 
-namespace SyncTool.Synchronization
+namespace SyncTool.FileSystem.Versioning
 {
     class FilteredFileSystemDiff : IFileSystemDiff
     {

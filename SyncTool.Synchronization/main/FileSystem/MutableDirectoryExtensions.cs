@@ -4,9 +4,8 @@
 // // -----------------------------------------------------------------------------------------------------------
 
 using System;
-using SyncTool.FileSystem;
 
-namespace SyncTool.Synchronization
+namespace SyncTool.FileSystem
 {
     internal static class MutableDirectoryExtensions
     {

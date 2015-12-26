@@ -8,7 +8,7 @@
     <ProjectGuid>{AF4AB9BC-E63C-427F-B69D-B350A3BFABC2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool.FileSystem.Versioning.Git</RootNamespace>
+    <RootNamespace>SyncTool</RootNamespace>
     <AssemblyName>SyncTool.FileSystem.Versioning.Git.Test</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -56,21 +56,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Versioning\GitBasedHistoryGroupManagerTest.cs" />
-    <Compile Include="MetaFileSystem\DirectoryPropertiesFileTest.cs" />
-    <Compile Include="MetaFileSystem\DirectoryPropertiesTest.cs" />
-    <Compile Include="MetaFileSystem\FilePropertiesFileTest.cs" />
-    <Compile Include="MetaFileSystem\FilePropertiesTest.cs" />
-    <Compile Include="MetaFileSystem\FileSystemToMetaFileSystemConverterTest.cs" />
-    <Compile Include="MetaFileSystem\MetaFileSystemLoaderTest.cs" />
-    <Compile Include="MetaFileSystem\MetaFileSystemToFileSystemConverterTest.cs" />
+    <Compile Include="FileSystem\Versioning\Git\GitBasedHistoryGroupManagerTest.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\DirectoryPropertiesFileTest.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\DirectoryPropertiesTest.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\FilePropertiesFileTest.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\FilePropertiesTest.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\FileSystemToMetaFileSystemConverterTest.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\MetaFileSystemLoaderTest.cs" />
+    <Compile Include="FileSystem\Versioning\Git\MetaFileSystem\MetaFileSystemToFileSystemConverterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Versioning\GitBasedFileSystemHistoryTest.cs" />
-    <Compile Include="Versioning\GitBasedFileSystemSnapshotTest.cs" />
-    <Compile Include="Versioning\GitBasedHistoryGroupTest.cs" />
-    <None Include="..\..\common\common.licenseheader">
-      <Link>common.licenseheader</Link>
-    </None>
+    <Compile Include="FileSystem\Versioning\Git\GitBasedFileSystemHistoryTest.cs" />
+    <Compile Include="FileSystem\Versioning\Git\GitBasedFileSystemSnapshotTest.cs" />
+    <Compile Include="FileSystem\Versioning\Git\GitBasedHistoryGroupTest.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
