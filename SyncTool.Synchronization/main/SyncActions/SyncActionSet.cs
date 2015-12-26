@@ -14,7 +14,13 @@ namespace SyncTool.Synchronization
     internal class SyncActionSet : ISyncActionSet, ISyncActionVisitor<MutableDirectory>
     {
         readonly IEqualityComparer<IFile> m_FileComparer; 
-        readonly LinkedList<SyncAction> m_Actions = new LinkedList<SyncAction>();
+        readonly LinkedList<ResolvedSyncAction> m_Actions = new LinkedList<ResolvedSyncAction>();
+        readonly LinkedList<ConflictSyncAction> m_Conflicts = new LinkedList<ConflictSyncAction>();
+
+
+        public IEnumerable<ResolvedSyncAction> Actions => m_Actions;
+
+        public IEnumerable<ConflictSyncAction> Conflicts => m_Conflicts; 
 
 
         public SyncActionSet(IEqualityComparer<IFile> fileComparer)
@@ -27,18 +33,23 @@ namespace SyncTool.Synchronization
         }
 
 
-        public void Add(SyncAction action)
+        public void Add(ResolvedSyncAction action)
         {
             m_Actions.AddLast(action);
         }
 
-        public IEnumerator<SyncAction> GetEnumerator() => m_Actions.GetEnumerator();
+        public void Add(ConflictSyncAction conflict)
+        {
+            m_Conflicts.AddLast(conflict);
+        } 
+
+        public IEnumerator<SyncAction> GetEnumerator() => m_Actions.Union(m_Conflicts.Cast<SyncAction>()).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public IDirectory ApplyTo(IDirectory directory)
         {
-            if (m_Actions.Any(action => action is ConflictSyncAction))
+            if (m_Conflicts.Any())
             {
                 throw new InvalidOperationException("Cannot apply SyncActionSet to directory because it contains conflicts");
             }

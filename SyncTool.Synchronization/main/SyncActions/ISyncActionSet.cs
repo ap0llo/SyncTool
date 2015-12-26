@@ -10,6 +10,9 @@ namespace SyncTool.Synchronization
 {
     public interface ISyncActionSet : IEnumerable<SyncAction>
     {
+        IEnumerable<ResolvedSyncAction> Actions { get; }
+
+        IEnumerable<ConflictSyncAction> Conflicts { get; }
 
         IDirectory ApplyTo(IDirectory directory);
     }
