@@ -18,6 +18,7 @@ namespace SyncTool.TestHelpers
 
         public static void DirectoryEqual(IDirectory expected, IDirectory actual)
         {
+            Assert.Equal(expected.Path, actual.Path);
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.Directories.Count(), actual.Directories.Count());
             Assert.Equal(expected.Files.Count(), actual.Files.Count());
@@ -38,6 +39,7 @@ namespace SyncTool.TestHelpers
 
         public static void FileEqual(IFile expected, IFile actual)
         {
+            Assert.Equal(expected.Path, actual.Path);
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.Length, actual.Length);
             Assert.Equal(expected.LastWriteTime, actual.LastWriteTime);

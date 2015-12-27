@@ -10,6 +10,10 @@
     <AssemblyName>SyncTool.Synchronization</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Option, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Option.3.0.1\lib\Net35\Option.dll</HintPath>
       <Private>True</Private>
@@ -35,6 +39,7 @@
     <Compile Include="Synchronization\ISynchronizerResult.cs" />
     <Compile Include="Synchronization\Conflicts\ModificationDeletionSyncConflict.cs" />
     <Compile Include="Synchronization\Conflicts\MultipleVersionSyncConflict.cs" />
+    <Compile Include="Synchronization\SyncActions\SyncActionSerializer.cs" />
     <Compile Include="Synchronization\SynchronizerResult.cs" />
     <Compile Include="Synchronization\Synchronizer.cs" />
     <Compile Include="Synchronization\SyncActions\AddFileSyncAction.cs" />
