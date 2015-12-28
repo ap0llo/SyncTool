@@ -15,6 +15,9 @@ using Xunit;
 
 namespace SyncTool.Synchronization
 {
+    /// <summary>
+    /// Tests for <see cref="Synchronizer"/>
+    /// </summary>
     public class SynchronizerTest
     {
         readonly Synchronizer m_Instance;
@@ -336,11 +339,11 @@ namespace SyncTool.Synchronization
             var lastWriteTime = DateTime.Parse("01.01.1990");
             var leftChanges = new IChange[]
             {
-                new Change(ChangeType.Added, null, MockingHelper.GetMockedFile("file", lastWriteTime, 23))
+                new Change(ChangeType.Added, null, FileMockingHelper.GetMockedFile("file", lastWriteTime, 23))
             };
             var rightChanges = new IChange[]
             {
-                new Change(ChangeType.Added, null,MockingHelper.GetMockedFile("file", lastWriteTime, 23))
+                new Change(ChangeType.Added, null,FileMockingHelper.GetMockedFile("file", lastWriteTime, 23))
             };
 
             var syncResult = m_Instance.Synchronize(
@@ -360,7 +363,7 @@ namespace SyncTool.Synchronization
                 new Change(
                     ChangeType.Added, 
                     null, 
-                    MockingHelper.GetFileMock()
+                    FileMockingHelper.GetFileMock()
                     .Named("file1")
                     .WithLastWriteTime(lastWriteTime)
                     .WithLength(23)
@@ -372,7 +375,7 @@ namespace SyncTool.Synchronization
                 new Change(
                     ChangeType.Added, 
                     null,                     
-                    MockingHelper.GetFileMock()
+                    FileMockingHelper.GetFileMock()
                     .Named("file1")
                     .WithLastWriteTime(lastWriteTime.AddHours(1))
                     .WithLength(23)
@@ -394,8 +397,8 @@ namespace SyncTool.Synchronization
         [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize() Addition and Deletion throws " + nameof(InvalidOperationException))]
         public void Synchronize_Addition_and_Deletion_throws_InvalidOperationException()
         {
-            var leftChanges = new IChange[] {new Change(ChangeType.Added, null, MockingHelper.GetMockedFile("file"))};
-            var rightChanges = new IChange[] { new Change(ChangeType.Deleted, MockingHelper.GetMockedFile("file"), null) };
+            var leftChanges = new IChange[] {new Change(ChangeType.Added, null, FileMockingHelper.GetMockedFile("file"))};
+            var rightChanges = new IChange[] { new Change(ChangeType.Deleted, FileMockingHelper.GetMockedFile("file"), null) };
 
             var leftDiff = GetMockedFileSystemDiff(null, null, leftChanges).Object;
             var rightDiff = GetMockedFileSystemDiff(null, null, rightChanges).Object;

@@ -3,7 +3,9 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using LibGit2Sharp;
 
 namespace SyncTool.FileSystem.Git.Utilities
@@ -17,7 +19,13 @@ namespace SyncTool.FileSystem.Git.Utilities
         }
 
         public static IEnumerable<Branch> GetRemoteBranches(this Repository repository) => repository.Branches.GetRemoteBranches();
+
         public static IEnumerable<Branch> GetLocalBranches(this Repository repository) => repository.Branches.GetLocalBranches();
+
+        public static Branch GetLocalBranch(this Repository repository, string branchName)
+        {
+            return repository.GetLocalBranches().FirstOrDefault(b => b.FriendlyName.Equals(branchName, StringComparison.InvariantCultureIgnoreCase));
+        }
 
     }
 }

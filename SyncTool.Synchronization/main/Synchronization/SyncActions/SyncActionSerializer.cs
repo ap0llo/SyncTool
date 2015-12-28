@@ -4,11 +4,13 @@
 // // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SyncTool.FileSystem;
+using File = SyncTool.FileSystem.File;
 
 namespace SyncTool.Synchronization.SyncActions
 {
@@ -19,48 +21,27 @@ namespace SyncTool.Synchronization.SyncActions
                 
 
 
-        public string Serialize(SyncAction action)
+        public string Serialize(SyncAction action) => SerializeToJObject(action).ToString();
+      
+
+        public void Serialize(SyncAction action, System.IO.Stream writeTo)
         {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-
-            var jObject = new JObject()
-            {
-                new JProperty(s_Name, action.GetType().Name)
-            };
-
-            action.Accept(this, jObject);
-
-            return jObject.ToString();
-
+            var writer = new JsonTextWriter(new StreamWriter(writeTo));
+            SerializeToJObject(action).WriteTo(writer);
+            writer.Flush();
         }
 
+        public SyncAction Deserialize(System.IO.Stream stream)
+        {
+            var jsonReader = new JsonTextReader(new System.IO.StreamReader(stream));
+            var json = JObject.Load(jsonReader);
+            return Deserialize(json);
+        }
 
         public SyncAction Deserialize(string jsonString)
-        {
+        {            
             var json = JObject.Parse(jsonString);
-
-            var name = GetPropertyValue(json, s_Name, JTokenType.String).ToString();
-            var value = GetObjectProperty(json, s_Value);
-           
-            switch (name)
-            {
-                case nameof(ReplaceFileSyncAction):
-                    return DeserializeReplaceFileSyncAction(value);
-                    
-
-                case nameof(AddFileSyncAction):
-                    return DeserializeAddFileSyncAction(value);                    
-
-                case nameof(RemoveFileSyncAction):
-                    return DeserializeRemoveFileSyncAction(value);
-                    
-                default:
-                    throw new SerializationException($"Error deserializing json as SyncAction. Unknown action name {name}");
-            }
-                        
+            return Deserialize(json);
         }
 
 
@@ -83,7 +64,47 @@ namespace SyncTool.Synchronization.SyncActions
             var dto = new RemoveFileSyncActionDto(action);
             var value = JObject.Parse(JsonConvert.SerializeObject(dto));
             jsonObject.Add(s_Value, value);
-        }      
+        }
+
+
+        JObject SerializeToJObject(SyncAction action)
+        {
+            if (action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            var jObject = new JObject()
+            {
+                new JProperty(s_Name, action.GetType().Name)
+            };
+
+            action.Accept(this, jObject);
+
+            return jObject;
+        }
+
+        SyncAction Deserialize(JObject json)
+        {
+            var name = GetPropertyValue(json, s_Name, JTokenType.String).ToString();
+            var value = GetObjectProperty(json, s_Value);
+
+            switch (name)
+            {
+                case nameof(ReplaceFileSyncAction):
+                    return DeserializeReplaceFileSyncAction(value);
+
+
+                case nameof(AddFileSyncAction):
+                    return DeserializeAddFileSyncAction(value);
+
+                case nameof(RemoveFileSyncAction):
+                    return DeserializeRemoveFileSyncAction(value);
+
+                default:
+                    throw new SerializationException($"Error deserializing json as SyncAction. Unknown action name {name}");
+            }
+        }
 
 
         AddFileSyncAction DeserializeAddFileSyncAction(JObject json)
@@ -117,7 +138,7 @@ namespace SyncTool.Synchronization.SyncActions
         
         JToken GetPropertyValue(JObject jObject, string propertyName, JTokenType type)
         {
-            var property = jObject[propertyName] as JToken;
+            var property = jObject[propertyName];
             if (property == null || property.Type != type)
             {
                 throw new SerializationException($"Error deserializing SyncAction from json. Property '{propertyName}' is missing or of wrong type");

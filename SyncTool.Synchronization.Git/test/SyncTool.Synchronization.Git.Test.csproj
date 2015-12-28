@@ -1,25 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" />
+  <Import Project="..\..\packages\LibGit2Sharp.NativeBinaries.1.0.106\build\LibGit2Sharp.NativeBinaries.props" Condition="Exists('..\..\packages\LibGit2Sharp.NativeBinaries.1.0.106\build\LibGit2Sharp.NativeBinaries.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildThisFileDirectory)..\..\common\CommonProperties.properties" />
   <PropertyGroup>
-    <IsTestProject>true</IsTestProject>
-    <ProjectGuid>{FBC69896-8B65-4C09-8B8D-634272B41DDB}</ProjectGuid>
+    <ProjectGuid>{3AF72CB7-2F0E-410E-8BF0-E1E9B229315B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SyncTool</RootNamespace>
-    <AssemblyName>SyncTool.Test</AssemblyName>
+    <AssemblyName>SyncTool.Synchronization.Git.Test</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LibGit2Sharp, Version=0.22.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LibGit2Sharp.0.22.0-pre20151023210959\lib\net40\LibGit2Sharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -48,25 +52,46 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cli\Framework\ApplicationTest.cs" />
+    <ProjectReference Include="..\..\SyncTool.Synchronization\main\SyncTool.Synchronization.csproj">
+      <Name>SyncTool.Synchronization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.Synchronization\test\SyncTool.Synchronization.Test.csproj">
+      <Project>{af7f6404-d4a5-4cf7-adde-dbb568e197e6}</Project>
+      <Name>SyncTool.Synchronization.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\main\SyncTool.Synchronization.Git.csproj">
+      <Name>SyncTool.Synchronization.Git</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\test\SyncTool.FileSystem.Versioning.Test.csproj">
+      <Project>{c30bafac-dd15-4fc6-9b8b-334f9682290d}</Project>
+      <Name>SyncTool.FileSystem.Versioning.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.FileSystem\test\SyncTool.FileSystem.Test.csproj">
+      <Project>{7f7f158b-eb20-4354-89d9-c415cd8e3b21}</Project>
+      <Name>SyncTool.FileSystem.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.Common\test\SyncTool.Common.Test.csproj">
+      <Project>{da54c484-4021-4628-bbf0-dfca543a585a}</Project>
+      <Name>SyncTool.Common.Test</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Synchronization\Transfer\GitSynchronizationStateGroupTest.cs" />
+    <Compile Include="Synchronization\Transfer\GitSynchronizationStateTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\LibGit2Sharp.NativeBinaries.1.0.106\build\LibGit2Sharp.NativeBinaries.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\LibGit2Sharp.NativeBinaries.1.0.106\build\LibGit2Sharp.NativeBinaries.props'))" />
     <Error Condition="!Exists('..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

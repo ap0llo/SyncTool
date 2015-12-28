@@ -13,6 +13,9 @@ using Xunit;
 
 namespace SyncTool.Synchronization
 {
+    /// <summary>
+    /// Tests for <see cref="SynchronizerResult"/>
+    /// </summary>
     public class SynchronizerResultTest
     {
         readonly SynchronizerResult m_Instance;
@@ -26,7 +29,7 @@ namespace SyncTool.Synchronization
         [Fact]
         public void ApplyTo_throws_InvalidOperationException_if_set_contains_conflicts()
         {            
-            m_Instance.Add(new MultipleVersionSyncConflict(MockingHelper.GetMockedFile("file1"), MockingHelper.GetMockedFile("file1")));
+            m_Instance.Add(new MultipleVersionSyncConflict(FileMockingHelper.GetMockedFile("file1"), FileMockingHelper.GetMockedFile("file1")));
 
             Assert.Throws<InvalidOperationException>(() => m_Instance.ApplyTo(new Directory("root")));
 
@@ -40,7 +43,7 @@ namespace SyncTool.Synchronization
                 root => new EmptyFile(root, "file1")
             };
 
-            m_Instance.Add(new AddFileSyncAction(SyncParticipant.Left, MockingHelper.GetMockedFile("file1")));
+            m_Instance.Add(new AddFileSyncAction(SyncParticipant.Left, FileMockingHelper.GetMockedFile("file1")));
 
             Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory));
         }

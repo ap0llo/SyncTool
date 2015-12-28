@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace SyncTool.FileSystem
 {
-    class NullDirectory : IDirectory
+    public class NullDirectory : IDirectory
     {
         public string Name { get; }
 

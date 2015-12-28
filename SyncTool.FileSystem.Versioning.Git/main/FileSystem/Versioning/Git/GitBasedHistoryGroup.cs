@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LibGit2Sharp;
+using SyncTool.Common;
 using SyncTool.FileSystem.Git;
 using SyncTool.FileSystem.Git.Utilities;
 using NativeDirectory = System.IO.Directory;
@@ -16,8 +17,7 @@ namespace SyncTool.FileSystem.Versioning.Git
     public sealed class GitBasedHistoryGroup : GitBasedGroup, IHistoryGroup
     {
         const string s_BranchPrefix = "filesystemhistory/";
-        
-        
+                
 
 
         public GitBasedHistoryGroup(string repositoryPath) : base(repositoryPath)
@@ -48,20 +48,23 @@ namespace SyncTool.FileSystem.Versioning.Git
 
         public IFileSystemHistory GetItem(string name)
         {
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             var branchName = s_BranchPrefix + name;
-            var branch = m_Repository.GetLocalBranches().FirstOrDefault(b => b.FriendlyName.Equals(branchName, StringComparison.InvariantCultureIgnoreCase));
+            var branch = m_Repository.GetLocalBranch(branchName);                                     
 
             if (branch == null)
             {
-                //TODO: throw more appropriate exception
-                throw new Exception();
+                throw new ItemNotFoundException(name);
             }
             
-            return new GitBasedFileSystemHistory(m_Repository, branchName);
+            return new GitBasedFileSystemHistory(m_Repository, branch.FriendlyName);
         }
 
 
- 
 
         public static GitBasedHistoryGroup Create(string repositoryLocation)
         {

@@ -9,7 +9,7 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.TestHelpers
 {
-    public static class MockingHelper
+    public static class FileMockingHelper
     {
         public static IFile GetMockedFile() => GetFileMock().Object;
 

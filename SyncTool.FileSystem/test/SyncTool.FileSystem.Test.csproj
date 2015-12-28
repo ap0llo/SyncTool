@@ -54,7 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHelpers\DirectoryBasedTest.cs" />
     <Compile Include="TestHelpers\FileSystemAssert.cs" />
-    <Compile Include="TestHelpers\MockingHelper.cs" />
+    <Compile Include="TestHelpers\FileMockingHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

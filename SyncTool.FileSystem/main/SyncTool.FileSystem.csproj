@@ -36,6 +36,7 @@
     <Compile Include="FileSystem\Filtering\FilteringConverter.cs" />
     <Compile Include="FileSystem\Filtering\IFileSystemFilter.cs" />
     <Compile Include="FileSystem\InMemoryDirectory.cs" />
+    <Compile Include="FileSystem\DataFile.cs" />
     <Compile Include="FileSystem\Local\CreateLocalDirectoryVisitorExtensions.cs" />
     <Compile Include="FileSystem\EmptyFile.cs" />
     <Compile Include="FileSystem\Local\LocalDirectoryExtensions.cs" />
@@ -52,7 +53,7 @@
     <Compile Include="FileSystem\IFileSystemItem.cs" />
     <Compile Include="FileSystem\IReadableFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FileSystem\SeralizationExtensions.cs" />
+    <Compile Include="FileSystem\SerializationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

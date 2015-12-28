@@ -28,6 +28,7 @@
     <Compile Include="Common\GroupManagerException.cs" />
     <Compile Include="Common\IGroup.cs" />
     <Compile Include="Common\IGroupManager.cs" />
+    <Compile Include="Common\ItemNotFoundException.cs" />
     <Compile Include="Common\Utilities\CachingObjectMapper.cs" />
     <Compile Include="Common\Utilities\DirectoryHelper.cs" />
     <Compile Include="Common\Utilities\IObjectMapper.cs" />

@@ -2,8 +2,11 @@
 //  Copyright (c) 2015, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
+
+using System;
 using System.Linq;
 using LibGit2Sharp;
+using SyncTool.Common;
 using SyncTool.TestHelpers;
 using Xunit;
 
@@ -73,5 +76,43 @@ namespace SyncTool.FileSystem.Versioning.Git
 
         }
 
+
+        [Fact]
+        public void GetItem_throws_ArgumentNullException_if_name_is_null_or_whitespace()
+        {
+            using (var group = GitBasedHistoryGroup.Create(m_TempDirectory.Location))
+            {
+                Assert.Throws<ArgumentNullException>(() => group.GetItem(null));
+                Assert.Throws<ArgumentNullException>(() => group.GetItem(""));
+                Assert.Throws<ArgumentNullException>(() => group.GetItem(" "));
+            }
+        }
+
+        [Fact]
+        public void GetItem_throws_ItemNotFoundException_if_requested_item_could_not_be_found()
+        {
+            using (var group = GitBasedHistoryGroup.Create(m_TempDirectory.Location))
+            {
+                Assert.Throws<ItemNotFoundException>(() => group.GetItem("Irrelevant"));                
+            }
+        }
+
+
+        [Fact]
+        public void GetItem_returns_expected_item()
+        {
+            using (var group = GitBasedHistoryGroup.Create(m_TempDirectory.Location))
+            {
+                group.CreateHistory("item1");
+                
+                Assert.NotNull(group.GetItem("item1"));
+                Assert.NotNull(group.GetItem("ITem1"));
+
+                // make sure the history has the name it was initially created with instead of the name it was retrieved with
+                // otherwise there might be problem with pushing changes back to the master repository
+                Assert.EndsWith("item1", group.GetItem("ITem1").Id);
+
+            }
+        }
     }
 }

@@ -8,11 +8,11 @@ using Newtonsoft.Json;
 
 namespace SyncTool.FileSystem
 {
-    public static class SeralizationExtensions
+    public static class SerializationExtensions
     {
 
         /// <summary>
-        /// Seralizes the object to JSON and writes it to the specified stream
+        /// Serializes the object to JSON and writes it to the specified stream
         /// </summary>
         public static void WriteTo(this object obj, Stream stream)
         {

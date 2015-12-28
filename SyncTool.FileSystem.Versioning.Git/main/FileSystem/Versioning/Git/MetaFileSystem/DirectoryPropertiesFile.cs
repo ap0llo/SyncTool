@@ -10,7 +10,7 @@ namespace SyncTool.FileSystem.Versioning.Git.MetaFileSystem
     /// <summary>
     /// Represents a file containing a serialized <see cref="FileProperties"/> instance
     /// </summary>
-    public class DirectoryPropertiesFile : FileSystemItem, IReadableFile
+    public class DirectoryPropertiesFile : DataFile<DirectoryProperties>
     {
 
         /// <summary>
@@ -19,45 +19,24 @@ namespace SyncTool.FileSystem.Versioning.Git.MetaFileSystem
         public const string FileName = "SyncToolDirectoryInfo.json";
 
 
-        private DirectoryPropertiesFile(IDirectory parentDirectory, IDirectory directory) : base(parentDirectory, FileName)
-        {            
-            Content = new DirectoryProperties(directory);
-            LastWriteTime = DateTime.Now;
+        private DirectoryPropertiesFile(IDirectory parentDirectory, IDirectory directory) : base(parentDirectory, FileName, new DirectoryProperties(directory))
+        {                    
         }
 
         // constructor needs to be internal because it is used by tests
-        internal DirectoryPropertiesFile(IDirectory parentDirectory, DateTime lastWriteTime, DirectoryProperties content) : base(parentDirectory, FileName)
+        internal DirectoryPropertiesFile(IDirectory parentDirectory, DateTime lastWriteTime, DirectoryProperties content) : base(parentDirectory, FileName, content)
         {            
-            Content = content;
             LastWriteTime = lastWriteTime;
         }
         
-
-        public DateTime LastWriteTime { get; }
-
-        public long Length { get { throw new NotSupportedException(); } }
-
-        public IFile WithParent(IDirectory newParent)
+        
+        public override IFile WithParent(IDirectory newParent)
         {
             return new DirectoryPropertiesFile(newParent, this.LastWriteTime, this.Content);
         }
 
-        /// <summary>
-        /// Gets the <see cref="DirectoryProperties"/> this file contains
-        /// </summary>
-        public DirectoryProperties Content { get; }
 
-        public Stream OpenRead()
-        {
-            using (var writeStream = new MemoryStream())
-            {
-                Content.WriteTo(writeStream);
-                writeStream.Flush();
-
-                return new MemoryStream(writeStream.ToArray());
-            }
-        }
-
+      
 
         /// <summary>
         /// Creates a new <see cref="DirectoryPropertiesFile"/> encapsulating the properties of the specified directory instance

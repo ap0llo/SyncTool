@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LibGit2Sharp;
+using SyncTool.Common;
 using SyncTool.Configuration.Model;
 using SyncTool.Configuration.Reader;
 using SyncTool.FileSystem;
@@ -53,9 +54,22 @@ namespace SyncTool.Configuration.Git
             }
         }
 
-        public SyncFolder GetItem(string name) => Items.Single(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+        public SyncFolder GetItem(string name)
+        {
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
 
-      
+            var item = Items.SingleOrDefault(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            if (item == null)
+            {
+                throw new ItemNotFoundException(name);
+            }
+            return item;
+        }
+
+
 
         public GitBasedConfigurationGroup(string repositoryPath) : base(repositoryPath)
         {            

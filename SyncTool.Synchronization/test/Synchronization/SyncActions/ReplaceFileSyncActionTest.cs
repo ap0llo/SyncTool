@@ -9,6 +9,9 @@ using Xunit;
 
 namespace SyncTool.Synchronization.SyncActions
 {
+    /// <summary>
+    /// Tests for <see cref="ReplaceFileSyncAction"/>
+    /// </summary>
     public class ReplaceFileSyncActionTest
     {
 
@@ -19,8 +22,8 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Throws<ArgumentException>(
                 () => new ReplaceFileSyncAction(
                             SyncParticipant.Left,   // irrelevant
-                            MockingHelper.GetMockedFile("path1"), 
-                            MockingHelper.GetMockedFile("path2")));
+                            FileMockingHelper.GetMockedFile("path1"), 
+                            FileMockingHelper.GetMockedFile("path2")));
         }
 
 

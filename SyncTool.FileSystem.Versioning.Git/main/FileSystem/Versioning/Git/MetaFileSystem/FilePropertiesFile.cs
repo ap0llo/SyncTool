@@ -11,7 +11,7 @@ namespace SyncTool.FileSystem.Versioning.Git.MetaFileSystem
     /// <summary>
     /// Represents a file containing a serialized <see cref="FileProperties"/> instance
     /// </summary>
-    class FilePropertiesFile : FileSystemItem, IReadableFile
+    class FilePropertiesFile : DataFile<FileProperties>
     {
         /// <summary>
         /// The suffix used to identify file properties files 
@@ -19,44 +19,22 @@ namespace SyncTool.FileSystem.Versioning.Git.MetaFileSystem
         public const string FileNameSuffix = ".SyncToolFileInfo.json";
         
 
-        private FilePropertiesFile(IDirectory parent, IFile file) : base(parent, file.Name + FileNameSuffix)
-        {            
-            Content = new FileProperties(file);
-            LastWriteTime = DateTime.Now;
+        private FilePropertiesFile(IDirectory parent, IFile file) : base(parent, file.Name + FileNameSuffix, new FileProperties(file))
+        {                        
         }
 
         private FilePropertiesFile(IDirectory parent, string name, DateTime lastWriteTime, FileProperties content)
-            : base(parent, name)
-        {
-            Content = content;
+            : base(parent, name, content)
+        {            
             LastWriteTime = lastWriteTime;
         }
         
         
-        public DateTime LastWriteTime { get; }
 
-        public long Length { get { throw new NotSupportedException();} }
-
-        public IFile WithParent(IDirectory newParent)
+        public override IFile WithParent(IDirectory newParent)
         {
             return new FilePropertiesFile(newParent, this.Name, this.LastWriteTime, this.Content);
-        }
-
-        /// <summary>
-        /// Gets the <see cref="FileProperties"/> this file contains
-        /// </summary>
-        public FileProperties Content { get; }
-
-        public Stream OpenRead()
-        {            
-            using (var writeStream = new MemoryStream())            
-            {
-                Content.WriteTo(writeStream);
-                writeStream.Flush();
-
-                return new MemoryStream(writeStream.ToArray());
-            }            
-        }
+        }     
 
 
         /// <summary>
