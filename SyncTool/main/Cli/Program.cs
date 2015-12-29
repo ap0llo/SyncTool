@@ -6,9 +6,7 @@
 using Ninject;
 using SyncTool.Cli.DI;
 using SyncTool.Cli.Framework;
-using SyncTool.Configuration.Git.DI;
-using SyncTool.FileSystem.Git.DI;
-using SyncTool.FileSystem.Versioning.Git.DI;
+using SyncTool.Git.DI;
 
 namespace SyncTool.Cli
 {

@@ -1,0 +1,19 @@
+﻿// -----------------------------------------------------------------------------------------------------------
+//  Copyright (c) 2015, Andreas Grünwald
+//  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
+// -----------------------------------------------------------------------------------------------------------
+
+using Ninject.Modules;
+using SyncTool.FileSystem.Versioning;
+using SyncTool.Git.FileSystem.Versioning;
+
+namespace SyncTool.Git.DI
+{
+    public class GitFileSystemVersioningModule : NinjectModule
+    {
+        public override void Load()
+        {
+            this.Bind<IHistoryGroup>().To<GitBasedHistoryGroup>();
+        }
+    }
+}

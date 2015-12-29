@@ -8,9 +8,6 @@ using System.Linq;
 using System.Reflection;
 using CommandLine;
 using Ninject;
-using SyncTool.Configuration.Git.DI;
-using SyncTool.FileSystem.Git.DI;
-using SyncTool.FileSystem.Versioning.Git.DI;
 
 namespace SyncTool.Cli.Framework
 {
