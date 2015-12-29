@@ -28,42 +28,46 @@ namespace SyncTool.Synchronization.Transfer
             }
         }
 
+        public ISynchronizationState this[string name]
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(name))
+                {
+                    throw new ArgumentNullException(nameof(name));
+                }
+
+                var branchName = s_BranchPrefix + name;
+                var branch = m_Repository.GetLocalBranch(branchName);
+
+                if (branch == null)
+                {
+                    throw new ItemNotFoundException(name);
+                }
+
+                return new GitSynchronizationState(m_Repository, branchName);
+            }
+            set
+            {
+                var branchName = s_BranchPrefix + name;
+                var branch = m_Repository.GetLocalBranch(branchName);
+
+                if (branch == null)
+                {
+                    var initialCommit = m_Repository.Lookup<Commit>(m_Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha);
+                    branch = m_Repository.CreateBranch(branchName, initialCommit);
+                }
+
+                GitSynchronizationState.Create(m_Repository, branch.FriendlyName, value);
+            }
+        }
+     
 
         public GitSynchronizationStateGroup(string repositoryPath) : base(repositoryPath)
         {
         }
 
 
-        public ISynchronizationState GetItem(string name)
-        {
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            var branchName = s_BranchPrefix + name;
-            var branch = m_Repository.GetLocalBranch(branchName);
-
-            if (branch == null)
-            {
-                throw new ItemNotFoundException(name);
-            }
-
-            return new GitSynchronizationState(m_Repository, branchName);
-        }
-
-        public void SetState(string name, ISynchronizationState state)
-        {
-            var branchName = s_BranchPrefix + name;
-            var branch = m_Repository.GetLocalBranch(branchName);
-
-            if (branch == null)
-            {
-                var initialCommit = m_Repository.Lookup<Commit>(m_Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha);
-                branch = m_Repository.CreateBranch(branchName, initialCommit);
-            }
-
-            GitSynchronizationState.Create(m_Repository, branch.FriendlyName, state);
-        }
+     
     }
 }

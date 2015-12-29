@@ -17,15 +17,29 @@ namespace SyncTool.FileSystem.Versioning.Git
     public sealed class GitBasedHistoryGroup : GitBasedGroup, IHistoryGroup
     {
         const string s_BranchPrefix = "filesystemhistory/";
-                
 
 
-        public GitBasedHistoryGroup(string repositoryPath) : base(repositoryPath)
+
+        public IFileSystemHistory this[string name]
         {
+            get
+            {
+                 if (String.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+    var branchName = s_BranchPrefix + name;
+    var branch = m_Repository.GetLocalBranch(branchName);                                     
+
+            if (branch == null)
+            {
+                throw new ItemNotFoundException(name);
+}
             
+            return new GitBasedFileSystemHistory(m_Repository, branch.FriendlyName);
+            }
         }
-
-
 
         public IEnumerable<IFileSystemHistory> Items
         {
@@ -37,6 +51,15 @@ namespace SyncTool.FileSystem.Versioning.Git
             }
         }
 
+
+
+        public GitBasedHistoryGroup(string repositoryPath) : base(repositoryPath)
+        {
+            
+        }
+
+
+
         public void CreateHistory(string name)
         {
             var branchName = s_BranchPrefix + name;
@@ -45,25 +68,7 @@ namespace SyncTool.FileSystem.Versioning.Git
             
             m_Repository.CreateBranch(branchName, parentCommit);            
         }
-
-        public IFileSystemHistory GetItem(string name)
-        {
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            var branchName = s_BranchPrefix + name;
-            var branch = m_Repository.GetLocalBranch(branchName);                                     
-
-            if (branch == null)
-            {
-                throw new ItemNotFoundException(name);
-            }
-            
-            return new GitBasedFileSystemHistory(m_Repository, branch.FriendlyName);
-        }
-
+    
 
 
         public static GitBasedHistoryGroup Create(string repositoryLocation)

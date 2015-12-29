@@ -26,6 +26,7 @@ namespace SyncTool.Common
         /// <returns>Returns the requested item</returns>
         /// <exception cref="ItemNotFoundException">Thrown if the specified item could not be found</exception>
         /// <exception cref="ArgumentNullException">Thrown if 'name' is null or empty</exception>
-        T GetItem(string name);
+        T this[string name] { get; } 
+        
     }
 }

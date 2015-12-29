@@ -26,9 +26,25 @@ namespace SyncTool.Configuration.Git
 
         
         readonly ISyncFolderReader m_SyncFolderReader = new JsonSyncFolderReader();
-                
 
-      
+
+        public SyncFolder this[string name]
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(name))
+                {
+                    throw new ArgumentNullException(nameof(name));
+                }
+
+                var item = Items.SingleOrDefault(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                if (item == null)
+                {
+                    throw new ItemNotFoundException(name);
+                }
+                return item;
+            }
+        }
 
         public IEnumerable<SyncFolder> Items
         {
@@ -52,21 +68,6 @@ namespace SyncTool.Configuration.Git
                     return Enumerable.Empty<SyncFolder>();
                 }
             }
-        }
-
-        public SyncFolder GetItem(string name)
-        {
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            var item = Items.SingleOrDefault(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-            if (item == null)
-            {
-                throw new ItemNotFoundException(name);
-            }
-            return item;
         }
 
 

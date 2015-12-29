@@ -9,8 +9,7 @@ namespace SyncTool.Synchronization.Transfer
 {
     public interface ISynchronizationStateGroup : IGroup<ISynchronizationState>
     {
-
-        void SetState(string name, ISynchronizationState state);
-
+        new ISynchronizationState this[string name] { get; set; }
+        
     }
 }

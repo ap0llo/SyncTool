@@ -76,38 +76,38 @@ namespace SyncTool.Configuration.Git
 
 
         [Fact]
-        public void GetItem_throws_ArgumentNullException_if_name_is_null_or_whitespace()
+        public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
         {
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");
             using (var group = new GitBasedConfigurationGroup(m_TempDirectory.Location))
             {                
-                Assert.Throws<ArgumentNullException>(() => group.GetItem(null));
-                Assert.Throws<ArgumentNullException>(() => group.GetItem(""));
-                Assert.Throws<ArgumentNullException>(() => group.GetItem(" "));
+                Assert.Throws<ArgumentNullException>(() => group[null]);
+                Assert.Throws<ArgumentNullException>(() => group[""]);
+                Assert.Throws<ArgumentNullException>(() => group[" "]);
             }
         }
 
 
         [Fact]
-        public void GetItem_throws_ItemNotFoundException_if_the_requested_item_was_not_found()
+        public void Indexer_Get_throws_ItemNotFoundException_if_the_requested_item_was_not_found()
         {
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");
             using (var group = new GitBasedConfigurationGroup(m_TempDirectory.Location))
             {                
-                Assert.Throws<ItemNotFoundException>(() => group.GetItem("SomeName"));                
+                Assert.Throws<ItemNotFoundException>(() => group["SomeName"]);                
             }
         }
 
         [Fact]
-        public void GetItem_returns_the_expected_Item()
+        public void Indexer_Get_returns_the_expected_Item()
         {
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");
             using (var group = new GitBasedConfigurationGroup(m_TempDirectory.Location))
             {
                 group.AddSyncFolder(new SyncFolder() { Name = "folder1"});
-                Assert.NotNull(group.GetItem("folder1"));
+                Assert.NotNull(group["folder1"]);
                 // name has to be treated case-invariant
-                Assert.NotNull(group.GetItem("foLDEr1"));
+                Assert.NotNull(group["foLDEr1"]);
             }
         }
 

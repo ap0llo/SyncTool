@@ -52,8 +52,8 @@ namespace SyncTool.Cli.Commands
             using (var group = m_ConfigurationGroupManager.GetGroup(opts.Group))
             using (var historyRepository = m_HistoryGroupManager.GetGroup(opts.Group))
             {
-                var folder = group.GetItem(opts.Folder);
-                var history = historyRepository.GetItem(opts.Folder);
+                var folder = group[opts.Folder];
+                var history = historyRepository[opts.Folder];
 
                 var state = new LocalDirectory(null, folder.Path);
 

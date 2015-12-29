@@ -78,39 +78,39 @@ namespace SyncTool.FileSystem.Versioning.Git
 
 
         [Fact]
-        public void GetItem_throws_ArgumentNullException_if_name_is_null_or_whitespace()
+        public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
         {
             using (var group = GitBasedHistoryGroup.Create(m_TempDirectory.Location))
             {
-                Assert.Throws<ArgumentNullException>(() => group.GetItem(null));
-                Assert.Throws<ArgumentNullException>(() => group.GetItem(""));
-                Assert.Throws<ArgumentNullException>(() => group.GetItem(" "));
+                Assert.Throws<ArgumentNullException>(() => group[null]);
+                Assert.Throws<ArgumentNullException>(() => group[""]);
+                Assert.Throws<ArgumentNullException>(() => group[" "]);
             }
         }
 
         [Fact]
-        public void GetItem_throws_ItemNotFoundException_if_requested_item_could_not_be_found()
+        public void Indexer_Get_throws_ItemNotFoundException_if_requested_item_could_not_be_found()
         {
             using (var group = GitBasedHistoryGroup.Create(m_TempDirectory.Location))
             {
-                Assert.Throws<ItemNotFoundException>(() => group.GetItem("Irrelevant"));                
+                Assert.Throws<ItemNotFoundException>(() => group["Irrelevant"]);                
             }
         }
 
 
         [Fact]
-        public void GetItem_returns_expected_item()
+        public void Indexer_Get_returns_expected_item()
         {
             using (var group = GitBasedHistoryGroup.Create(m_TempDirectory.Location))
             {
                 group.CreateHistory("item1");
                 
-                Assert.NotNull(group.GetItem("item1"));
-                Assert.NotNull(group.GetItem("ITem1"));
+                Assert.NotNull(group["item1"]);
+                Assert.NotNull(group["ITem1"]);
 
                 // make sure the history has the name it was initially created with instead of the name it was retrieved with
                 // otherwise there might be problem with pushing changes back to the master repository
-                Assert.EndsWith("item1", group.GetItem("ITem1").Id);
+                Assert.EndsWith("item1", group["ITem1"].Id);
 
             }
         }

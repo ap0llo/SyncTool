@@ -39,34 +39,34 @@ namespace SyncTool.Synchronization.Transfer
         {
             var state = SynchronizationStateMockingHelper.GetSynchronizationStateMock().WithEmptyActionLists().WithIds().Object;
 
-            m_Group.SetState("state1", state);
+            m_Group["state1"] = state;
             Assert.Single(m_Group.Items);
 
-            m_Group.SetState("state2", state);
+            m_Group["state2"] = state;
             Assert.Equal(2, m_Group.Items.Count());
         }
 
         [Fact]
-        public void SetState_creates_a_new_state_if_the_state_does_not_yet_exist()
+        public void Indexer_Set_creates_a_new_state_if_the_state_does_not_yet_exist()
         {
             Assert.Empty(m_Group.Items);
 
             var state = SynchronizationStateMockingHelper.GetSynchronizationStateMock().WithEmptyActionLists().WithIds().Object;
-            m_Group.SetState("state1", state);
+            m_Group["state1"] = state;
 
             Assert.Single(m_Group.Items);
 
         }
 
         [Fact]
-        public void SetState_overwrites_existing_state_if_state_with_specified_name_already_exists()
+        public void Indexer_Set_overwrites_existing_state_if_state_with_specified_name_already_exists()
         {
             var state1 = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
                 .WithEmptyActionLists()
                 .WithIds("global1", "local1")
                 .Object;
 
-            m_Group.SetState("state", state1);
+            m_Group["state"] = state1;
 
             Assert.Single(m_Group.Items);
             Assert.Equal("global1", m_Group.Items.Single().GlobalSnapshotId);
@@ -78,7 +78,7 @@ namespace SyncTool.Synchronization.Transfer
                 .Object;
 
             // state names must be handled case-invariant
-            m_Group.SetState("StATE", state2);
+            m_Group["StATE"] = state2;
 
             var gitState = m_Group.Items.Single();
 
@@ -87,27 +87,27 @@ namespace SyncTool.Synchronization.Transfer
         }
 
         [Fact]
-        public void GetItem_throws_ArgumentNullException_if_name_is_null_or_whitespace()
+        public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
         {
-            Assert.Throws<ArgumentNullException>(() => m_Group.GetItem(null));
-            Assert.Throws<ArgumentNullException>(() => m_Group.GetItem(""));
-            Assert.Throws<ArgumentNullException>(() => m_Group.GetItem(" "));
+            Assert.Throws<ArgumentNullException>(() => m_Group[null]);
+            Assert.Throws<ArgumentNullException>(() => m_Group[""]);
+            Assert.Throws<ArgumentNullException>(() => m_Group[" "]);
         }
 
         [Fact]
-        public void GetItem_throws_ItemNotFoundException_if_requested_item_could_not_be_found()
+        public void Indexer_Get_throws_ItemNotFoundException_if_requested_item_could_not_be_found()
         {
-            Assert.Throws<ItemNotFoundException>(() => m_Group.GetItem("Irrelevant"));
+            Assert.Throws<ItemNotFoundException>(() => m_Group["Irrelevant"]);
         }
 
         [Fact]
-        public void GetItem_returns_expected_item()
+        public void Indexer_Get_returns_expected_item()
         {
             var state = SynchronizationStateMockingHelper.GetSynchronizationStateMock().WithEmptyActionLists().WithIds().Object;
-            m_Group.SetState("item1", state);
+            m_Group["item1"] =  state;
 
-            Assert.NotNull(m_Group.GetItem("item1"));
-            Assert.NotNull(m_Group.GetItem("ITem1"));
+            Assert.NotNull(m_Group["item1"]);
+            Assert.NotNull(m_Group["ITem1"]);
         }
 
 
