@@ -105,7 +105,14 @@ namespace SyncTool.Git.Configuration
             
         }
 
-
+        public bool ItemExists(string name)
+        {
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+            return Items.Any(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+        }
 
         
         public void Dispose()

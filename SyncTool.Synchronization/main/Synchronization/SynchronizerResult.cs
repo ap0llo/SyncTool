@@ -46,7 +46,7 @@ namespace SyncTool.Synchronization
         } 
         
 
-        public IDirectory ApplyTo(IDirectory directory)
+        public IDirectory ApplyTo(IDirectory directory, SyncParticipant target)
         {
             if (m_Conflicts.Any())
             {
@@ -54,7 +54,7 @@ namespace SyncTool.Synchronization
             }
             
             var newDirectory = directory.ToMutableDirectory();
-            foreach (var syncAction in m_Actions)
+            foreach (var syncAction in m_Actions.Where(action => action.Target == target))
             {                
                 syncAction.Accept(this, newDirectory);
             }

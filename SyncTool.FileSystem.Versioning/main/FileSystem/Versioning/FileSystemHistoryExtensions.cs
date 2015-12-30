@@ -3,19 +3,17 @@
 // //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // // -----------------------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using SyncTool.FileSystem;
-using SyncTool.Synchronization.Conflicts;
-using SyncTool.Synchronization.SyncActions;
+using System.Linq;
 
-namespace SyncTool.Synchronization
+namespace SyncTool.FileSystem.Versioning
 {
-    public interface ISynchronizerResult 
+    public static class FileSystemHistoryExtensions
     {
-        IEnumerable<SyncAction> Actions { get; }
 
-        IEnumerable<SyncConflict> Conflicts { get; }
+        public static IFileSystemSnapshot GetOldestSnapshot(this IFileSystemHistory history)
+        {
+            return history.Snapshots.OrderBy(x => x.CreationTime).First();
+        }
 
-        IDirectory ApplyTo(IDirectory directory, SyncParticipant target);
     }
 }

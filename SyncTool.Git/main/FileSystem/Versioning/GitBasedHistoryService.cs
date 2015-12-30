@@ -25,20 +25,20 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             get
             {
-                 if (String.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+                if (String.IsNullOrWhiteSpace(name))
+                {
+                    throw new ArgumentNullException(nameof(name));
+                }
 
-            var branchName = s_BranchPrefix + name;
-            var branch = GitGroup.Repository.GetLocalBranch(branchName);                                     
+                var branchName = s_BranchPrefix + name;
+                var branch = GitGroup.Repository.GetLocalBranch(branchName);
 
-            if (branch == null)
-            {
-                throw new ItemNotFoundException(name);
-}
-            
-            return new GitBasedFileSystemHistory(GitGroup.Repository, branch.FriendlyName);
+                if (branch == null)
+                {
+                    throw new ItemNotFoundException(name);
+                }
+
+                return new GitBasedFileSystemHistory(GitGroup.Repository, branch.FriendlyName);
             }
         }
 
@@ -56,10 +56,12 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         public GitBasedHistoryService(GitBasedGroup group) : base(group)
         {
-            
+
         }
 
 
+
+        public bool ItemExists(string name) => GitGroup.Repository.LocalBranchExists(s_BranchPrefix + name);
 
         public void CreateHistory(string name)
         {
@@ -67,9 +69,9 @@ namespace SyncTool.Git.FileSystem.Versioning
             var parentCommitId = GitGroup.Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
             var parentCommit = GitGroup.Repository.Lookup<Commit>(parentCommitId);
 
-            GitGroup.Repository.CreateBranch(branchName, parentCommit);            
+            GitGroup.Repository.CreateBranch(branchName, parentCommit);
         }
 
-        
+
     }
 }

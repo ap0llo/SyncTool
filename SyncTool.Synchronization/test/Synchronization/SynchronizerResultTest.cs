@@ -31,7 +31,7 @@ namespace SyncTool.Synchronization
         {            
             m_Instance.Add(new MultipleVersionSyncConflict(FileMockingHelper.GetMockedFile("file1"), FileMockingHelper.GetMockedFile("file1")));
 
-            Assert.Throws<InvalidOperationException>(() => m_Instance.ApplyTo(new Directory("root")));
+            Assert.Throws<InvalidOperationException>(() => m_Instance.ApplyTo(new Directory("root"), SyncParticipant.Left));
 
         }
 
@@ -45,7 +45,7 @@ namespace SyncTool.Synchronization
 
             m_Instance.Add(new AddFileSyncAction(SyncParticipant.Left, FileMockingHelper.GetMockedFile("file1")));
 
-            Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory));
+            Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory, SyncParticipant.Left));
         }
 
         [Fact]
@@ -57,7 +57,7 @@ namespace SyncTool.Synchronization
 
             m_Instance.Add(new AddFileSyncAction(SyncParticipant.Left, newFile));
 
-            var newDirectory = m_Instance.ApplyTo(directory);
+            var newDirectory = m_Instance.ApplyTo(directory, SyncParticipant.Left);
 
             Assert.True(newDirectory.FileExists("dir1/file1"));
         }
@@ -71,7 +71,7 @@ namespace SyncTool.Synchronization
             var fileToRemove = new EmptyFile(new NullDirectory("", "root"), "file1");
             m_Instance.Add(new RemoveFileSyncAction(SyncParticipant.Left, fileToRemove));
 
-            Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory));            
+            Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory, SyncParticipant.Left));            
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace SyncTool.Synchronization
             var fileToRemove = new EmptyFile(new NullDirectory("", "root"), "file1");
             m_Instance.Add(new RemoveFileSyncAction(SyncParticipant.Left, fileToRemove));
 
-            Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory));
+            Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory, SyncParticipant.Left));
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace SyncTool.Synchronization
             var fileToRemove = new EmptyFile(new NullDirectory("", "root"), "file1") { LastWriteTime = DateTime.Parse("01.01.1980") };
             m_Instance.Add(new RemoveFileSyncAction(SyncParticipant.Left, fileToRemove));
 
-            var newDirectory = m_Instance.ApplyTo(directory);
+            var newDirectory = m_Instance.ApplyTo(directory, SyncParticipant.Left);
             Assert.False(newDirectory.FileExists("file1"));
             Assert.Empty(newDirectory.Files);
         }
@@ -115,7 +115,7 @@ namespace SyncTool.Synchronization
 
             m_Instance.Add(new ReplaceFileSyncAction(SyncParticipant.Left, oldVersion, newVersion));
 
-            Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory));
+            Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory, SyncParticipant.Left));
         }
 
         [Fact]
@@ -131,7 +131,7 @@ namespace SyncTool.Synchronization
 
             m_Instance.Add(new ReplaceFileSyncAction(SyncParticipant.Left, oldVersion, newVersion));
 
-            Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory));
+            Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory, SyncParticipant.Left));
         }
 
 
@@ -148,9 +148,27 @@ namespace SyncTool.Synchronization
             var newVersion = new EmptyFile(new NullDirectory("", "root"), "file1") { LastWriteTime = DateTime.Parse("01.01.1981") };
             m_Instance.Add(new ReplaceFileSyncAction(SyncParticipant.Left, oldVersion, newVersion));
 
-            var newDirectory = m_Instance.ApplyTo(directory);
+            var newDirectory = m_Instance.ApplyTo(directory, SyncParticipant.Left);
             Assert.True(newDirectory.FileExists("file1"));
             Assert.Equal(newVersion.LastWriteTime, newDirectory.GetFile("file1").LastWriteTime);
+        }
+
+
+        [Fact]
+        public void ApplyTo_only_applies_changes_with_the_specified_target()
+        {
+            var directory = new Directory("root")
+            {
+                root => new EmptyFile(root, "file1") {LastWriteTime = DateTime.Parse("01.01.1980")}
+            };
+
+            var fileToRemove = new EmptyFile(new NullDirectory("", "root"), "file1") { LastWriteTime = DateTime.Parse("01.01.1980") };
+            m_Instance.Add(new RemoveFileSyncAction(SyncParticipant.Left, fileToRemove));
+
+            var newDirectory = m_Instance.ApplyTo(directory, SyncParticipant.Right);
+            
+            // as we choose target "Right", the directory has to be unchanged
+            FileSystemAssert.DirectoryEqual(directory, newDirectory);
         }
     }
 }

@@ -3,19 +3,15 @@
 // //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // // -----------------------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using SyncTool.FileSystem;
-using SyncTool.Synchronization.Conflicts;
-using SyncTool.Synchronization.SyncActions;
+using Ninject.Modules;
 
-namespace SyncTool.Synchronization
+namespace SyncTool.Synchronization.DI
 {
-    public interface ISynchronizerResult 
+    public class SynchronizationModule : NinjectModule
     {
-        IEnumerable<SyncAction> Actions { get; }
-
-        IEnumerable<SyncConflict> Conflicts { get; }
-
-        IDirectory ApplyTo(IDirectory directory, SyncParticipant target);
+        public override void Load()
+        {
+            this.Bind<ISynchronizer>().To<Synchronizer>();
+        }
     }
 }

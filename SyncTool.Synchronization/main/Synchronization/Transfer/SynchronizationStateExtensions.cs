@@ -3,19 +3,17 @@
 // //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // // -----------------------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using SyncTool.FileSystem;
-using SyncTool.Synchronization.Conflicts;
-using SyncTool.Synchronization.SyncActions;
+using System.Linq;
 
-namespace SyncTool.Synchronization
+namespace SyncTool.Synchronization.Transfer
 {
-    public interface ISynchronizerResult 
+    public static class SynchronizationStateExtensions
     {
-        IEnumerable<SyncAction> Actions { get; }
 
-        IEnumerable<SyncConflict> Conflicts { get; }
+        public static bool IsCompleted(this ISynchronizationState state)
+        {
+            return state.QueuedActions.Any() || state.InProgressActions.Any();
+        }
 
-        IDirectory ApplyTo(IDirectory directory, SyncParticipant target);
     }
 }

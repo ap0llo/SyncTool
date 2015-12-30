@@ -21,5 +21,7 @@ namespace SyncTool.Common
         /// <exception cref="ItemNotFoundException">Thrown if the specified item could not be found</exception>
         /// <exception cref="ArgumentNullException">Thrown if 'name' is null or empty</exception>
         T this[string name] { get; }
+
+        bool ItemExists(string name);
     }
 }

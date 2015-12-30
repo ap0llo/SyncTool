@@ -27,5 +27,10 @@ namespace SyncTool.Git.Common
             return repository.GetLocalBranches().FirstOrDefault(b => b.FriendlyName.Equals(branchName, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        public static bool LocalBranchExists(this Repository repository, string branchName)
+        {
+            return repository.GetLocalBranches().Any(b => b.FriendlyName.Equals(branchName, StringComparison.InvariantCultureIgnoreCase));
+        }
+
     }
 }

@@ -33,6 +33,7 @@
     <Compile Include="FileSystem\Versioning\IFileSystemHistory.cs" />
     <Compile Include="FileSystem\Versioning\IFileSystemSnapshot.cs" />
     <Compile Include="FileSystem\Versioning\IHistoryService.cs" />
+    <Compile Include="FileSystem\Versioning\FileSystemHistoryExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FileSystem\Versioning\SnapshotNotFoundException.cs" />
   </ItemGroup>

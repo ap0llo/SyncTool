@@ -69,6 +69,6 @@ namespace SyncTool.Git.Synchronization.Transfer
         }
 
 
-     
+        public bool ItemExists(string name) => GitGroup.Repository.LocalBranchExists(s_BranchPrefix + name);
     }
 }

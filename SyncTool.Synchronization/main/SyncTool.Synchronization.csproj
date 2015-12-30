@@ -39,6 +39,7 @@
     <Compile Include="FileSystem\FilePropertiesComparer.cs" />
     <Compile Include="FileSystem\MutableDirectory.cs" />
     <Compile Include="FileSystem\MutableDirectoryExtensions.cs" />
+    <Compile Include="Synchronization\DI\SynchronizationModule.cs" />
     <Compile Include="Synchronization\NotApplicableException.cs" />
     <Compile Include="Synchronization\ISynchronizerResult.cs" />
     <Compile Include="Synchronization\Conflicts\ModificationDeletionSyncConflict.cs" />
@@ -60,6 +61,8 @@
     <Compile Include="Synchronization\SyncActions\SyncParticipant.cs" />
     <Compile Include="Synchronization\Transfer\ISynchronizationState.cs" />
     <Compile Include="Synchronization\Transfer\ISynchronizationStateService.cs" />
+    <Compile Include="Synchronization\Transfer\MutableSynchronizationState.cs" />
+    <Compile Include="Synchronization\Transfer\SynchronizationStateExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -10,10 +10,14 @@ using SyncTool.Common;
 namespace SyncTool.FileSystem.Versioning
 {
     public interface IHistoryService : IItemService<IFileSystemHistory>
-    {        
+    {
+
         
+
         void CreateHistory(string name);
         
+
+
 
     }
 }
