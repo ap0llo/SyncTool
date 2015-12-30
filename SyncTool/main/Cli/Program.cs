@@ -14,7 +14,7 @@ namespace SyncTool.Cli
     {
         static int Main(string[] args)
         {
-            var kernel = new StandardKernel(new CliModule(), new GitConfigurationModule(), new GitFileSystemModule(), new GitVersioningModule());
+            var kernel = new StandardKernel(new CliModule(), new GitModule());
             return kernel.Get<Application>().Run(args);
         }
     }

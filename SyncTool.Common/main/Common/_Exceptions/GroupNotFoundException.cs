@@ -4,16 +4,14 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using SyncTool.Common;
 
-namespace SyncTool.FileSystem.Versioning
+namespace SyncTool.Common
 {
-    public interface IHistoryGroup : IGroup<IFileSystemHistory>, IDisposable
-    {        
-        
-        void CreateHistory(string name);
-        
-
+    [Serializable]
+    public class GroupNotFoundException : Exception
+    {
+        public GroupNotFoundException(string name) : base($"The Group '{name}' could not be found")
+        {
+        }
     }
 }

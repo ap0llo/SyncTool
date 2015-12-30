@@ -23,31 +23,32 @@ namespace SyncTool.Cli.Commands
 
     public class GetGroupCommand : CommandBase, ICommand<GetGroupOptions>
     {
-        readonly IGroupManager<IConfigurationGroup> m_ConfigurationGroupManager;        
+        readonly IGroupManager m_GroupManager;        
 
 
-        public GetGroupCommand(IOutputWriter outputWriter, IGroupManager<IConfigurationGroup> configurationGroupManager) : base(outputWriter)
+        public GetGroupCommand(IOutputWriter outputWriter, IGroupManager groupManager) : base(outputWriter)
         {
-            if (configurationGroupManager == null)
+            if (groupManager == null)
             {
-                throw new ArgumentNullException(nameof(configurationGroupManager));
+                throw new ArgumentNullException(nameof(groupManager));
             }
 
-            m_ConfigurationGroupManager = configurationGroupManager;
+            m_GroupManager = groupManager;
         }
 
 
         public int Run(GetGroupOptions opts)
         {
             var groupNames = String.IsNullOrEmpty(opts.Name)
-                    ? m_ConfigurationGroupManager.Groups
-                    : m_ConfigurationGroupManager.Groups.Where(g => g.Equals(opts.Name, StringComparison.InvariantCultureIgnoreCase));
+                    ? m_GroupManager.Groups
+                    : m_GroupManager.Groups.Where(g => g.Equals(opts.Name, StringComparison.InvariantCultureIgnoreCase));
 
-            foreach (var group in groupNames.Select(m_ConfigurationGroupManager.GetGroup))
+            foreach (var group in groupNames.Select(m_GroupManager.GetGroup))
             {
                 using (group)
                 {
-                    PrintSyncGroup(group);
+                    var configurationService = group.GetService<IConfigurationService>();
+                    Print(configurationService);
                 }
             }
 
@@ -55,12 +56,12 @@ namespace SyncTool.Cli.Commands
         }
 
 
-        void PrintSyncGroup(IConfigurationGroup group)
+        void Print(IConfigurationService service)
         {                       
-            OutputWriter.WriteLine($"SyncGroup '{group.Name}'");
+            OutputWriter.WriteLine($"SyncGroup '{service.Group.Name}'");
             OutputWriter.WriteLine();
 
-            if (group.Items.Any())
+            if (service.Items.Any())
             {
                 OutputWriter.WriteTable(
                     new []
@@ -71,9 +72,9 @@ namespace SyncTool.Cli.Commands
                     },
                     new []
                     {
-                        group.Items.Select(x => x.Name).ToArray(),
-                        group.Items.Select(x => x.Path).ToArray(),
-                        group.Items.Select(x => x.Filter?.Query).Select(x => x ?? "").ToArray(),
+                        service.Items.Select(x => x.Name).ToArray(),
+                        service.Items.Select(x => x.Path).ToArray(),
+                        service.Items.Select(x => x.Filter?.Query).Select(x => x ?? "").ToArray(),
                     });
             }
             else

@@ -59,7 +59,7 @@
     <Compile Include="Synchronization\SyncActions\SyncAction.cs" />
     <Compile Include="Synchronization\SyncActions\SyncParticipant.cs" />
     <Compile Include="Synchronization\Transfer\ISynchronizationState.cs" />
-    <Compile Include="Synchronization\Transfer\ISynchronizationStateGroup.cs" />
+    <Compile Include="Synchronization\Transfer\ISynchronizationStateService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -3,16 +3,17 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using Ninject.Modules;
-using SyncTool.Git.Common;
+using System;
+using System.Collections.Generic;
+using SyncTool.Common;
 
-namespace SyncTool.Git.DI
+namespace SyncTool.FileSystem.Versioning
 {
-    public class GitFileSystemModule : NinjectModule
-    {
-        public override void Load()
-        {
-            this.Bind<IRepositoryPathProvider>().To<CurrentDirectoryRepositoryPathProvider>();
-        }
+    public interface IHistoryService : IItemService<IFileSystemHistory>
+    {        
+        
+        void CreateHistory(string name);
+        
+
     }
 }

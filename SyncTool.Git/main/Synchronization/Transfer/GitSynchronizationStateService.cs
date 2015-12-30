@@ -14,7 +14,7 @@ using SyncTool.Synchronization.Transfer;
 
 namespace SyncTool.Git.Synchronization.Transfer
 {
-    public class GitSynchronizationStateGroup : GitBasedGroup, ISynchronizationStateGroup
+    public class GitSynchronizationStateService : GitBasedService, ISynchronizationStateService
     {
         const string s_BranchPrefix = "synchronizationState/";
 
@@ -23,9 +23,9 @@ namespace SyncTool.Git.Synchronization.Transfer
         {
             get
             {
-                return m_Repository.Branches.GetLocalBranches()
+                return GitGroup.Repository.Branches.GetLocalBranches()
                    .Where(b => b.FriendlyName.StartsWith(s_BranchPrefix))
-                   .Select(b => new GitSynchronizationState(m_Repository, b.FriendlyName));
+                   .Select(b => new GitSynchronizationState(GitGroup.Repository, b.FriendlyName));
             }
         }
 
@@ -39,32 +39,32 @@ namespace SyncTool.Git.Synchronization.Transfer
                 }
 
                 var branchName = s_BranchPrefix + name;
-                var branch = m_Repository.GetLocalBranch(branchName);
+                var branch = GitGroup.Repository.GetLocalBranch(branchName);
 
                 if (branch == null)
                 {
                     throw new ItemNotFoundException(name);
                 }
 
-                return new GitSynchronizationState(m_Repository, branchName);
+                return new GitSynchronizationState(GitGroup.Repository, branchName);
             }
             set
             {
                 var branchName = s_BranchPrefix + name;
-                var branch = m_Repository.GetLocalBranch(branchName);
+                var branch = GitGroup.Repository.GetLocalBranch(branchName);
 
                 if (branch == null)
                 {
-                    var initialCommit = m_Repository.Lookup<Commit>(m_Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha);
-                    branch = m_Repository.CreateBranch(branchName, initialCommit);
+                    var initialCommit = GitGroup.Repository.Lookup<Commit>(GitGroup.Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha);
+                    branch = GitGroup.Repository.CreateBranch(branchName, initialCommit);
                 }
 
-                GitSynchronizationState.Create(m_Repository, branch.FriendlyName, value);
+                GitSynchronizationState.Create(GitGroup.Repository, branch.FriendlyName, value);
             }
         }
      
 
-        public GitSynchronizationStateGroup(string repositoryPath) : base(repositoryPath)
+        public GitSynchronizationStateService(GitBasedGroup group) : base(group)
         {
         }
 

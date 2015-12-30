@@ -13,13 +13,12 @@ using SyncTool.Configuration.Model;
 using SyncTool.Configuration.Reader;
 using SyncTool.FileSystem;
 using SyncTool.Git.Common;
-using SyncTool.Git.FileSystem;
 using NativeDirectory = System.IO.Directory;
 using NativeFile = System.IO.File;
 
 namespace SyncTool.Git.Configuration
 {
-    public sealed class GitBasedConfigurationGroup : GitBasedGroup, IConfigurationGroup
+    public sealed class GitBasedConfigurationService : GitBasedService, IConfigurationService
     {
         const string s_SyncFolders = "SyncFolders";
         const string s_Json = "json";
@@ -50,7 +49,7 @@ namespace SyncTool.Git.Configuration
         {
             get
             {
-                var directory = GetConfigurationRootDirectory();
+                var directory = GitGroup.GetConfigurationRootDirectory();
                 if (directory.DirectoryExists(s_SyncFolders))
                 {
                     var configFiles = directory.GetDirectory(s_SyncFolders).Files.Where(f => f.HasExtensions(s_Json)).Cast<IReadableFile>();
@@ -72,7 +71,7 @@ namespace SyncTool.Git.Configuration
 
 
 
-        public GitBasedConfigurationGroup(string repositoryPath) : base(repositoryPath)
+        public GitBasedConfigurationService(GitBasedGroup group) : base(group)
         {            
         }
 
@@ -85,7 +84,7 @@ namespace SyncTool.Git.Configuration
             }            
 
             // add config file for the sync folder to the configuration directory
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_Repository.Info.Path, RepositoryInitHelper.ConfigurationBranchName))
+            using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, RepositoryInitHelper.ConfigurationBranchName))
             {
                 var syncFoldersPath = Path.Combine(workingDirectory.Location, s_SyncFolders);
 
@@ -105,8 +104,13 @@ namespace SyncTool.Git.Configuration
             }
             
         }
+
+
+
         
-
-
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

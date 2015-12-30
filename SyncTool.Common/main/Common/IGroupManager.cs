@@ -7,11 +7,11 @@ using System.Collections.Generic;
 
 namespace SyncTool.Common
 {
-    public interface IGroupManager<T> where T : IGroup
+    public interface IGroupManager
     {
         IEnumerable<string> Groups { get; }
 
-        T GetGroup(string name);
+        IGroup GetGroup(string name);
 
         void AddGroup(string name);
 

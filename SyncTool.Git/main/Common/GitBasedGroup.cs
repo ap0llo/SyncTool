@@ -6,13 +6,19 @@
 using System;
 using LibGit2Sharp;
 using SyncTool.Common;
+using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
+using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
+using SyncTool.Git.Configuration;
 using SyncTool.Git.FileSystem;
+using SyncTool.Git.FileSystem.Versioning;
+using SyncTool.Git.Synchronization.Transfer;
+using SyncTool.Synchronization.Transfer;
 
 namespace SyncTool.Git.Common
 {
-    public class GitBasedGroup : IGroup, IDisposable
+    public class GitBasedGroup : IGroup
     {
         protected readonly Repository m_Repository;
 
@@ -30,6 +36,7 @@ namespace SyncTool.Git.Common
             }
         }
 
+        public Repository Repository => m_Repository;
 
 
         public GitBasedGroup(string repositoryPath)
@@ -43,15 +50,34 @@ namespace SyncTool.Git.Common
         }
 
 
+        public T GetService<T>()
+        {
+            if (typeof (T) == typeof (IConfigurationService))
+            {
+                return (T) (object) new GitBasedConfigurationService(this);
+            }
+            else if (typeof (T) == typeof (IHistoryService))
+            {
+                return (T) (object) new GitBasedHistoryService(this);
+            }
+            else if (typeof (T) == typeof (ISynchronizationStateService))
+            {
+                return (T)(object)new GitSynchronizationStateService(this);
+            }
+            else
+            {
+                throw new ServiceNotFoundException(typeof(T));
+            }            
+        }
+
         public void Dispose()
         {
             m_Repository.Dispose();
         }
 
 
-
         Commit GetConfigurationCommit() => m_Repository.Branches[RepositoryInitHelper.ConfigurationBranchName].Tip;
 
-        protected GitDirectory GetConfigurationRootDirectory() => new GitDirectory(null, "root", GetConfigurationCommit());
+        internal GitDirectory GetConfigurationRootDirectory() => new GitDirectory(null, "root", GetConfigurationCommit());
     }
 }

@@ -37,21 +37,16 @@ namespace SyncTool.Cli.Commands
 
     public class AddFolderCommand : CommandBase, ICommand<AddFolderOptions>
     {
-        readonly IGroupManager<IConfigurationGroup> m_ConfigurationGroupManager;
-        readonly IGroupManager<IHistoryGroup> m_HistoryGroupManager;        
+        readonly IGroupManager m_GroupManager;
+        
 
-        public AddFolderCommand(IOutputWriter outputWriter, IGroupManager<IConfigurationGroup> configurationGroupManager, IGroupManager<IHistoryGroup> historyGroupManager) : base(outputWriter)
+        public AddFolderCommand(IOutputWriter outputWriter, IGroupManager groupManager) : base(outputWriter)
         {
-            if (configurationGroupManager == null)
+            if (groupManager == null)
             {
-                throw new ArgumentNullException(nameof(configurationGroupManager));
+                throw new ArgumentNullException(nameof(groupManager));
             }
-            if (historyGroupManager == null)
-            {
-                throw new ArgumentNullException(nameof(historyGroupManager));
-            }
-            m_ConfigurationGroupManager = configurationGroupManager;
-            m_HistoryGroupManager = historyGroupManager;
+            m_GroupManager = groupManager;            
         }
 
 
@@ -63,8 +58,7 @@ namespace SyncTool.Cli.Commands
             }
 
 
-            using (var syncGroup = m_ConfigurationGroupManager.GetGroup(opts.Group))
-            using (var historyRepository = m_HistoryGroupManager.GetGroup(opts.Group))
+            using (var group = m_GroupManager.GetGroup(opts.Group))            
             {
                 var filter = new FileSystemFilterConfiguration() { Type = FileSystemFilterType.MicroscopeQuery };
                 if (opts.Filter != null)
@@ -82,8 +76,11 @@ namespace SyncTool.Cli.Commands
                     filter.Query = File.ReadAllText(opts.FilterFilePath);
                 }
 
-                syncGroup.AddSyncFolder(new SyncFolder() { Name = opts.Name, Path = opts.Path, Filter = filter });
-                historyRepository.CreateHistory(opts.Name);
+                var configService = group.GetService<IConfigurationService>();
+                configService.AddSyncFolder(new SyncFolder() { Name = opts.Name, Path = opts.Path, Filter = filter });
+
+                var historyService = group.GetService<IHistoryService>();
+                historyService.CreateHistory(opts.Name);
             }
             return 0;
         }

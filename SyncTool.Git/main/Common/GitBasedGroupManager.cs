@@ -13,7 +13,7 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Git.Common
 {
-    public abstract class GitBasedGroupManager<T> : IGroupManager<T> where T : IGroup
+    public class GitBasedGroupManager : IGroupManager
     {
         protected readonly IRepositoryPathProvider m_PathProvider;
 
@@ -34,7 +34,7 @@ namespace SyncTool.Git.Common
 
         
        
-        protected GitBasedGroupManager(IRepositoryPathProvider pathProvider)
+        public GitBasedGroupManager(IRepositoryPathProvider pathProvider)
         {
             if (pathProvider == null)
             {
@@ -45,7 +45,23 @@ namespace SyncTool.Git.Common
 
 
 
-        public abstract T GetGroup(string name);
+        public IGroup GetGroup(string name)
+        {
+            foreach (var dir in m_PathProvider.RepositoryPaths)
+            {
+                var group = new GitBasedGroup(dir);
+                if (StringComparer.InvariantCultureIgnoreCase.Equals(group.Name, name))
+                {
+                    return group;
+                }
+                else
+                {
+                    group.Dispose();
+                }                                     
+            }
+
+            throw new GroupNotFoundException(name);
+        }
 
         public void AddGroup(string name)
         {

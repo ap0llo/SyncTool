@@ -28,33 +28,30 @@ namespace SyncTool.Cli.Commands
 
     public class GetSnapshotCommand : CommandBase, ICommand<GetSnapshotOptions>
     {
-        readonly IGroupManager<IConfigurationGroup> m_ConfigurationGroupManager;
-        readonly IGroupManager<IHistoryGroup> m_HistoryGroupManager;
+        readonly IGroupManager m_GroupManager;
+       
 
-        public GetSnapshotCommand(IOutputWriter outputWriter, IGroupManager<IHistoryGroup> historyGroupManager, IGroupManager<IConfigurationGroup> configurationGroupManager) : base(outputWriter)
+        public GetSnapshotCommand(IOutputWriter outputWriter, IGroupManager groupManager) : base(outputWriter)
         {
-            if (historyGroupManager == null)
+            if (groupManager == null)
             {
-                throw new ArgumentNullException(nameof(historyGroupManager));
-            }
-            if (configurationGroupManager == null)
-            {
-                throw new ArgumentNullException(nameof(configurationGroupManager));
-            }
-            m_HistoryGroupManager = historyGroupManager;
-            m_ConfigurationGroupManager = configurationGroupManager;
+                throw new ArgumentNullException(nameof(groupManager));
+            }         
+            m_GroupManager = groupManager;
         }
 
 
         public int Run(GetSnapshotOptions opts)
         {
-            using (var group = m_ConfigurationGroupManager.GetGroup(opts.Group))
-            using (var historyRepository = m_HistoryGroupManager.GetGroup(opts.Group))
+            using (var group = m_GroupManager.GetGroup(opts.Group))
             {
-                var folder = group[opts.Folder];
-                var history = historyRepository[opts.Folder];
+                var configurationService = group.GetService<IConfigurationService>();
+                var historyService = group.GetService<IHistoryService>();
 
-                OutputWriter.WriteLine($"SyncGroup '{group.Name}', Folder '{folder.Name}'");                
+                var configuration = configurationService[opts.Folder];
+                var history = historyService[opts.Folder];
+
+                OutputWriter.WriteLine($"SyncGroup '{group.Name}', Folder '{configuration.Name}'");                
                 OutputWriter.WriteLine();
                 PrintHistory(history);
             }

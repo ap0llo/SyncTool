@@ -9,24 +9,11 @@ using System.Collections.Generic;
 namespace SyncTool.Common
 {
 
-    public interface IGroup
+    public interface IGroup : IDisposable
     {
         string Name { get; }
 
+        T GetService<T>();
     }
 
-    public interface IGroup<T> : IGroup
-    {        
-        IEnumerable<T> Items { get; }
-
-        /// <summary>
-        /// Gets the specified item from the group
-        /// </summary>
-        /// <param name="name">The name of the item to retrieve</param>
-        /// <returns>Returns the requested item</returns>
-        /// <exception cref="ItemNotFoundException">Thrown if the specified item could not be found</exception>
-        /// <exception cref="ArgumentNullException">Thrown if 'name' is null or empty</exception>
-        T this[string name] { get; } 
-        
-    }
 }

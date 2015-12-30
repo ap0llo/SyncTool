@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LibGit2Sharp;
-using SyncTool.Git.Common;
 
-namespace SyncTool.Git.FileSystem
+
+namespace SyncTool.Git.Common
 {
     public class SingleDirectoryRepositoryPathProvider : IRepositoryPathProvider
     {

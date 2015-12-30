@@ -15,7 +15,7 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Git.FileSystem.Versioning
 {
-    public sealed class GitBasedHistoryGroup : GitBasedGroup, IHistoryGroup
+    public sealed class GitBasedHistoryService : GitBasedService, IHistoryService
     {
         const string s_BranchPrefix = "filesystemhistory/";
 
@@ -30,15 +30,15 @@ namespace SyncTool.Git.FileSystem.Versioning
                 throw new ArgumentNullException(nameof(name));
             }
 
-    var branchName = s_BranchPrefix + name;
-    var branch = m_Repository.GetLocalBranch(branchName);                                     
+            var branchName = s_BranchPrefix + name;
+            var branch = GitGroup.Repository.GetLocalBranch(branchName);                                     
 
             if (branch == null)
             {
                 throw new ItemNotFoundException(name);
 }
             
-            return new GitBasedFileSystemHistory(m_Repository, branch.FriendlyName);
+            return new GitBasedFileSystemHistory(GitGroup.Repository, branch.FriendlyName);
             }
         }
 
@@ -46,15 +46,15 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             get
             {
-                return m_Repository.Branches.GetLocalBranches()
+                return GitGroup.Repository.Branches.GetLocalBranches()
                  .Where(b => b.FriendlyName.StartsWith(s_BranchPrefix))
-                 .Select(b => new GitBasedFileSystemHistory(m_Repository, b.FriendlyName));
+                 .Select(b => new GitBasedFileSystemHistory(GitGroup.Repository, b.FriendlyName));
             }
         }
 
 
 
-        public GitBasedHistoryGroup(string repositoryPath) : base(repositoryPath)
+        public GitBasedHistoryService(GitBasedGroup group) : base(group)
         {
             
         }
@@ -64,26 +64,12 @@ namespace SyncTool.Git.FileSystem.Versioning
         public void CreateHistory(string name)
         {
             var branchName = s_BranchPrefix + name;
-            var parentCommitId = m_Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
-            var parentCommit = m_Repository.Lookup<Commit>(parentCommitId);            
-            
-            m_Repository.CreateBranch(branchName, parentCommit);            
-        }
-    
+            var parentCommitId = GitGroup.Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
+            var parentCommit = GitGroup.Repository.Lookup<Commit>(parentCommitId);
 
-
-        public static GitBasedHistoryGroup Create(string repositoryLocation)
-        {
-            if (!NativeDirectory.Exists(repositoryLocation))
-            {
-                NativeDirectory.CreateDirectory(repositoryLocation);
-            }
-
-            RepositoryInitHelper.InitializeRepository(repositoryLocation);
-
-            return new GitBasedHistoryGroup(repositoryLocation);
+            GitGroup.Repository.CreateBranch(branchName, parentCommit);            
         }
 
-
+        
     }
 }

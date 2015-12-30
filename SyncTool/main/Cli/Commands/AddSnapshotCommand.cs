@@ -28,32 +28,29 @@ namespace SyncTool.Cli.Commands
 
     public class AddSnapshotCommand : CommandBase, ICommand<AddSnapshotOptions>
     {
-        readonly IGroupManager<IConfigurationGroup> m_ConfigurationGroupManager;
-        readonly IGroupManager<IHistoryGroup> m_HistoryGroupManager;
+        readonly IGroupManager m_GroupManager;
+        
 
-        public AddSnapshotCommand(IOutputWriter outputWriter, IGroupManager<IConfigurationGroup> configurationGroupManager, IGroupManager<IHistoryGroup> historyGroupManager) : base(outputWriter)
+        public AddSnapshotCommand(IOutputWriter outputWriter, IGroupManager groupManager) : base(outputWriter)
         {
-            if (configurationGroupManager == null)
+            if (groupManager == null)
             {
-                throw new ArgumentNullException(nameof(configurationGroupManager));
+                throw new ArgumentNullException(nameof(groupManager));
             }
-            if (historyGroupManager == null)
-            {
-                throw new ArgumentNullException(nameof(historyGroupManager));
-            }
-            m_ConfigurationGroupManager = configurationGroupManager;
-            m_HistoryGroupManager = historyGroupManager;
+            m_GroupManager = groupManager;        
         }
 
 
 
         public int Run(AddSnapshotOptions opts)
         {
-            using (var group = m_ConfigurationGroupManager.GetGroup(opts.Group))
-            using (var historyRepository = m_HistoryGroupManager.GetGroup(opts.Group))
+            using (var group = m_GroupManager.GetGroup(opts.Group))
             {
-                var folder = group[opts.Folder];
-                var history = historyRepository[opts.Folder];
+                var configurationService = group.GetService<IConfigurationService>();
+                var historyService = group.GetService<IHistoryService>();
+
+                var folder = configurationService[opts.Folder];
+                var history = historyService[opts.Folder];
 
                 var state = new LocalDirectory(null, folder.Path);
 

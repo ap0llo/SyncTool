@@ -5,16 +5,16 @@
 
 using Ninject.Modules;
 using SyncTool.Common;
-using SyncTool.FileSystem.Versioning;
-using SyncTool.Git.FileSystem.Versioning;
+using SyncTool.Git.Common;
 
 namespace SyncTool.Git.DI
 {
-    public class GitVersioningModule : NinjectModule
+    public class GitModule : NinjectModule
     {
         public override void Load()
         {
-            Bind<IGroupManager<IHistoryGroup>>().To<GitBasedHistoryGroupManager>();
+            this.Bind<IRepositoryPathProvider>().To<CurrentDirectoryRepositoryPathProvider>();
+            this.Bind<IGroupManager>().To<GitBasedGroupManager>();
         }
     }
 }

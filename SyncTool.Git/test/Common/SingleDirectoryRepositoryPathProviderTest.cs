@@ -8,7 +8,7 @@ using SyncTool.Git.FileSystem;
 using SyncTool.TestHelpers;
 using Xunit;
 
-namespace SyncTool.FileSystem.Git
+namespace SyncTool.Git.Common
 {
     /// <summary>
     /// Tests for <see cref="SingleDirectoryRepositoryPathProvider"/>

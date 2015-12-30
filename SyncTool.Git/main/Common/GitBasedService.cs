@@ -3,13 +3,30 @@
 // //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // // -----------------------------------------------------------------------------------------------------------
 
+using System;
 using SyncTool.Common;
 
-namespace SyncTool.Synchronization.Transfer
+namespace SyncTool.Git.Common
 {
-    public interface ISynchronizationStateGroup : IGroup<ISynchronizationState>
+    public class GitBasedService : IService
     {
-        new ISynchronizationState this[string name] { get; set; }
+
+        public IGroup Group => GitGroup;
         
+        protected GitBasedGroup GitGroup { get; }
+
+
+        public GitBasedService(GitBasedGroup group)
+        {
+            if (group == null)
+            {
+                throw new ArgumentNullException(nameof(group));
+            }
+            GitGroup = group;
+        }
+
+
+
+
     }
 }

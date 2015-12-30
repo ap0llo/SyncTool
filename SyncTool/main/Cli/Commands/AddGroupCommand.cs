@@ -24,17 +24,21 @@ namespace SyncTool.Cli.Commands
 
     public class AddGroupCommand : CommandBase, ICommand<AddGroupOptions>
     {
-        readonly IGroupManager<IConfigurationGroup> m_ConfigurationGroupManager;
+        readonly IGroupManager m_GroupManager;
 
-        public AddGroupCommand(IOutputWriter outputWriter, IGroupManager<IConfigurationGroup> configurationGroupManager)  : base(outputWriter)
+        public AddGroupCommand(IOutputWriter outputWriter, IGroupManager groupManager)  : base(outputWriter)
         {
-            m_ConfigurationGroupManager = configurationGroupManager;
+            if (groupManager == null)
+            {
+                throw new ArgumentNullException(nameof(groupManager));
+            }
+            m_GroupManager = groupManager;
         }
 
 
         public int Run(AddGroupOptions opts)
         {
-            m_ConfigurationGroupManager.AddGroup(opts.Name);
+            m_GroupManager.AddGroup(opts.Name);
             return 0;
         }
 

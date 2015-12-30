@@ -5,34 +5,32 @@
 
 using System;
 using System.Linq;
-using Moq;
 using SyncTool.Common;
 using SyncTool.Git.Common;
-using SyncTool.Git.Synchronization.Transfer;
-using SyncTool.Synchronization.SyncActions;
 using SyncTool.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Git.Synchronization.Transfer
 {
     /// <summary>
-    ///     Tests for <see cref="GitSynchronizationStateGroup" />
+    ///     Tests for <see cref="GitSynchronizationStateService" />
     /// </summary>
-    public class GitSynchronizationStateGroupTest : DirectoryBasedTest
+    public class GitSynchronizationStateServiceTest : DirectoryBasedTest
     {
-        readonly GitSynchronizationStateGroup m_Group;
+        readonly GitBasedGroup m_Group;
+        readonly GitSynchronizationStateService m_Service;
 
-
-        public GitSynchronizationStateGroupTest()
+        public GitSynchronizationStateServiceTest()
         {
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
-            m_Group = new GitSynchronizationStateGroup(m_TempDirectory.Location);
+            m_Group = new GitBasedGroup(m_TempDirectory.Location);
+            m_Service = new GitSynchronizationStateService(m_Group);
         }
 
         [Fact]
         public void Items_is_empty_for_empty_repository()
         {
-            Assert.Empty(m_Group.Items);
+            Assert.Empty(m_Service.Items);
         }
 
         [Fact]
@@ -40,22 +38,22 @@ namespace SyncTool.Git.Synchronization.Transfer
         {
             var state = SynchronizationStateMockingHelper.GetSynchronizationStateMock().WithEmptyActionLists().WithIds().Object;
 
-            m_Group["state1"] = state;
-            Assert.Single(m_Group.Items);
+            m_Service["state1"] = state;
+            Assert.Single(m_Service.Items);
 
-            m_Group["state2"] = state;
-            Assert.Equal(2, m_Group.Items.Count());
+            m_Service["state2"] = state;
+            Assert.Equal(2, m_Service.Items.Count());
         }
 
         [Fact]
         public void Indexer_Set_creates_a_new_state_if_the_state_does_not_yet_exist()
         {
-            Assert.Empty(m_Group.Items);
+            Assert.Empty(m_Service.Items);
 
             var state = SynchronizationStateMockingHelper.GetSynchronizationStateMock().WithEmptyActionLists().WithIds().Object;
-            m_Group["state1"] = state;
+            m_Service["state1"] = state;
 
-            Assert.Single(m_Group.Items);
+            Assert.Single(m_Service.Items);
 
         }
 
@@ -67,11 +65,11 @@ namespace SyncTool.Git.Synchronization.Transfer
                 .WithIds("global1", "local1")
                 .Object;
 
-            m_Group["state"] = state1;
+            m_Service["state"] = state1;
 
-            Assert.Single(m_Group.Items);
-            Assert.Equal("global1", m_Group.Items.Single().GlobalSnapshotId);
-            Assert.Equal("local1", m_Group.Items.Single().LocalSnapshotId);
+            Assert.Single(m_Service.Items);
+            Assert.Equal("global1", m_Service.Items.Single().GlobalSnapshotId);
+            Assert.Equal("local1", m_Service.Items.Single().LocalSnapshotId);
 
             var state2 = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
                 .WithEmptyActionLists()
@@ -79,9 +77,9 @@ namespace SyncTool.Git.Synchronization.Transfer
                 .Object;
 
             // state names must be handled case-invariant
-            m_Group["StATE"] = state2;
+            m_Service["StATE"] = state2;
 
-            var gitState = m_Group.Items.Single();
+            var gitState = m_Service.Items.Single();
 
             Assert.Equal("global2", gitState.GlobalSnapshotId);
             Assert.Equal("local2", gitState.LocalSnapshotId);
@@ -90,25 +88,25 @@ namespace SyncTool.Git.Synchronization.Transfer
         [Fact]
         public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
         {
-            Assert.Throws<ArgumentNullException>(() => m_Group[null]);
-            Assert.Throws<ArgumentNullException>(() => m_Group[""]);
-            Assert.Throws<ArgumentNullException>(() => m_Group[" "]);
+            Assert.Throws<ArgumentNullException>(() => m_Service[null]);
+            Assert.Throws<ArgumentNullException>(() => m_Service[""]);
+            Assert.Throws<ArgumentNullException>(() => m_Service[" "]);
         }
 
         [Fact]
         public void Indexer_Get_throws_ItemNotFoundException_if_requested_item_could_not_be_found()
         {
-            Assert.Throws<ItemNotFoundException>(() => m_Group["Irrelevant"]);
+            Assert.Throws<ItemNotFoundException>(() => m_Service["Irrelevant"]);
         }
 
         [Fact]
         public void Indexer_Get_returns_expected_item()
         {
             var state = SynchronizationStateMockingHelper.GetSynchronizationStateMock().WithEmptyActionLists().WithIds().Object;
-            m_Group["item1"] =  state;
+            m_Service["item1"] =  state;
 
-            Assert.NotNull(m_Group["item1"]);
-            Assert.NotNull(m_Group["ITem1"]);
+            Assert.NotNull(m_Service["item1"]);
+            Assert.NotNull(m_Service["ITem1"]);
         }
 
 

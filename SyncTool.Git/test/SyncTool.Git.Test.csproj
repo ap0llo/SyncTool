@@ -63,21 +63,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\GitBasedConfigurationGroupManagerTest.cs" />
-    <Compile Include="Configuration\GitBasedConfigurationGroupTest.cs" />
+    <Compile Include="Configuration\GitBasedConfigurationServiceTest.cs" />
     <Compile Include="Configuration\Reader\JsonSyncRepositoryReaderTest.cs" />
-    <Compile Include="Common\GitBasedGroupManagerTest.cs" />
     <Compile Include="Common\GitBasedGroupTest.cs" />
     <Compile Include="FileSystem\GitDirectoryTest.cs" />
-    <Compile Include="FileSystem\SingleDirectoryRepositoryPathProviderTest.cs" />
+    <Compile Include="Common\SingleDirectoryRepositoryPathProviderTest.cs" />
     <Compile Include="Common\RepositoryCloneTest.cs" />
     <Compile Include="Common\RepositoryInfoTest.cs" />
     <Compile Include="Common\RepositoryInitHelperTest.cs" />
     <Compile Include="Common\TemporaryWorkingDirectoryTest.cs" />
     <Compile Include="FileSystem\Versioning\GitBasedFileSystemHistoryTest.cs" />
     <Compile Include="FileSystem\Versioning\GitBasedFileSystemSnapshotTest.cs" />
-    <Compile Include="FileSystem\Versioning\GitBasedHistoryGroupManagerTest.cs" />
-    <Compile Include="FileSystem\Versioning\GitBasedHistoryGroupTest.cs" />
+    <Compile Include="Common\GitBasedGroupManagerTest.cs" />
+    <Compile Include="FileSystem\Versioning\GitBasedHistoryServiceTest.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\DirectoryPropertiesFileTest.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\DirectoryPropertiesTest.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\FilePropertiesFileTest.cs" />
@@ -86,7 +84,7 @@
     <Compile Include="FileSystem\Versioning\MetaFileSystem\MetaFileSystemLoaderTest.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\MetaFileSystemToFileSystemConverterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Synchronization\Transfer\GitSynchronizationStateGroupTest.cs" />
+    <Compile Include="Synchronization\Transfer\GitSynchronizationStateServiceTest.cs" />
     <Compile Include="Synchronization\Transfer\GitSynchronizationStateTest.cs" />
   </ItemGroup>
   <ItemGroup>
