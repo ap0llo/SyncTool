@@ -10,6 +10,7 @@ using Functional.Option;
 using LibGit2Sharp;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
+using SyncTool.Git.Common;
 using SyncTool.Git.FileSystem.Versioning.MetaFileSystem;
 
 namespace SyncTool.Git.FileSystem.Versioning
@@ -61,7 +62,55 @@ namespace SyncTool.Git.FileSystem.Versioning
             return snapshot;
         }
 
-        public IFileSystemDiff CompareSnapshots(string fromId, string toId)
+        public IFileSystemDiff GetChanges(string toId)
+        {
+            var toSnapshot = GetSnapshot(toId);
+
+            var treeChanges = m_Repository.Diff.Compare<TreeChanges>(m_Repository.GetInitialCommit().Tree, toSnapshot.Commit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
+
+            var changes = treeChanges
+                .Where(treeChange => treeChange.Status != ChangeKind.Unmodified)
+                .Select(treeChange =>
+                {
+                    var path = treeChange.Path.Split("\\/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                    // ignore changes in the repository outside of the "Snapshot" directory
+                    var dirName = path.First();
+                    if (!StringComparer.InvariantCultureIgnoreCase.Equals(dirName, GitBasedFileSystemSnapshot.SnapshotDirectoryName))
+                    {
+                        return Option.None;
+                    }
+
+                    // ignore directory property files
+                    var fileName = path.Last();
+                    if (StringComparer.InvariantCultureIgnoreCase.Equals(fileName, DirectoryPropertiesFile.FileName))
+                    {
+                        return Option.None;
+                    }
+
+                    switch (treeChange.Status)
+                    {
+                        case ChangeKind.Unmodified:
+                            throw new InvalidOperationException("Unmodified changes should have been filtered out");
+
+                        //since we're getting all changes from the initial commit (which is empty) to the snapshot
+                        // only additions of files are possible
+                        case ChangeKind.Added:
+                            return (Option<Change>)new Change(ChangeType.Added, null, toSnapshot.GetFileForGitRelativePath(treeChange.Path));
+                        
+                        default:
+                            throw new NotImplementedException();
+                    }
+                })
+                .Where(change => change.HasValue)
+                .Select(change => change.Value)
+                .ToList();
+
+
+            return new FileSystemDiff(toSnapshot, changes);
+        }
+
+        public IFileSystemDiff GetChanges(string fromId, string toId)
         {
             var fromSnapshot = GetSnapshot(fromId);
             var toSnapshot = GetSnapshot(toId);

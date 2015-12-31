@@ -39,7 +39,7 @@
     <Compile Include="Cli\Commands\CommandBase.cs" />
     <Compile Include="Cli\Commands\GetGroupCommand.cs" />
     <Compile Include="Cli\Commands\GetSnapshotCommand.cs" />
-    <Compile Include="Cli\Commands\SynchronizeCommand.cs" />
+    <Compile Include="Cli\Commands\SyncCommand.cs" />
     <Compile Include="Cli\DI\CliModule.cs" />
     <Compile Include="Cli\Framework\AbstractCommandLoader.cs" />
     <Compile Include="Cli\Framework\Application.cs" />

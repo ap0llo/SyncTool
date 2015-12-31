@@ -12,7 +12,7 @@ namespace SyncTool.Synchronization.Transfer
 
         public static bool IsCompleted(this ISynchronizationState state)
         {
-            return state.QueuedActions.Any() || state.InProgressActions.Any();
+            return !(state.QueuedActions.Any() || state.InProgressActions.Any());
         }
 
     }

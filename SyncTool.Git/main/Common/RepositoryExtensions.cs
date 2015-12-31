@@ -32,5 +32,11 @@ namespace SyncTool.Git.Common
             return repository.GetLocalBranches().Any(b => b.FriendlyName.Equals(branchName, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        public static Commit GetInitialCommit(this Repository repository)
+        {
+            var sha = repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
+            return repository.Lookup<Commit>(sha);
+        }
+
     }
 }

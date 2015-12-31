@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using LibGit2Sharp;
 using SyncTool.FileSystem;
@@ -13,6 +14,9 @@ using SyncTool.Git.Common;
 using SyncTool.Git.FileSystem;
 using SyncTool.Synchronization.SyncActions;
 using SyncTool.Synchronization.Transfer;
+using Directory = SyncTool.FileSystem.Directory;
+using NativeDirectory = System.IO.Directory;
+
 
 namespace SyncTool.Git.Synchronization.Transfer
 {
@@ -98,11 +102,21 @@ namespace SyncTool.Git.Synchronization.Transfer
             using (var workingDirectory = new TemporaryWorkingDirectory(repository.Info.Path, branchName))
             {
                 var localItemCreator = new LocalItemCreator();
+
+                foreach(var name in new[] { s_Queued, s_InProgress, s_Completed })
+                {
+                    var path = Path.Combine(workingDirectory.Location, name);
+                    if (NativeDirectory.Exists(path))
+                    {
+                        NativeDirectory.Delete(path: path, recursive: true);
+                    }
+                }
+                
                 localItemCreator.CreateDirectoryInPlace(fileSystem, workingDirectory.Location);
 
                 if (workingDirectory.HasChanges)
                 {
-                    workingDirectory.Commit();
+                    workingDirectory.Commit($"Updated synchronization state '{branchName}'");
                     workingDirectory.Push();
                 }
             }

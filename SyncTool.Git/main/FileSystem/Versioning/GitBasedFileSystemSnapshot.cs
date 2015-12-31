@@ -73,7 +73,7 @@ namespace SyncTool.Git.FileSystem.Versioning
                 {
                     try
                     {
-                        commitId = workingRepository.Commit();
+                        commitId = workingRepository.Commit($"Created snapshot in '{branchName}'");
                         workingRepository.Push();
                     }
                     catch (EmptyCommitException)
