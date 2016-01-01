@@ -27,15 +27,15 @@
     <Compile Include="FileSystem\Versioning\Change.cs" />
     <Compile Include="FileSystem\Versioning\ChangeType.cs" />
     <Compile Include="FileSystem\Versioning\FileSystemDiff.cs" />
-    <Compile Include="FileSystem\Versioning\HistoryGroupNotFoundException.cs" />
     <Compile Include="FileSystem\Versioning\IChange.cs" />
     <Compile Include="FileSystem\Versioning\IFileSystemDiff.cs" />
     <Compile Include="FileSystem\Versioning\IFileSystemHistory.cs" />
     <Compile Include="FileSystem\Versioning\IFileSystemSnapshot.cs" />
     <Compile Include="FileSystem\Versioning\IHistoryService.cs" />
     <Compile Include="FileSystem\Versioning\FileSystemHistoryExtensions.cs" />
+    <Compile Include="FileSystem\Versioning\_Exceptions\DuplicateFileSystemHistoryException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FileSystem\Versioning\SnapshotNotFoundException.cs" />
+    <Compile Include="FileSystem\Versioning\_Exceptions\SnapshotNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

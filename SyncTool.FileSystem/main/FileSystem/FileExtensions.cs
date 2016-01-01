@@ -8,6 +8,9 @@ using System.IO;
 
 namespace SyncTool.FileSystem
 {
+    /// <summary>
+    /// Extension methods for <see cref="IFile"/>
+    /// </summary>
     public static class FileExtensions
     {
         static readonly char[] s_TrimChars = " .".ToCharArray();

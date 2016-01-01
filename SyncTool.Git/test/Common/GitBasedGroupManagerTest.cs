@@ -47,7 +47,7 @@ namespace SyncTool.Git.Common
             Assert.Empty(groupManager.Groups);
         }
 
-        [Fact(DisplayName = nameof(GitBasedGroupManager) + ".GetGroup() throws " + nameof(HistoryGroupNotFoundException))]
+        [Fact(DisplayName = nameof(GitBasedGroupManager) + ".GetGroup() throws " + nameof(GroupNotFoundException))]
         public void GetGroup_throws_SyncGroupNotFoundException()
         {
             var groupManager = new GitBasedGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location));            

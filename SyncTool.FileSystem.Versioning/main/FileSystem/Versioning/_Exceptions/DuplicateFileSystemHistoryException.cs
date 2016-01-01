@@ -3,16 +3,18 @@
 // //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // // -----------------------------------------------------------------------------------------------------------
 
-namespace SyncTool.Common
+using System;
+
+namespace SyncTool.FileSystem.Versioning
 {
-    /// <summary>
-    /// Base interface for all services
-    /// </summary>
-    public interface IService
+    [Serializable]
+    public class DuplicateFileSystemHistoryException : Exception
     {
-        /// <summary>
-        /// Gets the group the service is associated to
-        /// </summary>
-        IGroup Group { get; }         
+
+        public DuplicateFileSystemHistoryException(string name) : base($"A history named '{name}' already exists")
+        {
+            
+        }
+
     }
 }

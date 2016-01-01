@@ -31,6 +31,7 @@ namespace SyncTool.FileSystem.Local
         }
 
 
+
         public void Dispose()
         {
             DirectoryHelper.DeleteRecursively(Directory.Location);

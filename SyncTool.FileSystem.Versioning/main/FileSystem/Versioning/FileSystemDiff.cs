@@ -9,6 +9,9 @@ using System.Linq;
 
 namespace SyncTool.FileSystem.Versioning
 {
+    /// <summary>
+    /// Immutable default implementation of <see cref="IFileSystemDiff"/>
+    /// </summary>
     public class FileSystemDiff : IFileSystemDiff
     {
         public IFileSystemSnapshot FromSnapshot { get; }
@@ -16,6 +19,7 @@ namespace SyncTool.FileSystem.Versioning
         public IFileSystemSnapshot ToSnapshot { get; }
 
         public IEnumerable<IChange> Changes { get; }
+
 
         public FileSystemDiff(IFileSystemSnapshot toSnapshot, IEnumerable<IChange> changes)
         {

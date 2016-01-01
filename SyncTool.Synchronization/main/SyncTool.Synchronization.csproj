@@ -40,7 +40,7 @@
     <Compile Include="FileSystem\MutableDirectory.cs" />
     <Compile Include="FileSystem\MutableDirectoryExtensions.cs" />
     <Compile Include="Synchronization\DI\SynchronizationModule.cs" />
-    <Compile Include="Synchronization\NotApplicableException.cs" />
+    <Compile Include="Synchronization\_Exceptions\NotApplicableException.cs" />
     <Compile Include="Synchronization\ISynchronizerResult.cs" />
     <Compile Include="Synchronization\Conflicts\ModificationDeletionSyncConflict.cs" />
     <Compile Include="Synchronization\Conflicts\MultipleVersionSyncConflict.cs" />

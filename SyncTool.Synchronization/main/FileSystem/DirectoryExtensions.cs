@@ -9,9 +9,14 @@ using Directory = SyncTool.FileSystem.Directory;
 
 namespace SyncTool.FileSystem
 {
+    /// <summary>
+    /// Assembly-internal extension methods for <see cref="IDirectory"/>
+    /// </summary>
     internal static class DirectoryExtensions
     {
-
+        /// <summary>
+        /// Creates a new mutable directory from the specified directory
+        /// </summary>
         public static MutableDirectory ToMutableDirectory(this IDirectory directory)
         {
             return directory.ToMutableDirectory(null);
@@ -19,11 +24,15 @@ namespace SyncTool.FileSystem
 
         private static MutableDirectory ToMutableDirectory(this IDirectory directory, MutableDirectory parent)
         {
-            var newDirectory = new MutableDirectory(directory.Name);
+            var newDirectory = new MutableDirectory(parent, directory.Name);
+            
+            // recursively create mutable copies of all directories
             foreach (var dir in directory.Directories)
             {
                 newDirectory.Add(d => dir.ToMutableDirectory(d));
             }
+
+            // create copies of all file in the mutable directory
             foreach (var file in directory.Files)
             {
                 newDirectory.Add(d => file.WithParent(d));

@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 
 namespace SyncTool.FileSystem
 {
+    /// <summary>
+    /// Extension methods for (de)serialization
+    /// </summary>
     public static class SerializationExtensions
     {
 

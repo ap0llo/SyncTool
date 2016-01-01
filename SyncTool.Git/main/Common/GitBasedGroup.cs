@@ -9,7 +9,6 @@ using SyncTool.Common;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
-using SyncTool.Git.Common;
 using SyncTool.Git.Configuration;
 using SyncTool.Git.FileSystem;
 using SyncTool.Git.FileSystem.Versioning;
@@ -50,7 +49,7 @@ namespace SyncTool.Git.Common
         }
 
 
-        public T GetService<T>()
+        public T GetService<T>() where T : IService
         {
             if (typeof (T) == typeof (IConfigurationService))
             {

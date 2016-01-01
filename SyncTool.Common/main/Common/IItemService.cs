@@ -8,9 +8,15 @@ using System.Collections.Generic;
 
 namespace SyncTool.Common
 {
+    /// <summary>
+    /// Interface for a service managing items of type <typeparam name="T" />
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IItemService<T> : IService
     {
-
+        /// <summary>
+        /// Gets all the items managed by the service
+        /// </summary>
         IEnumerable<T> Items { get; }
 
         /// <summary>
@@ -22,6 +28,9 @@ namespace SyncTool.Common
         /// <exception cref="ArgumentNullException">Thrown if 'name' is null or empty</exception>
         T this[string name] { get; }
 
+        /// <summary>
+        /// Checks whether an item with the specified name exists
+        /// </summary>
         bool ItemExists(string name);
     }
 }

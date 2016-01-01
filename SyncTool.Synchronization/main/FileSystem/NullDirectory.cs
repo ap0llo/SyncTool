@@ -8,6 +8,10 @@ using System.Collections.Generic;
 
 namespace SyncTool.FileSystem
 {
+    /// <summary>
+    /// Implementation of <see cref="IDirectory"/> that has a fixed Path and Name
+    /// This allows files to be copied without their tree while still retaining the functionality of the Path property
+    /// </summary>
     public class NullDirectory : IDirectory
     {
         public string Name { get; }

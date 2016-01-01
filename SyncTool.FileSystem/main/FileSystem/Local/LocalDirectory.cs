@@ -10,6 +10,9 @@ using SyncTool.Common.Utilities;
 
 namespace SyncTool.FileSystem.Local
 {
+    /// <summary>
+    /// Default implementation of <see cref="ILocalDirectory"/>
+    /// </summary>
     public class LocalDirectory : AbstractDirectory, ILocalDirectory, IDisposable
     {
         readonly DirectoryInfo m_DirectoryInfo;
@@ -42,6 +45,24 @@ namespace SyncTool.FileSystem.Local
             }
         }
 
+
+        public LocalDirectory(IDirectory parent, string path) : this(parent, new DirectoryInfo(path))
+        {
+        }
+
+        public LocalDirectory(IDirectory parent, DirectoryInfo directoryInfo) : base(parent, directoryInfo.Name)
+        {
+            if (directoryInfo == null)
+            {
+                throw new ArgumentNullException(nameof(directoryInfo));
+            }
+            m_DirectoryInfo = directoryInfo;
+
+            m_DirectoryMapper = new CachingObjectMapper<DirectoryInfo, LocalDirectory>(dirInfo => new LocalDirectory(this, dirInfo), new NameOnlyFileSystemInfoEqualityComparer());
+            m_FileMapper = new CachingObjectMapper<FileInfo, LocalFile>(fileInfo => new LocalFile(this, fileInfo), new NameOnlyFileSystemInfoEqualityComparer());
+        }
+
+
         protected override bool FileExistsByName(string name)
         {
             return System.IO.File.Exists(System.IO.Path.Combine(m_DirectoryInfo.FullName, name));
@@ -64,23 +85,6 @@ namespace SyncTool.FileSystem.Local
             m_DirectoryInfo.Refresh();
             var dirInfo = m_DirectoryInfo.GetDirectories().Single(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
             return m_DirectoryMapper.MapObject(dirInfo);
-        }
-
-
-        public LocalDirectory(IDirectory parent, string path) : this(parent, new DirectoryInfo(path))
-        {
-        }
-
-        public LocalDirectory(IDirectory parent, DirectoryInfo directoryInfo) : base(parent, directoryInfo.Name)
-        {
-            if (directoryInfo == null)
-            {
-                throw new ArgumentNullException(nameof(directoryInfo));
-            }
-            m_DirectoryInfo = directoryInfo;
-
-            m_DirectoryMapper = new CachingObjectMapper<DirectoryInfo, LocalDirectory>(dirInfo => new LocalDirectory(this, dirInfo), new NameOnlyFileSystemInfoEqualityComparer());
-            m_FileMapper = new CachingObjectMapper<FileInfo, LocalFile>(fileInfo => new LocalFile(this, fileInfo), new NameOnlyFileSystemInfoEqualityComparer());
         }
 
 

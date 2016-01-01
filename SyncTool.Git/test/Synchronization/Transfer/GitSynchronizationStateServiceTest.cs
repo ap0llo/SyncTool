@@ -27,13 +27,13 @@ namespace SyncTool.Git.Synchronization.Transfer
             m_Service = new GitSynchronizationStateService(m_Group);
         }
 
-        [Fact]
+        [Fact(DisplayName= nameof(GitSynchronizationStateService) + ".Items is empty for empty repository")]
         public void Items_is_empty_for_empty_repository()
         {
             Assert.Empty(m_Service.Items);
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ".Items returns expected number of elements")]
         public void Items_returns_expected_number_of_elements()
         {
             var state = SynchronizationStateMockingHelper.GetSynchronizationStateMock().WithEmptyActionLists().WithIds().Object;
@@ -45,7 +45,7 @@ namespace SyncTool.Git.Synchronization.Transfer
             Assert.Equal(2, m_Service.Items.Count());
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": Indexer.Set creates a new state if the state does not yet exist")]
         public void Indexer_Set_creates_a_new_state_if_the_state_does_not_yet_exist()
         {
             Assert.Empty(m_Service.Items);
@@ -57,7 +57,7 @@ namespace SyncTool.Git.Synchronization.Transfer
 
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": Indexer.Set overwrites existing state if state with specified name already exists")]
         public void Indexer_Set_overwrites_existing_state_if_state_with_specified_name_already_exists()
         {
             var state1 = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
@@ -85,7 +85,7 @@ namespace SyncTool.Git.Synchronization.Transfer
             Assert.Equal("local2", gitState.LocalSnapshotId);
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": Indexer.Get throws ArgumentNullException if name is null or whitespace")]
         public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
         {
             Assert.Throws<ArgumentNullException>(() => m_Service[null]);
@@ -93,13 +93,13 @@ namespace SyncTool.Git.Synchronization.Transfer
             Assert.Throws<ArgumentNullException>(() => m_Service[" "]);
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": Indexer.Get throws ItemNotFoundException if requested item could not be found")]
         public void Indexer_Get_throws_ItemNotFoundException_if_requested_item_could_not_be_found()
         {
             Assert.Throws<ItemNotFoundException>(() => m_Service["Irrelevant"]);
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": Indexer.Get returns expected item")]
         public void Indexer_Get_returns_expected_item()
         {
             var state = SynchronizationStateMockingHelper.GetSynchronizationStateMock().WithEmptyActionLists().WithIds().Object;

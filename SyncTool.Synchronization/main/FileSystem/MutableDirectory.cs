@@ -7,6 +7,9 @@ using System;
 
 namespace SyncTool.FileSystem
 {
+    /// <summary>
+    /// Implementation of <see cref="IDirectory"/> that allows removal of directories
+    /// </summary>
     internal class MutableDirectory : Directory
     {
         public MutableDirectory(string name) : base(name)

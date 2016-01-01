@@ -10,7 +10,6 @@ using System.Linq;
 using SyncTool.Common;
 using SyncTool.Configuration;
 using SyncTool.Configuration.Model;
-using SyncTool.Configuration.Reader;
 using SyncTool.FileSystem;
 using SyncTool.Git.Common;
 using NativeDirectory = System.IO.Directory;
@@ -21,10 +20,7 @@ namespace SyncTool.Git.Configuration
     public sealed class GitBasedConfigurationService : GitBasedService, IConfigurationService
     {
         const string s_SyncFolders = "SyncFolders";
-        const string s_Json = "json";
-
-        
-        readonly ISyncFolderReader m_SyncFolderReader = new JsonSyncFolderReader();
+        const string s_Json = "json";               
         
 
         public SyncFolder this[string name]
@@ -58,7 +54,7 @@ namespace SyncTool.Git.Configuration
                     {
                         using (var stream = file.OpenRead())
                         {
-                            return m_SyncFolderReader.ReadSyncFolder(stream);
+                            return stream.Deserialize<SyncFolder>();
                         }
                     }).ToList();
                 }
@@ -114,10 +110,6 @@ namespace SyncTool.Git.Configuration
             return Items.Any(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+             
     }
 }

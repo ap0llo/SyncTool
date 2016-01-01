@@ -13,6 +13,10 @@ namespace SyncTool.FileSystem.Filtering
     {
         readonly IFileSystemFilter m_Filter;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="FilteringConverter"/>
+        /// </summary>
+        /// <param name="filter">The filter to use for conversion</param>
         public FilteringConverter(IFileSystemFilter filter)
         {
             if (filter == null)
@@ -23,15 +27,17 @@ namespace SyncTool.FileSystem.Filtering
         }
 
 
-
+        /// <summary>
+        /// Converts the specified directory to a new directory tree which contains only these items permitted by the filter
+        /// </summary>
         public IDirectory Convert(IDirectory directory) => Convert(null, directory);
 
 
 
         IDirectory Convert(IDirectory parentDirectory, IDirectory toConvert)
         {
-            var newDirectory = new Directory(null, toConvert.Name);
-
+            var newDirectory = new Directory(parentDirectory, toConvert.Name);
+           
             foreach (var subDirectory in toConvert.Directories)
             {
                 if (m_Filter.Applies(subDirectory) == false)

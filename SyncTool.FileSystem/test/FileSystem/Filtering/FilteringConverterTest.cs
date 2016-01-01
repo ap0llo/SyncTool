@@ -4,6 +4,7 @@
 // // -----------------------------------------------------------------------------------------------------------
 
 using Moq;
+using SyncTool.TestHelpers;
 using Xunit;
 
 namespace SyncTool.FileSystem.Filtering
@@ -13,11 +14,6 @@ namespace SyncTool.FileSystem.Filtering
         const string s_File1 = "file1";
         const string s_File2 = "file2";
            
-
-        public FilteringConverterTest()
-        {
-            
-        }
 
 
         [Fact(DisplayName = nameof(FilteringConverter) + "Convert() removes files from result")]
@@ -45,8 +41,33 @@ namespace SyncTool.FileSystem.Filtering
 
 
 
+        [Fact(DisplayName = nameof(FilteringConverter) + "Convert() correctly sets references between parent and child directories")]
+        public void Convert_correctly_sets_references_between_parent_and_child_directories()
+        {
+            var directory = new Directory(null, "root")
+            {
+                root => new File(root, s_File1),
+                root => new Directory(root, "dir1")
+            };
 
-        
+            // filter nothing 
+            var filter = new Mock<IFileSystemFilter>(MockBehavior.Strict);
+            filter.Setup(f => f.Applies(It.IsAny<IFileSystemItem>())).Returns(false);
+            
+
+            var converter = new FilteringConverter(filter.Object);
+
+            var filteredDirectory = converter.Convert(directory);
+
+
+            FileSystemAssert.DirectoryEqual(directory, filteredDirectory);
+
+            Assert.Null(filteredDirectory.Parent);
+            Assert.Equal(directory, directory.GetFile(s_File1).Parent);
+            Assert.Equal(directory, directory.GetDirectory("dir1").Parent);
+        }
+
+
 
     }
 }

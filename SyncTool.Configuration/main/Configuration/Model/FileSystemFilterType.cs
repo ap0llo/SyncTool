@@ -4,6 +4,9 @@
 // // -----------------------------------------------------------------------------------------------------------
 namespace SyncTool.Configuration.Model
 {
+    /// <summary>
+    /// Enum of filter types that can be specified as part of folder configuration
+    /// </summary>
     public enum FileSystemFilterType
     {        
         MicroscopeQuery

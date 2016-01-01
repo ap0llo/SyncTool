@@ -5,16 +5,21 @@
 
 using System;
 
-namespace SyncTool.FileSystem.Versioning
+namespace SyncTool.Common
 {
+
+
+    /// <summary>
+    /// Indicates that a group could not be added because a group with the specified groupName already exists
+    /// </summary>
     [Serializable]
-    public class HistoryGroupNotFoundException : Exception
+    public class DuplicateGroupException : GroupManagerException
     {
+        public string GroupName { get; }
 
-        public HistoryGroupNotFoundException(string message, Exception innerException) : base(message, innerException)
+        public DuplicateGroupException(string groupName) : base($"A Group named '{groupName}' already exists")
         {
-            
+            this.GroupName = groupName;
         }
-
     }
 }

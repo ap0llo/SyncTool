@@ -4,11 +4,13 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
-using SyncTool.Common.Utilities;
 using Xunit;
 
 namespace SyncTool.Common.Utilities
 {
+    /// <summary>
+    /// Tests for <see cref="CachingObjectMapper{T,T}"/>
+    /// </summary>
     public class CachingObjectMapperTest
     {
          

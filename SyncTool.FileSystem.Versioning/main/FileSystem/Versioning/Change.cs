@@ -2,6 +2,9 @@
 
 namespace SyncTool.FileSystem.Versioning
 {
+    /// <summary>
+    /// Default, immutable implementation of <see cref="IChange"/>
+    /// </summary>
     public class Change : IChange
     {
         public Change(ChangeType type, IFile fromFile, IFile toFile)

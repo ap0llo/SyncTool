@@ -9,10 +9,15 @@ using System.Linq;
 
 namespace SyncTool.FileSystem.Versioning
 {
+    /// <summary>
+    /// Implementatation of <see cref="IFileSystemDiff"/> that filters out changes if the file 
+    /// before and after the change is considered equal according to the specified equality comparer
+    /// </summary>
     class FilteredFileSystemDiff : IFileSystemDiff
     {
         readonly IFileSystemDiff m_WrappedDiff;
         readonly IEqualityComparer<IFile> m_FileComparer;
+
 
         public FilteredFileSystemDiff(IFileSystemDiff wrappedDiff, IEqualityComparer<IFile> fileComparer)
         {

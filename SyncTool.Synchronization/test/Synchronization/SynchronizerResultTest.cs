@@ -26,7 +26,7 @@ namespace SyncTool.Synchronization
         }
 
 
-        [Fact]
+        [Fact(DisplayName = nameof(SynchronizerResult) + ".ApplyTo throws InvalidOperationException if set contains conflicts")]
         public void ApplyTo_throws_InvalidOperationException_if_set_contains_conflicts()
         {            
             m_Instance.Add(new MultipleVersionSyncConflict(FileMockingHelper.GetMockedFile("file1"), FileMockingHelper.GetMockedFile("file1")));
@@ -35,7 +35,7 @@ namespace SyncTool.Synchronization
 
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(SynchronizerResult) + ".ApplyTo throws " + nameof(NotApplicableException) + " for " + nameof(AddFileSyncAction) + " if file already exists")]
         public void ApplyTo_throws_NotApplicableException_for_AddFileSyncAction_if_file_already_exists()
         {
             var directory = new Directory("root")
@@ -48,7 +48,7 @@ namespace SyncTool.Synchronization
             Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory, SyncParticipant.Left));
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(SynchronizerResult) + ".ApplyTo can successfully apply " + nameof(AddFileSyncAction) + "")]
         public void ApplyTo_can_successfully_apply_AddFileSyncAction()
         {
             var directory = new Directory("root");
@@ -62,8 +62,7 @@ namespace SyncTool.Synchronization
             Assert.True(newDirectory.FileExists("dir1/file1"));
         }
 
-
-        [Fact]
+        [Fact(DisplayName = nameof(SynchronizerResult) + ".ApplyTo throws " + nameof(NotApplicableException) + " for " + nameof(RemoveFileSyncAction) + " if file does not exist")]
         public void ApplyTo_throws_NotApplicableException_for_RemoveFileSyncAction_if_file_does_not_exist()
         {
             var directory = new Directory("root");
@@ -74,7 +73,7 @@ namespace SyncTool.Synchronization
             Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory, SyncParticipant.Left));            
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(SynchronizerResult) + ".ApplyTo throws " + nameof(NotApplicableException) + " for " + nameof(RemoveFileSyncAction) + " if file does not match properties")]
         public void ApplyTo_throws_NotApplicableException_for_RemoveFileSyncAction_if_file_does_not_match_properties()
         {
             var directory = new Directory("root")
@@ -88,7 +87,7 @@ namespace SyncTool.Synchronization
             Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory, SyncParticipant.Left));
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(SynchronizerResult) + ".ApplyTo can successfully apply " + nameof(RemoveFileSyncAction) + "")]
         public void ApplyTo_can_successfully_apply_RemoveFileSyncAction()
         {
             var directory = new Directory("root")
@@ -104,8 +103,7 @@ namespace SyncTool.Synchronization
             Assert.Empty(newDirectory.Files);
         }
 
-
-        [Fact]
+        [Fact(DisplayName = nameof(SynchronizerResult) + ".ApplyTo throws " + nameof(NotApplicableException) + " for " + nameof(ReplaceFileSyncAction) + " if file does not exist")]
         public void ApplyTo_throws_NotApplicableException_for_ReplaceFileSyncAction_if_file_does_not_exist()
         {
             var directory = new Directory("root");
@@ -118,7 +116,7 @@ namespace SyncTool.Synchronization
             Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory, SyncParticipant.Left));
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(SynchronizerResult) + ".ApplyTo throws " + nameof(NotApplicableException) + " for " + nameof(ReplaceFileSyncAction) + " if file does not match properties")]
         public void ApplyTo_throws_NotApplicableException_for_ReplaceFileSyncAction_if_file_does_not_match_properties()
         {
             var directory = new Directory("root")
@@ -134,9 +132,7 @@ namespace SyncTool.Synchronization
             Assert.Throws<NotApplicableException>(() => m_Instance.ApplyTo(directory, SyncParticipant.Left));
         }
 
-
-
-        [Fact]
+        [Fact(DisplayName = nameof(SynchronizerResult) + ".ApplyTo can successfully apply " + nameof(ReplaceFileSyncAction) + "")]        
         public void ApplyTo_can_successfully_apply_ReplaceFileSyncAction()
         {
             var directory = new Directory("root")
@@ -153,8 +149,7 @@ namespace SyncTool.Synchronization
             Assert.Equal(newVersion.LastWriteTime, newDirectory.GetFile("file1").LastWriteTime);
         }
 
-
-        [Fact]
+        [Fact(DisplayName = nameof(SynchronizerResult) + ".ApplyTo only applies changes with the specified target")]
         public void ApplyTo_only_applies_changes_with_the_specified_target()
         {
             var directory = new Directory("root")
@@ -170,5 +165,6 @@ namespace SyncTool.Synchronization
             // as we choose target "Right", the directory has to be unchanged
             FileSystemAssert.DirectoryEqual(directory, newDirectory);
         }
+
     }
 }

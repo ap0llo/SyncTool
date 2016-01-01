@@ -9,6 +9,9 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.FileSystem
 {
+    /// <summary>
+    ///  IEqualityComparer{IFile} that only considers the file's properties (Path, Length, LastWriteTime)
+    /// </summary>
     public class FilePropertiesComparer : IEqualityComparer<IFile>
     {
         public bool Equals(IFile x, IFile y)

@@ -83,7 +83,8 @@ namespace SyncTool.Git.Configuration
         }
 
 
-        [Fact]
+
+        [Fact(DisplayName = nameof(GitBasedConfigurationService) + ": Indexer.Get throws ArgumentNullException if name is null or whitespace")]
         public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
         {
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");
@@ -96,8 +97,7 @@ namespace SyncTool.Git.Configuration
             }
         }
 
-
-        [Fact]
+        [Fact(DisplayName = nameof(GitBasedConfigurationService) + ": Indexer.Get throws ItemNotFoundException if the requested item was not found")]
         public void Indexer_Get_throws_ItemNotFoundException_if_the_requested_item_was_not_found()
         {
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");
@@ -108,7 +108,7 @@ namespace SyncTool.Git.Configuration
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = nameof(GitBasedConfigurationService) + ": Indexer.Get returns the expected Item")]
         public void Indexer_Get_returns_the_expected_Item()
         {
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");

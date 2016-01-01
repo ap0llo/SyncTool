@@ -24,8 +24,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\DuplicateGroupException.cs" />
-    <Compile Include="Common\GroupManagerException.cs" />
+    <Compile Include="Common\_Exceptions\DuplicateGroupException.cs" />
+    <Compile Include="Common\_Exceptions\GroupManagerException.cs" />
     <Compile Include="Common\IGroup.cs" />
     <Compile Include="Common\IGroupManager.cs" />
     <Compile Include="Common\IItemService.cs" />

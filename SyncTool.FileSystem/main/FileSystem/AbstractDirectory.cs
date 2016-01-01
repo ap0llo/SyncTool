@@ -92,6 +92,10 @@ namespace SyncTool.FileSystem
             }
         }
 
+        /// <summary>
+        /// Checks whether a file with the specified name exists in this current directory.
+        /// Only direct children of the directory are considered, name must not be a path into a subdirectory       
+        /// </summary>
         protected abstract bool FileExistsByName(string name);
 
 
@@ -117,36 +121,52 @@ namespace SyncTool.FileSystem
             }
         }
 
+        /// <summary>
+        /// Checks whether a directory with the specified name exists in this directory.
+        /// Only direct children of the directory are considered, name must not be a path into a subdirectory       
+        /// </summary>
         protected abstract bool DirectoryExistsByName(string name);
 
-
+        /// <summary>
+        /// Gets the file with the specified name from the directory
+        /// Only direct children of the directory are considered, name must not be a path into a subdirectory       
+        /// </summary>
         protected abstract IFile GetFileByName(string name);
 
+        /// <summary>
+        /// Gets the directory with the specified name from the directory
+        /// Only direct children of the directory are considered, name must not be a path into a subdirectory       
+        /// </summary>
         protected abstract IDirectory GetDirectoryByName(string name);
         
 
         private void EnsurePathIsValid(string path)
         {
+            // path must not be null
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
 
+            // path must not be empty or whitespace
             if (String.IsNullOrWhiteSpace(path))
             {
                 throw new FormatException($"'{nameof(path)}' must not be null or empty");
             }
 
+            // path must not start with a slash
             if (path[0] == Constants.DirectorySeparatorChar)
             {
                 throw new FormatException($"'{nameof(path)}' must not start with '{Constants.DirectorySeparatorChar}'");
             }
 
+            // path must not end with a slash
             if (path[path.Length - 1] == Constants.DirectorySeparatorChar)
             {
                 throw new FormatException($"'{nameof(path)}' must not end with '{Constants.DirectorySeparatorChar}'");
             }
 
+            // path must not contain any forbidden characters
             if (Constants.InvalidPathCharacters.Any(path.Contains))
             {
                 throw new FormatException("The path contains invalid characters");

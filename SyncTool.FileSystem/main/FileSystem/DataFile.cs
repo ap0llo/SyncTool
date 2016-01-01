@@ -8,6 +8,11 @@ using System.IO;
 
 namespace SyncTool.FileSystem
 {
+    /// <summary>
+    /// Implementation of <see cref="IReadableFile"/> with arbitrary content of type <typeparam name="T" />
+    /// When OpenRead() is callled, the content will be serialized to Json and written to the stream
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class DataFile<T> : FileSystemItem, IReadableFile
     {
         public T Content { get; }

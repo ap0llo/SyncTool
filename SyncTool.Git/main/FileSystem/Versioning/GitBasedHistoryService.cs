@@ -66,6 +66,12 @@ namespace SyncTool.Git.FileSystem.Versioning
         public void CreateHistory(string name)
         {
             var branchName = s_BranchPrefix + name;
+
+            if (GitGroup.Repository.LocalBranchExists(branchName))
+            {
+                throw new DuplicateFileSystemHistoryException(name);
+            }
+
             var parentCommitId = GitGroup.Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
             var parentCommit = GitGroup.Repository.Lookup<Commit>(parentCommitId);
 

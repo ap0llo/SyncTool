@@ -7,6 +7,9 @@ using System;
 
 namespace SyncTool.Common
 {
+    /// <summary>
+    /// Indicates that a service  could not be located
+    /// </summary>
     [Serializable]
     public class ServiceNotFoundException : Exception
     {
