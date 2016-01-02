@@ -34,6 +34,6 @@ namespace SyncTool.Synchronization.Conflicts
         }
 
 
-    
+        public override void Accept<T>(ISyncConflictVisitor<T> visitor, T parameter) => visitor.Visit(this, parameter);
     }
 }

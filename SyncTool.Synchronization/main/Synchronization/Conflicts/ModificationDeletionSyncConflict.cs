@@ -11,7 +11,7 @@ namespace SyncTool.Synchronization.Conflicts
     public sealed class ModificationDeletionSyncConflict : SyncConflict
     {
 
-        public override string FilePath => ModifiedFile.Path;
+        public override string FilePath => ModifiedFile.Path;        
 
         public IFile ModifiedFile { get; }
 
@@ -37,6 +37,6 @@ namespace SyncTool.Synchronization.Conflicts
             this.DeletedFile = deletedFile;
         }
 
-        
+        public override void Accept<T>(ISyncConflictVisitor<T> visitor, T parameter) => visitor.Visit(this, parameter);
     }
 }
