@@ -28,7 +28,14 @@ namespace SyncTool.Synchronization.Conflicts
                 throw new ArgumentException("Enumeration of conflicted files must at least contain two items", nameof(conflictedFiles));
             }
 
-            // TODO: Check that all conflicts have the same path
+            // all files must have the same paths
+            var pathCount = conflictedFiles.GroupBy(f => f.Path, StringComparer.InvariantCultureIgnoreCase)
+                                           .Select(group => group.Key)
+                                           .Count();
+            if (pathCount > 1)
+            {
+                throw new ArgumentException($"The paths of the conflicted files differ");
+            }            
 
             this.ConflictedFiles = conflictedFiles;
         }

@@ -5,6 +5,7 @@
 
 using System;
 using SyncTool.FileSystem;
+using SyncTool.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Synchronization.Conflicts
@@ -24,5 +25,24 @@ namespace SyncTool.Synchronization.Conflicts
             Assert.Throws<ArgumentException>(() => new MultipleVersionSyncConflict(new IFile[0]));
             Assert.Throws<ArgumentException>(() => new MultipleVersionSyncConflict(new IFile[1]));
         }
+
+        [Fact(DisplayName = nameof(MultipleVersionSyncConflict) + ": Constructor throws " + nameof(ArgumentException) + " if the files' paths differ")]
+        public void Constructor_throws_ArgumentException_if_the_files_paths_differs()
+        {
+            var file1 = FileMockingHelper.GetFileMock().Named("file1").WithParentNamed("dir1").Object;
+            var file2 = FileMockingHelper.GetFileMock().Named("file1").WithParentNamed("dir2").Object;
+
+            Assert.Throws<ArgumentException>(() => new MultipleVersionSyncConflict(file1, file2));
+        }
+
+        [Fact(DisplayName = nameof(MultipleVersionSyncConflict) + ": Constructor: Check of file paths is case-insensitive")]
+        public void Constructor_Check_of_file_paths_is_case_insensitive()
+        {
+            var file1 = FileMockingHelper.GetFileMock().Named("file1").WithParentNamed("dir1").Object;
+            var file2 = FileMockingHelper.GetFileMock().Named("fILE1").WithParentNamed("DIR1").Object;
+
+            var conflict = new MultipleVersionSyncConflict(file1, file2);
+        }
+
     }
 }
