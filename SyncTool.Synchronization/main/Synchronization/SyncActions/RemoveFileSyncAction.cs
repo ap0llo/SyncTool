@@ -15,7 +15,7 @@ namespace SyncTool.Synchronization.SyncActions
         public IFile RemovedFile { get; }
 
 
-        public RemoveFileSyncAction(SyncParticipant target, IFile removedFile) : base(target)
+        public RemoveFileSyncAction(Guid id, SyncParticipant target, IFile removedFile) : base(id, target)
         {
             if (removedFile == null)
             {

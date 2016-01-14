@@ -14,9 +14,12 @@ namespace SyncTool.Synchronization.SyncActions
 
         public SyncParticipant Target { get; }
 
-        protected SyncAction(SyncParticipant target)
+        public Guid Id { get; }
+
+        protected SyncAction(Guid id, SyncParticipant target)
         {
             this.Target = target;
+            this.Id = id;
         }
 
 

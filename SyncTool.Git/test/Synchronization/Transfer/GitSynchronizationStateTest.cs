@@ -53,7 +53,7 @@ namespace SyncTool.Git.Synchronization.Transfer
 
             var inputState = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
                .WithEmptyActionLists()
-               .WithQueuedActions(new AddFileSyncAction(SyncParticipant.Right,file))
+               .WithQueuedActions(new AddFileSyncAction(Guid.NewGuid(), SyncParticipant.Right, file))
                .WithIds("id1", "id2")
                .Object;
 
@@ -72,7 +72,7 @@ namespace SyncTool.Git.Synchronization.Transfer
 
             var inputState = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
                .WithEmptyActionLists()
-               .WithCompletedActions(new AddFileSyncAction(SyncParticipant.Right, file))
+               .WithCompletedActions(new AddFileSyncAction(Guid.NewGuid(), SyncParticipant.Right, file))
                .WithIds("id1", "id2")
                .Object;
 
@@ -91,7 +91,7 @@ namespace SyncTool.Git.Synchronization.Transfer
 
             var inputState = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
                .WithEmptyActionLists()
-               .WithInProgressActions(new AddFileSyncAction(SyncParticipant.Right, file))
+               .WithInProgressActions(new AddFileSyncAction(Guid.NewGuid(), SyncParticipant.Right, file))
                .WithIds("id1", "id2")
                .Object;
 

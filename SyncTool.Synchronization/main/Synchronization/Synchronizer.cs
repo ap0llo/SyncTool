@@ -143,7 +143,9 @@ namespace SyncTool.Synchronization
             if (m_FileComparer.Equals(unchangedFile, change.FromFile))
             {
                 // => apply local modification to the other directory
-                resultSet.Add(new ReplaceFileSyncAction(target: changedParticipant.Invert(),
+                resultSet.Add(new ReplaceFileSyncAction(
+                    id: Guid.NewGuid(),
+                    target: changedParticipant.Invert(),
                     oldVersion: ExtractFileFromTree(unchangedFile),
                     newVersion: ExtractFileFromTree(change.ToFile)));
             }
@@ -174,7 +176,7 @@ namespace SyncTool.Synchronization
                 else
                 {
                     // => conflict
-                    resultSet.Add(new MultipleVersionSyncConflict(
+                    resultSet.Add(new MultipleVersionSyncConflict(                        
                         ExtractFileFromTree(unchangedFile),
                         ExtractFileFromTree(change.ToFile))
                     {
@@ -186,7 +188,10 @@ namespace SyncTool.Synchronization
             else
             {
                 // => add file to the other directory
-                resultSet.Add(new AddFileSyncAction(changedParticipant.Invert(), ExtractFileFromTree(change.ToFile)));
+                resultSet.Add(new AddFileSyncAction(
+                    id: Guid.NewGuid(), 
+                    target: changedParticipant.Invert(), 
+                    newFile: ExtractFileFromTree(change.ToFile)));
             }            
         }
 
@@ -207,7 +212,10 @@ namespace SyncTool.Synchronization
                 if (m_FileComparer.Equals(unchangedFile, change.FromFile))
                 {
                     // => apply change to the other directory
-                    resultSet.Add(new RemoveFileSyncAction(changedParticipant.Invert(), ExtractFileFromTree(unchangedFile)));                    
+                    resultSet.Add(new RemoveFileSyncAction(
+                        id: Guid.NewGuid(),
+                        target: changedParticipant.Invert(), 
+                        removedFile: ExtractFileFromTree(unchangedFile)));                    
                 }
                 // case 2.2: a file different from the deleted file is present in the other directory state
                 else
@@ -312,9 +320,11 @@ namespace SyncTool.Synchronization
             {
                 // previous version of the file was added to one of the folder while the file was modified in the other
                 // => apply the modification to the other folder as well
-                resultSet.Add(new ReplaceFileSyncAction(addedOn,
-                    ExtractFileFromTree(addition.ToFile),
-                    ExtractFileFromTree(modification.ToFile)));
+                resultSet.Add(new ReplaceFileSyncAction(
+                    id: Guid.NewGuid(), 
+                    target: addedOn, 
+                    oldVersion: ExtractFileFromTree(addition.ToFile), 
+                    newVersion: ExtractFileFromTree(modification.ToFile)));
             }
             else
             {
@@ -339,16 +349,20 @@ namespace SyncTool.Synchronization
             // case 2.1  Left.FromFile -> Left.ToFile / Right.FromFile -> Right.ToFile
             else if (m_FileComparer.Equals(change.LeftChange.ToFile, change.RightChange.FromFile))
             {
-                resultSet.Add(new ReplaceFileSyncAction(SyncParticipant.Left,
-                    ExtractFileFromTree(change.RightChange.FromFile),
-                    ExtractFileFromTree(change.RightChange.ToFile)));
+                resultSet.Add(new ReplaceFileSyncAction(
+                    id: Guid.NewGuid(),
+                    target: SyncParticipant.Left,
+                    oldVersion: ExtractFileFromTree(change.RightChange.FromFile),
+                    newVersion: ExtractFileFromTree(change.RightChange.ToFile)));
             }
             // case 2.2  Right.FromFile -> Right.ToFile / Left.FromFile -> Left.ToFile
             else if (m_FileComparer.Equals(change.RightChange.ToFile, change.LeftChange.FromFile))
             {
-                resultSet.Add(new ReplaceFileSyncAction(SyncParticipant.Right,
-                    ExtractFileFromTree(change.LeftChange.FromFile),
-                    ExtractFileFromTree(change.LeftChange.ToFile)));
+                resultSet.Add(new ReplaceFileSyncAction(
+                    id: Guid.NewGuid(),
+                    target: SyncParticipant.Right,
+                    oldVersion: ExtractFileFromTree(change.LeftChange.FromFile),
+                    newVersion: ExtractFileFromTree(change.LeftChange.ToFile)));
             }
             // case 3: "FromFile" is identical for both changes 
             else if(m_FileComparer.Equals(change.LeftChange.FromFile, change.RightChange.FromFile))
@@ -379,7 +393,10 @@ namespace SyncTool.Synchronization
             else if (m_FileComparer.Equals(modification.ToFile, deletion.FromFile))
             {
                 // => apply deletion to other directory
-                resultSet.Add(new RemoveFileSyncAction(modifiedOn, modification.ToFile));
+                resultSet.Add(new RemoveFileSyncAction(
+                    id: Guid.NewGuid(), 
+                    target: modifiedOn, 
+                    removedFile: modification.ToFile));
             }
             else
             {

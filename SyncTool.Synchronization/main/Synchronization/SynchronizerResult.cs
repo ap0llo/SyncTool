@@ -68,8 +68,8 @@ namespace SyncTool.Synchronization
         {
             // replace can be mapped to remove + add
 
-            var removeAction = new RemoveFileSyncAction(action.Target, action.OldVersion);
-            var addAction = new AddFileSyncAction(action.Target, action.NewVersion);
+            var removeAction = new RemoveFileSyncAction(Guid.Empty, action.Target, action.OldVersion);
+            var addAction = new AddFileSyncAction(Guid.Empty, action.Target, action.NewVersion);
             
             removeAction.Accept(this, rootDirectory);
             addAction.Accept(this, rootDirectory);

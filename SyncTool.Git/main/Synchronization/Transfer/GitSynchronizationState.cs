@@ -179,10 +179,10 @@ namespace SyncTool.Git.Synchronization.Transfer
         static Directory GetSyncActionDirectory(IDirectory parent, string name, IEnumerable<SyncAction> actions)
         {
             var directory = new Directory(parent, name);
-            var i = 0;
+            
             foreach (var action in actions)
             {
-                directory.Add(d => new SyncActionFile(d, i++, action));
+                directory.Add(d => new SyncActionFile(d, action));
             }
             return directory;
         }

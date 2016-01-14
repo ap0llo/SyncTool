@@ -17,7 +17,7 @@ namespace SyncTool.Git.FileSystem
         public const string FileSuffix = ".SyncAction.json";
 
 
-        public SyncActionFile(IDirectory parent, int index, SyncAction content) : base(parent, index + FileSuffix , content)
+        public SyncActionFile(IDirectory parent, SyncAction content) : base(parent, content.Id.ToString("D") + FileSuffix , content)
         {
         }
 

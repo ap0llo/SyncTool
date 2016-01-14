@@ -89,20 +89,27 @@ namespace SyncTool.Synchronization.SyncActions
             var name = GetPropertyValue(json, s_Name, JTokenType.String).ToString();
             var value = GetObjectProperty(json, s_Value);
 
-            switch (name)
+            try
             {
-                case nameof(ReplaceFileSyncAction):
-                    return DeserializeReplaceFileSyncAction(value);
 
+                switch (name)
+                {
+                    case nameof(ReplaceFileSyncAction):
+                        return DeserializeReplaceFileSyncAction(value);
 
-                case nameof(AddFileSyncAction):
-                    return DeserializeAddFileSyncAction(value);
+                    case nameof(AddFileSyncAction):
+                        return DeserializeAddFileSyncAction(value);
 
-                case nameof(RemoveFileSyncAction):
-                    return DeserializeRemoveFileSyncAction(value);
+                    case nameof(RemoveFileSyncAction):
+                        return DeserializeRemoveFileSyncAction(value);
 
-                default:
-                    throw new SerializationException($"Error deserializing json as SyncAction. Unknown action name {name}");
+                    default:
+                        throw new SerializationException($"Error deserializing json as SyncAction. Unknown action name {name}");
+                }
+            }
+            catch (JsonSerializationException ex)
+            {
+                throw new SerializationException("Error deserializing json as SyncAction", ex);
             }
         }
 
@@ -110,20 +117,20 @@ namespace SyncTool.Synchronization.SyncActions
         AddFileSyncAction DeserializeAddFileSyncAction(JObject json)
         {
             var dto = JsonConvert.DeserializeObject<AddFileSyncActionDto>(json.ToString());
-            return new AddFileSyncAction(dto.Target, DeserializeFile(dto.NewFile));
+            return new AddFileSyncAction(dto.Id, dto.Target, DeserializeFile(dto.NewFile));
         }
 
         RemoveFileSyncAction DeserializeRemoveFileSyncAction(JObject json)
         {
             var dto = JsonConvert.DeserializeObject<RemoveFileSyncActionDto>(json.ToString());
-            return new RemoveFileSyncAction(dto.Target, DeserializeFile(dto.RemovedFile));
+            return new RemoveFileSyncAction(dto.Id, dto.Target, DeserializeFile(dto.RemovedFile));
             
         }
 
         ReplaceFileSyncAction DeserializeReplaceFileSyncAction(JObject json)
         {
             var dto = JsonConvert.DeserializeObject<ReplaceFileSyncActionDto>(json.ToString());
-            return new ReplaceFileSyncAction(dto.Target, DeserializeFile(dto.OldVersion), DeserializeFile(dto.NewVersion));            
+            return new ReplaceFileSyncAction(dto.Id, dto.Target, DeserializeFile(dto.OldVersion), DeserializeFile(dto.NewVersion));            
         }
 
         JObject GetObjectProperty(JObject parent, string name)
@@ -160,14 +167,32 @@ namespace SyncTool.Synchronization.SyncActions
 
             return new File(parent, fileName) { LastWriteTime = dto.LastWriteTime, Length = dto.Length };
         }
-        
 
-        private class AddFileSyncActionDto
+
+
+        private abstract class SyncActionDto
+        {
+            [JsonProperty(Required = Required.Always)]
+            public Guid Id { get; set; }
+
+            // Parameterless constructor required for JsonSerializer
+            protected SyncActionDto()
+            {
+                
+            }
+
+            protected SyncActionDto(SyncAction syncAction)
+            {
+                this.Id = syncAction.Id;
+            }
+
+        }
+
+        private class AddFileSyncActionDto : SyncActionDto
         {
             public SyncParticipant Target { get; set; }
 
-            public FileDto NewFile { get; set; }
-
+            public FileDto NewFile { get; set; }            
 
             // Parameterless constructor required for JsonSerializer
             public AddFileSyncActionDto()
@@ -175,16 +200,16 @@ namespace SyncTool.Synchronization.SyncActions
                 
             }
 
-            public AddFileSyncActionDto(AddFileSyncAction action)
+            public AddFileSyncActionDto(AddFileSyncAction syncAction) : base(syncAction)
             {
-                this.Target = action.Target;
-                this.NewFile = new FileDto(action.NewFile);
+                this.Target = syncAction.Target;
+                this.NewFile = new FileDto(syncAction.NewFile);                
             }
         
         }
 
-        private class RemoveFileSyncActionDto
-        {
+        private class RemoveFileSyncActionDto : SyncActionDto
+        { 
             public SyncParticipant Target { get; set; }
 
             public FileDto RemovedFile { get; set; }
@@ -195,16 +220,16 @@ namespace SyncTool.Synchronization.SyncActions
                 
             }
 
-            public RemoveFileSyncActionDto(RemoveFileSyncAction syncAction)
+            public RemoveFileSyncActionDto(RemoveFileSyncAction syncAction) : base(syncAction)
             {
                 this.Target = syncAction.Target;
-                this.RemovedFile = new FileDto(syncAction.RemovedFile);
+                this.RemovedFile = new FileDto(syncAction.RemovedFile);                
             }
 
         }
 
 
-        private class ReplaceFileSyncActionDto
+        private class ReplaceFileSyncActionDto : SyncActionDto
         {
             public SyncParticipant Target { get; set; }
 
@@ -218,7 +243,7 @@ namespace SyncTool.Synchronization.SyncActions
                 
             }
 
-            public ReplaceFileSyncActionDto(ReplaceFileSyncAction syncAction)
+            public ReplaceFileSyncActionDto(ReplaceFileSyncAction syncAction) : base(syncAction)
             {
                 this.Target = syncAction.Target;
                 this.OldVersion = new FileDto(syncAction.OldVersion);

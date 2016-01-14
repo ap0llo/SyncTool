@@ -19,6 +19,7 @@ namespace SyncTool.Synchronization.SyncActions
             {
               ""name"": ""AddFileSyncAction"",
               ""value"": {
+                ""id"" : ""A7226A4D-4BE8-4B10-B378-BEF72A29FD24"",
                 ""Target"": 1,
                 ""NewFile"": {
                   ""Path"": ""dir1/file1"",
@@ -35,10 +36,47 @@ namespace SyncTool.Synchronization.SyncActions
             m_Instance = new SyncActionSerializer();
         }
 
+
+
+        [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Missing id causes SerializationException")]
+        public void Deserialize_missing_id_causes_SerializationException()
+        {
+            var value = (JObject) s_ValidJson["value"];
+            value.Remove("id");
+                   
+            // create new JObject without the id property
+            var jObject = new JObject(
+                new JProperty("name", s_ValidJson["name"]),
+                new JProperty("value", value)                
+                );
+
+            Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
+        }
+
+
+        [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Invalid id causes SerializationException")]
+        public void Deserialize_invalid_id_causes_SerializationException()
+        {
+            var value = (JObject)s_ValidJson["value"];
+            value.Remove("id");
+            value.Add(new JProperty("id", "This is not a Guid"));
+
+            // create new JObject without the id property
+            var jObject = new JObject(
+                new JProperty("value", value),
+                new JProperty("name", s_ValidJson["name"]));
+
+            Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
+        }
+
+
         [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Missing name causes SerializationException")]   
         public void Deserialize_missing_name_causes_SerializationException()
         {          
-            var jObject = new JObject(new JProperty("value", s_ValidJson["value"]));
+            // create new JObject without the name property
+            var jObject = new JObject(
+                new JProperty("value", s_ValidJson["value"]), 
+                new JProperty("id", s_ValidJson["id"]));
 
             Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
         }
@@ -46,7 +84,10 @@ namespace SyncTool.Synchronization.SyncActions
         [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Missing value causes SerializationException")]  
         public void Deserialize_missing_value_causes_SerializationException()
         {
-            var jObject = new JObject(new JProperty("name", s_ValidJson["name"]));
+            // create new JObject without the value property
+            var jObject = new JObject(
+                new JProperty("name", s_ValidJson["name"]),
+                new JProperty("id", s_ValidJson["id"]));
             Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
         }
 
@@ -75,10 +116,11 @@ namespace SyncTool.Synchronization.SyncActions
                 Length = 23
             };
             
-            var expected = new AddFileSyncAction(SyncParticipant.Right, file);
+            var expected = new AddFileSyncAction(Guid.Parse("A7226A4D-4BE8-4B10-B378-BEF72A29FD24"),  SyncParticipant.Right, file);
             var actual = m_Instance.Deserialize(m_Instance.Serialize(expected)) as AddFileSyncAction;
 
             Assert.NotNull(actual);
+            Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Target, actual.Target);
             FileSystemAssert.FileEqual(expected.NewFile, actual.NewFile);
         }
@@ -92,10 +134,11 @@ namespace SyncTool.Synchronization.SyncActions
                 Length = 23
             };
 
-            var expected = new RemoveFileSyncAction(SyncParticipant.Right, file);
+            var expected = new RemoveFileSyncAction(Guid.NewGuid(), SyncParticipant.Right, file);
             var actual = m_Instance.Deserialize(m_Instance.Serialize(expected)) as RemoveFileSyncAction;
 
             Assert.NotNull(actual);
+            Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Target, actual.Target);
             FileSystemAssert.FileEqual(expected.RemovedFile, actual.RemovedFile);
         }
@@ -116,10 +159,11 @@ namespace SyncTool.Synchronization.SyncActions
                 Length = 23 * 2 
             };
 
-            var expected = new ReplaceFileSyncAction(SyncParticipant.Right, oldVersion, newVersion);
+            var expected = new ReplaceFileSyncAction(Guid.NewGuid(), SyncParticipant.Right, oldVersion, newVersion);
             var actual = m_Instance.Deserialize(m_Instance.Serialize(expected)) as ReplaceFileSyncAction;
 
             Assert.NotNull(actual);
+            Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Target, actual.Target);
             FileSystemAssert.FileEqual(expected.OldVersion, actual.OldVersion);
             FileSystemAssert.FileEqual(expected.NewVersion, actual.NewVersion);
