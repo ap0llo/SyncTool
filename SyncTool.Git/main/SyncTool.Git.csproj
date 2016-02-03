@@ -57,8 +57,8 @@
     <Compile Include="Common\IRepositoryPathProvider.cs" />
     <Compile Include="Common\SingleDirectoryRepositoryPathProvider.cs" />
     <Compile Include="FileSystem\Utilities\FileSystemConverter.cs" />
-    <Compile Include="Common\RepositoryClone.cs" />
-    <Compile Include="Common\RepositoryCloneException.cs" />
+    <Compile Include="Common\GitTransaction.cs" />
+    <Compile Include="Common\GitTransactionException.cs" />
     <Compile Include="Common\RepositoryExtensions.cs" />
     <Compile Include="Common\RepositoryInfo.cs" />
     <Compile Include="FileSystem\RepositoryInfoFile.cs" />

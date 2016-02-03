@@ -96,7 +96,7 @@
     <Compile Include="Common\GitBasedGroupTest.cs" />
     <Compile Include="FileSystem\GitDirectoryTest.cs" />
     <Compile Include="Common\SingleDirectoryRepositoryPathProviderTest.cs" />
-    <Compile Include="Common\RepositoryCloneTest.cs" />
+    <Compile Include="Common\GitTransactionTest.cs" />
     <Compile Include="Common\RepositoryInfoTest.cs" />
     <Compile Include="Common\RepositoryInitHelperTest.cs" />
     <Compile Include="Common\TemporaryWorkingDirectoryTest.cs" />

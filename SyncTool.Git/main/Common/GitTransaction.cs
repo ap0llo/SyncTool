@@ -1,9 +1,9 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System;
+using System.Linq;
 using LibGit2Sharp;
 using NativeDirectory = System.IO.Directory;
 
@@ -14,10 +14,12 @@ namespace SyncTool.Git.Common
     /// It is intended to be used as a source to clone local working directories from.
     /// Commits from local working directories can be collected in this repository and then pushed to the remote repository
     /// </summary>
-    public class RepositoryClone
+    public class GitTransaction
     {
         const string s_Origin = "origin";
 
+
+        public bool IsActive { get; private set; }
 
         public string RemotePath { get; }
 
@@ -25,7 +27,7 @@ namespace SyncTool.Git.Common
 
 
 
-        public RepositoryClone(string remotePath, string localPath)
+        public GitTransaction(string remotePath, string localPath)
         {
             if (remotePath == null)
             {
@@ -37,15 +39,26 @@ namespace SyncTool.Git.Common
             }
 
             RemotePath = remotePath;
-            LocalPath = localPath;
-
-            Initialize();
+            LocalPath = localPath;   
         }
 
 
+        /// <summary>
+        /// Begins a new transaction by cloning the repository and creating local branches for all remote branches.
+        /// The repository will be cloned as a bare repository
+        /// </summary>
+        /// <exception cref="GitTransactionException">The local directory exists and is not empty</exception>        
+        public void Begin()
+        {
+            EnsureCanCloneIntoLocalDirecotry();
 
+            Repository.Clone(RemotePath, LocalPath, new CloneOptions { Checkout = false, IsBare = true });
+            CreateLocalBranches();
 
-        public void Push()
+            IsActive = true;
+        }
+
+        public void Commit()
         {
             using (var localRepository = new Repository(LocalPath))
             {                
@@ -54,37 +67,14 @@ namespace SyncTool.Git.Common
         }
 
 
-        void Initialize()
-        {
-            // if directory does not exist, clone repository
-            if (!NativeDirectory.Exists(LocalPath))
-            {
-                Repository.Clone(RemotePath, LocalPath, new CloneOptions { Checkout = false, IsBare = true });
-                CreateLocalBranches();
-            }
-            // if directory exists, make sure it is a clone of the remote repository and download all changes
-            else
-            {                                
-                using (var repository = new Repository(LocalPath))
-                {
-                    // check consistency
-                    CheckRepository(repository);
 
-                    // fetch changes from remote repository
-                    repository.Network.Fetch(repository.Network.Remotes[s_Origin], new FetchOptions { TagFetchMode = TagFetchMode.All });      
-                    
-                    // make sure there is a local branch for every remote branch
-                    CreateLocalBranches();              
-                }
-            }
-        }
 
         void CheckRepository(Repository repository)
         {
             // make sure repository is a bare repository (libgit2 cannot push to it otherwise)
             if (repository.Info.IsBare == false)
             {
-                throw new RepositoryCloneException($"The repository located at '{LocalPath}' is not a bare repository");
+                throw new GitTransactionException($"The repository located at '{LocalPath}' is not a bare repository");
             }
 
             // make sure the remote "origin" exists and points to the remote path
@@ -92,7 +82,7 @@ namespace SyncTool.Git.Common
 
             if (origin == null || origin.Url.Equals(RemotePath, StringComparison.InvariantCultureIgnoreCase) == false)
             {
-                throw new RepositoryCloneException($"The repository located at '{LocalPath}' is not a clone of '{RemotePath}'");
+                throw new GitTransactionException($"The repository located at '{LocalPath}' is not a clone of '{RemotePath}'");
             }
         }
 
@@ -116,7 +106,27 @@ namespace SyncTool.Git.Common
             }
         }
 
-        
+
+
+
+        void EnsureCanCloneIntoLocalDirecotry()
+        {
+            // if the directory exists, make sure the directory is empty
+            if (NativeDirectory.Exists(LocalPath))
+            {
+                if (NativeDirectory.EnumerateFiles(LocalPath).Any())
+                {
+                    throw new GitTransactionException($"The directory '{LocalPath}' is not empty");
+
+                }
+            }
+            //if the directory does not exist, create it
+            else
+            {
+                NativeDirectory.CreateDirectory(LocalPath);
+            }
+
+        }
 
 
 
