@@ -19,7 +19,7 @@ namespace SyncTool.Git.Common
         const string s_Origin = "origin";
 
 
-        public bool IsActive { get; private set; }
+        public TransactionState State{ get; private set; } = TransactionState.Created;
 
         public string RemotePath { get; }
 
@@ -47,44 +47,45 @@ namespace SyncTool.Git.Common
         /// Begins a new transaction by cloning the repository and creating local branches for all remote branches.
         /// The repository will be cloned as a bare repository
         /// </summary>
-        /// <exception cref="GitTransactionException">The local directory exists and is not empty</exception>        
+        /// <exception cref="GitTransactionException">The local directory exists and is not empty</exception>
+        /// <exception cref="InvalidTransactionStateException">The transaction is in a state other than 'Created'</exception>
         public void Begin()
         {
-            EnsureCanCloneIntoLocalDirecotry();
+            EnsureIsInState(TransactionState.Created);
+
+            EnsureCanCloneIntoLocalDirectory();
 
             Repository.Clone(RemotePath, LocalPath, new CloneOptions { Checkout = false, IsBare = true });
             CreateLocalBranches();
 
-            IsActive = true;
+            State = TransactionState.Active;
         }
 
+        /// <summary>
+        /// Completes the transaction by pushing all commits created in the local repository to the remote repository
+        /// </summary>
+        /// <exception cref="InvalidTransactionStateException">The transaction is in a state other than 'Active'</exception>
         public void Commit()
         {
-            using (var localRepository = new Repository(LocalPath))
-            {                
-                localRepository.Network.Push(localRepository.Branches.GetLocalBranches());
+            EnsureIsInState(TransactionState.Active);
+
+            try
+            {
+                using (var localRepository = new Repository(LocalPath))
+                {                
+                    localRepository.Network.Push(localRepository.Branches.GetLocalBranches());
+                }
             }
+            catch (NonFastForwardException ex)
+            {
+                throw new TransactionAbortedException("The changes from the transaction could not be pushed back to the remote repository because changes were made there", ex);
+            }
+
+            State = TransactionState.Completed;
         }
 
 
 
-
-        void CheckRepository(Repository repository)
-        {
-            // make sure repository is a bare repository (libgit2 cannot push to it otherwise)
-            if (repository.Info.IsBare == false)
-            {
-                throw new GitTransactionException($"The repository located at '{LocalPath}' is not a bare repository");
-            }
-
-            // make sure the remote "origin" exists and points to the remote path
-            var origin = repository.Network.Remotes[s_Origin];
-
-            if (origin == null || origin.Url.Equals(RemotePath, StringComparison.InvariantCultureIgnoreCase) == false)
-            {
-                throw new GitTransactionException($"The repository located at '{LocalPath}' is not a clone of '{RemotePath}'");
-            }
-        }
 
         /// <summary>
         /// Creates local tracking branches for all remote branches
@@ -105,11 +106,8 @@ namespace SyncTool.Git.Common
                 }
             }
         }
-
-
-
-
-        void EnsureCanCloneIntoLocalDirecotry()
+       
+        void EnsureCanCloneIntoLocalDirectory()
         {
             // if the directory exists, make sure the directory is empty
             if (NativeDirectory.Exists(LocalPath))
@@ -126,6 +124,14 @@ namespace SyncTool.Git.Common
                 NativeDirectory.CreateDirectory(LocalPath);
             }
 
+        }
+
+        void EnsureIsInState(TransactionState expectedState)
+        {
+            if (State != expectedState)
+            {
+                throw new InvalidTransactionStateException(expectedState, State);
+            }
         }
 
 

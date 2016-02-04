@@ -40,6 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\GitBasedService.cs" />
+    <Compile Include="Common\TransactionState.cs" />
+    <Compile Include="Common\_Exceptions\InvalidTransactionStateException.cs" />
+    <Compile Include="Common\_Exceptions\TransactionAbortedException.cs" />
     <Compile Include="Configuration\ConfigurationNotFoundException.cs" />
     <Compile Include="Configuration\GitBasedConfigurationService.cs" />
     <Compile Include="Configuration\Model\SyncRepositorySettings.cs" />
@@ -58,7 +61,7 @@
     <Compile Include="Common\SingleDirectoryRepositoryPathProvider.cs" />
     <Compile Include="FileSystem\Utilities\FileSystemConverter.cs" />
     <Compile Include="Common\GitTransaction.cs" />
-    <Compile Include="Common\GitTransactionException.cs" />
+    <Compile Include="Common\_Exceptions\GitTransactionException.cs" />
     <Compile Include="Common\RepositoryExtensions.cs" />
     <Compile Include="Common\RepositoryInfo.cs" />
     <Compile Include="FileSystem\RepositoryInfoFile.cs" />
