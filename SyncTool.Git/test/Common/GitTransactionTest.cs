@@ -32,8 +32,10 @@ namespace SyncTool.Git.Common
             m_LocalRepositoryPath = Path.Combine(m_TempDirectory.Directory.Location, "Local");
 
             RepositoryInitHelper.InitializeRepository(m_RemoteRepositoryPath);
+            
             m_RemoteRepository = new Repository(m_RemoteRepositoryPath);
             m_RemoteRepository.CreateBranch(s_Branch2, m_RemoteRepository.Commits.Single());
+            m_RemoteRepository.CreateBranch(s_Branch3, m_RemoteRepository.Commits.Single());
         }
 
 
@@ -270,8 +272,55 @@ namespace SyncTool.Git.Common
             Assert.Throws<TransactionAbortedException>(() => transaction2.Commit());
         }
 
+        [Fact]
+        public void Commit_succeeds_if_transactions_work_on_different_branches()
+        {
+          
+            // create 2 transaction committing to the same branch
+            var localRepositoryPath1 = m_LocalRepositoryPath;
+            var localRepositoryPath2 = Path.Combine(m_TempDirectory.Directory.Location, "Local2");
 
-        //TODO: changes by 2 transaction on different branches => commit needs to succeed
+            var transaction1 = new GitTransaction(m_RemoteRepositoryPath, localRepositoryPath1);
+            var transaction2 = new GitTransaction(m_RemoteRepositoryPath, localRepositoryPath2);
+
+            // start transactions
+            transaction1.Begin();
+            transaction2.Begin();
+
+
+
+            // make change on master branch (transaction 1)
+            using (var workingDirectory = new TemporaryWorkingDirectory(localRepositoryPath1, s_Branch2))
+            {
+                using (File.Create(Path.Combine(workingDirectory.Location, "file1"))) { }
+
+                workingDirectory.Commit("Commit in Transaction 1");
+                workingDirectory.Push();
+            }
+
+
+            // make changes on master branch (transaction 2)
+            using (var workingDirectory = new TemporaryWorkingDirectory(localRepositoryPath2, s_Branch3))
+            {
+                using (File.Create(Path.Combine(workingDirectory.Location, "file2"))) { }
+
+                workingDirectory.Commit("Commit in Transaction 2");
+                workingDirectory.Push();
+            }
+
+
+            transaction1.Commit();
+            transaction2.Commit();
+
+
+
+            // make sure all the commits made it to the remote repository
+            Assert.Equal(3, m_RemoteRepository.GetAllCommits().Count());
+            
+        }
+
+
+        //TODO: branches created in the transaction are pushed to the remote repository
 
         //TODO: transaction 1 changes branch1 and branch2, transaction 2 changes branch1 => commit needs to fail
 

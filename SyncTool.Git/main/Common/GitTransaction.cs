@@ -3,6 +3,7 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using LibGit2Sharp;
 using NativeDirectory = System.IO.Directory;
@@ -72,8 +73,33 @@ namespace SyncTool.Git.Common
             try
             {
                 using (var localRepository = new Repository(LocalPath))
-                {                
-                    localRepository.Network.Push(localRepository.Branches.GetLocalBranches());
+                {
+                    // fetch changes from the remote repository (someone might have pushed there since we cloned the repository)
+                    localRepository.Network.Fetch(localRepository.Network.Remotes[s_Origin]);
+
+                    var localBranches = localRepository.Branches.GetLocalBranches().ToList();
+
+                    var branchesToPush = new LinkedList<Branch>();
+                    foreach (var branch in localBranches)
+                    {
+                        // check if there are changes to the branch locally or in the remote branch
+                        var hasRemoteChanges = branch.TrackingDetails.BehindBy > 0;
+                        var hasLocalChanges = branch.TrackingDetails.AheadBy > 0;
+
+                        //if there are both local and remote changes, we cannot continue
+                        if (hasRemoteChanges && hasLocalChanges)
+                        {
+                            throw new TransactionAbortedException("The changes from the transaction could not be pushed back to the remote repository because changes were made there");
+                        }   
+                        // if the branch has local changes, add it to the list of branches we need to push         
+                        else if (hasLocalChanges)
+                        {
+                            branchesToPush.AddLast(branch);
+                        }
+                    }                    
+
+                    // push all branches with local changes
+                    localRepository.Network.Push(branchesToPush);                    
                 }
             }
             catch (NonFastForwardException ex)
@@ -133,8 +159,6 @@ namespace SyncTool.Git.Common
                 throw new InvalidTransactionStateException(expectedState, State);
             }
         }
-
-
 
     }
 }
