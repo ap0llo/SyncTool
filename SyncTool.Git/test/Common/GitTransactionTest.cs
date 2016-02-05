@@ -319,7 +319,31 @@ namespace SyncTool.Git.Common
             
         }
 
+        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() pushes newly created branches")]
+        public void Commit_pushes_newly_created_branches()
+        {
+            var branchName = "newBranch";
 
+            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            transaction.Begin();
+
+            using (var repository = new Repository(m_LocalRepositoryPath))
+            {
+                repository.CreateBranch(branchName, repository.Commits.Single());
+            }
+
+            using (var workingDirectory = new TemporaryWorkingDirectory(transaction.LocalPath, branchName))
+            {                
+                File.WriteAllText(Path.Combine(workingDirectory.Location, "file1"), "Hello World");
+                workingDirectory.Commit();
+                workingDirectory.Push();
+            }
+
+            transaction.Commit();
+
+            Assert.True(m_RemoteRepository.Branches.Any(x => x.FriendlyName == branchName));
+            Assert.Equal(2, m_RemoteRepository.GetAllCommits().Count());
+        }
         //TODO: branches created in the transaction are pushed to the remote repository
 
         //TODO: transaction 1 changes branch1 and branch2, transaction 2 changes branch1 => commit needs to fail

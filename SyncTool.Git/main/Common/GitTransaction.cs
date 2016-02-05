@@ -82,18 +82,31 @@ namespace SyncTool.Git.Common
                     var branchesToPush = new LinkedList<Branch>();
                     foreach (var branch in localBranches)
                     {
-                        // check if there are changes to the branch locally or in the remote branch
-                        var hasRemoteChanges = branch.TrackingDetails.BehindBy > 0;
-                        var hasLocalChanges = branch.TrackingDetails.AheadBy > 0;
 
-                        //if there are both local and remote changes, we cannot continue
-                        if (hasRemoteChanges && hasLocalChanges)
+                        if (branch.IsTracking)
                         {
-                            throw new TransactionAbortedException("The changes from the transaction could not be pushed back to the remote repository because changes were made there");
-                        }   
-                        // if the branch has local changes, add it to the list of branches we need to push         
-                        else if (hasLocalChanges)
+                            // check if there are changes to the branch locally or in the remote branch
+                            var hasRemoteChanges = branch.TrackingDetails.BehindBy > 0;
+                            var hasLocalChanges = branch.TrackingDetails.AheadBy > 0;
+
+                            //if there are both local and remote changes, we cannot continue
+                            if (hasRemoteChanges && hasLocalChanges)
+                            {
+                                throw new TransactionAbortedException("The changes from the transaction could not be pushed back to the remote repository because changes were made there");
+                            }
+                            // if the branch has local changes, add it to the list of branches we need to push         
+                            else if (hasLocalChanges)
+                            {
+                                branchesToPush.AddLast(branch);
+                            }
+                        }
+                        else
                         {
+                            localRepository.Branches.Update(
+                                branch, 
+                                b => b.Remote = s_Origin,                                
+                                b => b.UpstreamBranch = branch.CanonicalName);
+
                             branchesToPush.AddLast(branch);
                         }
                     }                    
