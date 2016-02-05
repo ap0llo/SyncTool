@@ -3,7 +3,6 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Linq;
 using LibGit2Sharp;
@@ -228,7 +227,6 @@ namespace SyncTool.Git.Common
             
         }
 
-
         [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(TransactionAbortedException) + " if changes could not be pushed to remote repository")]
         public void Commit_throws_TransactionAbortedException_if_changes_could_not_be_pushed_to_remote_repository()
         {
@@ -344,9 +342,126 @@ namespace SyncTool.Git.Common
             Assert.True(m_RemoteRepository.Branches.Any(x => x.FriendlyName == branchName));
             Assert.Equal(2, m_RemoteRepository.GetAllCommits().Count());
         }
-        //TODO: branches created in the transaction are pushed to the remote repository
 
-        //TODO: transaction 1 changes branch1 and branch2, transaction 2 changes branch1 => commit needs to fail
+        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() fails to create a new branch if the same branch was created by another transaction")]
+        public void Commit_fails_to_create_a_new_branch_if_the_same_branch_was_created_by_another_transaction()
+        {
+            const string branchName = "newBranch";
+
+            var localPath1 = m_LocalRepositoryPath;
+            var localPath2 = Path.Combine(m_TempDirectory.Location, "Local2");
+
+            var transaction1 = new GitTransaction(m_RemoteRepositoryPath, localPath1);
+            var transaction2 = new GitTransaction(m_RemoteRepositoryPath, localPath2);
+
+            transaction1.Begin();
+            transaction2.Begin();
+
+            using (var localRepository1 = new Repository(localPath1))
+            {
+                localRepository1.CreateBranch(branchName, localRepository1.Commits.Single());
+            }
+
+            using (var workingDirectory = new TemporaryWorkingDirectory(localPath1, branchName))
+            {
+                File.WriteAllText(Path.Combine(workingDirectory.Location, "file1"), "Hello World");
+                workingDirectory.Commit();
+                workingDirectory.Push();
+            }
+
+            using (var localRepository2 = new Repository(localPath2))
+            {
+                localRepository2.CreateBranch(branchName, localRepository2.Commits.Single());
+            }
+
+            transaction1.Commit();
+            Assert.Throws<TransactionAbortedException>(() => transaction2.Commit());
+        }
+
+        [Fact(DisplayName = nameof(GitTransaction) +".Commit() succeeds if two transactions created the same branch pointing to the same commit")]
+        public void Commit_succeeds_if_two_transactions_created_the_same_branch_pointing_to_the_same_commit()
+        {
+            const string branchName = "newBranch";
+
+            var localPath1 = m_LocalRepositoryPath;
+            var localPath2 = Path.Combine(m_TempDirectory.Location, "Local2");
+
+            var transaction1 = new GitTransaction(m_RemoteRepositoryPath, localPath1);
+            var transaction2 = new GitTransaction(m_RemoteRepositoryPath, localPath2);
+
+            transaction1.Begin();
+            transaction2.Begin();
+
+            // transaction 1: create branch
+            using (var localRepository1 = new Repository(localPath1))
+            {
+                localRepository1.CreateBranch(branchName, localRepository1.Commits.Single());
+            }
+
+            // transaction 2: create branch
+            using (var localRepository2 = new Repository(localPath2))
+            {
+                localRepository2.CreateBranch(branchName, localRepository2.Commits.Single());
+            }
+
+            // commit both transactions
+            transaction1.Commit();
+            transaction2.Commit();
+
+            Assert.True(m_RemoteRepository.Branches.Any(x => x.FriendlyName == branchName));
+        }
+
+        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() fails when only one branch was changed on the remote")]
+        public void Commit_fails_when_only_one_branch_was_changed_on_the_remote()
+        {
+
+            var localPath1 = m_LocalRepositoryPath;
+            var localPath2 = Path.Combine(m_TempDirectory.Location, "Local2");
+
+            var transaction1 = new GitTransaction(m_RemoteRepositoryPath, localPath1);
+            var transaction2 = new GitTransaction(m_RemoteRepositoryPath, localPath2);
+
+            transaction1.Begin();
+            transaction2.Begin();
+
+            // transaction 1: create commit on branch2 and branch3
+            using (var workingDirectory = new TemporaryWorkingDirectory(localPath1, s_Branch2))
+            {
+                File.WriteAllText(Path.Combine(workingDirectory.Location, "file1"), "Hello World");
+                workingDirectory.Commit();
+                workingDirectory.Push();
+            }
+
+            using (var workingDirectory = new TemporaryWorkingDirectory(localPath1, s_Branch3))
+            {
+                File.WriteAllText(Path.Combine(workingDirectory.Location, "file2"), "Hello World");
+                workingDirectory.Commit();
+                workingDirectory.Push();
+            }
+
+            // transaction 2: create commit on branch2
+            using (var workingDirectory = new TemporaryWorkingDirectory(localPath2, s_Branch2))
+            {
+                File.WriteAllText(Path.Combine(workingDirectory.Location, "file3"), "Hello World");
+                workingDirectory.Commit();
+                workingDirectory.Push();
+            }
+
+
+            // transaction 2 commit its changes first
+            transaction2.Commit();
+
+            // transaction 1 needs to fail
+            Assert.Throws<TransactionAbortedException>(() => transaction1.Commit());
+
+            // check that no commit from transaction 2 made it to the master repository 
+            // expected 2 commits (one initial commit created when initializing the repo and two created by transaction 1)
+            Assert.Equal(2, m_RemoteRepository.GetAllCommits().Count());
+        }
+
+        
+
+        
 
         #endregion
 
