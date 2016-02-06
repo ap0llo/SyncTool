@@ -3,6 +3,7 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Linq;
 using LibGit2Sharp;
@@ -236,7 +237,7 @@ namespace SyncTool.Git.Common
             Assert.Throws<TransactionAbortedException>(() => transaction2.Commit());
         }
 
-        [Fact]
+        [Fact(DisplayName= nameof(GitTransaction) + "Commit() succeeds if transactions work on different branches")]
         public void Commit_succeeds_if_transactions_work_on_different_branches()
         {          
             // create 2 transaction committing to the same branch
@@ -364,7 +365,38 @@ namespace SyncTool.Git.Common
             // check that no commit from transaction 2 made it to the master repository 
             // expected 2 commits (one initial commit created when initializing the repo and two created by transaction 1)
             Assert.Equal(2, m_RemoteRepository.GetAllCommits().Count());
-        }              
+        }
+
+        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() deletes the local directory after pushing the changes")]
+        public void Commit_deletes_the_local_directory_after_pushing_the_changes()
+        {
+            var transaction = CreateTransaction();
+
+            transaction.Begin();
+            AddFile(transaction, "master", "file1");
+            transaction.Commit();
+            
+            Assert.False(Directory.Exists(transaction.LocalPath));            
+        }
+
+        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() deletes the local directory, even when the transaction fails")]
+        public void Commit_deletes_the_local_directory_even_when_the_transaction_fails()
+        {
+            var transaction1 = CreateTransaction();
+            var transaction2 = CreateTransaction();
+                        
+            transaction1.Begin();
+            transaction2.Begin();
+
+            AddFile(transaction1, "master", "file1");
+            AddFile(transaction2, "master", "file2");
+            
+            transaction1.Commit();
+            Assert.Throws<TransactionAbortedException>(() => transaction2.Commit());            
+
+            Assert.False(Directory.Exists(transaction1.LocalPath));
+            Assert.False(Directory.Exists(transaction2.LocalPath));
+        }
 
         #endregion
         

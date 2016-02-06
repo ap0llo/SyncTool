@@ -1,17 +1,19 @@
-﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015-2016, Andreas Grünwald
-//  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
-// -----------------------------------------------------------------------------------------------------------
+﻿// // -----------------------------------------------------------------------------------------------------------
+// //  Copyright (c) 2015-2016, Andreas Grünwald
+// //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
+// // -----------------------------------------------------------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using LibGit2Sharp;
+using SyncTool.Common.Utilities;
 using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Git.Common
 {
     /// <summary>
-    /// Provides a local (bare) copy of a repository. 
+    /// Provides a local (bare) copy of a repository.
     /// It is intended to be used as a source to clone local working directories from.
     /// Commits from local working directories can be collected in this repository and then pushed to the remote repository
     /// </summary>
@@ -20,7 +22,7 @@ namespace SyncTool.Git.Common
         const string s_Origin = "origin";
 
 
-        public TransactionState State{ get; private set; } = TransactionState.Created;
+        public TransactionState State { get; private set; } = TransactionState.Created;
 
         public string RemotePath { get; }
 
@@ -40,7 +42,7 @@ namespace SyncTool.Git.Common
             }
 
             RemotePath = remotePath;
-            LocalPath = localPath;   
+            LocalPath = localPath;
         }
 
 
@@ -56,7 +58,7 @@ namespace SyncTool.Git.Common
 
             EnsureCanCloneIntoLocalDirectory();
 
-            Repository.Clone(RemotePath, LocalPath, new CloneOptions { Checkout = false, IsBare = true });
+            Repository.Clone(RemotePath, LocalPath, new CloneOptions {Checkout = false, IsBare = true});
             CreateLocalBranches();
 
             State = TransactionState.Active;
@@ -70,59 +72,34 @@ namespace SyncTool.Git.Common
         {
             EnsureIsInState(TransactionState.Active);
 
+            var canCommit = CanCommit();
+            if (!canCommit)
+            {
+                OnTransactionAborted();
+                throw new TransactionAbortedException("The changes from the transaction could not be pushed back to the remote repository because changes were made there");
+            }
+
             try
             {
                 using (var localRepository = new Repository(LocalPath))
                 {
-                    // fetch changes from the remote repository (someone might have pushed there since we cloned the repository)
-                    localRepository.Network.Fetch(localRepository.Network.Remotes[s_Origin]);
-
-                    var localBranches = localRepository.Branches.GetLocalBranches().ToList();
-
-                    var branchesToPush = new LinkedList<Branch>();
-                    foreach (var branch in localBranches)
-                    {
-
-                        if (branch.IsTracking)
-                        {
-                            // check if there are changes to the branch locally or in the remote branch
-                            var hasRemoteChanges = branch.TrackingDetails.BehindBy > 0;
-                            var hasLocalChanges = branch.TrackingDetails.AheadBy > 0;
-
-                            //if there are both local and remote changes, we cannot continue
-                            if (hasRemoteChanges && hasLocalChanges)
-                            {
-                                throw new TransactionAbortedException("The changes from the transaction could not be pushed back to the remote repository because changes were made there");
-                            }
-                            // if the branch has local changes, add it to the list of branches we need to push         
-                            else if (hasLocalChanges)
-                            {
-                                branchesToPush.AddLast(branch);
-                            }
-                        }
-                        else
-                        {
-                            localRepository.Branches.Update(
-                                branch, 
-                                b => b.Remote = s_Origin,                                
-                                b => b.UpstreamBranch = branch.CanonicalName);
-
-                            branchesToPush.AddLast(branch);
-                        }
-                    }                    
-
                     // push all branches with local changes
-                    localRepository.Network.Push(branchesToPush);                    
+                    var branchesToPush = GetBranchesToPush(localRepository);
+                    localRepository.Network.Push(branchesToPush);
                 }
+
+                OnTransactionCompleted();
             }
             catch (NonFastForwardException ex)
             {
+                OnTransactionAborted();
                 throw new TransactionAbortedException("The changes from the transaction could not be pushed back to the remote repository because changes were made there", ex);
             }
-
-            State = TransactionState.Completed;
+            finally
+            {
+                State = TransactionState.Completed;
+            }
         }
-
 
 
 
@@ -145,7 +122,7 @@ namespace SyncTool.Git.Common
                 }
             }
         }
-       
+
         void EnsureCanCloneIntoLocalDirectory()
         {
             // if the directory exists, make sure the directory is empty
@@ -154,7 +131,6 @@ namespace SyncTool.Git.Common
                 if (NativeDirectory.EnumerateFiles(LocalPath).Any())
                 {
                     throw new GitTransactionException($"The directory '{LocalPath}' is not empty");
-
                 }
             }
             //if the directory does not exist, create it
@@ -162,7 +138,6 @@ namespace SyncTool.Git.Common
             {
                 NativeDirectory.CreateDirectory(LocalPath);
             }
-
         }
 
         void EnsureIsInState(TransactionState expectedState)
@@ -173,5 +148,68 @@ namespace SyncTool.Git.Common
             }
         }
 
+        bool CanCommit()
+        {
+            using (var localRepository = new Repository(LocalPath))
+            {
+                // fetch changes from the remote repository (someone might have pushed there since we cloned the repository)
+                localRepository.Network.Fetch(localRepository.Network.Remotes[s_Origin]);
+
+                var localBranches = localRepository.Branches.GetLocalBranches().ToList();
+
+                foreach (var branch in localBranches.Where(b => b.IsTracking))
+                {
+                    // check if there are changes to the branch locally or in the remote branch
+                    var hasRemoteChanges = branch.TrackingDetails.BehindBy > 0;
+                    var hasLocalChanges = branch.TrackingDetails.AheadBy > 0;
+
+                    //if there are both local and remote changes, we cannot continue
+                    if (hasRemoteChanges && hasLocalChanges)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+
+            return true;
+        }
+
+        IEnumerable<Branch> GetBranchesToPush(Repository localRepository)
+        {
+            var localBranches = localRepository.Branches.GetLocalBranches().ToList();
+
+            var branchesToPush = new LinkedList<Branch>();
+            foreach (var branch in localBranches)
+            {
+                if (branch.IsTracking)
+                {
+                    // check if there are changes to the branch locally or in the remote branch
+                    var hasLocalChanges = branch.TrackingDetails.AheadBy > 0;
+
+                    // if the branch has local changes, add it to the list of branches we need to push         
+                    if (hasLocalChanges)
+                    {
+                        branchesToPush.AddLast(branch);
+                    }
+                }
+                else
+                {
+                    localRepository.Branches.Update(
+                        branch,
+                        b => b.Remote = s_Origin,
+                        b => b.UpstreamBranch = branch.CanonicalName);
+
+                    branchesToPush.AddLast(branch);
+                }
+            }
+
+            return branchesToPush;
+        }
+
+
+        protected virtual void OnTransactionAborted() => DirectoryHelper.DeleteRecursively(LocalPath);
+
+        protected virtual void OnTransactionCompleted() => DirectoryHelper.DeleteRecursively(LocalPath);
     }
 }
