@@ -16,16 +16,16 @@ namespace SyncTool.Git.Common
     /// It is intended to be used as a source to clone local working directories from.
     /// Commits from local working directories can be collected in this repository and then pushed to the remote repository
     /// </summary>
-    public class GitTransaction
+    public class GitTransaction : AbstractGitTransaction
     {
-        const string s_Origin = "origin";
+        
 
 
-        public TransactionState State { get; private set; } = TransactionState.Created;
+        public override TransactionState State { get; protected set; } = TransactionState.Created;
 
-        public string RemotePath { get; }
+        public override string RemotePath { get; }
 
-        public string LocalPath { get; }
+        public override string LocalPath { get; }
 
 
 
@@ -45,13 +45,8 @@ namespace SyncTool.Git.Common
         }
 
 
-        /// <summary>
-        /// Begins a new transaction by cloning the repository and creating local branches for all remote branches.
-        /// The repository will be cloned as a bare repository
-        /// </summary>
-        /// <exception cref="GitTransactionException">The local directory exists and is not empty</exception>
-        /// <exception cref="InvalidTransactionStateException">The transaction is in a state other than 'Created'</exception>
-        public void Begin()
+        
+        public override void Begin()
         {
             EnsureIsInState(TransactionState.Created);
 
@@ -62,12 +57,8 @@ namespace SyncTool.Git.Common
 
             State = TransactionState.Active;
         }
-
-        /// <summary>
-        /// Completes the transaction by pushing all commits created in the local repository to the remote repository
-        /// </summary>
-        /// <exception cref="InvalidTransactionStateException">The transaction is in a state other than 'Active'</exception>
-        public void Commit()
+        
+        public override void Commit()
         {
             EnsureIsInState(TransactionState.Active);
 

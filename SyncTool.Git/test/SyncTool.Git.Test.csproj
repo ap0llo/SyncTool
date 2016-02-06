@@ -91,12 +91,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\CachingGitTransactionTest.cs" />
+    <Compile Include="Common\GitTransactionTest.cs" />
     <Compile Include="Configuration\GitBasedConfigurationServiceTest.cs" />
     <Compile Include="Configuration\Reader\JsonSyncRepositoryReaderTest.cs" />
     <Compile Include="Common\GitBasedGroupTest.cs" />
     <Compile Include="FileSystem\GitDirectoryTest.cs" />
     <Compile Include="Common\SingleDirectoryRepositoryPathProviderTest.cs" />
-    <Compile Include="Common\GitTransactionTest.cs" />
+    <Compile Include="Common\AbstractGitTransactionTest.cs" />
     <Compile Include="Common\RepositoryInfoTest.cs" />
     <Compile Include="Common\RepositoryInitHelperTest.cs" />
     <Compile Include="Common\TemporaryWorkingDirectoryTest.cs" />
