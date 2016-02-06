@@ -19,16 +19,16 @@ namespace SyncTool.Git.Common
         const string s_Branch2 = "branch2";
         const string s_Branch3 = "branch3";
 
-        readonly string m_RemoteRepositoryPath;
-        readonly string m_LocalRepositoryPath;
+        readonly string m_RemoteRepositoryPath;        
         readonly Repository m_RemoteRepository;
 
+        int m_TransactionCount;
 
 
         public GitTransactionTest()
         {
             m_RemoteRepositoryPath = Path.Combine(m_TempDirectory.Directory.Location, "Remote");
-            m_LocalRepositoryPath = Path.Combine(m_TempDirectory.Directory.Location, "Local");
+            
 
             RepositoryInitHelper.InitializeRepository(m_RemoteRepositoryPath);
             
@@ -41,7 +41,7 @@ namespace SyncTool.Git.Common
         [Fact(DisplayName = nameof(GitTransaction) + ": Initial state is 'Created'")]
         public void Initial_state_is_Created()
         {
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            var transaction = CreateTransaction();
             Assert.Equal(TransactionState.Created, transaction.State);
         }
 
@@ -50,44 +50,44 @@ namespace SyncTool.Git.Common
         [Fact(DisplayName = nameof(GitTransaction) + ".Begin() throws " + nameof(GitTransactionException) + " if the local directory exists and is not empty")]
         public void Begin_throws_GitTransactionException_if_local_directory_exists_and_is_not_empty()
         {
-            Directory.CreateDirectory(m_LocalRepositoryPath);
-            File.WriteAllText(Path.Combine(m_LocalRepositoryPath, "file1"), "Irrelevant");
+            var transaction = CreateTransaction();
 
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            Directory.CreateDirectory(transaction.LocalPath);
+            File.WriteAllText(Path.Combine(transaction.LocalPath, "file1"), "Irrelevant");
+
             Assert.Throws<GitTransactionException>(() => transaction.Begin());            
         }
 
         [Fact(DisplayName = nameof(GitTransaction) + ".Begin() succeeds if the local directory does not exists")]
         public void Begin_succeeds_if_the_local_directory_does_not_exist()
         {
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            var transaction = CreateTransaction();
             transaction.Begin();
 
-            Assert.NotEmpty(Directory.GetFileSystemEntries(m_LocalRepositoryPath));
-            Assert.True(Repository.IsValid(m_LocalRepositoryPath));        
+            Assert.NotEmpty(Directory.GetFileSystemEntries(transaction.LocalPath));
+            Assert.True(Repository.IsValid(transaction.LocalPath));        
         }
 
         [Fact(DisplayName = nameof(GitTransaction) + ".Begin() succeeds if the local directory exists but is empty")]
         public void Begin_succeeds_if_the_local_directory_exists_but_is_empty()
         {
-            Directory.CreateDirectory(m_LocalRepositoryPath);            
+            var transaction = CreateTransaction();
 
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            Directory.CreateDirectory(transaction.LocalPath);
+
             transaction.Begin();
 
-            Assert.NotEmpty(Directory.GetFileSystemEntries(m_LocalRepositoryPath));
-            Assert.True(Repository.IsValid(m_LocalRepositoryPath));
-
-
+            Assert.NotEmpty(Directory.GetFileSystemEntries(transaction.LocalPath));
+            Assert.True(Repository.IsValid(transaction.LocalPath));
         }
 
         [Fact(DisplayName = nameof(GitTransaction) + ".Begin() creates a bare repository")]
         public void Begin_creates_a_bare_repository()
         {
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            var transaction = CreateTransaction();
             transaction.Begin();
 
-            using (var repository = new Repository(m_LocalRepositoryPath))
+            using (var repository = new Repository(transaction.LocalPath))
             {
                 Assert.True(repository.Info.IsBare);
             }
@@ -96,12 +96,13 @@ namespace SyncTool.Git.Common
         [Fact(DisplayName = nameof(GitTransaction) + ".Begin() creates local branches for all remote branches")]
         public void Begin_creates_local_branches_for_all_remote_branches()
         {
-            Directory.CreateDirectory(m_LocalRepositoryPath);
+            var transaction = CreateTransaction();
 
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            Directory.CreateDirectory(transaction.LocalPath);
+
             transaction.Begin();
 
-            using (var localRepository = new Repository(m_LocalRepositoryPath))
+            using (var localRepository = new Repository(transaction.LocalPath))
             {
                 Assert.Equal(m_RemoteRepository.Branches.Count(), localRepository.GetLocalBranches().Count());
                 Assert.Equal(m_RemoteRepository.Branches.Select(x => x.FriendlyName), localRepository.GetLocalBranches().Select(b => b.FriendlyName));
@@ -118,25 +119,24 @@ namespace SyncTool.Git.Common
         [Fact(DisplayName = nameof(GitTransaction) + ".Begin() sets state to 'Active'")]
         public void Begin_sets_State_to_active()
         {
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            var transaction = CreateTransaction();
             transaction.Begin();
-
             Assert.Equal(TransactionState.Active, transaction.State);
         }
 
         [Fact(DisplayName = nameof(GitTransaction) + ".Begin() throws " + nameof(InvalidTransactionStateException) +" if State is 'Active'")]
         public void Begin_throws_InvalidTransactionStateException_if_state_is_Active()
         {
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            var transaction = CreateTransaction();
             transaction.Begin();
-
             Assert.Throws<InvalidTransactionStateException>(() => transaction.Begin());
         }
 
         [Fact(DisplayName = nameof(GitTransaction) + ".Begin() throws " + nameof(InvalidTransactionStateException) + " if State is 'Completed'")]
         public void Begin_throws_InvalidTransactionStateException_if_State_is_Completed()
         {
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            var transaction = CreateTransaction();
+
             transaction.Begin();
             transaction.Commit();
 
@@ -151,17 +151,18 @@ namespace SyncTool.Git.Common
         [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is not 'Created'")]
         public void Commit_throws_InvalidTransactionStateException_if_state_is_Created()
         {
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
-            
+            var transaction = CreateTransaction();
             Assert.Throws<InvalidTransactionStateException>(() => transaction.Commit());
         }
 
         [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is not 'Completed'")]
         public void Commit_throws_InvalidTransactionStateException_if_state_is_Completed()
         {
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            var transaction = CreateTransaction();
+
             transaction.Begin();
             transaction.Commit();
+
             Assert.Throws<InvalidTransactionStateException>(() => transaction.Commit());
         }
 
@@ -169,7 +170,8 @@ namespace SyncTool.Git.Common
         [Fact(DisplayName = nameof(GitTransaction) + ".Commit() sets state to 'Completed'")]
         public void Commit_sets_state_to_Completed()
         {
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            var transaction = CreateTransaction();
+
             transaction.Begin();
             transaction.Commit();
 
@@ -178,91 +180,55 @@ namespace SyncTool.Git.Common
 
         [Fact(DisplayName = nameof(GitTransaction) + ".Commit() pushes changes from all branches to the remote repository")]
         public void Commit_pushes_changes_from_all_branches_to_the_remote_repository()
-        {            
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+        {
+            var transaction = CreateTransaction();
             transaction.Begin();
 
             var expectedCommitCount = m_RemoteRepository.Commits.Count();
 
             // make change on master branch
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_LocalRepositoryPath, "master"))
-            {
-                using (System.IO.File.Create(Path.Combine(workingDirectory.Location, "file1"))) { }
-
-                workingDirectory.Commit("Commit 2");
-                workingDirectory.Push();
-
-                expectedCommitCount += 1;
-            }
-
-            using (var localRepo = new Repository(m_LocalRepositoryPath))
+            AddFile(transaction, "master", "file1");            
+            expectedCommitCount += 1;
+            
+            using (var localRepo = new Repository(transaction.LocalPath))
             {
                 Assert.Equal(expectedCommitCount, localRepo.GetAllCommits().Count());
             }
 
 
             // make change on branch2
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_LocalRepositoryPath, s_Branch2))
-            {
-                using (System.IO.File.Create(Path.Combine(workingDirectory.Location, "file2"))) { }
+            AddFile(transaction, s_Branch2, "file2");            
+            expectedCommitCount += 1;
 
-                workingDirectory.Commit("Commit 3");
-                workingDirectory.Push();
-
-                expectedCommitCount += 1;
-            }
-
-            using (var localRepo = new Repository(m_LocalRepositoryPath))
+            using (var localRepo = new Repository(transaction.LocalPath))
             {
                 Assert.Equal(expectedCommitCount, localRepo.GetAllCommits().Count());
             }
-
-
 
             // push to remote repository
             transaction.Commit();
 
             // check that the commit where pushed to the remote directory
-            Assert.Equal(expectedCommitCount, m_RemoteRepository.GetAllCommits().Count());
-            
+            Assert.Equal(expectedCommitCount, m_RemoteRepository.GetAllCommits().Count());            
         }
 
         [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(TransactionAbortedException) + " if changes could not be pushed to remote repository")]
         public void Commit_throws_TransactionAbortedException_if_changes_could_not_be_pushed_to_remote_repository()
         {
-
-            // create 2 transaction committing to the same branch
-            var localRepositoryPath1 = m_LocalRepositoryPath;
-            var localRepositoryPath2 = Path.Combine(m_TempDirectory.Directory.Location, "Local2");
-
-            var transaction1 = new GitTransaction(m_RemoteRepositoryPath, localRepositoryPath1);
-            var transaction2 = new GitTransaction(m_RemoteRepositoryPath, localRepositoryPath2);
+            // create 2 transaction committing to the same branch            
+            var transaction1 = CreateTransaction();
+            var transaction2 = CreateTransaction();
 
             // start transactions
             transaction1.Begin();
             transaction2.Begin();
 
-
             // make change on master branch (transaction 1)
-            using (var workingDirectory = new TemporaryWorkingDirectory(localRepositoryPath1, "master"))
-            {
-                using (File.Create(Path.Combine(workingDirectory.Location, "file1"))) { }
-
-                workingDirectory.Commit("Commit in Transaction 1");
-                workingDirectory.Push();                
-            }
-
-
+            AddFile(transaction1, "master", "file1");
+            
             // make changes on master branch (transaction 2)
-            using (var workingDirectory = new TemporaryWorkingDirectory(localRepositoryPath2, "master"))
-            {
-                using (File.Create(Path.Combine(workingDirectory.Location, "file2"))) { }
-
-                workingDirectory.Commit("Commit in Transaction 2");
-                workingDirectory.Push();
-            }
-
-          
+            AddFile(transaction2, "master", "file2");
+                      
             // complete transaction 1 
             transaction1.Commit();
 
@@ -272,49 +238,27 @@ namespace SyncTool.Git.Common
 
         [Fact]
         public void Commit_succeeds_if_transactions_work_on_different_branches()
-        {
-          
+        {          
             // create 2 transaction committing to the same branch
-            var localRepositoryPath1 = m_LocalRepositoryPath;
-            var localRepositoryPath2 = Path.Combine(m_TempDirectory.Directory.Location, "Local2");
-
-            var transaction1 = new GitTransaction(m_RemoteRepositoryPath, localRepositoryPath1);
-            var transaction2 = new GitTransaction(m_RemoteRepositoryPath, localRepositoryPath2);
+            
+            var transaction1 = CreateTransaction();
+            var transaction2 = CreateTransaction();
 
             // start transactions
             transaction1.Begin();
             transaction2.Begin();
 
-
-
             // make change on master branch (transaction 1)
-            using (var workingDirectory = new TemporaryWorkingDirectory(localRepositoryPath1, s_Branch2))
-            {
-                using (File.Create(Path.Combine(workingDirectory.Location, "file1"))) { }
-
-                workingDirectory.Commit("Commit in Transaction 1");
-                workingDirectory.Push();
-            }
-
-
+            AddFile(transaction1, s_Branch2, "file1");
+            
             // make changes on master branch (transaction 2)
-            using (var workingDirectory = new TemporaryWorkingDirectory(localRepositoryPath2, s_Branch3))
-            {
-                using (File.Create(Path.Combine(workingDirectory.Location, "file2"))) { }
-
-                workingDirectory.Commit("Commit in Transaction 2");
-                workingDirectory.Push();
-            }
-
-
+            AddFile(transaction2, s_Branch3, "file2");
+            
             transaction1.Commit();
             transaction2.Commit();
 
-
-
             // make sure all the commits made it to the remote repository
-            Assert.Equal(3, m_RemoteRepository.GetAllCommits().Count());
-            
+            Assert.Equal(3, m_RemoteRepository.GetAllCommits().Count());            
         }
 
         [Fact(DisplayName = nameof(GitTransaction) + ".Commit() pushes newly created branches")]
@@ -322,21 +266,16 @@ namespace SyncTool.Git.Common
         {
             var branchName = "newBranch";
 
-            var transaction = new GitTransaction(m_RemoteRepositoryPath, m_LocalRepositoryPath);
+            var transaction = CreateTransaction();
             transaction.Begin();
 
-            using (var repository = new Repository(m_LocalRepositoryPath))
+            using (var repository = new Repository(transaction.LocalPath))
             {
                 repository.CreateBranch(branchName, repository.Commits.Single());
             }
 
-            using (var workingDirectory = new TemporaryWorkingDirectory(transaction.LocalPath, branchName))
-            {                
-                File.WriteAllText(Path.Combine(workingDirectory.Location, "file1"), "Hello World");
-                workingDirectory.Commit();
-                workingDirectory.Push();
-            }
-
+            AddFile(transaction, branchName, "file1");
+            
             transaction.Commit();
 
             Assert.True(m_RemoteRepository.Branches.Any(x => x.FriendlyName == branchName));
@@ -347,29 +286,21 @@ namespace SyncTool.Git.Common
         public void Commit_fails_to_create_a_new_branch_if_the_same_branch_was_created_by_another_transaction()
         {
             const string branchName = "newBranch";
-
-            var localPath1 = m_LocalRepositoryPath;
-            var localPath2 = Path.Combine(m_TempDirectory.Location, "Local2");
-
-            var transaction1 = new GitTransaction(m_RemoteRepositoryPath, localPath1);
-            var transaction2 = new GitTransaction(m_RemoteRepositoryPath, localPath2);
+            
+            var transaction1 = CreateTransaction();
+            var transaction2 = CreateTransaction();
 
             transaction1.Begin();
             transaction2.Begin();
 
-            using (var localRepository1 = new Repository(localPath1))
+            using (var localRepository1 = new Repository(transaction1.LocalPath))
             {
                 localRepository1.CreateBranch(branchName, localRepository1.Commits.Single());
             }
 
-            using (var workingDirectory = new TemporaryWorkingDirectory(localPath1, branchName))
-            {
-                File.WriteAllText(Path.Combine(workingDirectory.Location, "file1"), "Hello World");
-                workingDirectory.Commit();
-                workingDirectory.Push();
-            }
+            AddFile(transaction1, branchName, "file1");
 
-            using (var localRepository2 = new Repository(localPath2))
+            using (var localRepository2 = new Repository(transaction2.LocalPath))
             {
                 localRepository2.CreateBranch(branchName, localRepository2.Commits.Single());
             }
@@ -382,24 +313,21 @@ namespace SyncTool.Git.Common
         public void Commit_succeeds_if_two_transactions_created_the_same_branch_pointing_to_the_same_commit()
         {
             const string branchName = "newBranch";
-
-            var localPath1 = m_LocalRepositoryPath;
-            var localPath2 = Path.Combine(m_TempDirectory.Location, "Local2");
-
-            var transaction1 = new GitTransaction(m_RemoteRepositoryPath, localPath1);
-            var transaction2 = new GitTransaction(m_RemoteRepositoryPath, localPath2);
+            
+            var transaction1 = CreateTransaction();
+            var transaction2 = CreateTransaction();
 
             transaction1.Begin();
             transaction2.Begin();
 
             // transaction 1: create branch
-            using (var localRepository1 = new Repository(localPath1))
+            using (var localRepository1 = new Repository(transaction1.LocalPath))
             {
                 localRepository1.CreateBranch(branchName, localRepository1.Commits.Single());
             }
 
             // transaction 2: create branch
-            using (var localRepository2 = new Repository(localPath2))
+            using (var localRepository2 = new Repository(transaction2.LocalPath))
             {
                 localRepository2.CreateBranch(branchName, localRepository2.Commits.Single());
             }
@@ -413,41 +341,20 @@ namespace SyncTool.Git.Common
 
         [Fact(DisplayName = nameof(GitTransaction) + ".Commit() fails when only one branch was changed on the remote")]
         public void Commit_fails_when_only_one_branch_was_changed_on_the_remote()
-        {
-
-            var localPath1 = m_LocalRepositoryPath;
-            var localPath2 = Path.Combine(m_TempDirectory.Location, "Local2");
-
-            var transaction1 = new GitTransaction(m_RemoteRepositoryPath, localPath1);
-            var transaction2 = new GitTransaction(m_RemoteRepositoryPath, localPath2);
+        {            
+            var transaction1 = CreateTransaction();
+            var transaction2 = CreateTransaction();
 
             transaction1.Begin();
             transaction2.Begin();
 
             // transaction 1: create commit on branch2 and branch3
-            using (var workingDirectory = new TemporaryWorkingDirectory(localPath1, s_Branch2))
-            {
-                File.WriteAllText(Path.Combine(workingDirectory.Location, "file1"), "Hello World");
-                workingDirectory.Commit();
-                workingDirectory.Push();
-            }
-
-            using (var workingDirectory = new TemporaryWorkingDirectory(localPath1, s_Branch3))
-            {
-                File.WriteAllText(Path.Combine(workingDirectory.Location, "file2"), "Hello World");
-                workingDirectory.Commit();
-                workingDirectory.Push();
-            }
-
+            AddFile(transaction1, s_Branch2, "file1");
+            AddFile(transaction1, s_Branch3, "file2");
+            
             // transaction 2: create commit on branch2
-            using (var workingDirectory = new TemporaryWorkingDirectory(localPath2, s_Branch2))
-            {
-                File.WriteAllText(Path.Combine(workingDirectory.Location, "file3"), "Hello World");
-                workingDirectory.Commit();
-                workingDirectory.Push();
-            }
-
-
+            AddFile(transaction2, s_Branch2, "file3");
+            
             // transaction 2 commit its changes first
             transaction2.Commit();
 
@@ -457,14 +364,10 @@ namespace SyncTool.Git.Common
             // check that no commit from transaction 2 made it to the master repository 
             // expected 2 commits (one initial commit created when initializing the repo and two created by transaction 1)
             Assert.Equal(2, m_RemoteRepository.GetAllCommits().Count());
-        }
-
-        
-
-        
+        }              
 
         #endregion
-
+        
 
         public override void Dispose()
         {
@@ -472,6 +375,28 @@ namespace SyncTool.Git.Common
             base.Dispose();
 
         }
+
+        /// <summary>
+        /// Adds the specified file to the specified branch using the path of the transaction's local repository
+        /// </summary>
+        void AddFile(GitTransaction transaction, string branchName, string fileName)
+        {
+            using (var workingDirectory = new TemporaryWorkingDirectory(transaction.LocalPath, branchName))
+            {
+                var path = Path.Combine(workingDirectory.Location, fileName);
+                File.WriteAllText(path, "Some file content");
+
+                workingDirectory.Commit();
+                workingDirectory.Push();                
+            }
+        }
+
         
+        protected virtual GitTransaction CreateTransaction()
+        {
+            var localPath = Path.Combine(m_TempDirectory.Location, "Local" + m_TransactionCount);
+            m_TransactionCount += 1;
+            return new GitTransaction(m_RemoteRepositoryPath, localPath);
+        }
     }
 }
