@@ -8,14 +8,14 @@ using System;
 namespace SyncTool.Git.Common
 {
     [Serializable]
-    public class TransactionAbortedException : GitTransactionException
+    public class TransactionFailedException : GitTransactionException
     {
-        public TransactionAbortedException(string message, Exception innerException) : base(message, innerException)
+        public TransactionFailedException(string message, Exception innerException) : base(message, innerException)
         {
             
         }
 
-        public TransactionAbortedException(string message) : base(message)
+        public TransactionFailedException(string message) : base(message)
         {
         }
     }

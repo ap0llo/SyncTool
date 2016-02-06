@@ -1,8 +1,7 @@
-﻿// // -----------------------------------------------------------------------------------------------------------
-// //  Copyright (c) 2015-2016, Andreas Grünwald
-// //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
-// // -----------------------------------------------------------------------------------------------------------
-
+﻿// -----------------------------------------------------------------------------------------------------------
+//  Copyright (c) 2015-2016, Andreas Grünwald
+//  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
+// -----------------------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,8 +74,9 @@ namespace SyncTool.Git.Common
             var canCommit = CanCommit();
             if (!canCommit)
             {
+                State = TransactionState.Failed;
                 OnTransactionAborted();
-                throw new TransactionAbortedException("The changes from the transaction could not be pushed back to the remote repository because changes were made there");
+                throw new TransactionFailedException("The changes from the transaction could not be pushed back to the remote repository because changes were made there");
             }
 
             try
@@ -88,17 +88,16 @@ namespace SyncTool.Git.Common
                     localRepository.Network.Push(branchesToPush);
                 }
 
+                State = TransactionState.Completed;
                 OnTransactionCompleted();
             }
             catch (NonFastForwardException ex)
             {
+                State = TransactionState.Failed;
                 OnTransactionAborted();
-                throw new TransactionAbortedException("The changes from the transaction could not be pushed back to the remote repository because changes were made there", ex);
+                throw new TransactionFailedException("The changes from the transaction could not be pushed back to the remote repository because changes were made there", ex);
             }
-            finally
-            {
-                State = TransactionState.Completed;
-            }
+            
         }
 
 

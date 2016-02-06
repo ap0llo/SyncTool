@@ -144,20 +144,59 @@ namespace SyncTool.Git.Common
             Assert.Throws<InvalidTransactionStateException>(() => transaction.Begin());
         }
 
+        [Fact(DisplayName = nameof(GitTransaction) + ".Begin() throws " + nameof(InvalidTransactionStateException) + " if State is 'Failed'")]
+        public void Begin_throws_InvalidTransactionStateException_if_State_is_Failed()
+        {
+            var transaction1 = CreateTransaction();
+            var transaction2 = CreateTransaction();
+
+            transaction1.Begin();
+            transaction2.Begin();
+
+            AddFile(transaction1, "master", "file1");
+            AddFile(transaction2, "master", "file2");
+
+            transaction1.Commit();
+            Assert.Throws<TransactionFailedException>(() => transaction2.Commit());
+            
+            Assert.Throws<InvalidTransactionStateException>(() => transaction1.Begin());
+            Assert.Equal(TransactionState.Failed, transaction2.State);
+            Assert.Throws<InvalidTransactionStateException>(() => transaction2.Begin());
+        }
         #endregion
 
 
         #region Commit()
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is not 'Created'")]
+        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is 'Created'")]
         public void Commit_throws_InvalidTransactionStateException_if_state_is_Created()
         {
             var transaction = CreateTransaction();
             Assert.Throws<InvalidTransactionStateException>(() => transaction.Commit());
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is not 'Completed'")]
+        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is 'Completed'")]
         public void Commit_throws_InvalidTransactionStateException_if_state_is_Completed()
+        {
+            var transaction1 = CreateTransaction();
+            var transaction2 = CreateTransaction();
+
+            transaction1.Begin();
+            transaction2.Begin();
+
+            AddFile(transaction1, "master", "file1");
+            AddFile(transaction2, "master", "file2");
+
+            transaction1.Commit();
+            Assert.Throws<TransactionFailedException>(() => transaction2.Commit());
+
+            Assert.Throws<InvalidTransactionStateException>(() => transaction1.Commit());
+            Assert.Equal(TransactionState.Failed, transaction2.State);
+            Assert.Throws<InvalidTransactionStateException>(() => transaction2.Commit());
+        }
+
+        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is 'failed'")]
+        public void Commit_throws_InvalidTransactionStateException_if_state_is_Failed()
         {
             var transaction = CreateTransaction();
 
@@ -167,9 +206,9 @@ namespace SyncTool.Git.Common
             Assert.Throws<InvalidTransactionStateException>(() => transaction.Commit());
         }
 
-        
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() sets state to 'Completed'")]
-        public void Commit_sets_state_to_Completed()
+
+        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() sets state to 'Completed' when successful")]
+        public void Commit_sets_state_to_Completed_when_successful()
         {
             var transaction = CreateTransaction();
 
@@ -178,6 +217,24 @@ namespace SyncTool.Git.Common
 
             Assert.Equal(TransactionState.Completed, transaction.State);
         }
+
+        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() sets state to 'Failed' when transaction failed")]
+        public void Commit_sets_state_to_Completed_when_transaction_failed()
+        {
+            var transaction1 = CreateTransaction();
+            var transaction2 = CreateTransaction();
+
+            transaction1.Begin();
+            transaction2.Begin();
+
+            AddFile(transaction1, "master", "file1");
+            AddFile(transaction2, "master", "file2");
+
+            transaction1.Commit();
+            Assert.Throws<TransactionFailedException>(() => transaction2.Commit());
+            Assert.Equal(TransactionState.Failed, transaction2.State);
+        }
+
 
         [Fact(DisplayName = nameof(GitTransaction) + ".Commit() pushes changes from all branches to the remote repository")]
         public void Commit_pushes_changes_from_all_branches_to_the_remote_repository()
@@ -213,8 +270,8 @@ namespace SyncTool.Git.Common
             Assert.Equal(expectedCommitCount, m_RemoteRepository.GetAllCommits().Count());            
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(TransactionAbortedException) + " if changes could not be pushed to remote repository")]
-        public void Commit_throws_TransactionAbortedException_if_changes_could_not_be_pushed_to_remote_repository()
+        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(TransactionFailedException) + " if changes could not be pushed to remote repository")]
+        public void Commit_throws_TransactionFailedException_if_changes_could_not_be_pushed_to_remote_repository()
         {
             // create 2 transaction committing to the same branch            
             var transaction1 = CreateTransaction();
@@ -234,7 +291,7 @@ namespace SyncTool.Git.Common
             transaction1.Commit();
 
             // try to complete transaction 2 (should fail because transaction 1 made changes to the same branch)
-            Assert.Throws<TransactionAbortedException>(() => transaction2.Commit());
+            Assert.Throws<TransactionFailedException>(() => transaction2.Commit());
         }
 
         [Fact(DisplayName= nameof(GitTransaction) + "Commit() succeeds if transactions work on different branches")]
@@ -307,7 +364,7 @@ namespace SyncTool.Git.Common
             }
 
             transaction1.Commit();
-            Assert.Throws<TransactionAbortedException>(() => transaction2.Commit());
+            Assert.Throws<TransactionFailedException>(() => transaction2.Commit());
         }
 
         [Fact(DisplayName = nameof(GitTransaction) +".Commit() succeeds if two transactions created the same branch pointing to the same commit")]
@@ -360,7 +417,7 @@ namespace SyncTool.Git.Common
             transaction2.Commit();
 
             // transaction 1 needs to fail
-            Assert.Throws<TransactionAbortedException>(() => transaction1.Commit());
+            Assert.Throws<TransactionFailedException>(() => transaction1.Commit());
 
             // check that no commit from transaction 2 made it to the master repository 
             // expected 2 commits (one initial commit created when initializing the repo and two created by transaction 1)
@@ -392,7 +449,7 @@ namespace SyncTool.Git.Common
             AddFile(transaction2, "master", "file2");
             
             transaction1.Commit();
-            Assert.Throws<TransactionAbortedException>(() => transaction2.Commit());            
+            Assert.Throws<TransactionFailedException>(() => transaction2.Commit());            
 
             Assert.False(Directory.Exists(transaction1.LocalPath));
             Assert.False(Directory.Exists(transaction2.LocalPath));
