@@ -8,6 +8,9 @@ using Xunit;
 
 namespace SyncTool.Git.Common
 {
+    /// <summary>
+    /// Tests for <see cref="GitTransaction"/>
+    /// </summary>
     public class GitTransactionTest : AbstractGitTransactionTest
     {
         
@@ -23,7 +26,7 @@ namespace SyncTool.Git.Common
             Assert.False(Directory.Exists(transaction.LocalPath));
         }
 
-        protected override AbstractGitTransaction CreateTransaction()
+        protected override IGitTransaction CreateTransaction()
         {
             return new GitTransaction(RemoteRepositoryPath, GetLocalTransactionDirectory());
         }

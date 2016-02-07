@@ -42,6 +42,7 @@
     <Compile Include="Common\AbstractGitTransaction.cs" />
     <Compile Include="Common\CachingGitTransaction.cs" />
     <Compile Include="Common\GitBasedService.cs" />
+    <Compile Include="Common\IGitTransaction.cs" />
     <Compile Include="Common\TransactionState.cs" />
     <Compile Include="Common\_Exceptions\InvalidTransactionStateException.cs" />
     <Compile Include="Common\_Exceptions\TransactionFailedException.cs" />

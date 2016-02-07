@@ -12,7 +12,7 @@ using Xunit;
 namespace SyncTool.Git.Common
 {
     /// <summary>
-    /// Tests for <see cref="GitTransaction"/>
+    /// Tests cases for both <see cref="GitTransaction"/> and <see cref="CachingGitTransaction"/>
     /// </summary>
     public abstract class AbstractGitTransactionTest : DirectoryBasedTest
     {
@@ -37,7 +37,7 @@ namespace SyncTool.Git.Common
         }
 
 
-        [Fact(DisplayName = nameof(GitTransaction) + ": Initial state is 'Created'")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ": Initial state is 'Created'")]
         public void Initial_state_is_Created()
         {
             var transaction = CreateTransaction();
@@ -46,7 +46,7 @@ namespace SyncTool.Git.Common
 
         #region Begin()
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Begin() throws " + nameof(GitTransactionException) + " if the local directory exists and is not empty")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() throws " + nameof(GitTransactionException) + " if the local directory exists and is not empty")]
         public void Begin_throws_GitTransactionException_if_local_directory_exists_and_is_not_empty()
         {
             var transaction = CreateTransaction();
@@ -57,7 +57,7 @@ namespace SyncTool.Git.Common
             Assert.Throws<GitTransactionException>(() => transaction.Begin());            
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Begin() succeeds if the local directory does not exists")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() succeeds if the local directory does not exists")]
         public void Begin_succeeds_if_the_local_directory_does_not_exist()
         {
             var transaction = CreateTransaction();
@@ -67,7 +67,7 @@ namespace SyncTool.Git.Common
             Assert.True(Repository.IsValid(transaction.LocalPath));        
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Begin() succeeds if the local directory exists but is empty")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() succeeds if the local directory exists but is empty")]
         public void Begin_succeeds_if_the_local_directory_exists_but_is_empty()
         {
             var transaction = CreateTransaction();
@@ -80,7 +80,7 @@ namespace SyncTool.Git.Common
             Assert.True(Repository.IsValid(transaction.LocalPath));
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Begin() creates a bare repository")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() creates a bare repository")]
         public void Begin_creates_a_bare_repository()
         {
             var transaction = CreateTransaction();
@@ -92,7 +92,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Begin() creates local branches for all remote branches")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() creates local branches for all remote branches")]
         public void Begin_creates_local_branches_for_all_remote_branches()
         {
             var transaction = CreateTransaction();
@@ -115,7 +115,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Begin() sets state to 'Active'")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() sets state to 'Active'")]
         public void Begin_sets_State_to_active()
         {
             var transaction = CreateTransaction();
@@ -123,7 +123,7 @@ namespace SyncTool.Git.Common
             Assert.Equal(TransactionState.Active, transaction.State);
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Begin() throws " + nameof(InvalidTransactionStateException) +" if State is 'Active'")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() throws " + nameof(InvalidTransactionStateException) +" if State is 'Active'")]
         public void Begin_throws_InvalidTransactionStateException_if_state_is_Active()
         {
             var transaction = CreateTransaction();
@@ -131,7 +131,7 @@ namespace SyncTool.Git.Common
             Assert.Throws<InvalidTransactionStateException>(() => transaction.Begin());
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Begin() throws " + nameof(InvalidTransactionStateException) + " if State is 'Completed'")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() throws " + nameof(InvalidTransactionStateException) + " if State is 'Completed'")]
         public void Begin_throws_InvalidTransactionStateException_if_State_is_Completed()
         {
             var transaction = CreateTransaction();
@@ -142,7 +142,7 @@ namespace SyncTool.Git.Common
             Assert.Throws<InvalidTransactionStateException>(() => transaction.Begin());
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Begin() throws " + nameof(InvalidTransactionStateException) + " if State is 'Failed'")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() throws " + nameof(InvalidTransactionStateException) + " if State is 'Failed'")]
         public void Begin_throws_InvalidTransactionStateException_if_State_is_Failed()
         {
             var transaction1 = CreateTransaction();
@@ -166,14 +166,14 @@ namespace SyncTool.Git.Common
 
         #region Commit()
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is 'Created'")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is 'Created'")]
         public void Commit_throws_InvalidTransactionStateException_if_state_is_Created()
         {
             var transaction = CreateTransaction();
             Assert.Throws<InvalidTransactionStateException>(() => transaction.Commit());
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is 'Completed'")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is 'Completed'")]
         public void Commit_throws_InvalidTransactionStateException_if_state_is_Completed()
         {
             var transaction1 = CreateTransaction();
@@ -193,7 +193,7 @@ namespace SyncTool.Git.Common
             Assert.Throws<InvalidTransactionStateException>(() => transaction2.Commit());
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is 'failed'")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Commit() throws " + nameof(InvalidTransactionStateException) + " if State is 'failed'")]
         public void Commit_throws_InvalidTransactionStateException_if_state_is_Failed()
         {
             var transaction = CreateTransaction();
@@ -205,7 +205,7 @@ namespace SyncTool.Git.Common
         }
 
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() sets state to 'Completed' when successful")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Commit() sets state to 'Completed' when successful")]
         public void Commit_sets_state_to_Completed_when_successful()
         {
             var transaction = CreateTransaction();
@@ -216,7 +216,7 @@ namespace SyncTool.Git.Common
             Assert.Equal(TransactionState.Completed, transaction.State);
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() sets state to 'Failed' when transaction failed")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Commit() sets state to 'Failed' when transaction failed")]
         public void Commit_sets_state_to_Completed_when_transaction_failed()
         {
             var transaction1 = CreateTransaction();
@@ -234,7 +234,7 @@ namespace SyncTool.Git.Common
         }
 
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() pushes changes from all branches to the remote repository")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Commit() pushes changes from all branches to the remote repository")]
         public void Commit_pushes_changes_from_all_branches_to_the_remote_repository()
         {
             var transaction = CreateTransaction();
@@ -268,7 +268,7 @@ namespace SyncTool.Git.Common
             Assert.Equal(expectedCommitCount, m_RemoteRepository.GetAllCommits().Count());            
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() throws " + nameof(TransactionFailedException) + " if changes could not be pushed to remote repository")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Commit() throws " + nameof(TransactionFailedException) + " if changes could not be pushed to remote repository")]
         public void Commit_throws_TransactionFailedException_if_changes_could_not_be_pushed_to_remote_repository()
         {
             // create 2 transaction committing to the same branch            
@@ -292,7 +292,7 @@ namespace SyncTool.Git.Common
             Assert.Throws<TransactionFailedException>(() => transaction2.Commit());
         }
 
-        [Fact(DisplayName= nameof(GitTransaction) + "Commit() succeeds if transactions work on different branches")]
+        [Fact(DisplayName= nameof(AbstractGitTransaction) + "Commit() succeeds if transactions work on different branches")]
         public void Commit_succeeds_if_transactions_work_on_different_branches()
         {          
             // create 2 transaction committing to the same branch
@@ -317,7 +317,7 @@ namespace SyncTool.Git.Common
             Assert.Equal(3, m_RemoteRepository.GetAllCommits().Count());            
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() pushes newly created branches")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Commit() pushes newly created branches")]
         public void Commit_pushes_newly_created_branches()
         {
             var branchName = "newBranch";
@@ -338,7 +338,7 @@ namespace SyncTool.Git.Common
             Assert.Equal(2, m_RemoteRepository.GetAllCommits().Count());
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() fails to create a new branch if the same branch was created by another transaction")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Commit() fails to create a new branch if the same branch was created by another transaction")]
         public void Commit_fails_to_create_a_new_branch_if_the_same_branch_was_created_by_another_transaction()
         {
             const string branchName = "newBranch";
@@ -365,7 +365,7 @@ namespace SyncTool.Git.Common
             Assert.Throws<TransactionFailedException>(() => transaction2.Commit());
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) +".Commit() succeeds if two transactions created the same branch pointing to the same commit")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) +".Commit() succeeds if two transactions created the same branch pointing to the same commit")]
         public void Commit_succeeds_if_two_transactions_created_the_same_branch_pointing_to_the_same_commit()
         {
             const string branchName = "newBranch";
@@ -395,7 +395,7 @@ namespace SyncTool.Git.Common
             Assert.True(m_RemoteRepository.Branches.Any(x => x.FriendlyName == branchName));
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() fails when only one branch was changed on the remote")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Commit() fails when only one branch was changed on the remote")]
         public void Commit_fails_when_only_one_branch_was_changed_on_the_remote()
         {            
             var transaction1 = CreateTransaction();
@@ -423,7 +423,7 @@ namespace SyncTool.Git.Common
         }
 
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() deletes the local directory, even when the transaction fails")]
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Commit() deletes the local directory, even when the transaction fails")]
         public void Commit_deletes_the_local_directory_even_when_the_transaction_fails()
         {
             var transaction1 = CreateTransaction();
@@ -437,8 +437,7 @@ namespace SyncTool.Git.Common
             
             transaction1.Commit();
             Assert.Throws<TransactionFailedException>(() => transaction2.Commit());            
-
-            Assert.False(Directory.Exists(transaction1.LocalPath));
+            
             Assert.False(Directory.Exists(transaction2.LocalPath));
         }
 
@@ -455,7 +454,7 @@ namespace SyncTool.Git.Common
         /// <summary>
         /// Adds the specified file to the specified branch using the path of the transaction's local repository
         /// </summary>
-        protected void AddFile(AbstractGitTransaction transaction, string branchName, string fileName)
+        protected void AddFile(IGitTransaction transaction, string branchName, string fileName)
         {
             using (var workingDirectory = new TemporaryWorkingDirectory(transaction.LocalPath, branchName))
             {
@@ -467,7 +466,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        protected abstract AbstractGitTransaction CreateTransaction();
+        protected abstract IGitTransaction CreateTransaction();
         
 
         protected string GetLocalTransactionDirectory()
