@@ -19,18 +19,38 @@ namespace SyncTool.Git.Common
 
         public override void Begin()
         {
-            base.Begin();
-            
-            //TODO
-//            // if we cannot reuse the local directory, delete the directory and execute the base case            
-//            if (!CanReuseLocalRepository())
-//            {
-//                DirectoryHelper.DeleteRecursively(LocalPath);
-//                return;
-//            }
-            
-            
-            
+            EnsureIsInState(TransactionState.Created);
+
+            // if we cannot reuse the local directory, delete the directory and execute the base case            
+            if (!CanReuseLocalRepository())
+            {
+                DirectoryHelper.DeleteRecursively(LocalPath);
+                base.Begin();
+                return;
+            }
+
+            // fetch all changes
+            using (var repository = new Repository(LocalPath))
+            {
+                // TODO: Use FetchOptions.Prune once a libgit2sharp version with support for it was released 
+                repository.Network.Fetch(repository.Network.Remotes[s_Origin]);
+            }
+
+            CreateLocalBranches();
+        }
+
+        /// <summary>
+        /// Removes all local branches that are not tracking any remote branch
+        /// </summary>
+        private void RemoveRedundantBranches()
+        {
+            using (var repository = new Repository(this.LocalPath))
+            {
+                foreach (var localBranch in repository.GetLocalBranches().Where(b => !b.IsTracking))
+                {
+                    repository.Branches.Remove(localBranch);
+                }
+            }
         }
 
         protected override void OnTransactionCompleted()
@@ -49,7 +69,7 @@ namespace SyncTool.Git.Common
             // if the directory is empty, there is nothing to reuse
             if (!Directory.EnumerateFileSystemEntries(LocalPath).Any())
             {
-                return false;                
+                return false;
             }
 
             // check if the directory is a git repository
@@ -79,7 +99,7 @@ namespace SyncTool.Git.Common
                 {
                     return false;
                 }
-                
+
                 //fetch all branches
                 repository.Network.Fetch(repository.Network.Remotes[s_Origin]);
 
@@ -88,11 +108,9 @@ namespace SyncTool.Git.Common
                 {
                     return false;
                 }
-
             }
 
             return true;
-
         }
     }
 }

@@ -24,7 +24,7 @@ namespace SyncTool.Git.Common
         public string LocalPath { get; }
 
 
-        public AbstractGitTransaction(string remotePath, string localPath)
+        protected AbstractGitTransaction(string remotePath, string localPath)
         {
             if (remotePath == null)
             {
@@ -90,7 +90,7 @@ namespace SyncTool.Git.Common
         /// <summary>
         /// Creates local tracking branches for all remote branches
         /// </summary>
-        void CreateLocalBranches()
+        protected void CreateLocalBranches()
         {
             using (var repository = new Repository(LocalPath))
             {
@@ -124,7 +124,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        void EnsureIsInState(TransactionState expectedState)
+        protected void EnsureIsInState(TransactionState expectedState)
         {
             if (State != expectedState)
             {
@@ -162,8 +162,7 @@ namespace SyncTool.Git.Common
         IEnumerable<Branch> GetBranchesToPush(Repository localRepository)
         {
             var localBranches = localRepository.Branches.GetLocalBranches().ToList();
-
-            var branchesToPush = new LinkedList<Branch>();
+            
             foreach (var branch in localBranches)
             {
                 if (branch.IsTracking)
@@ -174,23 +173,22 @@ namespace SyncTool.Git.Common
                     // if the branch has local changes, add it to the list of branches we need to push         
                     if (hasLocalChanges)
                     {
-                        branchesToPush.AddLast(branch);
+                        yield return branch;
                     }
                 }
                 else
                 {
+                    // set up the local branch to track the corresponding remote branch
                     localRepository.Branches.Update(
                         branch,
                         b => b.Remote = s_Origin,
                         b => b.UpstreamBranch = branch.CanonicalName);
 
-                    branchesToPush.AddLast(branch);
+                    yield return branch;
                 }
-            }
-
-            return branchesToPush;
+            }            
+            
         }
-
 
         protected virtual void OnTransactionAborted() => DirectoryHelper.DeleteRecursively(LocalPath);
 

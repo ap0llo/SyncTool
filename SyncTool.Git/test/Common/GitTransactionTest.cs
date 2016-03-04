@@ -11,9 +11,20 @@ namespace SyncTool.Git.Common
     /// <summary>
     /// Tests for <see cref="GitTransaction"/>
     /// </summary>
-    public class GitTransactionTest : AbstractGitTransactionTest
+    public class GitTransactionTest : AbstractGitTransactionTest<GitTransactionTest>
     {
-        
+
+        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() throws " + nameof(GitTransactionException) + " if the local directory exists and is not empty")]
+        public void Begin_throws_GitTransactionException_if_local_directory_exists_and_is_not_empty()
+        {
+            var transaction = CreateTransaction();
+
+            Directory.CreateDirectory(transaction.LocalPath);
+            File.WriteAllText(Path.Combine(transaction.LocalPath, "file1"), "Irrelevant");
+
+            Assert.Throws<GitTransactionException>(() => transaction.Begin());
+        }
+
         [Fact(DisplayName = nameof(GitTransaction) + ".Commit() deletes the local directory after pushing the changes")]
         public void Commit_deletes_the_local_directory_after_pushing_the_changes()
         {
