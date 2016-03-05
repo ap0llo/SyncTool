@@ -6,7 +6,6 @@ using System;
 using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.Configuration.Model;
-using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Configuration;
 using SyncTool.Git.FileSystem;
@@ -18,29 +17,28 @@ namespace SyncTool.Git.Common
 {
     public class GitBasedGroup : IGroup
     {
-        public string Name
-        {
-            get
-            {
-                var infoFile = (IReadableFile)GetConfigurationRootDirectory().GetFile(RepositoryInfoFile.RepositoryInfoFileName);
-                using (var stream = infoFile.OpenRead())
-                {
-                    var repositoryInfo = stream.Deserialize<RepositoryInfo>();
-                    return repositoryInfo.RepositoryName;
-                }
-            }
-        }
+        public string Name { get; }        
 
         public Repository Repository { get; }
 
         //TODO: use GitTransaction so repositoryPath can be a remote repository
-        public GitBasedGroup(string repositoryPath)
+        public GitBasedGroup(string name, string repositoryPath)
         {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Name must not be empty", nameof(name));
+            }
+
             if (repositoryPath == null)
             {
                 throw new ArgumentNullException(nameof(repositoryPath));
             }
 
+            Name = name;
             Repository = new Repository(repositoryPath);
         }
 

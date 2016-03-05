@@ -1,8 +1,7 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2016-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System;
 using SyncTool.Git.Common;
 using SyncTool.Git.FileSystem;
@@ -16,17 +15,16 @@ namespace SyncTool.Git.Common
     /// </summary>
     public class GitBasedGroupTest : DirectoryBasedTest
     {
-        [Fact(DisplayName = nameof(GitBasedGroup) + ".Name returns name specified in RepositoryInfo file")]
-        public void Name_returns_name_specified_in_RepositoryInfo_file()
+        [Fact(DisplayName = nameof(GitBasedGroup) + ".Name must not be null or empty")]
+        public void Name_must_not_be_null_or_empty()
         {
-            var name = Guid.NewGuid().ToString();
+            Assert.Throws<ArgumentNullException>(() => new GitBasedGroup(null, m_TempDirectory.Location));
 
-            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, name);
-
-            using (var syncGroup = new GitBasedGroup(m_TempDirectory.Location))
-            {
-                Assert.Equal(name, syncGroup.Name);
-            }
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup("", m_TempDirectory.Location));
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup("  ", m_TempDirectory.Location));
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup(" \t ", m_TempDirectory.Location));
         }
+
+
     }
 }

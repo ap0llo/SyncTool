@@ -47,7 +47,7 @@ namespace SyncTool.Git.Common
         public IGroup GetGroup(string name)
         {
             EnsureGroupExists(name);            
-            return new GitBasedGroup(m_GroupSettings[name].Address);          
+            return new GitBasedGroup(m_GroupSettings[name].Name, m_GroupSettings[name].Address);          
         }
 
         public void AddGroup(string name, string address)
@@ -96,7 +96,7 @@ namespace SyncTool.Git.Common
             }
 
             NativeDirectory.CreateDirectory(directoryPath);
-            RepositoryInitHelper.InitializeRepository(directoryPath, name);
+            RepositoryInitHelper.InitializeRepository(directoryPath);
 
             using (var repository = new Repository(directoryPath))
             {

@@ -1,8 +1,7 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System;
 using System.Linq;
 using LibGit2Sharp;
@@ -24,9 +23,9 @@ namespace SyncTool.Git.Configuration
         [Fact(DisplayName = nameof(GitBasedConfigurationService) + ".Items is empty for new directory")]
         public void Items_is_empty_for_new_directory()
         {            
-            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");
+            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
 
-            using (var group = new GitBasedGroup(m_TempDirectory.Location))
+            using (var group = new GitBasedGroup("Irrelevant", m_TempDirectory.Location))
             {
                 var syncGroup = new GitBasedConfigurationService(group);
                 Assert.Empty(syncGroup.Items);
@@ -39,7 +38,7 @@ namespace SyncTool.Git.Configuration
         public void AddSyncGroup_creates_a_new_commit_in_the_underlying_repository()
         {
 
-            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");
+            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
 
             int previousCommitCount;
             using (var repo = new Repository(m_TempDirectory.Location))
@@ -50,7 +49,7 @@ namespace SyncTool.Git.Configuration
             var syncFolder = new SyncFolder() { Name = "folder1", Path = "foo", Filter = null };
 
             
-            using (var group = new GitBasedGroup(m_TempDirectory.Location))
+            using (var group = new GitBasedGroup("Irrelevant", m_TempDirectory.Location))
             {
                 var service = new GitBasedConfigurationService(group);
                 service.AddSyncFolder(syncFolder);
@@ -69,12 +68,12 @@ namespace SyncTool.Git.Configuration
         [Fact(DisplayName = nameof(GitBasedConfigurationService) + ".AddSyncGroup throws " + nameof(DuplicateSyncFolderException))]
         public void AddSyncGroup_throws_DuplicateSyncFolderException()
         {
-            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");            
+            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
 
             var syncFolder1 = new SyncFolder() { Name = "folder1", Path = "foo", Filter = null };
             var syncFolder2 = new SyncFolder() { Name = "folder1", Path = "bar", Filter = null };
 
-            using (var group = new GitBasedGroup(m_TempDirectory.Location))
+            using (var group = new GitBasedGroup("Irrelevant", m_TempDirectory.Location))
             {
                 var service = new GitBasedConfigurationService(group);
                 service.AddSyncFolder(syncFolder1);
@@ -87,8 +86,8 @@ namespace SyncTool.Git.Configuration
         [Fact(DisplayName = nameof(GitBasedConfigurationService) + ": Indexer.Get throws ArgumentNullException if name is null or whitespace")]
         public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
         {
-            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");
-            using (var group = new GitBasedGroup(m_TempDirectory.Location))
+            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
+            using (var group = new GitBasedGroup("Irrelevant", m_TempDirectory.Location))
             {
                 var service = new GitBasedConfigurationService(group);
                 Assert.Throws<ArgumentNullException>(() => service[null]);
@@ -100,8 +99,8 @@ namespace SyncTool.Git.Configuration
         [Fact(DisplayName = nameof(GitBasedConfigurationService) + ": Indexer.Get throws ItemNotFoundException if the requested item was not found")]
         public void Indexer_Get_throws_ItemNotFoundException_if_the_requested_item_was_not_found()
         {
-            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");
-            using (var group = new GitBasedGroup(m_TempDirectory.Location))
+            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
+            using (var group = new GitBasedGroup("Irrelevant",m_TempDirectory.Location))
             {
                 var service = new GitBasedConfigurationService(group);
                 Assert.Throws<ItemNotFoundException>(() => service["SomeName"]);                
@@ -111,8 +110,8 @@ namespace SyncTool.Git.Configuration
         [Fact(DisplayName = nameof(GitBasedConfigurationService) + ": Indexer.Get returns the expected Item")]
         public void Indexer_Get_returns_the_expected_Item()
         {
-            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location, "Irrelevant");
-            using (var group = new GitBasedGroup(m_TempDirectory.Location))
+            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
+            using (var group = new GitBasedGroup("Irrelevant", m_TempDirectory.Location))
             {
                 var service = new GitBasedConfigurationService(group);
                 service.AddSyncFolder(new SyncFolder() { Name = "folder1"});

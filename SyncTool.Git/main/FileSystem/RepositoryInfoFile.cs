@@ -1,51 +1,62 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System;
-using System.IO;
 using SyncTool.FileSystem;
 using SyncTool.Git.Common;
 
 namespace SyncTool.Git.FileSystem
 {
-    public class RepositoryInfoFile : FileSystemItem, IReadableFile
+    public class RepositoryInfoFile : DataFile<RepositoryInfo>
     {
         public const string RepositoryInfoFileName = "SyncToolRepositoryInfo.json";
-
         
-        public DateTime LastWriteTime { get; }
+        
 
-        public long Length
+        public RepositoryInfoFile(IDirectory parent) : this(parent, new RepositoryInfo())
         {
-            get { throw new NotSupportedException(); }
+         
         }
 
-        public RepositoryInfo Content { get; }
+        public RepositoryInfoFile(IDirectory parent, RepositoryInfo repositoryInfo) : base(parent, RepositoryInfoFileName, repositoryInfo)
+        {            
+        }
 
-
-        public RepositoryInfoFile(IDirectory parent, string repositoryName = null) : base(parent, RepositoryInfoFileName)
+        public RepositoryInfoFile(IDirectory parent, RepositoryInfo repositoryInfo, DateTime lastWriteTime) : base(parent, RepositoryInfoFileName, repositoryInfo)
         {
-            LastWriteTime = DateTime.Now;
-            Content = repositoryName == null ? new RepositoryInfo() : new RepositoryInfo(repositoryName);
+            this.LastWriteTime = lastWriteTime;
         }
 
 
-        public Stream OpenRead()
+
+
+        public override IFile WithParent(IDirectory newParent)
         {
-            using (var writeStream = new MemoryStream())
+            return new RepositoryInfoFile(newParent, this.Content);
+        }
+
+
+        /// <summary>
+        /// Loads a <see cref="RepositoryInfoFile"/> written out into a file 
+        /// </summary>
+        public static RepositoryInfoFile Load(IDirectory parentDirectory, IReadableFile file)
+        {
+            if (file == null)
             {
-                Content.WriteTo(writeStream);
-                writeStream.Flush();
+                throw new ArgumentNullException(nameof(file));
+            }
 
-                return new MemoryStream(writeStream.ToArray());
+            if (!file.Name.Equals(RepositoryInfoFileName, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new ArgumentException($"File name has to be {RepositoryInfoFileName}", nameof(file));
+            }
+
+            using (var stream = file.OpenRead())
+            {
+                return new RepositoryInfoFile(parentDirectory, stream.Deserialize<RepositoryInfo>(), file.LastWriteTime);
             }
         }
 
-        public IFile WithParent(IDirectory newParent)
-        {
-            return  new RepositoryInfoFile(newParent, this.Content.RepositoryName);
-        }
     }
 }

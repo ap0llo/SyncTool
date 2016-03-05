@@ -1,8 +1,7 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System;
 using System.Reflection;
 
@@ -11,31 +10,7 @@ namespace SyncTool.Git.Common
     public class RepositoryInfo
     {
 
-        public string RepositoryName { get; set; }
-
-        public Version SyncToolVersion { get; set; }
-
-
-        public RepositoryInfo(string repositoryName)
-        {
-            if (repositoryName == null)
-            {
-                throw new ArgumentNullException(nameof(repositoryName));
-            }
-            
-            if (String.IsNullOrWhiteSpace(repositoryName))
-            {
-                throw new ArgumentException("Repository name must not be empty", nameof(repositoryName));
-            }
-
-            SyncToolVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            RepositoryName = repositoryName;
-        }
-
-        public RepositoryInfo() : this($"Repository_{Guid.NewGuid()}")
-        {
-            
-        }
+        public Version SyncToolVersion { get; set; } = Assembly.GetExecutingAssembly().GetName().Version;
 
     }
 }

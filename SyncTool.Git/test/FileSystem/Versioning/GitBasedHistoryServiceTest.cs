@@ -1,8 +1,7 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System;
 using System.Linq;
 using LibGit2Sharp;
@@ -26,7 +25,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         public GitBasedHistoryServiceTest()
         {
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
-            m_Group = new GitBasedGroup(m_TempDirectory.Location);
+            m_Group = new GitBasedGroup("Irrelevant", m_TempDirectory.Location);
         }
 
 
