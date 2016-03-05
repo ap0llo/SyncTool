@@ -45,7 +45,14 @@ namespace SyncTool.Git.Common
 
             EnsureCanCloneIntoLocalDirectory();
 
-            Repository.Clone(RemotePath, LocalPath, new CloneOptions { Checkout = false, IsBare = true });
+            try
+            {
+                Repository.Clone(RemotePath, LocalPath, new CloneOptions { Checkout = false, IsBare = true });
+            }
+            catch (LibGit2SharpException ex)
+            {                
+                throw new TransactionCloneException($"Could not clone from remote path '{RemotePath}'", ex);
+            }
             CreateLocalBranches();
 
             State = TransactionState.Active;

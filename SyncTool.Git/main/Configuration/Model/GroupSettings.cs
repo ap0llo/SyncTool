@@ -1,16 +1,15 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 namespace SyncTool.Git.Configuration.Model
 {
-    public class SyncRepositorySettings
+    public class GroupSettings
     {
 
-        public string MasterRepositoryPath { get; set; }
+        public string Name { get; set; }
         
-        public string LocalRepositoryPath { get; set; }
+        public string Address { get; set; }
     
     }
 }

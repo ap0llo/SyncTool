@@ -1,8 +1,7 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System.Collections.Generic;
 
 namespace SyncTool.Common
@@ -23,12 +22,23 @@ namespace SyncTool.Common
         IGroup GetGroup(string name);
 
         /// <summary>
-        /// Adds a new group
+        /// Adds an existing group
         /// </summary>
-        /// <param name="name">The name of the group to add</param>
+        /// <param name="name">The name of the group</param>
+        /// <param name="address">The address of the group</param>
         /// <remarks>Group names are case-invariant</remarks>
         /// <exception cref="DuplicateGroupException">Thrown if a group with the specified name already exists</exception>
-        void AddGroup(string name);
+        void AddGroup(string name, string address);
+
+        /// <summary>
+        /// Creates a new group
+        /// </summary>
+        /// <param name="name">The name of the group to create</param>
+        /// <param name="address">The address of the group</param>
+        /// <remarks>Group names are case-invariant</remarks>
+        /// <exception cref="DuplicateGroupException">Thrown if a group with the specified name already exists</exception>
+        void CreateGroup(string name, string address);
+                
 
         /// <summary>
         /// Removes the specified group

@@ -228,7 +228,9 @@ namespace SyncTool.Git.Common
 
 
         protected override IGitTransaction CreateTransaction() => CreateCachingTransaction();
-       
+
+        protected override IGitTransaction CreateTransaction(string remotePath, string localPath) => CreateCachingTransaction(remotePath, localPath);
+
         CachingGitTransaction CreateCachingTransaction() => CreateCachingTransaction(GetLocalTransactionDirectory());
 
         CachingGitTransaction CreateCachingTransaction(string localPath)
@@ -236,6 +238,10 @@ namespace SyncTool.Git.Common
             return new CachingGitTransaction(RemoteRepositoryPath, localPath);
         }
 
+        CachingGitTransaction CreateCachingTransaction(string remotePath, string localPath)
+        {
+            return new CachingGitTransaction(remotePath, localPath);
+        }
 
     }
 }

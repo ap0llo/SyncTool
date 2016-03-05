@@ -1,10 +1,10 @@
-﻿// // -----------------------------------------------------------------------------------------------------------
-// //  Copyright (c) 2015, Andreas Grünwald
-// //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
-// // -----------------------------------------------------------------------------------------------------------
-
+﻿// -----------------------------------------------------------------------------------------------------------
+//  Copyright (c) 2015-2016, Andreas Grünwald
+//  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
+// -----------------------------------------------------------------------------------------------------------
 using System;
 using System.Linq;
+using System.Security.Policy;
 using CommandLine;
 using SyncTool.Cli.Framework;
 using SyncTool.Cli.Output;
@@ -19,6 +19,12 @@ namespace SyncTool.Cli.Commands
     {
         [Option('n', "name", Required = true)]
         public string Name { get; set; }
+
+        [Option('a', "address", Required = true)]
+        public string Address { get; set; }
+
+        [Option("create", Required = false)]
+        public bool Create { get; set; }
     }
 
 
@@ -38,7 +44,14 @@ namespace SyncTool.Cli.Commands
 
         public int Run(AddGroupOptions opts)
         {
-            m_GroupManager.AddGroup(opts.Name);
+            if (opts.Create)
+            {
+                m_GroupManager.CreateGroup(opts.Name, opts.Address);
+            }
+            else
+            {
+                m_GroupManager.AddGroup(opts.Name, opts.Address);                
+            }
             return 0;
         }
 

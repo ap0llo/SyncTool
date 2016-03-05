@@ -1,8 +1,7 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System.Linq;
 using LibGit2Sharp;
 using SyncTool.FileSystem.Local;
@@ -46,11 +45,9 @@ namespace SyncTool.Git.Common
                     var signature = SignatureHelper.NewSignature();
 
                     clonedRepo.Stage(repositoryInfoFile.Name);
-                    var commit = clonedRepo.Commit("Initial Commit", signature, signature, new CommitOptions());
-                    clonedRepo.ApplyTag(InitialCommitTagName, commit.Sha);
+                    clonedRepo.Commit("Initial Commit", signature, signature, new CommitOptions());                    
 
-                    clonedRepo.Network.Push(clonedRepo.Network.Remotes["origin"], @"refs/heads/master");
-                    clonedRepo.Network.Push(clonedRepo.Network.Remotes["origin"], @"refs/tags/" + InitialCommitTagName);
+                    clonedRepo.Network.Push(clonedRepo.Network.Remotes["origin"], @"refs/heads/master");                    
                 }
             }
 
@@ -58,6 +55,7 @@ namespace SyncTool.Git.Common
             using (var repository = new Repository(location))
             {
                 repository.CreateBranch(ConfigurationBranchName, repository.GetAllCommits().Single());
+                repository.Tags.Add(InitialCommitTagName, repository.GetAllCommits().Single());
             }
         }
         

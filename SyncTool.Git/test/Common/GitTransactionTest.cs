@@ -41,5 +41,10 @@ namespace SyncTool.Git.Common
         {
             return new GitTransaction(RemoteRepositoryPath, GetLocalTransactionDirectory());
         }
+
+        protected override IGitTransaction CreateTransaction(string remotePath, string localPath)
+        {
+            return new GitTransaction(remotePath, localPath);
+        }
     }
 }

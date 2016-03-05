@@ -31,6 +31,7 @@
     <Compile Include="Common\IItemService.cs" />
     <Compile Include="Common\IService.cs" />
     <Compile Include="Common\_Exceptions\GroupNotFoundException.cs" />
+    <Compile Include="Common\_Exceptions\InvalidGroupAddressException.cs" />
     <Compile Include="Common\_Exceptions\ItemNotFoundException.cs" />
     <Compile Include="Common\Utilities\CachingObjectMapper.cs" />
     <Compile Include="Common\Utilities\DirectoryHelper.cs" />

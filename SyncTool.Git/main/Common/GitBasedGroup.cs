@@ -1,8 +1,7 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System;
 using LibGit2Sharp;
 using SyncTool.Common;
@@ -19,9 +18,6 @@ namespace SyncTool.Git.Common
 {
     public class GitBasedGroup : IGroup
     {
-        protected readonly Repository m_Repository;
-
-
         public string Name
         {
             get
@@ -35,9 +31,9 @@ namespace SyncTool.Git.Common
             }
         }
 
-        public Repository Repository => m_Repository;
+        public Repository Repository { get; }
 
-
+        //TODO: use GitTransaction so repositoryPath can be a remote repository
         public GitBasedGroup(string repositoryPath)
         {
             if (repositoryPath == null)
@@ -45,7 +41,7 @@ namespace SyncTool.Git.Common
                 throw new ArgumentNullException(nameof(repositoryPath));
             }
 
-            m_Repository = new Repository(repositoryPath);
+            Repository = new Repository(repositoryPath);
         }
 
 
@@ -69,13 +65,10 @@ namespace SyncTool.Git.Common
             }            
         }
 
-        public void Dispose()
-        {
-            m_Repository.Dispose();
-        }
+        public void Dispose() => Repository.Dispose();
 
 
-        Commit GetConfigurationCommit() => m_Repository.Branches[RepositoryInitHelper.ConfigurationBranchName].Tip;
+        Commit GetConfigurationCommit() => Repository.Branches[RepositoryInitHelper.ConfigurationBranchName].Tip;
 
         internal GitDirectory GetConfigurationRootDirectory() => new GitDirectory(null, "root", GetConfigurationCommit());
     }

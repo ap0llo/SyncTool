@@ -94,7 +94,7 @@
     <Compile Include="Common\CachingGitTransactionTest.cs" />
     <Compile Include="Common\GitTransactionTest.cs" />
     <Compile Include="Configuration\GitBasedConfigurationServiceTest.cs" />
-    <Compile Include="Configuration\Reader\JsonSyncRepositoryReaderTest.cs" />
+    <Compile Include="Configuration\Reader\JsonGroupSettingsProviderTest.cs" />
     <Compile Include="Common\GitBasedGroupTest.cs" />
     <Compile Include="FileSystem\GitDirectoryTest.cs" />
     <Compile Include="Common\SingleDirectoryRepositoryPathProviderTest.cs" />
@@ -116,6 +116,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Synchronization\Transfer\GitSynchronizationStateServiceTest.cs" />
     <Compile Include="Synchronization\Transfer\GitSynchronizationStateTest.cs" />
+    <Compile Include="TestHelpers\GroupSettingsProviderMockingHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\main\SyncTool.Git.csproj">

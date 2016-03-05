@@ -1,8 +1,7 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System;
 
 namespace SyncTool.Common
@@ -13,13 +12,22 @@ namespace SyncTool.Common
     /// Indicates that a group could not be added because a group with the specified groupName already exists
     /// </summary>
     [Serializable]
-    public class DuplicateGroupException : GroupManagerException
+    public sealed class DuplicateGroupException : GroupManagerException
     {
-        public string GroupName { get; }
+        
+        private DuplicateGroupException(string message) : base(message)
+        {            
+        }
 
-        public DuplicateGroupException(string groupName) : base($"A Group named '{groupName}' already exists")
+
+        public static DuplicateGroupException FromName(string groupName)
         {
-            this.GroupName = groupName;
+            return new DuplicateGroupException($"A Group named '{groupName}' already exists");
+        }
+
+        public static DuplicateGroupException FromAddress(string address)
+        {
+            return new DuplicateGroupException($"A Group with '{address}' already exists");
         }
     }
 }

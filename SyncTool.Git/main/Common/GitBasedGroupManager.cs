@@ -1,74 +1,92 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.Common.Utilities;
-using SyncTool.Git.Common;
+using SyncTool.Git.Configuration.Model;
+using SyncTool.Git.Configuration.Reader;
 using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Git.Common
 {
     public class GitBasedGroupManager : IGroupManager
     {
-        protected readonly IRepositoryPathProvider m_PathProvider;
+        readonly IDictionary<string, GroupSettings> m_GroupSettings;  
+        readonly IRepositoryPathProvider m_PathProvider;
+        readonly IGroupSettingsProvider m_SettingsProvider;
 
-
-        public IEnumerable<string> Groups
-        {
-            get
-            {
-                foreach (var dir in m_PathProvider.RepositoryPaths)
-                {
-                    using (var group = new GitBasedGroup(dir))
-                    {
-                        yield return group.Name;
-                    }
-                }
-            }
-        }
-
+        public IEnumerable<string> Groups => m_GroupSettings.Keys;
+        
         
        
-        public GitBasedGroupManager(IRepositoryPathProvider pathProvider)
+        public GitBasedGroupManager(IRepositoryPathProvider pathProvider, IGroupSettingsProvider settingsProvider)
         {
             if (pathProvider == null)
             {
                 throw new ArgumentNullException(nameof(pathProvider));
             }
+            if (settingsProvider == null)
+            {
+                throw new ArgumentNullException(nameof(settingsProvider));
+            }
+
             m_PathProvider = pathProvider;
+            m_SettingsProvider = settingsProvider;
+
+            m_GroupSettings = m_SettingsProvider.GetGroupSettings().ToDictionary(g => g.Name, StringComparer.InvariantCultureIgnoreCase);
+
         }
 
 
 
         public IGroup GetGroup(string name)
         {
-            foreach (var dir in m_PathProvider.RepositoryPaths)
-            {
-                var group = new GitBasedGroup(dir);
-                if (StringComparer.InvariantCultureIgnoreCase.Equals(group.Name, name))
-                {
-                    return group;
-                }
-                else
-                {
-                    group.Dispose();
-                }                                     
-            }
-
-            throw new GroupNotFoundException(name);
+            EnsureGroupExists(name);            
+            return new GitBasedGroup(m_GroupSettings[name].Address);          
         }
 
-        public void AddGroup(string name)
+        public void AddGroup(string name, string address)
         {
-            if (Groups.Contains(name, StringComparer.CurrentCultureIgnoreCase))
+            EnsureGroupDoesNotExist(name);
+            EnsureAddressDoesNotExist(address);
+
+            var localPath = m_PathProvider.GetRepositoryPath(name);
+
+            // create a transaction for the repository (this will clone the repository)
+            var transaction = new GitTransaction(address, localPath);
+            try
             {
-                throw new DuplicateGroupException(name);
+                transaction.Begin();
             }
+            catch (TransactionCloneException ex)
+            {
+                throw InvalidGroupAddressException.FromAdress(address, ex);
+            }
+            catch (GitTransactionException ex)
+            {
+                throw new GroupManagerException("Error adding group", ex);                
+            }
+
+            // cloning succeeded, now verify that the local directory is actually a repository for a group           
+            if (!RepositoryVerifier.IsValid(transaction.LocalPath))
+            {
+                throw InvalidGroupAddressException.FromAdress(address);
+            }
+                       
+            transaction.Commit();            
+
+            DoAddGroup(name, address);
+        }
+
+        public void CreateGroup(string name, string address)
+        {
+            EnsureGroupDoesNotExist(name);
+            EnsureAddressDoesNotExist(address);
 
             var directoryPath = m_PathProvider.GetRepositoryPath(name);
 
@@ -79,39 +97,68 @@ namespace SyncTool.Git.Common
 
             NativeDirectory.CreateDirectory(directoryPath);
             RepositoryInitHelper.InitializeRepository(directoryPath, name);
-        }
 
-
-        public void RemoveGroup(string name)
-        {
-            if (Groups.Contains(name, StringComparer.InvariantCultureIgnoreCase) == false)
+            using (var repository = new Repository(directoryPath))
             {
-                throw new GroupNotFoundException(name);
+                var origin = repository.Network.Remotes.Add("origin", address);
+
+                foreach (var localBranch in repository.GetLocalBranches())
+                {
+                    repository.Branches.Update(localBranch,
+                            b => b.Remote = origin.Name,
+                            b => b.UpstreamBranch = localBranch.CanonicalName);
+
+                }
+                repository.Network.Push(origin, repository.Branches.GetLocalBranches().ToRefSpecs().Union(repository.Tags.ToRefSpecs()));
             }
 
-            var directoryPath = m_PathProvider.GetRepositoryPath(name);
+            DirectoryHelper.DeleteRecursively(directoryPath);
+
+            DoAddGroup(name, address);
+        }
+
+        public void RemoveGroup(string name)
+        {            
+            EnsureGroupExists(name);
+            
+            m_GroupSettings.Remove(name);
+            m_SettingsProvider.SaveGroupSettings(m_GroupSettings.Values);
+
+            // remove the local directory for the group if it exists
+            var directoryPath = m_PathProvider.GetRepositoryPath(name);            
             DirectoryHelper.DeleteRecursively(directoryPath);
         }
 
-        protected string GetRepositoryPath(string name)
+
+        void DoAddGroup(string name, string address)
         {
-            var directories = m_PathProvider.RepositoryPaths;
-            foreach (var dir in directories)
-            {
-                using (var group = new GitBasedGroup(dir))
-                {
-                    if (group.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        return dir;
-                    }                    
-                }
-                    
-            }
-            
-            throw new GroupNotFoundException(name);
+            m_GroupSettings.Add(name, new GroupSettings { Name = name, Address = address });
+            m_SettingsProvider.SaveGroupSettings(m_GroupSettings.Values);
         }
 
+        void EnsureGroupExists(string name)
+        {
+            if (!m_GroupSettings.ContainsKey(name))
+            {
+                throw new GroupNotFoundException(name);
+            }
+        }
 
+        void EnsureGroupDoesNotExist(string name)
+        {
+            if (m_GroupSettings.ContainsKey(name))
+            {
+                throw DuplicateGroupException.FromName(name);
+            }
+        }
 
+        void EnsureAddressDoesNotExist(string address)
+        {
+            var query = m_GroupSettings.Values.Where(group => group.Address.Equals(address, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            if (query.Any())
+            {
+                throw DuplicateGroupException.FromAddress(address);
+            }
+        }
     }
 }

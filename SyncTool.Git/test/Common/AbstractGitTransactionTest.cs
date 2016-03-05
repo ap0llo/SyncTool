@@ -152,6 +152,14 @@ namespace SyncTool.Git.Common
             Assert.Equal(TransactionState.Failed, transaction2.State);
             Assert.Throws<InvalidTransactionStateException>(() => transaction2.Begin());
         }
+
+        [Fact]
+        public void Begin_throws_TransactionCloneException_if_RemotePath_is_not_a_valid_git_repository()
+        {
+            var transaction = CreateTransaction(GetLocalTransactionDirectory(), GetLocalTransactionDirectory());
+            Assert.Throws<TransactionCloneException>(() => transaction.Begin());
+        }
+
         #endregion
 
 
@@ -475,7 +483,9 @@ namespace SyncTool.Git.Common
         }
 
         protected abstract IGitTransaction CreateTransaction();
-        
+
+        protected abstract IGitTransaction CreateTransaction(string remotePath, string localPath);
+
 
         protected string GetLocalTransactionDirectory()
         {
