@@ -2,7 +2,6 @@
 //  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -69,9 +68,11 @@ namespace SyncTool.Git.Common
             {
                 using (var localRepository = new Repository(LocalPath))
                 {
-                    // push all branches with local changes
-                    var branchesToPush = GetBranchesToPush(localRepository);
-                    localRepository.Network.Push(branchesToPush);
+                    // push all branches with local changes and all tags
+                    var branchesToPush = GetBranchesToPush(localRepository).ToList();
+
+                    var refSpecs = branchesToPush.ToRefSpecs().Union(localRepository.Tags.ToRefSpecs());
+                    localRepository.Network.Push(localRepository.Network.Remotes[s_Origin], refSpecs);
                 }
 
                 State = TransactionState.Completed;

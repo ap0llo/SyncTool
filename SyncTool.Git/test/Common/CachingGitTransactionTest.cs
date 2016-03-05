@@ -15,7 +15,7 @@ namespace SyncTool.Git.Common
     /// <summary>
     /// Tests for <see cref="CachingGitTransaction"/>
     /// </summary>
-    public class CachingGitTransactionTest : AbstractGitTransactionTest<CachingGitTransactionTest>
+    public class CachingGitTransactionTest : AbstractGitTransactionTest
     {
 
         #region Commit

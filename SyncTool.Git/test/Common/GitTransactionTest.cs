@@ -11,7 +11,7 @@ namespace SyncTool.Git.Common
     /// <summary>
     /// Tests for <see cref="GitTransaction"/>
     /// </summary>
-    public class GitTransactionTest : AbstractGitTransactionTest<GitTransactionTest>
+    public class GitTransactionTest : AbstractGitTransactionTest
     {
 
         [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() throws " + nameof(GitTransactionException) + " if the local directory exists and is not empty")]

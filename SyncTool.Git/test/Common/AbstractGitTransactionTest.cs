@@ -14,7 +14,7 @@ namespace SyncTool.Git.Common
     /// <summary>
     /// Tests cases for both <see cref="GitTransaction"/> and <see cref="CachingGitTransaction"/>
     /// </summary>
-    public abstract class AbstractGitTransactionTest<T> : DirectoryBasedTest
+    public abstract class AbstractGitTransactionTest : DirectoryBasedTest
     {
         protected const string s_Branch2 = "branch2";
         protected const string s_Branch3 = "branch3";
@@ -428,7 +428,27 @@ namespace SyncTool.Git.Common
             
             Assert.False(Directory.Exists(transaction2.LocalPath));
         }
-        
+
+
+        [Fact]
+        public void Commit_pushes_tags_created_within_the_transaction()
+        {
+            const string tagName = "testTag";
+
+            var transaction = CreateTransaction();
+            transaction.Begin();
+
+            using (var repository = new Repository(transaction.LocalPath))
+            {
+                repository.Tags.Add(tagName, repository.Commits.Single());
+            }
+
+            transaction.Commit();
+
+            Assert.NotNull(m_RemoteRepository.Tags[tagName]);
+            Assert.Equal(m_RemoteRepository.Commits.Single().Sha, m_RemoteRepository.Tags[tagName].Target.Sha);
+        }
+
         #endregion
         
 
