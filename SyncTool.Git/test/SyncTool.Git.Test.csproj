@@ -117,6 +117,7 @@
     <Compile Include="Synchronization\Transfer\GitSynchronizationStateServiceTest.cs" />
     <Compile Include="Synchronization\Transfer\GitSynchronizationStateTest.cs" />
     <Compile Include="TestHelpers\GroupSettingsProviderMockingHelper.cs" />
+    <Compile Include="TestHelpers\GitGroupBasedTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\main\SyncTool.Git.csproj">

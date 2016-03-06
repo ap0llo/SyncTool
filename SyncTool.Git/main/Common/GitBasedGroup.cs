@@ -17,13 +17,20 @@ namespace SyncTool.Git.Common
 {
     public class GitBasedGroup : IGroup
     {
+        readonly IRepositoryPathProvider m_PathProvider;
+        readonly IGitTransaction m_Transaction;
+
         public string Name { get; }        
 
         public Repository Repository { get; }
 
-        //TODO: use GitTransaction so repositoryPath can be a remote repository
-        public GitBasedGroup(string name, string repositoryPath)
+        public GitBasedGroup(IRepositoryPathProvider pathProvider, string name, string repositoryPath)
         {
+            if (pathProvider == null)
+            {
+                throw new ArgumentNullException(nameof(pathProvider));
+            }
+            
             if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
@@ -38,8 +45,14 @@ namespace SyncTool.Git.Common
                 throw new ArgumentNullException(nameof(repositoryPath));
             }
 
+            m_PathProvider = pathProvider;
             Name = name;
-            Repository = new Repository(repositoryPath);
+
+            var localRepositoryPath = m_PathProvider.GetRepositoryPath(name);
+            m_Transaction = new CachingGitTransaction(repositoryPath, localRepositoryPath);
+            m_Transaction.Begin();
+
+            Repository = new Repository(localRepositoryPath);
         }
 
 
@@ -63,7 +76,11 @@ namespace SyncTool.Git.Common
             }            
         }
 
-        public void Dispose() => Repository.Dispose();
+        public void Dispose()
+        {
+            Repository.Dispose();
+            m_Transaction.Commit();
+        }
 
 
         Commit GetConfigurationCommit() => Repository.Branches[RepositoryInitHelper.ConfigurationBranchName].Tip;

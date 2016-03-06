@@ -35,7 +35,7 @@ namespace SyncTool.Git.TestHelpers
             {
                 current = mock.Object.GetGroupSettings();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 current = Enumerable.Empty<GroupSettings>();
             }

@@ -3,26 +3,27 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System;
+using System.IO;
 using System.Linq;
 using SyncTool.Common;
 using SyncTool.Git.Common;
+using SyncTool.Git.TestHelpers;
 using SyncTool.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Git.Synchronization.Transfer
 {
     /// <summary>
-    ///     Tests for <see cref="GitSynchronizationStateService" />
+    /// Tests for <see cref="GitSynchronizationStateService" />
     /// </summary>
-    public class GitSynchronizationStateServiceTest : DirectoryBasedTest
+    public class GitSynchronizationStateServiceTest : GitGroupBasedTest
     {
         readonly GitBasedGroup m_Group;
         readonly GitSynchronizationStateService m_Service;
 
         public GitSynchronizationStateServiceTest()
-        {
-            RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
-            m_Group = new GitBasedGroup("Irrelevant", m_TempDirectory.Location);
+        {        
+            m_Group = CreateGroup();
             m_Service = new GitSynchronizationStateService(m_Group);
         }
 
