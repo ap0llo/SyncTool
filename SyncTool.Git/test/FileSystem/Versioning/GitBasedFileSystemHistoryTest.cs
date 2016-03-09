@@ -38,7 +38,10 @@ namespace SyncTool.Git.FileSystem.Versioning
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
 
             m_Repository = new Repository(m_TempDirectory.Location);
-            m_Instance = new GitBasedFileSystemHistory(m_Repository, "master");
+            var branchName = new BranchName("", "branch1", 0);
+            m_Repository.CreateBranch(branchName, m_Repository.GetAllCommits().Single());
+
+            m_Instance = new GitBasedFileSystemHistory(m_Repository, branchName);
 
         }
 
@@ -114,13 +117,13 @@ namespace SyncTool.Git.FileSystem.Versioning
                 dir1 => new EmptyFile(dir1, s_File1) {LastWriteTime = dateTime2 }
             };
 
-            var commitCount = m_Repository.Commits.Count();
+            var commitCount = m_Repository.GetAllCommits().Count();
                      
             var snapshot1 = m_Instance.CreateSnapshot(state1);
-            Assert.Equal(commitCount + 1 , m_Repository.Commits.Count());                
+            Assert.Equal(commitCount + 1 , m_Repository.GetAllCommits().Count());                
             
             var snapshot2 = m_Instance.CreateSnapshot(state2);
-            Assert.Equal(commitCount + 2, m_Repository.Commits.Count());                
+            Assert.Equal(commitCount + 2, m_Repository.GetAllCommits().Count());                
             
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
         }

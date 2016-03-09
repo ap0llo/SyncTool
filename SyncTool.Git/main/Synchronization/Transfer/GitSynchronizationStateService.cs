@@ -9,23 +9,22 @@ using System.Linq;
 using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.Git.Common;
-using SyncTool.Git.FileSystem;
 using SyncTool.Synchronization.Transfer;
 
 namespace SyncTool.Git.Synchronization.Transfer
 {
     public class GitSynchronizationStateService : GitBasedService, ISynchronizationStateService
     {
-        const string s_BranchPrefix = "synchronizationState/";
+        
 
 
         public IEnumerable<ISynchronizationState> Items
         {
             get
             {
-                return GitGroup.Repository.Branches.GetLocalBranches()
-                   .Where(b => b.FriendlyName.StartsWith(s_BranchPrefix))
-                   .Select(b => new GitSynchronizationState(GitGroup.Repository, b.FriendlyName));
+                return GitGroup.Repository.Branches
+                    .GetLocalBranchesByPrefix(GitSynchronizationState.BranchNamePrefix)
+                    .Select(b => new GitSynchronizationState(GitGroup.Repository, BranchName.Parse(b.FriendlyName)));
             }
         }
 
@@ -38,7 +37,7 @@ namespace SyncTool.Git.Synchronization.Transfer
                     throw new ArgumentNullException(nameof(name));
                 }
 
-                var branchName = s_BranchPrefix + name;
+                var branchName = new BranchName(GitSynchronizationState.BranchNamePrefix, name, 0);
                 var branch = GitGroup.Repository.GetLocalBranch(branchName);
 
                 if (branch == null)
@@ -46,20 +45,20 @@ namespace SyncTool.Git.Synchronization.Transfer
                     throw new ItemNotFoundException(name);
                 }
 
-                return new GitSynchronizationState(GitGroup.Repository, branchName);
+                return new GitSynchronizationState(GitGroup.Repository, BranchName.Parse(branch.FriendlyName));
             }
             set
             {
-                var branchName = s_BranchPrefix + name;
+                var branchName = new BranchName(GitSynchronizationState.BranchNamePrefix, name, 0);
                 var branch = GitGroup.Repository.GetLocalBranch(branchName);
 
                 if (branch == null)
                 {
-                    var initialCommit = GitGroup.Repository.Lookup<Commit>(GitGroup.Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha);
+                    var initialCommit = GitGroup.Repository.Lookup<Commit>(GitGroup.Repository.GetInitialCommit().Sha);
                     branch = GitGroup.Repository.CreateBranch(branchName, initialCommit);
                 }
 
-                GitSynchronizationState.Create(GitGroup.Repository, branch.FriendlyName, value);
+                GitSynchronizationState.Create(GitGroup.Repository, BranchName.Parse(branch.FriendlyName), value);
             }
         }
      
@@ -69,6 +68,6 @@ namespace SyncTool.Git.Synchronization.Transfer
         }
 
 
-        public bool ItemExists(string name) => GitGroup.Repository.LocalBranchExists(s_BranchPrefix + name);
+        public bool ItemExists(string name) => GitGroup.Repository.LocalBranchExists(new BranchName(GitSynchronizationState.BranchNamePrefix, name, 0));
     }
 }

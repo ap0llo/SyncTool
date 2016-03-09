@@ -80,7 +80,7 @@ namespace SyncTool.Git.Configuration
             }            
 
             // add config file for the sync folder to the configuration directory
-            using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, RepositoryInitHelper.ConfigurationBranchName))
+            using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
             {
                 var syncFoldersPath = Path.Combine(workingDirectory.Location, s_SyncFolders);
 

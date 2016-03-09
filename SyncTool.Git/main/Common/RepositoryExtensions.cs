@@ -27,16 +27,29 @@ namespace SyncTool.Git.Common
             return repository.GetLocalBranches().FirstOrDefault(b => b.FriendlyName.Equals(branchName, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        public static Branch GetLocalBranch(this Repository repository, BranchName branchName)
+        {
+            return repository.GetLocalBranches().FirstOrDefault(b => b.FriendlyName.Equals(branchName.ToString(), StringComparison.InvariantCultureIgnoreCase));
+        }
+
+
         public static bool LocalBranchExists(this Repository repository, string branchName)
         {
             return repository.GetLocalBranches().Any(b => b.FriendlyName.Equals(branchName, StringComparison.InvariantCultureIgnoreCase));
         }
+
+        public static bool LocalBranchExists(this Repository repository, BranchName branchName) => repository.LocalBranchExists(branchName.ToString());
 
         public static Commit GetInitialCommit(this Repository repository)
         {
             var sha = repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
             return repository.Lookup<Commit>(sha);
         }
+
+
+        public static Branch CreateBranch(this Repository repository, BranchName branchName, Commit commit) => repository.CreateBranch(branchName.ToString(), commit);
+
+        public static Branch GetBranch(this Repository repository, BranchName branchName) => repository.Branches.FirstOrDefault(b => BranchName.Parse(b.FriendlyName).Equals(branchName));
 
     }
 }

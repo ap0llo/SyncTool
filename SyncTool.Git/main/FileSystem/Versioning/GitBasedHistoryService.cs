@@ -17,7 +17,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 {
     public sealed class GitBasedHistoryService : GitBasedService, IHistoryService
     {
-        const string s_BranchPrefix = "filesystemhistory/";
+        
 
 
 
@@ -30,15 +30,14 @@ namespace SyncTool.Git.FileSystem.Versioning
                     throw new ArgumentNullException(nameof(name));
                 }
 
-                var branchName = s_BranchPrefix + name;
-                var branch = GitGroup.Repository.GetLocalBranch(branchName);
-
-                if (branch == null)
+                var branchName = new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name, 0);
+                
+                if (!GitGroup.Repository.LocalBranchExists(branchName))
                 {
                     throw new ItemNotFoundException(name);
                 }
 
-                return new GitBasedFileSystemHistory(GitGroup.Repository, branch.FriendlyName);
+                return new GitBasedFileSystemHistory(GitGroup.Repository, name);
             }
         }
 
@@ -46,9 +45,9 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             get
             {
-                return GitGroup.Repository.Branches.GetLocalBranches()
-                 .Where(b => b.FriendlyName.StartsWith(s_BranchPrefix))
-                 .Select(b => new GitBasedFileSystemHistory(GitGroup.Repository, b.FriendlyName));
+                return GitGroup.Repository.Branches
+                    .GetLocalBranchesByPrefix(GitBasedFileSystemHistory.BranchNamePrefix)
+                    .Select(b => new GitBasedFileSystemHistory(GitGroup.Repository, BranchName.Parse(b.FriendlyName)));
             }
         }
 
@@ -61,11 +60,11 @@ namespace SyncTool.Git.FileSystem.Versioning
 
 
 
-        public bool ItemExists(string name) => GitGroup.Repository.LocalBranchExists(s_BranchPrefix + name);
+        public bool ItemExists(string name) => GitGroup.Repository.LocalBranchExists(new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name, 0));
 
         public void CreateHistory(string name)
         {
-            var branchName = s_BranchPrefix + name;
+            var branchName = new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name, 0);
 
             if (GitGroup.Repository.LocalBranchExists(branchName))
             {

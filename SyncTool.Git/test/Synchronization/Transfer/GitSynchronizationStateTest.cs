@@ -8,7 +8,6 @@ using System.Linq;
 using LibGit2Sharp;
 using SyncTool.FileSystem;
 using SyncTool.Git.Common;
-using SyncTool.Git.Synchronization.Transfer;
 using SyncTool.Synchronization.SyncActions;
 using SyncTool.TestHelpers;
 using Xunit;
@@ -20,7 +19,7 @@ namespace SyncTool.Git.Synchronization.Transfer
     /// </summary>
     public class GitSynchronizationStateTest : DirectoryBasedTest
     {
-        const string s_BranchName = "stateBranch";
+        static readonly BranchName s_BranchName = new BranchName("", "stateBranch");
         readonly Repository m_Repository;
 
         public GitSynchronizationStateTest()

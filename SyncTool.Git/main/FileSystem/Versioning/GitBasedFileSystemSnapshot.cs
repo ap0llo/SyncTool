@@ -52,13 +52,15 @@ namespace SyncTool.Git.FileSystem.Versioning
 
 
         
-        public static GitBasedFileSystemSnapshot Create(Repository repository, string branchName, IDirectory rootDirectory)
+        public static GitBasedFileSystemSnapshot Create(Repository repository, BranchName branchName, IDirectory rootDirectory)
         {
             var directoryCreator = new LocalItemCreator();
             var metaFileSystemCreator = new FileSystemToMetaFileSystemConverter();
 
+            var branch = repository.GetBranch(branchName);
+
             string commitId;
-            using (var workingRepository = new TemporaryWorkingDirectory(repository.Info.Path, branchName))
+            using (var workingRepository = new TemporaryWorkingDirectory(repository.Info.Path, branch.FriendlyName))
             {                 
                 var snapshotDirectoryPath = Path.Combine(workingRepository.Location, SnapshotDirectoryName);
                 if (NativeDirectory.Exists(snapshotDirectoryPath))
@@ -79,17 +81,15 @@ namespace SyncTool.Git.FileSystem.Versioning
                     catch (EmptyCommitException)
                     {
                         // no changes after all (HasChanges does not seem to be a 100% accurate)
-                        commitId = repository.Branches[branchName].Tip.Sha;
+                        commitId = repository.GetBranch(branchName).Tip.Sha;
                     }
                     
                 }
                 else
                 {                    
-                    commitId = repository.Branches[branchName].Tip.Sha;
+                    commitId = repository.GetBranch(branchName).Tip.Sha;
                 }
-            }
-
-            
+            }            
 
             var commit = repository.Lookup<Commit>(commitId);
             return new GitBasedFileSystemSnapshot(commit);

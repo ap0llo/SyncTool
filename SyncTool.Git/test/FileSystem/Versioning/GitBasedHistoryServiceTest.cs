@@ -7,6 +7,7 @@ using System.Linq;
 using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.FileSystem.Versioning;
+using SyncTool.Git.Common;
 using SyncTool.Git.TestHelpers;
 using Xunit;
 
@@ -124,8 +125,8 @@ namespace SyncTool.Git.FileSystem.Versioning
                 Assert.NotNull(service["ITem1"]);
 
                 // make sure the history has the name it was initially created with instead of the name it was retrieved with
-                // otherwise there might be problem with pushing changes back to the master repository
-                Assert.EndsWith("item1", service["ITem1"].Id);
+                // otherwise there might be problem with pushing changes back to the master repository                
+                Assert.Equal("item1", service["ITem1"].Name);
             }
 
 

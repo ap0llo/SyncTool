@@ -103,7 +103,7 @@ namespace SyncTool.Git.Synchronization.Transfer
         public void Indexer_Get_returns_expected_item()
         {
             var state = SynchronizationStateMockingHelper.GetSynchronizationStateMock().WithEmptyActionLists().WithIds().Object;
-            m_Service["item1"] =  state;
+            m_Service["item1"] = state;
 
             Assert.NotNull(m_Service["item1"]);
             Assert.NotNull(m_Service["ITem1"]);

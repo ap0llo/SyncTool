@@ -26,6 +26,7 @@ namespace SyncTool.Git.Common
         /// </summary>
         public bool HasChanges => m_Repository.RetrieveStatus().IsDirty;
 
+        
 
         public TemporaryWorkingDirectory(string sourceUrl, string branchName)
         {

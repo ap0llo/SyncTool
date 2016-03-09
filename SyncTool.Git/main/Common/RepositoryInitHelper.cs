@@ -14,7 +14,7 @@ namespace SyncTool.Git.Common
         
         // TODO: Move to RepositoryConstants or something similar
         public const string InitialCommitTagName = "InitialCommit";
-        public const string ConfigurationBranchName = "Configuration";
+        public static readonly BranchName ConfigurationBranchName = new BranchName("configuration");
 
 
 
@@ -54,7 +54,7 @@ namespace SyncTool.Git.Common
             //create the configuration branch pointing to the initial commit
             using (var repository = new Repository(location))
             {
-                repository.CreateBranch(ConfigurationBranchName, repository.GetAllCommits().Single());
+                repository.CreateBranch(ConfigurationBranchName.ToString(), repository.GetAllCommits().Single());
                 repository.Tags.Add(InitialCommitTagName, repository.GetAllCommits().Single());
             }
         }

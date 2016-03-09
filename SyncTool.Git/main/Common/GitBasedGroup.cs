@@ -83,7 +83,7 @@ namespace SyncTool.Git.Common
         }
 
 
-        Commit GetConfigurationCommit() => Repository.Branches[RepositoryInitHelper.ConfigurationBranchName].Tip;
+        Commit GetConfigurationCommit() => Repository.GetBranch(RepositoryInitHelper.ConfigurationBranchName).Tip;
 
         internal GitDirectory GetConfigurationRootDirectory() => new GitDirectory(null, "root", GetConfigurationCommit());
     }

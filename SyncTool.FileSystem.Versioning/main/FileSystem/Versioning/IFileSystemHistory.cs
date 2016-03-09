@@ -9,7 +9,12 @@ namespace SyncTool.FileSystem.Versioning
     public interface IFileSystemHistory
     {
         /// <summary>
-        /// The Id uniquely identifiying this history within a group of histories
+        /// The name of this history
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// The Id uniquely identifying this history within a group of histories
         /// </summary>
         string Id { get; }
 
@@ -38,7 +43,7 @@ namespace SyncTool.FileSystem.Versioning
         IFileSystemDiff GetChanges(string toId);
 
         /// <summary>
-        /// Gets all changes betweeen the specified snapshots
+        /// Gets all changes between the specified snapshots
         /// </summary>
         /// <param name="fromId">The id of the snapshot marking the start of the range</param>
         /// <param name="toId">The id of the last snapshot in the range</param>

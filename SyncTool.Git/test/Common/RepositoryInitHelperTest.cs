@@ -93,7 +93,7 @@ namespace SyncTool.Git.Common
             // assert that the configuration branch has been created and points to the inital commit
             using (var repository = new Repository(m_TemporaryDirectory.Location))
             {
-                var configurationBranch = repository.Branches[RepositoryInitHelper.ConfigurationBranchName];
+                var configurationBranch = repository.GetBranch(RepositoryInitHelper.ConfigurationBranchName);
                 Assert.NotNull(configurationBranch);
                 Assert.Single(configurationBranch.Commits);
 

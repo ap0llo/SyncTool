@@ -169,7 +169,7 @@ namespace SyncTool.Cli.Commands
         {
             if (!localHistory.Snapshots.Any())
             {
-                OutputWriter.WriteErrorLine($"No snapshots for '{localHistory.Id}' found");
+                OutputWriter.WriteErrorLine($"No snapshots for '{localHistory.Name}' found");
                 return false;
             }
             return true;

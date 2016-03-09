@@ -10,7 +10,7 @@ using System.Linq;
 namespace SyncTool.FileSystem.Versioning
 {
     /// <summary>
-    /// Implementatation of <see cref="IFileSystemDiff"/> that filters out changes if the file 
+    /// Implementation of <see cref="IFileSystemDiff"/> that filters out changes if the file 
     /// before and after the change is considered equal according to the specified equality comparer
     /// </summary>
     class FilteredFileSystemDiff : IFileSystemDiff

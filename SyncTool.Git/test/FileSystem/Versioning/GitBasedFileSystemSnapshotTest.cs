@@ -18,7 +18,7 @@ namespace SyncTool.Git.FileSystem.Versioning
     public class GitBasedFileSystemSnapshotTest : DirectoryBasedTest
     {
 
-        const string s_BranchName1 = "master";
+        
         const string s_BranchName2 = "branch/name";
 
         public GitBasedFileSystemSnapshotTest()
@@ -27,15 +27,15 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             using (var repo = new Repository(m_TempDirectory.Location))
             {
-                repo.CreateBranch(s_BranchName2, repo.Commits.Single());
+                repo.CreateBranch(new BranchName("branch", "name"), repo.Commits.Single());
             }
 
         }
 
         [Theory(DisplayName = "GitBasedFileSystemSnapshot.Create() returns a new snapshot that equals the original directory")]
-        [InlineData(s_BranchName1)]
-        [InlineData(s_BranchName2)]
-        public void Create_returns_a_new_snapshot_that_equals_the_original_directory(string branchName)
+        [InlineData("", "master")]
+        [InlineData("branch", "name")]
+        public void Create_returns_a_new_snapshot_that_equals_the_original_directory(string branchPrefix, string branchName)
         {
             var directory = new Directory(null, "root")
             {
@@ -49,7 +49,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             using (var repository = new Repository(m_TempDirectory.Location))
             {
-                var snapshot = GitBasedFileSystemSnapshot.Create(repository, branchName, directory);
+                var snapshot = GitBasedFileSystemSnapshot.Create(repository, new BranchName(branchPrefix, branchName), directory);
 
                 FileSystemAssert.DirectoryEqual(directory, snapshot.RootDirectory);
             }

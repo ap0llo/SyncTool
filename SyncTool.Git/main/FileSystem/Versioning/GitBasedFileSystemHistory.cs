@@ -17,21 +17,24 @@ namespace SyncTool.Git.FileSystem.Versioning
 {
     public class GitBasedFileSystemHistory : IFileSystemHistory
     {
+        public const string BranchNamePrefix = "filesystemHistory";
+
         readonly Repository m_Repository;
-        readonly string m_BranchName;
+        readonly BranchName m_BranchName;
         
         readonly Lazy<IDictionary<string, GitBasedFileSystemSnapshot>> m_Snapshots;
 
 
-        public string Id => m_BranchName;
+        public string Name => m_BranchName.Name;
 
-        public IFileSystemSnapshot LatestFileSystemSnapshot => Snapshots.FirstOrDefault(snapshot => snapshot.Id == m_Repository.Branches[m_BranchName].Tip.Sha);
+        public string Id => m_BranchName.ToString();
+
+        public IFileSystemSnapshot LatestFileSystemSnapshot => Snapshots.FirstOrDefault(snapshot => snapshot.Id == m_Repository.GetBranch(m_BranchName).Tip.Sha);
 
         public IEnumerable<IFileSystemSnapshot> Snapshots => m_Snapshots.Value.Values;
 
-        
 
-        public GitBasedFileSystemHistory(Repository repository, string branchName)
+        public GitBasedFileSystemHistory(Repository repository, BranchName branchName)
         {
             if (branchName == null)
             {
@@ -42,10 +45,16 @@ namespace SyncTool.Git.FileSystem.Versioning
                 throw new ArgumentNullException(nameof(repository));
             }
 
-            m_BranchName = branchName;
             m_Repository = repository;
+            var branch = repository.GetBranch(branchName);
+            m_BranchName = BranchName.Parse(branch.FriendlyName);
 
-            m_Snapshots = new Lazy<IDictionary<string, GitBasedFileSystemSnapshot>>(LoadSnapshots);            
+            m_Snapshots = new Lazy<IDictionary<string, GitBasedFileSystemSnapshot>>(LoadSnapshots);
+        }
+
+        public GitBasedFileSystemHistory(Repository repository, string historyName) : this(repository, new BranchName(BranchNamePrefix, historyName, 0))
+        {
+                 
         }
 
 
@@ -168,7 +177,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         IDictionary<string, GitBasedFileSystemSnapshot> LoadSnapshots()
         {
-            return m_Repository.Branches[m_BranchName].Commits
+            return m_Repository.GetBranch(m_BranchName).Commits
                                .Where(GitBasedFileSystemSnapshot.IsSnapshot)
                                .Select(commit => new GitBasedFileSystemSnapshot(commit))
                                .ToDictionary(snapshot => snapshot.Id, StringComparer.InvariantCultureIgnoreCase);

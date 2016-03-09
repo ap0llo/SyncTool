@@ -21,13 +21,16 @@ using NativeDirectory = System.IO.Directory;
 namespace SyncTool.Git.Synchronization.Transfer
 {
     public class GitSynchronizationState : ISynchronizationState
-    {               
+    {
+
+        public const string BranchNamePrefix = "synchronizationState";
+
         const string s_Queued = "Queued";
         const string s_InProgress = "InProgress";
         const string s_Completed = "Completed";
 
 
-        readonly string m_BranchName;
+        readonly BranchName m_BranchName;
         readonly Repository m_Repository;
         readonly SyncActionSerializer m_Serializer = new SyncActionSerializer();
 
@@ -50,7 +53,7 @@ namespace SyncTool.Git.Synchronization.Transfer
 
 
 
-        public GitSynchronizationState(Repository repository, string branchName)
+        public GitSynchronizationState(Repository repository, BranchName branchName)
         {
             if (repository == null)
             {
@@ -69,7 +72,7 @@ namespace SyncTool.Git.Synchronization.Transfer
 
             m_GitDirectory = new Lazy<GitDirectory>(() =>
             {
-                var branch = m_Repository.Branches[m_BranchName];
+                var branch = m_Repository.GetBranch(m_BranchName);
                 return new GitDirectory(null, "root", branch.Tip);
             });
 
@@ -78,12 +81,12 @@ namespace SyncTool.Git.Synchronization.Transfer
 
 
 
-        public static GitSynchronizationState Create(Repository repository, string branchName, ISynchronizationState state)
+        public static GitSynchronizationState Create(Repository repository, BranchName branchName, ISynchronizationState state)
         {
             if (state == null)
             {
                 throw new ArgumentNullException(nameof(state));
-            }
+            }            
 
             var ids = new SynchronizationStateSnapshotIds()
             {
@@ -99,7 +102,7 @@ namespace SyncTool.Git.Synchronization.Transfer
                 root => GetSyncActionDirectory(root, s_Completed, state.CompletedActions)
             };
 
-            using (var workingDirectory = new TemporaryWorkingDirectory(repository.Info.Path, branchName))
+            using (var workingDirectory = new TemporaryWorkingDirectory(repository.Info.Path, branchName.ToString()))
             {
                 var localItemCreator = new LocalItemCreator();
 
