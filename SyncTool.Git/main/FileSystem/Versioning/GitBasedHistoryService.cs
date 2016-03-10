@@ -30,7 +30,7 @@ namespace SyncTool.Git.FileSystem.Versioning
                     throw new ArgumentNullException(nameof(name));
                 }
 
-                var branchName = new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name, 0);
+                var branchName = new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name);
                 
                 if (!GitGroup.Repository.LocalBranchExists(branchName))
                 {
@@ -60,11 +60,11 @@ namespace SyncTool.Git.FileSystem.Versioning
 
 
 
-        public bool ItemExists(string name) => GitGroup.Repository.LocalBranchExists(new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name, 0));
+        public bool ItemExists(string name) => GitGroup.Repository.LocalBranchExists(new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name));
 
         public void CreateHistory(string name)
         {
-            var branchName = new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name, 0);
+            var branchName = new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name);
 
             if (GitGroup.Repository.LocalBranchExists(branchName))
             {
