@@ -1,8 +1,7 @@
-﻿// // -----------------------------------------------------------------------------------------------------------
-// //  Copyright (c) 2015, Andreas Grünwald
-// //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
-// // -----------------------------------------------------------------------------------------------------------
-
+﻿// -----------------------------------------------------------------------------------------------------------
+//  Copyright (c) 2015-2016, Andreas Grünwald
+//  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
+// -----------------------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +18,16 @@ namespace SyncTool.FileSystem.Versioning
         readonly IEqualityComparer<IFile> m_FileComparer;
 
 
+
+        public IFileSystemHistory History => m_WrappedDiff.History;
+
+        public IFileSystemSnapshot FromSnapshot => m_WrappedDiff.FromSnapshot;
+
+        public IFileSystemSnapshot ToSnapshot => m_WrappedDiff.ToSnapshot;
+
+        public IEnumerable<IChange> Changes => FilterChanges(m_WrappedDiff.Changes);
+
+
         public FilteredFileSystemDiff(IFileSystemDiff wrappedDiff, IEqualityComparer<IFile> fileComparer)
         {
             if (wrappedDiff == null)
@@ -32,13 +41,6 @@ namespace SyncTool.FileSystem.Versioning
             m_WrappedDiff = wrappedDiff;
             m_FileComparer = fileComparer;
         }
-
-
-        public IFileSystemSnapshot FromSnapshot => m_WrappedDiff.FromSnapshot;
-
-        public IFileSystemSnapshot ToSnapshot => m_WrappedDiff.ToSnapshot;
-
-        public IEnumerable<IChange> Changes => FilterChanges(m_WrappedDiff.Changes);
 
 
         IEnumerable<IChange> FilterChanges(IEnumerable<IChange> changes)
