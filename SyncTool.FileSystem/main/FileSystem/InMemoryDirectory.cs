@@ -9,6 +9,9 @@ using System.Linq;
 
 namespace SyncTool.FileSystem
 {
+    /// <summary>
+    /// Base class for implementations of <see cref="IDirectory"/> that hold data in memory
+    /// </summary>
     public abstract class InMemoryDirectory : AbstractDirectory
     {
         readonly IDictionary<string, IDirectory> m_Directories;
@@ -37,6 +40,9 @@ namespace SyncTool.FileSystem
 
         protected override IDirectory GetDirectoryByName(string name) => m_Directories[name];
     
+        /// <summary>
+        /// Adds a directory
+        /// </summary>
         protected IDirectory Add(Func<IDirectory, IDirectory> createDirectory)
         {
             var directory = createDirectory(this);            
@@ -44,6 +50,9 @@ namespace SyncTool.FileSystem
             return directory;
         }
 
+        /// <summary>
+        /// Adds a file to the directory
+        /// </summary>
         protected IFile Add(Func<IDirectory, IFile> createFile)
         {
             var file = createFile(this);
@@ -51,7 +60,9 @@ namespace SyncTool.FileSystem
             return file;
         }
         
-
+        /// <summary>
+        /// Removes the file with the specified name from the directory 
+        /// </summary>        
         protected void RemoveFileByName(string name)
         {
             m_Files.Remove(name);

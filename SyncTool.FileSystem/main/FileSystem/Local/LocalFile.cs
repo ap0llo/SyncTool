@@ -7,7 +7,7 @@ using System.IO;
 
 namespace SyncTool.FileSystem.Local
 {
-    public class LocalFile : FileSystemItem, IReadableFile, ILocalFile
+    internal class LocalFile : FileSystemItem, IReadableFile, ILocalFile
     {
         readonly FileInfo m_FileInfo;
 
@@ -47,7 +47,5 @@ namespace SyncTool.FileSystem.Local
         {
             return new LocalFile(newParent, this.m_FileInfo);
         }
-
-
     }
 }

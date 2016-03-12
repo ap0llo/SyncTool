@@ -6,8 +6,7 @@ using System;
 using System.IO;
 
 namespace SyncTool.FileSystem.Local
-{
-    //TODO: Rename to something without visitor in name (that's an implementation detail)
+{   
     public class LocalItemCreator : BaseVisitor<string>
     {
 
@@ -41,8 +40,7 @@ namespace SyncTool.FileSystem.Local
             VisitDynamic(toCreate, createIn);
             return new LocalFile(null, Path.Combine(createIn, toCreate.Name));
         }
-
-
+        
         public void Visit(IFile file, string parentPath)
         {
             using (System.IO.File.Create(Path.Combine(parentPath, file.Name)))

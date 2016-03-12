@@ -37,7 +37,7 @@
     <Compile Include="FileSystem\Filtering\IFileSystemFilter.cs" />
     <Compile Include="FileSystem\InMemoryDirectory.cs" />
     <Compile Include="FileSystem\DataFile.cs" />
-    <Compile Include="FileSystem\Local\CreateLocalDirectoryVisitorExtensions.cs" />
+    <Compile Include="FileSystem\Local\LocalItemCreatorExtensions.cs" />
     <Compile Include="FileSystem\EmptyFile.cs" />
     <Compile Include="FileSystem\Local\LocalDirectoryExtensions.cs" />
     <Compile Include="FileSystem\Local\ILocalFile.cs" />
