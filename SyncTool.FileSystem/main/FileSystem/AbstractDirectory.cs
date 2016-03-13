@@ -2,18 +2,19 @@
 //  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace SyncTool.FileSystem
 {
+    /// <summary>
+    /// Base class for implementations of <see cref="IDirectory"/>
+    /// </summary>
     public abstract class AbstractDirectory : FileSystemItem, IDirectory
     {
-        
         public abstract IEnumerable<IDirectory> Directories { get; }
 
         public abstract IEnumerable<IFile> Files { get; }
@@ -88,7 +89,7 @@ namespace SyncTool.FileSystem
             else
             {
                 return file;
-            }
+        }
         }
 
 
@@ -162,9 +163,9 @@ namespace SyncTool.FileSystem
         protected abstract IDirectory GetDirectoryByName(string name);
         
 
-    
+                       
 
-        private void ParsePath(string path, out string localName, out string remainingPath)
+        void ParsePath(string path, out string localName, out string remainingPath)
         {
             if (path.Contains(Constants.DirectorySeparatorChar))
             {

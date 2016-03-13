@@ -37,7 +37,7 @@ namespace SyncTool.Git.Synchronization.Transfer
                     throw new ArgumentNullException(nameof(name));
                 }
 
-                var branchName = new BranchName(GitSynchronizationState.BranchNamePrefix, name, 0);
+                var branchName = new BranchName(GitSynchronizationState.BranchNamePrefix, name);
                 var branch = GitGroup.Repository.GetLocalBranch(branchName);
 
                 if (branch == null)
@@ -49,7 +49,7 @@ namespace SyncTool.Git.Synchronization.Transfer
             }
             set
             {
-                var branchName = new BranchName(GitSynchronizationState.BranchNamePrefix, name, 0);
+                var branchName = new BranchName(GitSynchronizationState.BranchNamePrefix, name);
                 var branch = GitGroup.Repository.GetLocalBranch(branchName);
 
                 if (branch == null)
@@ -68,6 +68,6 @@ namespace SyncTool.Git.Synchronization.Transfer
         }
 
 
-        public bool ItemExists(string name) => GitGroup.Repository.LocalBranchExists(new BranchName(GitSynchronizationState.BranchNamePrefix, name, 0));
+        public bool ItemExists(string name) => GitGroup.Repository.LocalBranchExists(new BranchName(GitSynchronizationState.BranchNamePrefix, name));
     }
 }

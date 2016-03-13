@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
@@ -52,7 +52,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             m_Snapshots = new Lazy<IDictionary<string, GitBasedFileSystemSnapshot>>(LoadSnapshots);
         }
 
-        public GitBasedFileSystemHistory(Repository repository, string historyName) : this(repository, new BranchName(BranchNamePrefix, historyName, 0))
+        public GitBasedFileSystemHistory(Repository repository, string historyName) : this(repository, new BranchName(BranchNamePrefix, historyName))
         {
                  
         }
@@ -62,7 +62,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             var snapshots = m_Snapshots.Value;
 
-            var snapshot = GitBasedFileSystemSnapshot.Create(m_Repository, m_BranchName, fileSystemState);
+            var snapshot = GitBasedFileSystemSnapshot.Create(m_Repository, m_BranchName, this, fileSystemState);
 
             if (!snapshots.ContainsKey(snapshot.Id))
             {
@@ -116,7 +116,7 @@ namespace SyncTool.Git.FileSystem.Versioning
                 .ToList();
 
 
-            return new FileSystemDiff(toSnapshot, changes);
+            return new FileSystemDiff(this, toSnapshot, changes);
         }
 
         public IFileSystemDiff GetChanges(string fromId, string toId)
@@ -171,7 +171,7 @@ namespace SyncTool.Git.FileSystem.Versioning
                 .Select(change => change.Value)
                 .ToList();            
 
-            return new FileSystemDiff(fromSnapshot, toSnapshot, changes);
+            return new FileSystemDiff(this, fromSnapshot, toSnapshot, changes);
         }
 
 
@@ -179,7 +179,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             return m_Repository.GetBranch(m_BranchName).Commits
                                .Where(GitBasedFileSystemSnapshot.IsSnapshot)
-                               .Select(commit => new GitBasedFileSystemSnapshot(commit))
+                               .Select(commit => new GitBasedFileSystemSnapshot(this, commit))
                                .ToDictionary(snapshot => snapshot.Id, StringComparer.InvariantCultureIgnoreCase);
         }
 

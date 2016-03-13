@@ -38,7 +38,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
 
             m_Repository = new Repository(m_TempDirectory.Location);
-            var branchName = new BranchName("", "branch1", 0);
+            var branchName = new BranchName("", "branch1");
             m_Repository.CreateBranch(branchName, m_Repository.GetAllCommits().Single());
 
             m_Instance = new GitBasedFileSystemHistory(m_Repository, branchName);

@@ -12,8 +12,7 @@ namespace SyncTool.Git.Common
 {
     public sealed class BranchName : IEquatable<BranchName>
     {
-        static readonly Regex s_VersionRegex = new Regex("^v[0-9]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-
+        
 
         public static readonly BranchName Master = new BranchName("master");
 
@@ -21,35 +20,23 @@ namespace SyncTool.Git.Common
         public string Prefix { get; }
 
         public string Name { get; }
+        
 
-        public int Version { get; }
-
-
-        public BranchName(string name) : this("", name, 0)
+        public BranchName(string name) : this("", name)
         {
             
         }
+        
 
-        public BranchName(string prefix, string name) : this(prefix, name, 0)
-        {
-
-        }
-
-        public BranchName(string prefix, string name, int version)
+        public BranchName(string prefix, string name)
         {
             if (String.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentException("Name must not be empty", nameof(name));
-            }
-
-            if (s_VersionRegex.IsMatch(name))
-            {
-                throw new ArgumentException($"'{name}' cannot be used as name because it could conflict with a version name", nameof(name));
-            }
+            }            
 
             Prefix = prefix?.Trim() ?? "";
             Name = name.Trim();
-            Version = version;
         }
 
 
@@ -64,10 +51,7 @@ namespace SyncTool.Git.Common
                 stringBuilder.Append("/");
             }
 
-            stringBuilder.Append(Name);
-
-            stringBuilder.Append("/v");
-            stringBuilder.Append(Version);
+            stringBuilder.Append(Name);        
             return stringBuilder.ToString();
         }
 
@@ -93,34 +77,11 @@ namespace SyncTool.Git.Common
                     throw new InvalidOperationException();
 
                 case 1:
-                    if (s_VersionRegex.IsMatch(fragments.Single()))
-                    {
-                        throw new FormatException($"Invalid branch name '{name}'. Name is missing");
-                    }
-                    else
-                    {
-                        throw new FormatException($"Invalid branch name '{name}'. Version is missing");
-                    }
+                    return new BranchName(fragments[0]);
 
-                case 2:
-                    if (!s_VersionRegex.IsMatch(fragments.Last()))
-                    {
-                        throw new FormatException($"Invalid branch name '{name}'. Version is missing");
-                    }
-                    else
-                    {
-                        return new BranchName("", fragments.First(), int.Parse(fragments.Last().Substring(1)));
-                    }
-
-                default:
-                    if (!s_VersionRegex.IsMatch(fragments.Last()))
-                    {
-                        throw new FormatException($"Invalid branch name '{name}'. Version is missing");
-                    }
-                    else
-                    {
-                        return new BranchName(fragments.Take(fragments.Length - 2).Aggregate((a, b) => $"{a}/{b}"), fragments.Skip(fragments.Length - 2).First(), int.Parse(fragments.Last().Substring(1)));
-                    }
+                default:                                   
+                    return new BranchName(fragments.Take(fragments.Length - 1).Aggregate((a, b) => $"{a}/{b}") , fragments.Last());
+                    
             }
         }
 
@@ -130,8 +91,7 @@ namespace SyncTool.Git.Common
         {
             return other != null &&
                    StringComparer.InvariantCultureIgnoreCase.Equals(Name, other.Name) &&
-                   StringComparer.InvariantCultureIgnoreCase.Equals(Prefix, other.Prefix) &&
-                   Version == other.Version;
+                   StringComparer.InvariantCultureIgnoreCase.Equals(Prefix, other.Prefix);
         }
 
 
@@ -140,8 +100,7 @@ namespace SyncTool.Git.Common
         public override int GetHashCode()
         {          
             var hashCode = (Prefix != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(Prefix) : 0);
-            hashCode = (hashCode * 397) ^ StringComparer.InvariantCultureIgnoreCase.GetHashCode(Name);
-            hashCode = (hashCode * 397) ^ Version;
+            hashCode = (hashCode * 397) ^ StringComparer.InvariantCultureIgnoreCase.GetHashCode(Name);           
             return hashCode;            
         }       
     }

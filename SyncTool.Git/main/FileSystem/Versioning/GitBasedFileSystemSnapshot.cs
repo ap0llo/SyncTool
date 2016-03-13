@@ -1,8 +1,7 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
-
 using System;
 using System.IO;
 using LibGit2Sharp;
@@ -28,6 +27,8 @@ namespace SyncTool.Git.FileSystem.Versioning
         IDirectory m_MetaFileSystem;
 
 
+        public IFileSystemHistory History { get; }
+
         public string Id => m_Commit.Sha;
 
         public DateTime CreationTime => m_Commit.Author.When.DateTime;
@@ -38,12 +39,18 @@ namespace SyncTool.Git.FileSystem.Versioning
 
 
 
-        public GitBasedFileSystemSnapshot(Commit commit)
+        public GitBasedFileSystemSnapshot(IFileSystemHistory history, Commit commit)
         {
+            if (history == null)
+            {
+                throw new ArgumentNullException(nameof(history));
+            }
             if (commit == null)
             {
                 throw new ArgumentNullException(nameof(commit));
             }
+
+            History = history;
             m_Commit = commit;
             LoadSnapshot();
            
@@ -52,7 +59,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
 
         
-        public static GitBasedFileSystemSnapshot Create(Repository repository, BranchName branchName, IDirectory rootDirectory)
+        public static GitBasedFileSystemSnapshot Create(Repository repository, BranchName branchName, IFileSystemHistory history, IDirectory rootDirectory)
         {
             var directoryCreator = new LocalItemCreator();
             var metaFileSystemCreator = new FileSystemToMetaFileSystemConverter();
@@ -92,7 +99,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             }            
 
             var commit = repository.Lookup<Commit>(commitId);
-            return new GitBasedFileSystemSnapshot(commit);
+            return new GitBasedFileSystemSnapshot(history, commit);
             
        }
 

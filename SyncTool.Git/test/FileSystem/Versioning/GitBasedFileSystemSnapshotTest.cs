@@ -1,11 +1,13 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System;
 using System.Linq;
 using LibGit2Sharp;
+using Moq;
 using SyncTool.FileSystem;
+using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
 using SyncTool.TestHelpers;
 using Xunit;
@@ -17,10 +19,7 @@ namespace SyncTool.Git.FileSystem.Versioning
     /// </summary>
     public class GitBasedFileSystemSnapshotTest : DirectoryBasedTest
     {
-
-        
-        const string s_BranchName2 = "branch/name";
-
+               
         public GitBasedFileSystemSnapshotTest()
         {
             RepositoryInitHelper.InitializeRepository(m_TempDirectory.Location);
@@ -47,9 +46,11 @@ namespace SyncTool.Git.FileSystem.Versioning
                 }
             };
 
+            
+
             using (var repository = new Repository(m_TempDirectory.Location))
             {
-                var snapshot = GitBasedFileSystemSnapshot.Create(repository, new BranchName(branchPrefix, branchName), directory);
+                var snapshot = GitBasedFileSystemSnapshot.Create(repository, new BranchName(branchPrefix, branchName), new Mock<IFileSystemHistory>().Object, directory);
 
                 FileSystemAssert.DirectoryEqual(directory, snapshot.RootDirectory);
             }

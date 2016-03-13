@@ -20,7 +20,6 @@ namespace SyncTool.FileSystem.Local
         readonly CachingObjectMapper<FileInfo, LocalFile> m_FileMapper;
 
 
-
         public string Location => m_DirectoryInfo.FullName;
 
         public override IEnumerable<IDirectory> Directories
@@ -50,7 +49,7 @@ namespace SyncTool.FileSystem.Local
         {
         }
 
-        public LocalDirectory(IDirectory parent, DirectoryInfo directoryInfo) : base(parent, directoryInfo.Name)
+        private LocalDirectory(IDirectory parent, DirectoryInfo directoryInfo) : base(parent, directoryInfo.Name)
         {
             if (directoryInfo == null)
             {
@@ -86,17 +85,20 @@ namespace SyncTool.FileSystem.Local
             var dirInfo = m_DirectoryInfo.GetDirectories().Single(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
             return m_DirectoryMapper.MapObject(dirInfo);
         }
+   
+
+        public void Dispose()
+        {
+            m_DirectoryMapper.Dispose();
+            m_FileMapper.Dispose();
+        }
 
 
-
-      
-
-
-        private class  NameOnlyFileSystemInfoEqualityComparer : IEqualityComparer<FileSystemInfo>
+        class NameOnlyFileSystemInfoEqualityComparer : IEqualityComparer<FileSystemInfo>
         {
             public bool Equals(FileSystemInfo x, FileSystemInfo y)
             {
-                if (object.ReferenceEquals(x, y))
+                if (ReferenceEquals(x, y))
                 {
                     return true;
                 }
@@ -115,10 +117,5 @@ namespace SyncTool.FileSystem.Local
             }
         }
 
-        public void Dispose()
-        {
-            m_DirectoryMapper.Dispose();
-            m_FileMapper.Dispose();
-        }
     }
 }
