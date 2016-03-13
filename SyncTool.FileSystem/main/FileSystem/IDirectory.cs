@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System;
@@ -19,6 +19,8 @@ namespace SyncTool.FileSystem
         IDirectory GetDirectory(string path);
 
         IFile GetFile(string path);
+
+        IFile GetFile(IFileReference reference);
 
         bool FileExists(string path);
 

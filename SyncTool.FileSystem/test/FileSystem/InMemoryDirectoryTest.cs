@@ -1,11 +1,12 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using Xunit;
@@ -47,7 +48,13 @@ namespace SyncTool.FileSystem
         [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() throws ArgumentNullException if path is null")]
         public void GetFile_throws_ArgumentNullException_if_path_is_null()
         {
-            Assert.Throws<ArgumentNullException>(() => m_Root.GetFile(null));
+            Assert.Throws<ArgumentNullException>(() => m_Root.GetFile((string) null));
+        }
+
+        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() throws ArgumentNullException if reference is null")]
+        public void GetFile_throws_ArgumentNullException_if_reference_is_null()
+        {
+            Assert.Throws<ArgumentNullException>(() => m_Root.GetFile((IFileReference)null));
         }
 
         [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() throws FormatException if path is empty or whitespace")]
@@ -55,7 +62,7 @@ namespace SyncTool.FileSystem
         {
             Assert.Throws<FormatException>(() => m_Root.GetFile(""));
             Assert.Throws<FormatException>(() => m_Root.GetFile("  "));
-        }
+        } 
 
         [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() throws FormatException if path contains a backslash")]
         public void GetFile_throws_FormatException_if_path_contains_a_backslash()
@@ -87,6 +94,7 @@ namespace SyncTool.FileSystem
 
             Assert.Equal(expected, actual);
         }
+       
 
         [Fact(DisplayName= nameof(InMemoryDirectory) + ".GetFile() returns children down in the hierarchy")]
         public void GetFile_returns_children_down_in_the_hierarchy()
@@ -95,6 +103,30 @@ namespace SyncTool.FileSystem
             var actual = m_Root.GetFile("dir1/file1");
 
             Assert.Equal(expected, actual);
+        }
+
+        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() using reference returns children down in the hierarchy")]
+        public void GetFile_using_reference_returns_children_down_in_the_hierarchy()
+        {
+            var expected = m_File1;
+            var actual = m_Root.GetFile(new FileReference(m_File1.Path, m_File1.LastWriteTime, m_File1.Length));
+
+            Assert.Equal(expected, actual);
+        }
+
+
+        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() using reference throws " + nameof(FileNotFoundException) + " if the LastWriteTime from the reference does not match")]
+        public void GetFile_using_reference_throws_FileNotFoundException_if_the_LastWriteTime_from_the_reference_does_not_match()
+        {
+            var reference = new FileReference(m_File1.Path, m_File1.LastWriteTime.AddMinutes(1), m_File1.Length);
+            Assert.Throws<FileNotFoundException>(() => m_Root.GetFile(reference));
+        }
+
+        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() using reference throws " + nameof(FileNotFoundException) + " if the Length from the reference does not match")]
+        public void GetFile_using_reference_throws_FileNotFoundException_if_the_Length_from_the_reference_does_not_match()
+        {
+            var reference = new FileReference(m_File1.Path, m_File1.LastWriteTime, m_File1.Length + 2);
+            Assert.Throws<FileNotFoundException>(() => m_Root.GetFile(reference));
         }
 
 

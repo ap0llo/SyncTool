@@ -1,11 +1,13 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace SyncTool.FileSystem
 {
@@ -36,7 +38,7 @@ namespace SyncTool.FileSystem
 
         public virtual IDirectory GetDirectory(string path)
         {
-            EnsurePathIsValid(path);
+            PathValidator.EnsurePathIsValid(path);
             string localName;
             string remainingPath;
             ParsePath(path, out localName, out remainingPath);
@@ -53,7 +55,7 @@ namespace SyncTool.FileSystem
 
         public virtual IFile GetFile(string path)
         {
-            EnsurePathIsValid(path);
+            PathValidator.EnsurePathIsValid(path);
 
             string localName;
             string remainingPath;            
@@ -69,10 +71,30 @@ namespace SyncTool.FileSystem
             }
         }
 
+        public virtual IFile GetFile(IFileReference reference)
+        {
+            if (reference == null)
+            {
+                throw new ArgumentNullException(nameof(reference));
+            }
+
+            // first get file by path
+            var file = GetFile(reference.Path);
+
+            if (!reference.Matches(file))
+            {
+                throw new FileNotFoundException("A file at the specified path was found, but does not match ther reference");
+            }
+            else
+            {
+                return file;
+            }
+        }
+
 
         public virtual bool FileExists(string path)
         {
-            EnsurePathIsValid(path);
+            PathValidator.EnsurePathIsValid(path);
 
             string localName;
             string remainingPath;
@@ -101,7 +123,7 @@ namespace SyncTool.FileSystem
 
         public virtual bool DirectoryExists(string path)
         {
-            EnsurePathIsValid(path);
+            PathValidator.EnsurePathIsValid(path);
 
             string localName;
             string remainingPath;
@@ -140,39 +162,7 @@ namespace SyncTool.FileSystem
         protected abstract IDirectory GetDirectoryByName(string name);
         
 
-        private void EnsurePathIsValid(string path)
-        {
-            // path must not be null
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-
-            // path must not be empty or whitespace
-            if (String.IsNullOrWhiteSpace(path))
-            {
-                throw new FormatException($"'{nameof(path)}' must not be null or empty");
-            }
-
-            // path must not start with a slash
-            if (path[0] == Constants.DirectorySeparatorChar)
-            {
-                throw new FormatException($"'{nameof(path)}' must not start with '{Constants.DirectorySeparatorChar}'");
-            }
-
-            // path must not end with a slash
-            if (path[path.Length - 1] == Constants.DirectorySeparatorChar)
-            {
-                throw new FormatException($"'{nameof(path)}' must not end with '{Constants.DirectorySeparatorChar}'");
-            }
-
-            // path must not contain any forbidden characters
-            if (Constants.InvalidPathCharacters.Any(path.Contains))
-            {
-                throw new FormatException("The path contains invalid characters");
-            }
-                       
-        }
+    
 
         private void ParsePath(string path, out string localName, out string remainingPath)
         {

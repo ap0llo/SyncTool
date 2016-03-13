@@ -18,10 +18,7 @@ namespace SyncTool.FileSystem
 
         public FileReference(string path, DateTime? lastWriteTime = null, long? length = null)
         {
-            if (String.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException("Value must not be null or empty", nameof(path));
-            }
+            PathValidator.EnsurePathIsValid(path);
 
             Path = path;
             LastWriteTime = lastWriteTime;
