@@ -72,7 +72,7 @@ namespace SyncTool.FileSystem
             }
         }
 
-        public virtual IFile GetFile(IFileReference reference)
+        public IFile GetFile(IFileReference reference)
         {
             if (reference == null)
             {
@@ -108,6 +108,24 @@ namespace SyncTool.FileSystem
             else if(DirectoryExistsByName(localName))
             {
                 return GetDirectoryByName(localName).FileExists(remainingPath);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool FileExists(IFileReference reference)
+        {
+            if (reference == null)
+            {
+                throw new ArgumentNullException(nameof(reference));
+            }
+
+            if (FileExists(reference.Path))
+            {
+                var file = GetFile(reference.Path);
+                return reference.Matches(file);
             }
             else
             {

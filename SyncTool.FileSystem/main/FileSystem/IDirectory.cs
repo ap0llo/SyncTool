@@ -24,6 +24,8 @@ namespace SyncTool.FileSystem
 
         bool FileExists(string path);
 
+        bool FileExists(IFileReference reference);
+
         bool DirectoryExists(string path);
 
     }

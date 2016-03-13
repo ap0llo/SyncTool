@@ -72,6 +72,8 @@ namespace SyncTool.FileSystem
 
         public bool FileExists(string path) => false;
 
+        public bool FileExists(IFileReference reference) => false;
+
         public bool DirectoryExists(string path) => false;
         
     }
