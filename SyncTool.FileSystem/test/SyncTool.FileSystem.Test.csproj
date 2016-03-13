@@ -47,6 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileSystem\FileReferenceExtensionsTest.cs" />
     <Compile Include="FileSystem\Filtering\FilteringConverterTest.cs" />
     <Compile Include="FileSystem\InMemoryDirectoryTest.cs" />
     <Compile Include="FileSystem\Local\LocalItemCreatorTest.cs" />
