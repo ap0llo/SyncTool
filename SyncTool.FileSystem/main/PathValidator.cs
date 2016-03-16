@@ -6,12 +6,27 @@
 using System;
 using System.Linq;
 using SyncTool.FileSystem;
+using SyncTool.Common;
 
 namespace SyncTool
 {
     internal static class PathValidator
     {
-        internal static void EnsurePathIsValid(string path)
+
+        public static void EnsureIsValidDirectoryPath(string path) => EnsureIsValidPath(path);
+
+        public static void EnsureIsValidFilePath(string path)
+        {
+            EnsureIsValidPath(path);
+
+            // "/" is allowed for directory paths, but not for file paths
+            if(path.TrimStart(Constants.DirectorySeparatorChar) == "")
+            {
+                throw new FormatException($"'{path}' is not a valid file path");
+            }
+        }
+
+        private static void EnsureIsValidPath(string path)
         {
             // path must not be null
             if (path == null)
@@ -25,14 +40,8 @@ namespace SyncTool
                 throw new FormatException($"'{nameof(path)}' must not be null or empty");
             }
 
-            // path must not start with a slash
-            if (path[0] == Constants.DirectorySeparatorChar)
-            {
-                throw new FormatException($"'{nameof(path)}' must not start with '{Constants.DirectorySeparatorChar}'");
-            }
-
-            // path must not end with a slash
-            if (path[path.Length - 1] == Constants.DirectorySeparatorChar)
+            // path must not end with a slash (but may start with one)
+            if (path.TrimStart(Constants.DirectorySeparatorChar) != "" && path.EndsWith(Constants.DirectorySeparatorChar))
             {
                 throw new FormatException($"'{nameof(path)}' must not end with '{Constants.DirectorySeparatorChar}'");
             }
@@ -44,5 +53,8 @@ namespace SyncTool
             }
 
         }
+
+
+
     }
 }

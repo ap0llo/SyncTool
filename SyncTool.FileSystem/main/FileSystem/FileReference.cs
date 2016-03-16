@@ -18,7 +18,7 @@ namespace SyncTool.FileSystem
 
         public FileReference(string path, DateTime? lastWriteTime = null, long? length = null)
         {
-            PathValidator.EnsurePathIsValid(path);
+            PathValidator.EnsureIsValidFilePath(path);
 
             Path = path;
             LastWriteTime = lastWriteTime;

@@ -1,6 +1,9 @@
-﻿using System.IO;
-using System.Security.Cryptography;
-using System.Text;
+﻿// -----------------------------------------------------------------------------------------------------------
+//  Copyright (c) 2015-2016, Andreas Grünwald
+//  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
+// -----------------------------------------------------------------------------------------------------------
+using System;
+using System.IO;
 
 namespace SyncTool.Common
 {
@@ -19,5 +22,25 @@ namespace SyncTool.Common
             return stream;
         }
 
+
+        public static bool StartsWith(this string str, char c)
+        {
+            if (str == null)
+            {
+                throw new ArgumentNullException(nameof(str));
+            }
+
+            return str.Length > 0 && str[0] == c;
+        }
+
+        public static bool EndsWith(this string str, char c)
+        {
+            if (str == null)
+            {
+                throw new ArgumentNullException(nameof(str));
+            }
+
+            return str.Length > 0 && str[str.Length - 1] == c;
+        }
     }
 }
