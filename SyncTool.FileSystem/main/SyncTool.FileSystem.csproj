@@ -60,6 +60,7 @@
     <Compile Include="FileSystem\SerializationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="docs\Directory.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

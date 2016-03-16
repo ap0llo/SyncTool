@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SyncTool.FileSystem.AbstractDirectory">
+    <Position X="3.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAEAAAgAAASAAADAAAAABQAAAAAAAAEAAEAAAAEIA=</HashCode>
+      <FileName>FileSystem\AbstractDirectory.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SyncTool.FileSystem.InMemoryDirectory">
+    <Position X="7.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIQEAAAgAAACAAAAAAAAAAQAAABAAAAAAAAAAAAEIA=</HashCode>
+      <FileName>FileSystem\InMemoryDirectory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SyncTool.FileSystem.Directory">
+    <Position X="10.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAABAAAAAAAAAAAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>FileSystem\Directory.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SyncTool.FileSystem.Local.LocalDirectory">
+    <Position X="1" Y="3.25" Width="1.5" />
+    <NestedTypes>
+      <Class Name="SyncTool.FileSystem.Local.LocalDirectory.NameOnlyFileSystemInfoEqualityComparer" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FileSystem\Local\LocalDirectory.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAwCAACAAAAAIAAAAQAAAAAAAAAAAIAAAAkIA=</HashCode>
+      <FileName>FileSystem\Local\LocalDirectory.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

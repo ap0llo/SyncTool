@@ -37,40 +37,9 @@ namespace SyncTool.FileSystem
         }
 
 
-        public virtual IDirectory GetDirectory(string path)
-        {
-            PathValidator.EnsurePathIsValid(path);
-            string localName;
-            string remainingPath;
-            ParsePath(path, out localName, out remainingPath);
+        public virtual IDirectory GetDirectory(string path) => GetFileSystemItem(path, GetDirectoryByName, (dir, relativePath) => dir.GetDirectory(relativePath));
 
-            if (remainingPath == "")
-            {
-                return GetDirectoryByName(localName);
-            }
-            else
-            {
-                return GetDirectoryByName(localName).GetDirectory(remainingPath);
-            }
-        }
-
-        public virtual IFile GetFile(string path)
-        {
-            PathValidator.EnsurePathIsValid(path);
-
-            string localName;
-            string remainingPath;            
-            ParsePath(path, out localName, out remainingPath);       
-            
-            if(remainingPath == "")
-            {
-                return GetFileByName(localName);
-            }
-            else
-            {
-                return GetDirectoryByName(localName).GetFile(remainingPath);
-            }
-        }
+        public virtual IFile GetFile(string path) => GetFileSystemItem(path, GetFileByName, (dir, relativePath) => dir.GetFile(relativePath));
 
         public IFile GetFile(IFileReference reference)
         {
@@ -95,24 +64,7 @@ namespace SyncTool.FileSystem
 
         public virtual bool FileExists(string path)
         {
-            PathValidator.EnsurePathIsValid(path);
-
-            string localName;
-            string remainingPath;
-            ParsePath(path, out localName, out remainingPath);
-
-            if (remainingPath == "")
-            {
-                return FileExistsByName(localName);
-            }
-            else if(DirectoryExistsByName(localName))
-            {
-                return GetDirectoryByName(localName).FileExists(remainingPath);
-            }
-            else
-            {
-                return false;
-            }
+            return FileSystemItemExists<IFile>(path, FileExistsByName, (dir, relativePath) => dir.FileExists(relativePath));
         }
 
         public bool FileExists(IFileReference reference)
@@ -142,24 +94,7 @@ namespace SyncTool.FileSystem
 
         public virtual bool DirectoryExists(string path)
         {
-            PathValidator.EnsurePathIsValid(path);
-
-            string localName;
-            string remainingPath;
-            ParsePath(path, out localName, out remainingPath);
-
-            if (remainingPath == "")
-            {
-                return DirectoryExistsByName(localName);                
-            }
-            else if (DirectoryExistsByName(localName))
-            {
-                return GetDirectoryByName(localName).DirectoryExists(remainingPath);
-            }
-            else
-            {
-                return false;
-            }
+            return FileSystemItemExists<IDirectory>(path, DirectoryExistsByName, (dir, relativePath) => dir.DirectoryExists(relativePath));
         }
 
         /// <summary>
@@ -183,13 +118,17 @@ namespace SyncTool.FileSystem
 
                        
 
-        void ParsePath(string path, out string localName, out string remainingPath)
-        {
+        void ParseRelativePath(string path, out string localName, out string remainingPath)
+        {        
             if (path.Contains(Constants.DirectorySeparatorChar))
             {
+                
+                // remove the first name from the path (that's the name of this directory's child directory -> 'localName')
                 var splitIndex = path.IndexOf(Constants.DirectorySeparatorChar);
                 localName = path.Substring(0, splitIndex);
-                remainingPath = path.Substring(splitIndex + 1);
+
+                // remainingPath is the path relative to the child director
+                remainingPath = path.Substring(splitIndex + 1);                
             }
             else
             {
@@ -198,7 +137,47 @@ namespace SyncTool.FileSystem
             }
         }
 
-        
-        
+
+
+        private T GetFileSystemItem<T>(string path, Func<string, T> getFileSystemItemByNameFunction, Func<IDirectory, string, T> getFileSystemItemFunction)
+        {
+            PathValidator.EnsurePathIsValid(path);
+
+            string localName;
+            string remainingPath;
+            ParseRelativePath(path, out localName, out remainingPath);
+
+            if (remainingPath == "")
+            {
+                return getFileSystemItemByNameFunction.Invoke(localName);
+            }
+            else
+            {
+                return getFileSystemItemFunction.Invoke(GetDirectoryByName(localName), remainingPath);
+            }
+        }
+
+        public virtual bool FileSystemItemExists<T>(string path, Func<string, bool> existsByNameFunction, Func<IDirectory, string, bool> existsFunction)
+        {
+            PathValidator.EnsurePathIsValid(path);
+
+            string localName;
+            string remainingPath;
+            ParseRelativePath(path, out localName, out remainingPath);
+
+            if (remainingPath == "")
+            {
+                return existsByNameFunction.Invoke(localName);
+            }
+            else if (DirectoryExistsByName(localName))
+            {
+                return existsFunction(GetDirectoryByName(localName), remainingPath);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
     }
 }
