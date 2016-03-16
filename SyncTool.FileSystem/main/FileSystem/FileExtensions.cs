@@ -22,5 +22,14 @@ namespace SyncTool.FileSystem
         {
             return file.GetExtension().TrimStart(s_TrimChars).Equals(extension.TrimStart(s_TrimChars), StringComparison.InvariantCultureIgnoreCase);
         }
+
+        public static IFileReference ToReference(this IFile file)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+            return new FileReference(file.Path, file.LastWriteTime, file.Length);
+        }
     }
 }
