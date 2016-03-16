@@ -7,7 +7,7 @@ using System;
 
 namespace SyncTool.FileSystem
 {
-    public interface IFileReference
+    public interface IFileReference : IEquatable<IFileReference>
     {
         /// <summary>
         /// The path of the referenced file

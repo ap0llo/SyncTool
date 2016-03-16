@@ -24,5 +24,28 @@ namespace SyncTool.FileSystem
             LastWriteTime = lastWriteTime;
             Length = length;
         }
+
+
+        public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(Path);
+
+        public override bool Equals(object obj) => Equals(obj as IFileReference);
+
+        public bool Equals(IFileReference other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+
+            return StringComparer.InvariantCultureIgnoreCase.Equals(this.Path, other.Path) &&
+                   LastWriteTime == other.LastWriteTime &&
+                   Length == other.Length;            
+        }
     }
 }

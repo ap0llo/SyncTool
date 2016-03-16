@@ -45,5 +45,10 @@ namespace SyncTool.TestHelpers
             Assert.Equal(expected.LastWriteTime, actual.LastWriteTime);
         }
 
+
+        public static void FileReferenceMatches(IFile file, IFileReference reference)
+        {
+            Assert.True(reference.Matches(file));            
+        }
     }
 }
