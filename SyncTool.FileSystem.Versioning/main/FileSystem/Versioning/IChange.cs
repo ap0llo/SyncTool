@@ -1,7 +1,9 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
+
+using System;
 
 namespace SyncTool.FileSystem.Versioning
 {
@@ -20,11 +22,23 @@ namespace SyncTool.FileSystem.Versioning
         /// <summary>
         /// The file before the change (Not available for changes of type 'Addded')
         /// </summary>
+        [Obsolete]
         IFile FromFile { get; }
 
         /// <summary>
         /// The file after the change (Not available for changes of type 'Deleted')
         /// </summary>
+        [Obsolete]
         IFile ToFile { get; }
+
+        /// <summary>
+        /// A reference to the file before the modification
+        /// </summary>
+        IFileReference FromVersion { get; }
+
+        /// <summary>
+        /// A referecne to the file after the modification
+        /// </summary>
+        IFileReference ToVersion { get; }
     }
 }

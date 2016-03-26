@@ -1,4 +1,8 @@
-﻿using System;
+﻿// -----------------------------------------------------------------------------------------------------------
+//  Copyright (c) 2015-2016, Andreas Grünwald
+//  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
+// -----------------------------------------------------------------------------------------------------------
+using System;
 
 namespace SyncTool.FileSystem.Versioning
 {
@@ -6,15 +10,22 @@ namespace SyncTool.FileSystem.Versioning
     /// Default, immutable implementation of <see cref="IChange"/>
     /// </summary>
     public class Change : IChange
-    {
-        public Change(ChangeType type, IFile fromFile, IFile toFile)
+    {        
+        public Change(ChangeType type, IFile fromFile, IFile toFile) : this(type, fromFile?.ToReference(), toFile?.ToReference())
+        {
+            FromFile = fromFile;
+            ToFile = toFile;
+        }
+
+        //This will become the new constructor, once the obsolete IFile properties are removed
+        private Change(ChangeType type, IFileReference fromFile, IFileReference toFile)
         {
             AssertIsValidChange(type, fromFile, toFile);
             AssertPathsAreEqual(fromFile, toFile);
 
             Type = type;
-            FromFile = fromFile;
-            ToFile = toFile;
+            FromVersion = fromFile;
+            ToVersion = toFile;            
         }
 
         public string Path => FromFile?.Path ?? ToFile.Path;
@@ -25,8 +36,11 @@ namespace SyncTool.FileSystem.Versioning
 
         public IFile ToFile { get; }
 
+        public IFileReference FromVersion { get; }
 
-        void AssertIsValidChange(ChangeType type, IFile fromFile, IFile toFile)
+        public IFileReference ToVersion { get; }
+
+        void AssertIsValidChange(ChangeType type, IFileReference fromFile, IFileReference toFile)
         {
             switch (type)
             {
@@ -44,7 +58,7 @@ namespace SyncTool.FileSystem.Versioning
             }
         }
 
-        void AssertIsValidAddedChange(IFile fromFile, IFile toFile)
+        void AssertIsValidAddedChange(IFileReference fromFile, IFileReference toFile)
         {
             if (fromFile != null)
             {
@@ -56,7 +70,7 @@ namespace SyncTool.FileSystem.Versioning
             }
         }
 
-        void AssertIsValidDeletedChange(IFile fromFile, IFile toFile)
+        void AssertIsValidDeletedChange(IFileReference fromFile, IFileReference toFile)
         {
             if (fromFile == null)
             {
@@ -68,7 +82,7 @@ namespace SyncTool.FileSystem.Versioning
             }
         }
 
-        void AssertIsValidModifiedChange(IFile fromFile, IFile toFile)
+        void AssertIsValidModifiedChange(IFileReference fromFile, IFileReference toFile)
         {
             if (fromFile == null)
             {
@@ -80,7 +94,7 @@ namespace SyncTool.FileSystem.Versioning
             }
         }
 
-        void AssertPathsAreEqual(IFile fromFile, IFile toFile)
+        void AssertPathsAreEqual(IFileReference fromFile, IFileReference toFile)
         {
             if (fromFile == null || toFile == null)
             {

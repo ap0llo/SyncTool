@@ -1,5 +1,5 @@
 ﻿// // -----------------------------------------------------------------------------------------------------------
-// //  Copyright (c) 2015, Andreas Grünwald
+// //  Copyright (c) 2015-2016, Andreas Grünwald
 // //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // // -----------------------------------------------------------------------------------------------------------
 
@@ -397,8 +397,8 @@ namespace SyncTool.Synchronization
         [Fact(DisplayName = nameof(Synchronizer) + ".Synchronize() Addition and Deletion throws " + nameof(InvalidOperationException))]
         public void Synchronize_Addition_and_Deletion_throws_InvalidOperationException()
         {
-            var leftChanges = new IChange[] {new Change(ChangeType.Added, null, FileMockingHelper.GetMockedFile("file"))};
-            var rightChanges = new IChange[] { new Change(ChangeType.Deleted, FileMockingHelper.GetMockedFile("file"), null) };
+            var leftChanges = new IChange[] {new Change(ChangeType.Added, null, FileMockingHelper.GetMockedFile("file", DateTime.Now, 42))};
+            var rightChanges = new IChange[] { new Change(ChangeType.Deleted, FileMockingHelper.GetMockedFile("file", DateTime.Now, 42), null) };
 
             var leftDiff = GetMockedFileSystemDiff(null, null, leftChanges).Object;
             var rightDiff = GetMockedFileSystemDiff(null, null, rightChanges).Object;
