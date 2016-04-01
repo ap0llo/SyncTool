@@ -21,8 +21,9 @@ namespace SyncTool.FileSystem.Versioning
 
         public IEnumerable<IChange> Changes { get; }
 
+        public IEnumerable<IChangeList> ChangeLists { get; } 
 
-        public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot toSnapshot, IEnumerable<IChange> changes)
+        public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot toSnapshot, IEnumerable<IChange> changes, IEnumerable<IChangeList> changeLists )
         {
             if (history == null)
             {
@@ -36,18 +37,26 @@ namespace SyncTool.FileSystem.Versioning
             {
                 throw new ArgumentNullException(nameof(changes));
             }
+            if (changeLists == null)
+            {
+                throw new ArgumentNullException(nameof(changeLists));
+            }
+
+            changes = changes.ToList();
+            changeLists = changeLists.ToList();
+
             History = history;
             ToSnapshot = toSnapshot;
-            Changes = changes.ToList();
+            Changes = changes;
+            ChangeLists = changeLists;
         }
 
-        public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot fromSnapshot, IFileSystemSnapshot toSnapshot, IEnumerable<IChange> changes)
+        public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot fromSnapshot, IFileSystemSnapshot toSnapshot, IEnumerable<IChange> changes, IEnumerable<IChangeList> changeLists)
         {
             if (history == null)
             {
                 throw new ArgumentNullException(nameof(history));
             }
-
             if (fromSnapshot == null)
             {
                 throw new ArgumentNullException(nameof(fromSnapshot));
@@ -60,11 +69,19 @@ namespace SyncTool.FileSystem.Versioning
             {
                 throw new ArgumentNullException(nameof(changes));
             }
+            if (changeLists == null)
+            {
+                throw new ArgumentNullException(nameof(changeLists));
+            }
 
+            changes = changes.ToList();
+            changeLists = changeLists.ToList();
+            
             History = history;
             FromSnapshot = fromSnapshot;
             ToSnapshot = toSnapshot;
-            Changes = changes.ToList();
+            Changes = changes;
+            ChangeLists = changeLists;
         }
     }
 }

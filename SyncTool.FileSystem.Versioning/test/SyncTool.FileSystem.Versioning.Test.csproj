@@ -54,6 +54,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileSystem\Versioning\ChangeListTest.cs" />
     <Compile Include="FileSystem\Versioning\ChangeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
@@ -196,11 +196,22 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Equal(diff.FromSnapshot, snapshot1);
             Assert.Equal(diff.ToSnapshot, snapshot2);
 
-            Assert.Equal(1, diff.Changes.Count());
+            // "old" Changes API
+
+            Assert.Single(diff.Changes);
             Assert.Equal(ChangeType.Modified, diff.Changes.Single().Type);
             
             FileSystemAssert.FileEqual(state1.GetFile(s_File1), diff.Changes.Single().FromFile);
             FileSystemAssert.FileEqual(state2.GetFile(s_File1), diff.Changes.Single().ToFile);
+
+            // "new" changes API
+
+            Assert.Single(diff.ChangeLists);
+            Assert.Single(diff.ChangeLists.Single().Changes);
+            Assert.Equal(ChangeType.Modified, diff.ChangeLists.Single().Changes.Single().Type);
+
+            FileSystemAssert.FileReferenceMatches(state1.GetFile(s_File1), diff.ChangeLists.Single().Changes.Single().FromVersion);
+            FileSystemAssert.FileReferenceMatches(state2.GetFile(s_File1), diff.ChangeLists.Single().Changes.Single().ToVersion);
         }
 
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() detects additions of files")]
@@ -225,14 +236,27 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
 
+
             Assert.Equal(diff.FromSnapshot, snapshot1);
             Assert.Equal(diff.ToSnapshot, snapshot2);
+
+            // "old" Changes API 
 
             Assert.Equal(1, diff.Changes.Count());
             Assert.Equal(ChangeType.Added, diff.Changes.Single().Type);
 
             Assert.Null(diff.Changes.Single().FromFile);            
             FileSystemAssert.FileEqual(state2.GetFile(s_File2), diff.Changes.Single().ToFile);
+        
+            // "new" Changes API
+
+            Assert.Single(diff.ChangeLists);
+
+            var changes = diff.ChangeLists.Single().Changes.ToList();
+
+            Assert.Single(changes);
+            Assert.Equal(ChangeType.Added, changes.Single().Type);
+            FileSystemAssert.FileReferenceMatches(state2.GetFile(s_File2), changes.Single().ToVersion);
         }
 
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() detects deletions of files")]
@@ -254,18 +278,29 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Equal(diff.FromSnapshot, snapshot1);
             Assert.Equal(diff.ToSnapshot, snapshot2);
 
+            // "old" Changes API
+
             Assert.Equal(1, diff.Changes.Count());
             Assert.Equal(ChangeType.Deleted, diff.Changes.Single().Type);
 
             Assert.Null(diff.Changes.Single().ToFile);
             FileSystemAssert.FileEqual(state1.GetFile(s_File1), diff.Changes.Single().FromFile);
+
+            //´"new" Changes API
+
+            Assert.Single(diff.ChangeLists);
+            var changes = diff.ChangeLists.Single().Changes.ToList();
+            Assert.Single(changes);
+            Assert.Equal(ChangeType.Deleted, changes.Single().Type);
+
+            Assert.Null(changes.Single().ToVersion);
+            FileSystemAssert.FileReferenceMatches(state1.GetFile(s_File1), changes.Single().FromVersion);
         }
 
 
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() ignores Additions of empty directories")]
         public void GetChanges_ignores_Additions_of_empty_directories()
         {
-
             var state1 = new Directory(s_Dir1);
 
             var state2 = new Directory(s_Dir1)
@@ -280,7 +315,11 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
 
+            // "old" Changes API
             Assert.Empty(diff.Changes);
+
+            // "new" Changes API
+            Assert.Empty(diff.ChangeLists);
 
         }
 
@@ -301,7 +340,11 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
 
+            // "old" Changes API
             Assert.Empty(diff.Changes);
+
+            // "new" Changes API
+            Assert.Empty(diff.ChangeLists);
 
         }
 
@@ -331,10 +374,14 @@ namespace SyncTool.Git.FileSystem.Versioning
             var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
 
             // there should only be a single change (the addition of 'file1')
+
+            // "old" Changes API
             Assert.Single(diff.Changes);
 
+            // "new" Changes API
+            Assert.Single(diff.ChangeLists);
         }
-     
+
 
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() with single id gets all changes since the initial commit")]
         public void GetChanges_with_single_id_gets_all_changes_since_the_initial_commit()
@@ -348,18 +395,25 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             var diff = m_Instance.GetChanges(snapshot.Id);
 
+
             Assert.NotNull(diff);
             Assert.Null(diff.FromSnapshot);
             Assert.NotNull(diff.ToSnapshot);
+            
+            // "old" Changes API
             Assert.Single(diff.Changes);
+            Assert.Equal(ChangeType.Added, diff.Changes.Single().Type);            
 
-            Assert.Equal(ChangeType.Added, diff.Changes.Single().Type);
+            // "new" Changes API
+            Assert.Single(diff.ChangeLists);
+            var changes = diff.ChangeLists.Single().Changes.ToList();
+            Assert.Equal(ChangeType.Added, changes.Single().Type);           
         }
 
 
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() with single id combines changes to additions")]
-        public void GetChanges_with_single_id_combines_changes_to_additions()
+        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): Multiple changes to the same file")]
+        public void GetChanges_Multiple_chamges_to_the_same_file()
         {
             var lastWriteTime = DateTime.Now;
             var state1 = new Directory(s_Dir1)
@@ -371,20 +425,148 @@ namespace SyncTool.Git.FileSystem.Versioning
                 dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
             };
 
-            m_Instance.CreateSnapshot(state1);
-            var snapshot = m_Instance.CreateSnapshot(state2);
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
 
-            var diff = m_Instance.GetChanges(snapshot.Id);
+            var diff = m_Instance.GetChanges(snapshot2.Id);
 
             Assert.NotNull(diff);
             Assert.Null(diff.FromSnapshot);
             Assert.NotNull(diff.ToSnapshot);
-            Assert.Single(diff.Changes);
 
+            // "old" Changes API combines addition and modification to a single addition change
+
+            Assert.Single(diff.Changes);
             Assert.Equal(ChangeType.Added, diff.Changes.Single().Type);
+
+            // "new" Changes API gets all the changes to the file (both the addition and the modification)
+
+            Assert.Single(diff.ChangeLists);
+            var changes = diff.ChangeLists.Single().Changes.ToArray();
+            // both changes should be contained in a single ChangeList
+            Assert.Equal(2, changes.Length);
+
+            // addition
+            Assert.Equal(ChangeType.Added, changes[0].Type);
+            Assert.Null(changes[0].FromVersion);
+            FileSystemAssert.FileReferenceMatches(state1.GetFile("file1"), changes[0].ToVersion);
+
+            // modification
+            Assert.Equal(ChangeType.Modified, changes[1].Type);
+            FileSystemAssert.FileReferenceMatches(state1.GetFile("file1"), changes[1].FromVersion);
+            FileSystemAssert.FileReferenceMatches(state2.GetFile("file1"), changes[1].ToVersion);
         }
 
 
+        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): A file gets added, modified and deleted ")]
+        public void GetChanges_A_file_gets_added_modified_and_deleted()
+        {
+            var lastWriteTime = DateTime.Now;
+            var state1 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+            };
+            var state2 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
+            };
+            var state3 = new Directory(s_Dir1); // file1 deleted
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+            var snapshot3 = m_Instance.CreateSnapshot(state3);
+
+            var diff = m_Instance.GetChanges(snapshot3.Id);
+
+
+            Assert.NotNull(diff);
+            Assert.Null(diff.FromSnapshot);
+            Assert.NotNull(diff.ToSnapshot);
+
+            // "old" Changes API ignores the file (no change between latest snapshot and before first snapshot)            
+
+            Assert.Empty(diff.Changes);            
+
+            // "new" Changes API gets all the changes to the file 
+
+            Assert.Single(diff.ChangeLists);
+            var changes = diff.ChangeLists.Single().Changes.ToArray();
+            // both changes should be contained in a single ChangeList
+            Assert.Equal(3, changes.Length);
+
+            // addition
+            Assert.Equal(ChangeType.Added, changes[0].Type);
+            Assert.Null(changes[0].FromVersion);
+            FileSystemAssert.FileReferenceMatches(state1.GetFile("file1"), changes[0].ToVersion);
+
+            // modification
+            Assert.Equal(ChangeType.Modified, changes[1].Type);
+            FileSystemAssert.FileReferenceMatches(state1.GetFile("file1"), changes[1].FromVersion);
+            FileSystemAssert.FileReferenceMatches(state2.GetFile("file1"), changes[1].ToVersion);
+
+            // deletion
+            Assert.Equal(ChangeType.Deleted, changes[2].Type);
+            FileSystemAssert.FileReferenceMatches(state2.GetFile("file1"), changes[2].FromVersion);
+            Assert.Null(changes[2].ToVersion);
+
+        }
+
+
+        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): A file gets added, modified and deleted betwen snapshots")]
+        public void GetChanges_A_file_gets_added_modified_and_deleted_between_snapshots()
+        {
+            var lastWriteTime = DateTime.Now;
+            var state0 = new Directory(s_Dir1);
+            var state1 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+            };
+            var state2 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
+            };
+            var state3 = new Directory(s_Dir1); // file1 deleted
+
+            var snapshot0 = m_Instance.CreateSnapshot(state0);            
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+            var snapshot3 = m_Instance.CreateSnapshot(state3);
+
+            var diff = m_Instance.GetChanges(snapshot0.Id, snapshot3.Id);
+
+
+            Assert.NotNull(diff);
+            Assert.Equal(snapshot0, diff.FromSnapshot);
+            Assert.Equal(snapshot3, diff.ToSnapshot);
+
+            // "old" Changes API ignores the file (no change between latest snapshot and before first snapshot)            
+
+            Assert.Empty(diff.Changes);
+
+            // "new" Changes API gets all the changes to the file 
+
+            Assert.Single(diff.ChangeLists);
+            var changes = diff.ChangeLists.Single().Changes.ToArray();
+            // both changes should be contained in a single ChangeList
+            Assert.Equal(3, changes.Length);
+
+            // addition
+            Assert.Equal(ChangeType.Added, changes[0].Type);
+            Assert.Null(changes[0].FromVersion);
+            FileSystemAssert.FileReferenceMatches(state1.GetFile("file1"), changes[0].ToVersion);
+
+            // modification
+            Assert.Equal(ChangeType.Modified, changes[1].Type);
+            FileSystemAssert.FileReferenceMatches(state1.GetFile("file1"), changes[1].FromVersion);
+            FileSystemAssert.FileReferenceMatches(state2.GetFile("file1"), changes[1].ToVersion);
+
+            // deletion
+            Assert.Equal(ChangeType.Deleted, changes[2].Type);
+            FileSystemAssert.FileReferenceMatches(state2.GetFile("file1"), changes[2].FromVersion);
+            Assert.Null(changes[2].ToVersion);
+
+        }
+       
         #endregion
 
 

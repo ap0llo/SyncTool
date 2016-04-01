@@ -25,9 +25,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileSystem\Versioning\Change.cs" />
+    <Compile Include="FileSystem\Versioning\ChangeList.cs" />
     <Compile Include="FileSystem\Versioning\ChangeType.cs" />
     <Compile Include="FileSystem\Versioning\FileSystemDiff.cs" />
     <Compile Include="FileSystem\Versioning\IChange.cs" />
+    <Compile Include="FileSystem\Versioning\IChangeList.cs" />
     <Compile Include="FileSystem\Versioning\IFileSystemDiff.cs" />
     <Compile Include="FileSystem\Versioning\IFileSystemHistory.cs" />
     <Compile Include="FileSystem\Versioning\IFileSystemSnapshot.cs" />

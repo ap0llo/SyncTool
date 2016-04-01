@@ -74,8 +74,9 @@ namespace SyncTool.Git.FileSystem.Versioning
         public IFileSystemDiff GetChanges(string toId)
         {
             var toSnapshot = GetSnapshot(toId);
+            var initialCommit = m_Repository.GetInitialCommit();
 
-            var treeChanges = m_Repository.Diff.Compare<TreeChanges>(m_Repository.GetInitialCommit().Tree, toSnapshot.Commit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
+            var treeChanges = m_Repository.Diff.Compare<TreeChanges>(initialCommit.Tree, toSnapshot.Commit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
 
             var changes = treeChanges
                 .Where(treeChange => treeChange.Status != ChangeKind.Unmodified)
@@ -116,16 +117,22 @@ namespace SyncTool.Git.FileSystem.Versioning
                 .ToList();
 
 
-            return new FileSystemDiff(this, toSnapshot, changes);
+            // build change lists
+            var changeLists = GetChangeLists(initialCommit.Sha, toSnapshot);
+
+            return new FileSystemDiff(this, toSnapshot, changes, changeLists);
         }
 
         public IFileSystemDiff GetChanges(string fromId, string toId)
         {
+            //TODO: Ensure, fromId is an ancestor of toId
+
             var fromSnapshot = GetSnapshot(fromId);
             var toSnapshot = GetSnapshot(toId);
             
             var treeChanges = m_Repository.Diff.Compare<TreeChanges>(fromSnapshot.Commit.Tree, toSnapshot.Commit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
 
+            // build changes
             var changes = treeChanges
                 .Where(treeChange => treeChange.Status != ChangeKind.Unmodified)
                 .Select(treeChange =>
@@ -171,7 +178,11 @@ namespace SyncTool.Git.FileSystem.Versioning
                 .Select(change => change.Value)
                 .ToList();            
 
-            return new FileSystemDiff(this, fromSnapshot, toSnapshot, changes);
+
+            // build change lists
+            var changeLists = GetChangeLists(fromSnapshot.Commit.Sha, toSnapshot);
+
+            return new FileSystemDiff(this, fromSnapshot, toSnapshot, changes, changeLists);
         }
 
 
@@ -185,11 +196,138 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         GitBasedFileSystemSnapshot GetSnapshot(string id)
         {
-            if (!m_Snapshots.Value.ContainsKey(id))
+            if (!SnapshotExists(id))
             {
                 throw new SnapshotNotFoundException(id);
             }
             return m_Snapshots.Value[id];
         }
+
+        bool SnapshotExists(string id) => m_Snapshots.Value.ContainsKey(id);
+
+
+        IEnumerable<ChangeList> GetChangeLists(string fromCommit, GitBasedFileSystemSnapshot toSnapshot)
+        {
+            var changeLists = GetAllChanges(fromCommit, toSnapshot)
+                .GroupBy(change => change.Path, StringComparer.InvariantCultureIgnoreCase)
+                .Select(group => new ChangeList(group.Reverse()));
+                
+            return changeLists;
+        }
+
+
+        IEnumerable<IChange> GetAllChanges(string fromCommit, GitBasedFileSystemSnapshot toSnapshot)
+        {
+            var currentCommit = toSnapshot.Commit;
+            var currentSnapshot = toSnapshot;
+
+            while (currentCommit.Sha != fromCommit)
+            {
+                var parentCommit = GetParentSnapshotCommit(currentCommit);
+
+                // parent commit is inital commit
+                if (parentCommit.Sha == m_Repository.GetInitialCommit().Sha)
+                {
+                    var treeChanges = m_Repository.Diff.Compare<TreeChanges>(parentCommit.Tree, currentCommit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
+                    // build changes
+
+                    foreach (var change in GetChanges(treeChanges, null, currentSnapshot))
+                    {
+                        yield return change;
+                    }
+
+                    // there won't be any commit after this (we already reached the inital commit) 
+                    // => abort the loop
+                    break;
+                }
+                else
+                {    
+                    var parentSnapshot = GetSnapshot(parentCommit.Sha);
+
+                    var treeChanges = m_Repository.Diff.Compare<TreeChanges>(parentCommit.Tree, currentCommit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
+
+                    // build changes
+                    foreach(var change in GetChanges(treeChanges, parentSnapshot, currentSnapshot))
+                    {
+                        yield return change;
+                    }
+
+                    currentCommit = parentCommit;
+                    currentSnapshot = parentSnapshot;
+                }
+
+            }
+        }
+        
+        IEnumerable<IChange> GetChanges(TreeChanges treeChanges, GitBasedFileSystemSnapshot fromSnapshot, GitBasedFileSystemSnapshot toSnapshot)
+        {
+            foreach (var treeChange in treeChanges)
+            {
+                if (treeChange.Status == ChangeKind.Unmodified)
+                {
+                    continue;
+                }
+
+                var path = treeChange.Path.Split("\\/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                // ignore changes in the repository outside of the "Snapshot" directory
+                var dirName = path.First();
+                if (!StringComparer.InvariantCultureIgnoreCase.Equals(dirName, GitBasedFileSystemSnapshot.SnapshotDirectoryName))
+                {
+                    continue;                    
+                }
+
+                // ignore directory property files
+                var fileName = path.Last();
+                if (StringComparer.InvariantCultureIgnoreCase.Equals(fileName, DirectoryPropertiesFile.FileName))
+                {
+                    continue;
+                }
+
+                switch (treeChange.Status)
+                {
+                    case ChangeKind.Unmodified:
+                        throw new InvalidOperationException("Unmodified changes should have been filtered out");
+
+                    case ChangeKind.Modified:
+                        var fromFile = fromSnapshot.GetFileForGitRelativePath(treeChange.Path);
+                        var toFile = toSnapshot.GetFileForGitRelativePath(treeChange.Path);
+                        yield return new Change(ChangeType.Modified, fromFile, toFile);
+                        break;                        
+
+                    case ChangeKind.Added:
+                        yield return new Change(ChangeType.Added, null, toSnapshot.GetFileForGitRelativePath(treeChange.Path));
+                        break;
+
+                    case ChangeKind.Deleted:
+                        yield return new Change(ChangeType.Deleted, fromSnapshot.GetFileForGitRelativePath(treeChange.Path), null);
+                        break;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Gets the first parent of the specified commit that is a snapshot or
+        /// the inital commit of the repository if the specifed commit is the first snapshot in the history
+        /// </summary>
+        Commit GetParentSnapshotCommit(Commit commit)
+        {
+            var currentCommit = commit.Parents.Single();
+            var initialCommit = m_Repository.GetInitialCommit();
+
+            while (true)
+            {
+                if (currentCommit.Sha == initialCommit.Sha || SnapshotExists(currentCommit.Sha))
+                {
+                    return currentCommit;
+                }
+                currentCommit = currentCommit.Parents.Single();
+            }
+        }
+
     }
 }

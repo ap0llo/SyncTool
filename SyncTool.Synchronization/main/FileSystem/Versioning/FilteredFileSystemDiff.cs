@@ -27,6 +27,7 @@ namespace SyncTool.FileSystem.Versioning
 
         public IEnumerable<IChange> Changes => FilterChanges(m_WrappedDiff.Changes);
 
+        public IEnumerable<IChangeList> ChangeLists {  get { throw new NotImplementedException();} } 
 
         public FilteredFileSystemDiff(IFileSystemDiff wrappedDiff, IEqualityComparer<IFile> fileComparer)
         {

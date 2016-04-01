@@ -2,6 +2,7 @@
 //  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
+using System;
 using System.Collections.Generic;
 
 namespace SyncTool.FileSystem.Versioning
@@ -29,7 +30,13 @@ namespace SyncTool.FileSystem.Versioning
         /// <summary>
         /// The list of changes between the two snapshots
         /// </summary>
+        [Obsolete(nameof(Changes) + " is obsolete. Use " + nameof(ChangeLists) + " instead")]
         IEnumerable<IChange> Changes { get; } 
+
+        /// <summary>
+        /// Gets a change list for every file that changed between the two snapshots
+        /// </summary>
+        IEnumerable<IChangeList> ChangeLists { get; } 
 
     }
 }
