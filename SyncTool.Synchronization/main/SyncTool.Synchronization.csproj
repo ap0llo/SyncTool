@@ -43,6 +43,8 @@
     <Compile Include="Synchronization\ChangeGraph\Node.cs" />
     <Compile Include="Synchronization\ChangeGraph\NodeComparer.cs" />
     <Compile Include="Synchronization\DI\SynchronizationModule.cs" />
+    <Compile Include="Synchronization\State\DuplicateSynchronizationStateException.cs" />
+    <Compile Include="Synchronization\State\SynchronizationStateNotFoundException.cs" />
     <Compile Include="Synchronization\_Exceptions\NotApplicableException.cs" />
     <Compile Include="Synchronization\ISynchronizerResult.cs" />
     <Compile Include="Synchronization\Conflicts\ModificationDeletionSyncConflict.cs" />
@@ -61,10 +63,8 @@
     <Compile Include="Synchronization\SyncActions\ReplaceFileSyncAction.cs" />
     <Compile Include="Synchronization\SyncActions\SyncAction.cs" />
     <Compile Include="Synchronization\SyncActions\SyncParticipant.cs" />
-    <Compile Include="Synchronization\Transfer\ISynchronizationState.cs" />
-    <Compile Include="Synchronization\Transfer\ISynchronizationStateService.cs" />
-    <Compile Include="Synchronization\Transfer\MutableSynchronizationState.cs" />
-    <Compile Include="Synchronization\Transfer\SynchronizationStateExtensions.cs" />
+    <Compile Include="Synchronization\State\ISynchronizationState.cs" />
+    <Compile Include="Synchronization\State\ISynchronizationStateService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.Common\main\SyncTool.Common.csproj">

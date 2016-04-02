@@ -66,6 +66,8 @@
     <Compile Include="FileSystem\IFileSystemMapping.cs" />
     <Compile Include="Common\IRepositoryPathProvider.cs" />
     <Compile Include="Common\SingleDirectoryRepositoryPathProvider.cs" />
+    <Compile Include="FileSystem\MutableSynchronizationState.cs" />
+    <Compile Include="FileSystem\SynchronizationStateFile.cs" />
     <Compile Include="FileSystem\Utilities\FileSystemConverter.cs" />
     <Compile Include="Common\GitTransaction.cs" />
     <Compile Include="Common\_Exceptions\GitTransactionException.cs" />
@@ -86,11 +88,8 @@
     <Compile Include="FileSystem\Versioning\MetaFileSystem\MetaFileSystemLoader.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\MetaFileSystemToFileSystemConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Synchronization\Transfer\GitSynchronizationState.cs" />
-    <Compile Include="Synchronization\Transfer\GitSynchronizationStateService.cs" />
+    <Compile Include="Synchronization\State\GitSynchronizationStateService.cs" />
     <Compile Include="FileSystem\SyncActionFile.cs" />
-    <Compile Include="Synchronization\Transfer\SynchronizationStateSnapshotIds.cs" />
-    <Compile Include="FileSystem\SynchronizationStateSnapshotIdsFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

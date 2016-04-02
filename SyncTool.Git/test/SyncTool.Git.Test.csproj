@@ -115,8 +115,7 @@
     <Compile Include="FileSystem\Versioning\MetaFileSystem\MetaFileSystemLoaderTest.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\MetaFileSystemToFileSystemConverterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Synchronization\Transfer\GitSynchronizationStateServiceTest.cs" />
-    <Compile Include="Synchronization\Transfer\GitSynchronizationStateTest.cs" />
+    <Compile Include="Synchronization\State\GitSynchronizationStateServiceTest.cs" />
     <Compile Include="TestHelpers\GroupSettingsProviderMockingHelper.cs" />
     <Compile Include="TestHelpers\GitGroupBasedTest.cs" />
   </ItemGroup>

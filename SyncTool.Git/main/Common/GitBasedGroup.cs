@@ -10,8 +10,8 @@ using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Configuration;
 using SyncTool.Git.FileSystem;
 using SyncTool.Git.FileSystem.Versioning;
-using SyncTool.Git.Synchronization.Transfer;
-using SyncTool.Synchronization.Transfer;
+using SyncTool.Git.Synchronization.State;
+using SyncTool.Synchronization.State;
 
 namespace SyncTool.Git.Common
 {
