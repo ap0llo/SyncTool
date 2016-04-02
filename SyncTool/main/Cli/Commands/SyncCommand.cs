@@ -77,33 +77,36 @@ namespace SyncTool.Cli.Commands
                     return 1;
                 }
 
-                // get global and local changes
-                var globalChanges = GetGlobalChanges(synchronizationStateService, globalHistory, opts.Folder);
-                var localChanges = GetLocalChanges(synchronizationStateService, localHistory, opts.Folder);
+                throw new NotImplementedException();
 
-                // synchronize
-                var syncResult = m_Synchronizer.Synchronize(globalChanges, localChanges);
-
-                // handle sync conflicts
-                syncResult = HandleSyncConflicts(syncResult);
-                
-                // create a new global snapshot                
-                var globalState = syncResult.ApplyTo(globalHistory.LatestFileSystemSnapshot.RootDirectory, SyncParticipant.Left);
-                globalHistory.CreateSnapshot(globalState);
-
-                // create and sace new sync state
-                var localActions = syncResult.Actions.Where(action => action.Target == SyncParticipant.Right);
-                
-                synchronizationStateService[opts.Folder] = new MutableSynchronizationState()
-                {
-                    LocalSnapshotId = localChanges.ToSnapshot.Id,
-                    GlobalSnapshotId = globalChanges.ToSnapshot.Id,
-                    QueuedActions = synchronizationState.QueuedActions.Union(localActions).ToList(),
-                    InProgressActions = synchronizationState.InProgressActions,
-                    CompletedActions = synchronizationState.CompletedActions
-                };
-
-                return 0;
+//
+//                // get global and local changes
+//                var globalChanges = GetGlobalChanges(synchronizationStateService, globalHistory, opts.Folder);
+//                var localChanges = GetLocalChanges(synchronizationStateService, localHistory, opts.Folder);
+//
+//                // synchronize
+//                var syncResult = m_Synchronizer.Synchronize(globalChanges, localChanges);
+//
+//                // handle sync conflicts
+//                syncResult = HandleSyncConflicts(syncResult);
+//                
+//                // create a new global snapshot                
+//                var globalState = syncResult.ApplyTo(globalHistory.LatestFileSystemSnapshot.RootDirectory, SyncParticipant.Left);
+//                globalHistory.CreateSnapshot(globalState);
+//
+//                // create and sace new sync state
+//                var localActions = syncResult.Actions.Where(action => action.Target == SyncParticipant.Right);
+//                
+//                synchronizationStateService[opts.Folder] = new MutableSynchronizationState()
+//                {
+//                    LocalSnapshotId = localChanges.ToSnapshot.Id,
+//                    GlobalSnapshotId = globalChanges.ToSnapshot.Id,
+//                    QueuedActions = synchronizationState.QueuedActions.Union(localActions).ToList(),
+//                    InProgressActions = synchronizationState.InProgressActions,
+//                    CompletedActions = synchronizationState.CompletedActions
+//                };
+//
+//                return 0;
             }            
         }
 

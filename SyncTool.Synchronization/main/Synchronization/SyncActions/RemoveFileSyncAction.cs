@@ -12,10 +12,10 @@ namespace SyncTool.Synchronization.SyncActions
     {
         public override string FilePath => RemovedFile.Path;
 
-        public IFile RemovedFile { get; }
+        public IFileReference RemovedFile { get; }
 
 
-        public RemoveFileSyncAction(Guid id, SyncParticipant target, IFile removedFile) : base(id, target)
+        public RemoveFileSyncAction(Guid id, string target, IFileReference removedFile) : base(id, target)
         {
             if (removedFile == null)
             {

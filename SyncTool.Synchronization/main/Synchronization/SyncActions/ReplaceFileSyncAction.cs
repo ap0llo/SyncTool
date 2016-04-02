@@ -4,20 +4,22 @@
 // // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using Newtonsoft.Json;
 using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization.SyncActions
 {
     public sealed class ReplaceFileSyncAction : SyncAction
     {
+        [JsonIgnore]
         public override string FilePath => OldVersion.Path;
 
-        public IFile OldVersion { get; }
+        public IFileReference OldVersion { get; }
 
-        public IFile NewVersion { get; }
+        public IFileReference NewVersion { get; }
 
 
-        public ReplaceFileSyncAction(Guid id, SyncParticipant target, IFile oldVersion, IFile newVersion) : base(id, target)
+        public ReplaceFileSyncAction(Guid id, string target, IFileReference oldVersion, IFileReference newVersion) : base(id, target)
         {
             if (oldVersion == null)
             {

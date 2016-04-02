@@ -11,7 +11,7 @@ namespace SyncTool.Synchronization.DI
     {
         public override void Load()
         {
-            this.Bind<ISynchronizer>().To<Synchronizer>();
+            //this.Bind<ISynchronizer>().To<Synchronizer>();
         }
     }
 }

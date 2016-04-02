@@ -48,11 +48,11 @@ namespace SyncTool.Git.Synchronization.Transfer
         [Fact]
         public void Create_creates_a_SynchronizationState_in_the_and_stores_queued_actions()
         {            
-            var file = new File(new NullDirectory("", "root"), "file1");
+            var file = new FileReference("file1");
 
             var inputState = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
                .WithEmptyActionLists()
-               .WithQueuedActions(new AddFileSyncAction(Guid.NewGuid(), SyncParticipant.Right, file))
+               .WithQueuedActions(new AddFileSyncAction(Guid.NewGuid(), "target1", file))
                .WithIds("id1", "id2")
                .Object;
 
@@ -61,17 +61,17 @@ namespace SyncTool.Git.Synchronization.Transfer
             Assert.Empty(gitState.CompletedActions);
             Assert.Empty(gitState.InProgressActions);
             Assert.Single(gitState.QueuedActions);
-            Assert.Equal(SyncParticipant.Right, gitState.QueuedActions.Single().Target);
+            Assert.Equal("target1", gitState.QueuedActions.Single().Target);
         }
 
         [Fact]
         public void Create_creates_a_SynchronizationState_in_the_and_stores_completed_actions()
         {
-            var file = new File(new NullDirectory("", "root"), "file1");
+            var file = new FileReference("file1");
 
             var inputState = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
                .WithEmptyActionLists()
-               .WithCompletedActions(new AddFileSyncAction(Guid.NewGuid(), SyncParticipant.Right, file))
+               .WithCompletedActions(new AddFileSyncAction(Guid.NewGuid(), "target1", file))
                .WithIds("id1", "id2")
                .Object;
 
@@ -80,17 +80,17 @@ namespace SyncTool.Git.Synchronization.Transfer
             Assert.Empty(gitState.QueuedActions);
             Assert.Empty(gitState.InProgressActions);
             Assert.Single(gitState.CompletedActions);
-            Assert.Equal(SyncParticipant.Right, gitState.CompletedActions.Single().Target);
+            Assert.Equal("target1", gitState.CompletedActions.Single().Target);
         }
 
         [Fact]
         public void Create_creates_a_SynchronizationState_in_the_and_stores_inprogress_actions()
         {
-            var file = new File(new NullDirectory("", "root"), "file1");
+            var file = new FileReference("file1");
 
             var inputState = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
                .WithEmptyActionLists()
-               .WithInProgressActions(new AddFileSyncAction(Guid.NewGuid(), SyncParticipant.Right, file))
+               .WithInProgressActions(new AddFileSyncAction(Guid.NewGuid(), "target1", file))
                .WithIds("id1", "id2")
                .Object;
 
@@ -99,7 +99,7 @@ namespace SyncTool.Git.Synchronization.Transfer
             Assert.Empty(gitState.QueuedActions);
             Assert.Empty(gitState.CompletedActions);
             Assert.Single(gitState.InProgressActions);
-            Assert.Equal(SyncParticipant.Right, gitState.InProgressActions.Single().Target);
+            Assert.Equal("target1", gitState.InProgressActions.Single().Target);
         }
 
         public override void Dispose()

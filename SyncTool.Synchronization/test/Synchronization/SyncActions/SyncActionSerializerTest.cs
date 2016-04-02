@@ -20,7 +20,7 @@ namespace SyncTool.Synchronization.SyncActions
               ""name"": ""AddFileSyncAction"",
               ""value"": {
                 ""id"" : ""A7226A4D-4BE8-4B10-B378-BEF72A29FD24"",
-                ""Target"": 1,
+                ""Target"": ""target"",
                 ""NewFile"": {
                   ""Path"": ""dir1/file1"",
                   ""LastWriteTime"": ""2015-12-27T17:02:17.8666998+01:00"",
@@ -109,64 +109,48 @@ namespace SyncTool.Synchronization.SyncActions
 
         [Fact(DisplayName = nameof(SyncActionSerializer) + "AddFileSyncAction: Roundtrip")]
         public void AddFileSyncAction_Roundtrip()
-        {            
-            var file = new File(new NullDirectory("dir1", "dir1"),"file1" )
-            {
-                LastWriteTime = DateTime.Now,
-                Length = 23
-            };
+        {
+            var fileReference = new FileReference("file1", DateTime.Now, 23);
             
-            var expected = new AddFileSyncAction(Guid.Parse("A7226A4D-4BE8-4B10-B378-BEF72A29FD24"),  SyncParticipant.Right, file);
-            var actual = m_Instance.Deserialize(m_Instance.Serialize(expected)) as AddFileSyncAction;
+            var expected = new AddFileSyncAction(Guid.Parse("A7226A4D-4BE8-4B10-B378-BEF72A29FD24"),  "targetName", fileReference);
+            var actual = (AddFileSyncAction) m_Instance.Deserialize(m_Instance.Serialize(expected));
 
             Assert.NotNull(actual);
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Target, actual.Target);
-            FileSystemAssert.FileEqual(expected.NewFile, actual.NewFile);
+            Assert.Equal(expected.NewFile, actual.NewFile);
         }
 
         [Fact(DisplayName = nameof(SyncActionSerializer) + "RemoveFileSyncAction: Roundtrip")]
         public void RemoveFileSyncAction_Roundtrip()
         {
-            var file = new File(new NullDirectory("dir1", "dir1"), "file1")
-            {
-                LastWriteTime = DateTime.Now,
-                Length = 23
-            };
+            var fileReference = new FileReference("file1", DateTime.Now, 23);
 
-            var expected = new RemoveFileSyncAction(Guid.NewGuid(), SyncParticipant.Right, file);
-            var actual = m_Instance.Deserialize(m_Instance.Serialize(expected)) as RemoveFileSyncAction;
+            var expected = new RemoveFileSyncAction(Guid.NewGuid(), "targetName", fileReference);
+            var actual = (RemoveFileSyncAction) m_Instance.Deserialize(m_Instance.Serialize(expected));
 
             Assert.NotNull(actual);
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Target, actual.Target);
-            FileSystemAssert.FileEqual(expected.RemovedFile, actual.RemovedFile);
+            Assert.Equal(expected.RemovedFile, actual.RemovedFile);
         }
 
         [Fact(DisplayName = nameof(SyncActionSerializer) + "ReplaceFileSyncAction: Roundtrip")]
         public void ReplaceFileSyncAction_Roundtrip()
         {
             var lastWriteTime = DateTime.Now;
-            var oldVersion = new File(new NullDirectory("dir1", "dir1"), "file1")
-            {
-                LastWriteTime = lastWriteTime,
-                Length = 23
-            };
 
-            var newVersion = new File(new NullDirectory("dir1", "dir1"), "file1")
-            {
-                LastWriteTime = lastWriteTime.AddDays(1),
-                Length = 23 * 2 
-            };
-
-            var expected = new ReplaceFileSyncAction(Guid.NewGuid(), SyncParticipant.Right, oldVersion, newVersion);
-            var actual = m_Instance.Deserialize(m_Instance.Serialize(expected)) as ReplaceFileSyncAction;
+            var oldVersion = new FileReference("file1", lastWriteTime, 23);
+            var newVersion = new FileReference( "file1", lastWriteTime.AddDays(1), 23 * 2);            
+            
+            var expected = new ReplaceFileSyncAction(Guid.NewGuid(), Guid.NewGuid().ToString(), oldVersion, newVersion);
+            var actual = (ReplaceFileSyncAction) m_Instance.Deserialize(m_Instance.Serialize(expected));
 
             Assert.NotNull(actual);
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Target, actual.Target);
-            FileSystemAssert.FileEqual(expected.OldVersion, actual.OldVersion);
-            FileSystemAssert.FileEqual(expected.NewVersion, actual.NewVersion);
+            Assert.Equal(expected.OldVersion, actual.OldVersion);
+            Assert.Equal(expected.NewVersion, actual.NewVersion);
         }
 
     }

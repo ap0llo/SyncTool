@@ -4,6 +4,7 @@
 // // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using SyncTool.FileSystem;
 using SyncTool.TestHelpers;
 using Xunit;
 
@@ -22,9 +23,9 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Throws<ArgumentException>(
                 () => new ReplaceFileSyncAction(
                             Guid.Empty, // irrelevant
-                            SyncParticipant.Left,   // irrelevant
-                            FileMockingHelper.GetMockedFile("path1"), 
-                            FileMockingHelper.GetMockedFile("path2")));
+                            "target1",   // irrelevant
+                            new FileReference("path1"),
+                            new FileReference("path2")));
         }
 
 

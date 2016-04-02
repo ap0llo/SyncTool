@@ -4,6 +4,7 @@
 // // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using System.CodeDom;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -31,7 +32,7 @@ namespace SyncTool.Synchronization.SyncActions
             writer.Flush();
         }
 
-        public SyncAction Deserialize(System.IO.Stream stream)
+        public SyncAction Deserialize(Stream stream)
         {
             var jsonReader = new JsonTextReader(new System.IO.StreamReader(stream));
             var json = JObject.Load(jsonReader);
@@ -46,14 +47,14 @@ namespace SyncTool.Synchronization.SyncActions
 
 
         public void Visit(ReplaceFileSyncAction action, JObject jsonObject)
-        {
+        {            
             var dto = new ReplaceFileSyncActionDto(action);
             var value = JObject.Parse(JsonConvert.SerializeObject(dto));
             jsonObject.Add(s_Value, value);
         }
 
         public void Visit(AddFileSyncAction action, JObject jsonObject)
-        {            
+        {
             var dto = new AddFileSyncActionDto(action);
             var value = JObject.Parse(JsonConvert.SerializeObject(dto));            
             jsonObject.Add(s_Value, value);
@@ -91,7 +92,6 @@ namespace SyncTool.Synchronization.SyncActions
 
             try
             {
-
                 switch (name)
                 {
                     case nameof(ReplaceFileSyncAction):
@@ -117,20 +117,19 @@ namespace SyncTool.Synchronization.SyncActions
         AddFileSyncAction DeserializeAddFileSyncAction(JObject json)
         {
             var dto = JsonConvert.DeserializeObject<AddFileSyncActionDto>(json.ToString());
-            return new AddFileSyncAction(dto.Id, dto.Target, DeserializeFile(dto.NewFile));
+            return new AddFileSyncAction(dto.Id, dto.Target, DeserializeFileReference(dto.NewFile));
         }
 
         RemoveFileSyncAction DeserializeRemoveFileSyncAction(JObject json)
         {
             var dto = JsonConvert.DeserializeObject<RemoveFileSyncActionDto>(json.ToString());
-            return new RemoveFileSyncAction(dto.Id, dto.Target, DeserializeFile(dto.RemovedFile));
-            
+            return new RemoveFileSyncAction(dto.Id, dto.Target, DeserializeFileReference(dto.RemovedFile));            
         }
 
         ReplaceFileSyncAction DeserializeReplaceFileSyncAction(JObject json)
         {
             var dto = JsonConvert.DeserializeObject<ReplaceFileSyncActionDto>(json.ToString());
-            return new ReplaceFileSyncAction(dto.Id, dto.Target, DeserializeFile(dto.OldVersion), DeserializeFile(dto.NewVersion));            
+            return new ReplaceFileSyncAction(dto.Id, dto.Target, DeserializeFileReference(dto.OldVersion), DeserializeFileReference(dto.NewVersion));
         }
 
         JObject GetObjectProperty(JObject parent, string name)
@@ -155,125 +154,109 @@ namespace SyncTool.Synchronization.SyncActions
         }
         
 
-        IFile DeserializeFile(FileDto dto)
-        {           
-            var pathParts = dto.Path.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            var fileName = pathParts.Last();
-            pathParts = pathParts.Take(pathParts.Length - 1).ToArray();
-
-            var parentName = pathParts.Length > 0 ? pathParts.Last() : "root";
-            var parentPath = pathParts.Length > 0 ? pathParts.Aggregate((a, b) => $"{a}/{b}") : "";
-            var parent = new NullDirectory(parentPath, parentName);
-
-            return new File(parent, fileName) { LastWriteTime = dto.LastWriteTime, Length = dto.Length };
+        IFileReference DeserializeFileReference(FileReferenceDto dto)
+        {   
+            return new FileReference(dto.Path, dto.LastWriteTime, dto.Length);
         }
 
 
 
         private abstract class SyncActionDto
         {
-            [JsonProperty(Required = Required.Always)]
+            [JsonRequired]
+            public string Target { get; set; }
+
+            [JsonRequired]
             public Guid Id { get; set; }
 
-            // Parameterless constructor required for JsonSerializer
+
             protected SyncActionDto()
             {
                 
             }
 
-            protected SyncActionDto(SyncAction syncAction)
+            protected SyncActionDto(SyncAction action)
             {
-                this.Id = syncAction.Id;
+                Target = action.Target;
+                Id = action.Id;
             }
-
         }
 
         private class AddFileSyncActionDto : SyncActionDto
         {
-            public SyncParticipant Target { get; set; }
+            [JsonRequired]
+            public FileReferenceDto NewFile { get; set; }
 
-            public FileDto NewFile { get; set; }            
-
-            // Parameterless constructor required for JsonSerializer
             public AddFileSyncActionDto()
             {
                 
             }
 
-            public AddFileSyncActionDto(AddFileSyncAction syncAction) : base(syncAction)
+            public AddFileSyncActionDto(AddFileSyncAction action) : base(action)
             {
-                this.Target = syncAction.Target;
-                this.NewFile = new FileDto(syncAction.NewFile);                
+                NewFile = new FileReferenceDto(action.NewFile);   
             }
-        
         }
 
         private class RemoveFileSyncActionDto : SyncActionDto
-        { 
-            public SyncParticipant Target { get; set; }
+        {
+            [JsonRequired]
+            public FileReferenceDto RemovedFile { get; set; }
 
-            public FileDto RemovedFile { get; set; }
-
-            // Parameterless constructor required for JsonSerializer
             public RemoveFileSyncActionDto()
             {
                 
             }
 
-            public RemoveFileSyncActionDto(RemoveFileSyncAction syncAction) : base(syncAction)
+            public RemoveFileSyncActionDto(RemoveFileSyncAction action) : base(action)
             {
-                this.Target = syncAction.Target;
-                this.RemovedFile = new FileDto(syncAction.RemovedFile);                
+                RemovedFile = new FileReferenceDto(action.RemovedFile);
             }
-
         }
-
 
         private class ReplaceFileSyncActionDto : SyncActionDto
         {
-            public SyncParticipant Target { get; set; }
-
-            public FileDto OldVersion { get; set; }
-
-            public FileDto NewVersion { get; set; }
-
-            // Parameterless constructor required for JsonSerializer
             public ReplaceFileSyncActionDto()
             {
                 
             }
 
-            public ReplaceFileSyncActionDto(ReplaceFileSyncAction syncAction) : base(syncAction)
+            public ReplaceFileSyncActionDto(ReplaceFileSyncAction action) : base(action)
             {
-                this.Target = syncAction.Target;
-                this.OldVersion = new FileDto(syncAction.OldVersion);
-                this.NewVersion = new FileDto(syncAction.NewVersion);
+                OldVersion = new FileReferenceDto(action.OldVersion);
+                NewVersion = new FileReferenceDto(action.NewVersion);
             }
+
+            [JsonRequired]
+            public FileReferenceDto OldVersion { get; set; }
+
+            [JsonRequired]
+            public FileReferenceDto NewVersion { get; set; }
         }
 
-        private class FileDto
+        private class FileReferenceDto 
         {
-            // Parameterless constructor required for JsonSerializer
-            public FileDto()
+            public string Path { get; set; }
+
+            public DateTime? LastWriteTime { get; set; }
+
+            public long? Length { get; set; }
+
+
+            public FileReferenceDto()
             {
                 
             }
 
-            public FileDto(IFile file)
+            public FileReferenceDto(IFileReference reference)
             {
-                this.Path = file.Path;
-                this.LastWriteTime = file.LastWriteTime;
-                this.Length = file.Length;
+                Path = reference.Path;
+                LastWriteTime = reference.LastWriteTime;
+                Length = reference.Length;
             }
-            
-            public string Path { get; set; }
-
-            public DateTime LastWriteTime { get; set; }
-
-            public long Length { get; set; }
         }
 
-
+       
 
     }
 }

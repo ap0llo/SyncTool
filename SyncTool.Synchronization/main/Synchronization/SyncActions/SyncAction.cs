@@ -4,19 +4,21 @@
 // // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using Newtonsoft.Json;
 using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization.SyncActions
 {
     public abstract class SyncAction
     {        
+        [JsonIgnore]
         public abstract string FilePath { get; }
 
-        public SyncParticipant Target { get; }
+        public string Target { get; }
 
         public Guid Id { get; }
 
-        protected SyncAction(Guid id, SyncParticipant target)
+        protected SyncAction(Guid id, string target)
         {
             this.Target = target;
             this.Id = id;

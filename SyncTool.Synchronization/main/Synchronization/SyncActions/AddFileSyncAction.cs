@@ -13,9 +13,9 @@ namespace SyncTool.Synchronization.SyncActions
 
         public override string FilePath => NewFile.Path;
 
-        public IFile NewFile { get; }
+        public IFileReference NewFile { get; }
 
-        public AddFileSyncAction(Guid id, SyncParticipant target, IFile newFile) : base(id, target)
+        public AddFileSyncAction(Guid id, string target, IFileReference newFile) : base(id, target)
         {
             if (newFile == null)
             {
