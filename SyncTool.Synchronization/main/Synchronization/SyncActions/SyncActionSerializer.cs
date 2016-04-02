@@ -12,7 +12,7 @@ using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization.SyncActions
 {
-    public class SyncActionSerializer : ISyncActionVisitor<JObject>
+    public class SyncActionSerializer 
     {
         const string s_Name = "name";
         const string s_Value = "value";
@@ -43,21 +43,21 @@ namespace SyncTool.Synchronization.SyncActions
         }
 
 
-        public void Visit(ReplaceFileSyncAction action, JObject jsonObject)
+        void Serialize(ReplaceFileSyncAction action, JObject jsonObject)
         {            
             var dto = new ReplaceFileSyncActionDto(action);
             var value = JObject.Parse(JsonConvert.SerializeObject(dto));
             jsonObject.Add(s_Value, value);
         }
 
-        public void Visit(AddFileSyncAction action, JObject jsonObject)
+        void Serialize(AddFileSyncAction action, JObject jsonObject)
         {
             var dto = new AddFileSyncActionDto(action);
             var value = JObject.Parse(JsonConvert.SerializeObject(dto));            
             jsonObject.Add(s_Value, value);
         }
 
-        public void Visit(RemoveFileSyncAction action, JObject jsonObject)
+        void Serialize(RemoveFileSyncAction action, JObject jsonObject)
         {
             var dto = new RemoveFileSyncActionDto(action);
             var value = JObject.Parse(JsonConvert.SerializeObject(dto));
@@ -77,7 +77,7 @@ namespace SyncTool.Synchronization.SyncActions
                 new JProperty(s_Name, action.GetType().Name)
             };
 
-            action.Accept(this, jObject);
+            Serialize((dynamic) action, jObject);            
 
             return jObject;
         }

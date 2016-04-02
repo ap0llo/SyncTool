@@ -22,8 +22,6 @@ namespace SyncTool.Synchronization.SyncActions
             this.Target = target;
             this.Id = id;
         }
-
-
-        public abstract void Accept<T>(ISyncActionVisitor<T> visitor, T parameter);        
+        
     }
 }

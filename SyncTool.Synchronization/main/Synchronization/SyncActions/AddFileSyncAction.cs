@@ -9,10 +9,10 @@ namespace SyncTool.Synchronization.SyncActions
 {
     public sealed class AddFileSyncAction : SyncAction
     {
-
         public override string FilePath => NewFile.Path;
 
         public IFileReference NewFile { get; }
+
 
         public AddFileSyncAction(Guid id, string target, IFileReference newFile) : base(id, target)
         {
@@ -21,11 +21,6 @@ namespace SyncTool.Synchronization.SyncActions
                 throw new ArgumentNullException(nameof(newFile));
             }
             this.NewFile = newFile;
-        }
-
-        public override void Accept<T>(ISyncActionVisitor<T> visitor, T parameter)
-        {
-            visitor.Visit(this, parameter);
         }
     }
 }

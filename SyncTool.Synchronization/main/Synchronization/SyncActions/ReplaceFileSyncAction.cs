@@ -37,10 +37,6 @@ namespace SyncTool.Synchronization.SyncActions
             this.NewVersion = newVersion;
 
         }
-
-        public override void Accept<T>(ISyncActionVisitor<T> visitor, T parameter)
-        {
-            visitor.Visit(this, parameter);
-        }
+        
     }
 }
