@@ -18,7 +18,7 @@ namespace SyncTool.Synchronization.SyncActions
         public IFileReference NewVersion { get; }
 
 
-        public ReplaceFileSyncAction(Guid id, string target, IFileReference oldVersion, IFileReference newVersion) : base(id, target)
+        public ReplaceFileSyncAction(Guid id, string target, SyncActionState state, IFileReference oldVersion, IFileReference newVersion) : base(id, target, state)
         {
             if (oldVersion == null)
             {

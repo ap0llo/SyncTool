@@ -10,17 +10,19 @@ namespace SyncTool.Synchronization.SyncActions
 {
     public abstract class SyncAction
     {        
-        [JsonIgnore]
         public abstract string FilePath { get; }
+
+        public SyncActionState State { get; }
 
         public string Target { get; }
 
         public Guid Id { get; }
 
-        protected SyncAction(Guid id, string target)
+        protected SyncAction(Guid id, string target, SyncActionState state)
         {
             this.Target = target;
             this.Id = id;
+            this.State = state;
         }
         
     }

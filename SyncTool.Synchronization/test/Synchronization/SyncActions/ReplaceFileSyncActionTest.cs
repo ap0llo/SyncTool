@@ -23,6 +23,7 @@ namespace SyncTool.Synchronization.SyncActions
                 () => new ReplaceFileSyncAction(
                             Guid.Empty, // irrelevant
                             "target1",   // irrelevant
+                            default(SyncActionState), //irrelevant
                             new FileReference("path1"),
                             new FileReference("path2")));
         }

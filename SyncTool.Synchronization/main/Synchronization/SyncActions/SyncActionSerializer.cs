@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using SyncTool.FileSystem;
 
@@ -114,19 +115,19 @@ namespace SyncTool.Synchronization.SyncActions
         AddFileSyncAction DeserializeAddFileSyncAction(JObject json)
         {
             var dto = JsonConvert.DeserializeObject<AddFileSyncActionDto>(json.ToString());
-            return new AddFileSyncAction(dto.Id, dto.Target, DeserializeFileReference(dto.NewFile));
+            return new AddFileSyncAction(dto.Id, dto.Target, dto.State, DeserializeFileReference(dto.NewFile));
         }
 
         RemoveFileSyncAction DeserializeRemoveFileSyncAction(JObject json)
         {
             var dto = JsonConvert.DeserializeObject<RemoveFileSyncActionDto>(json.ToString());
-            return new RemoveFileSyncAction(dto.Id, dto.Target, DeserializeFileReference(dto.RemovedFile));            
+            return new RemoveFileSyncAction(dto.Id, dto.Target, dto.State, DeserializeFileReference(dto.RemovedFile));            
         }
 
         ReplaceFileSyncAction DeserializeReplaceFileSyncAction(JObject json)
         {
             var dto = JsonConvert.DeserializeObject<ReplaceFileSyncActionDto>(json.ToString());
-            return new ReplaceFileSyncAction(dto.Id, dto.Target, DeserializeFileReference(dto.OldVersion), DeserializeFileReference(dto.NewVersion));
+            return new ReplaceFileSyncAction(dto.Id, dto.Target, dto.State, DeserializeFileReference(dto.OldVersion), DeserializeFileReference(dto.NewVersion));
         }
 
         JObject GetObjectProperty(JObject parent, string name)
@@ -166,6 +167,8 @@ namespace SyncTool.Synchronization.SyncActions
             [JsonRequired]
             public Guid Id { get; set; }
 
+            [JsonRequired, JsonConverter(typeof(StringEnumConverter))]
+            public SyncActionState State { get; set; }
 
             protected SyncActionDto()
             {
@@ -176,6 +179,7 @@ namespace SyncTool.Synchronization.SyncActions
             {
                 Target = action.Target;
                 Id = action.Id;
+                State = action.State;
             }
         }
 
