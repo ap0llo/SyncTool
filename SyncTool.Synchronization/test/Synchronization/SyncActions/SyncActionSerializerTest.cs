@@ -189,5 +189,21 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Equal(expected.State, actual.State);
         }
 
+        [Fact(DisplayName = nameof(SyncActionSerializer) + ": State property is serialized as string")]
+        public void State_property_is_serialized_as_string()
+        {
+            var lastWriteTime = DateTime.Now;
+            var oldVersion = new FileReference("file1", lastWriteTime, 23);
+            var newVersion = new FileReference("file1", lastWriteTime.AddDays(1), 23 * 2);
+
+            var syncAction = new ReplaceFileSyncAction(Guid.NewGuid(), Guid.NewGuid().ToString(), SyncActionState.Completed, oldVersion, newVersion);
+
+            var serialized = JObject.Parse(m_Instance.Serialize(syncAction));
+
+            Assert.Equal(syncAction.State.ToString(), serialized["value"]["State"].ToString());
+
+        }
+
+
     }
 }
