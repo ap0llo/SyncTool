@@ -53,7 +53,6 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
         }
 
-
         [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Missing state causes SerializationException")]
         public void Deserialize_missing_state_causes_SerializationException()
         {
@@ -69,11 +68,10 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
         }
 
-
         [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Invalid id causes SerializationException")]
         public void Deserialize_invalid_id_causes_SerializationException()
         {
-            var value = (JObject)s_ValidJson["value"];
+            var value = (JObject)s_ValidJson["value"].DeepClone();
             value.Remove("id");
             value.Add(new JProperty("id", "This is not a Guid"));
 
@@ -83,14 +81,12 @@ namespace SyncTool.Synchronization.SyncActions
                 new JProperty("name", s_ValidJson["name"]));
 
             Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
-        }
-
-
+        }        
 
         [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Invalid state causes SerializationException")]
         public void Deserialize_invalid_state_causes_SerializationException()
         {
-            var value = (JObject)s_ValidJson["value"];
+            var value = (JObject)s_ValidJson["value"].DeepClone();
             value.Remove("State");
             value.Add(new JProperty("State", "This is not a SyncActionState"));
 
@@ -101,7 +97,6 @@ namespace SyncTool.Synchronization.SyncActions
 
             Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
         }
-
 
         [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Missing name causes SerializationException")]   
         public void Deserialize_missing_name_causes_SerializationException()
