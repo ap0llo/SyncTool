@@ -42,6 +42,8 @@
     <Compile Include="Synchronization\ChangeGraph\Graph.cs" />
     <Compile Include="Synchronization\ChangeGraph\Node.cs" />
     <Compile Include="Synchronization\ChangeGraph\NodeComparer.cs" />
+    <Compile Include="Synchronization\Conflicts\ConflictServiceExtensions.cs" />
+    <Compile Include="Synchronization\Conflicts\IConflictService.cs" />
     <Compile Include="Synchronization\DI\SynchronizationModule.cs" />
     <Compile Include="Synchronization\State\DuplicateSynchronizationStateException.cs" />
     <Compile Include="Synchronization\State\SynchronizationStateNotFoundException.cs" />
@@ -50,14 +52,11 @@
     <Compile Include="Synchronization\SyncActions\SyncActionState.cs" />
     <Compile Include="Synchronization\_Exceptions\DuplicateSyncActionException.cs" />
     <Compile Include="Synchronization\_Exceptions\NotApplicableException.cs" />
-    <Compile Include="Synchronization\ISynchronizerResult.cs" />
-    <Compile Include="Synchronization\Conflicts\ModificationDeletionSyncConflict.cs" />
-    <Compile Include="Synchronization\Conflicts\MultipleVersionSyncConflict.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionSerializer.cs" />
     <Compile Include="Synchronization\SynchronizerResult.cs" />
     <Compile Include="Synchronization\Synchronizer.cs" />
     <Compile Include="Synchronization\SyncActions\AddFileSyncAction.cs" />
-    <Compile Include="Synchronization\Conflicts\SyncConflict.cs" />
+    <Compile Include="Synchronization\Conflicts\ConflictInfo.cs" />
     <Compile Include="FileSystem\Versioning\FilteredFileSystemDiff.cs" />
     <Compile Include="Synchronization\GroupedChange.cs" />
     <Compile Include="Synchronization\ISynchronizer.cs" />

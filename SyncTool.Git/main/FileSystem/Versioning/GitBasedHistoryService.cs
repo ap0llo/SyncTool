@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ namespace SyncTool.Git.FileSystem.Versioning
                 
                 if (!GitGroup.Repository.LocalBranchExists(branchName))
                 {
-                    throw new ItemNotFoundException(name);
+                    throw new ItemNotFoundException($"An item named '{name}' was not found");
                 }
 
                 return new GitBasedFileSystemHistory(GitGroup.Repository, name);

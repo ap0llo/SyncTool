@@ -31,6 +31,7 @@
     <Compile Include="FileSystem\AbstractDirectory.cs" />
     <Compile Include="FileSystem\BaseVisitor.cs" />
     <Compile Include="FileSystem\Constants.cs" />
+    <Compile Include="FileSystem\DirectoryExtensions.cs" />
     <Compile Include="FileSystem\FileExtensions.cs" />
     <Compile Include="FileSystem\FileReference.cs" />
     <Compile Include="FileSystem\FileReferenceExtensions.cs" />

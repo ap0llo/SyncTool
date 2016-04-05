@@ -45,7 +45,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
                 }
 
                 var directory = gitDirectory.GetDirectory(directoryPath);
-                return GetSyncActions(directory);
+                return LoadSyncActions(directory);
             }
         }
 
@@ -74,7 +74,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
                 else
                 {
                     var directory = gitDirectory.GetDirectory(directoryPath);
-                    return GetSyncActions(directory);
+                    return LoadSyncActions(directory);
                 }
             }
         }
@@ -133,7 +133,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             {
                 PathValidator.EnsureIsRootedPath(syncAction.FilePath);
 
-                var directory = GetOrAddDirectory(root, GetRelativeSyncActionDirectoryPath(syncAction));
+                var directory = DirectoryHelper.GetOrAddDirectory(root, GetRelativeSyncActionDirectoryPath(syncAction));
                 directory.Add(d => new SyncActionFile(d, syncAction));
             }
 
@@ -185,7 +185,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
                     }
 
                     // add a new file
-                    var directory = GetOrAddDirectory(root, GetRelativeSyncActionDirectoryPath(syncAction));
+                    var directory = DirectoryHelper.GetOrAddDirectory(root, GetRelativeSyncActionDirectoryPath(syncAction));
                     directory.Add(d => new SyncActionFile(d, syncAction));
                 }
 
@@ -275,43 +275,15 @@ namespace SyncTool.Git.Synchronization.SyncActions
         /// <summary>
         /// Recursively loads all sync actions from the specified directory
         /// </summary>
-        IEnumerable<SyncAction> GetSyncActions(IDirectory directory)
+        IEnumerable<SyncAction> LoadSyncActions(IDirectory directory)
         {
-            foreach (var file in directory.Files.Where(f => f.Name.EndsWith(SyncActionFile.FileSuffix)).Cast<IReadableFile>())
-            {
-                using (var stream = file.OpenRead())
-                {
-                    yield return m_SyncActionSerializer.Deserialize(stream);
-                }
-            }
-
-            foreach (var dir in directory.Directories)
-            {
-                foreach (var syncAction in GetSyncActions(dir))
-                {
-                    yield return syncAction;
-                }
-            }
+            return directory
+                .EnumerateFilesRecursively()
+                .Where(f => f.Name.EndsWith(SyncActionFile.FileNameSuffix, StringComparison.InvariantCultureIgnoreCase))
+                .Cast<IReadableFile>()
+                .Select(file => SyncActionFile.Load(null, file).Content);
         }
 
-        Directory GetOrAddDirectory(Directory parent, string relativePath)
-        {
-            if (relativePath == "")
-            {
-                return parent;
-            }
-
-            if (parent.DirectoryExists(relativePath))
-            {
-                return (Directory) parent.GetDirectory(relativePath);
-            }
-            else
-            {
-                var name = PathParser.GetFileName(relativePath);
-                var directParent = GetOrAddDirectory(parent, PathParser.GetDirectoryName(relativePath));
-                return (Directory) directParent.Add(d => new Directory(d, name));
-            }
-        }
 
 
         string GetRelativeSyncActionDirectoryPath(SyncAction action) => GetRelativeSyncActionDirectoryPath(action.State, action.FilePath);

@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\_Exceptions\DuplicateGroupException.cs" />
+    <Compile Include="Common\_Exceptions\DuplicateItemException.cs" />
     <Compile Include="Common\_Exceptions\GroupManagerException.cs" />
     <Compile Include="Common\IGroup.cs" />
     <Compile Include="Common\IGroupManager.cs" />

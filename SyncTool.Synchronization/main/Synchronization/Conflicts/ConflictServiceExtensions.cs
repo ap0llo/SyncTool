@@ -3,19 +3,18 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using SyncTool.Common;
-
-namespace SyncTool.Synchronization.State
+namespace SyncTool.Synchronization.Conflicts
 {
-    public class SynchronizationStateNotFoundException : ItemNotFoundException
+    public static class ConflictServiceExtensions
     {
-
-        public int SynchronizationStateId { get; }
-
-
-        public SynchronizationStateNotFoundException(int id) : base($"A SynchronizationState with id {id} could not be found")
+        public static void Add(this IConflictService service, params ConflictInfo[] syncActions)
         {
-            SynchronizationStateId = id;
+            service.Add(syncActions);
+        }
+
+        public static void Remove(this IConflictService service, params ConflictInfo[] syncActions)
+        {
+            service.Remove(syncActions);
         }
     }
 }

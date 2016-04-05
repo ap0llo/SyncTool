@@ -31,7 +31,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
 
         #region Indexer
-
+        
         [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer validates the file path")]
         public void Indexer_validates_the_file_path()
         {
