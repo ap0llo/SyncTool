@@ -1,8 +1,9 @@
 ﻿// // -----------------------------------------------------------------------------------------------------------
-// //  Copyright (c) 2015, Andreas Grünwald
+// //  Copyright (c) 2015-2016, Andreas Grünwald
 // //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // // -----------------------------------------------------------------------------------------------------------
 
+using System.CodeDom;
 using System.IO;
 using SyncTool.FileSystem;
 using SyncTool.Synchronization.SyncActions;
@@ -17,7 +18,7 @@ namespace SyncTool.Git.FileSystem
         public const string FileSuffix = ".SyncAction.json";
 
 
-        public SyncActionFile(IDirectory parent, SyncAction content) : base(parent, content.Id.ToString("D") + FileSuffix , content)
+        public SyncActionFile(IDirectory parent, SyncAction content) : base(parent, GetFileName(content) , content)
         {
         }
 
@@ -37,5 +38,8 @@ namespace SyncTool.Git.FileSystem
         }
 
         public override IFile WithParent(IDirectory newParent) => new SyncActionFile(newParent, Name, Content);
+
+
+        internal static string GetFileName(SyncAction action) => action.Id.ToString("D") + FileSuffix;
     }
 }

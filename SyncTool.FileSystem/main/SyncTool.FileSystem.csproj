@@ -55,7 +55,8 @@
     <Compile Include="FileSystem\IFile.cs" />
     <Compile Include="FileSystem\IFileSystemItem.cs" />
     <Compile Include="FileSystem\IReadableFile.cs" />
-    <Compile Include="PathValidator.cs" />
+    <Compile Include="FileSystem\PathParser.cs" />
+    <Compile Include="FileSystem\PathValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FileSystem\SerializationExtensions.cs" />
   </ItemGroup>

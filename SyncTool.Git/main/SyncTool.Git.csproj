@@ -90,6 +90,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Synchronization\State\GitSynchronizationStateService.cs" />
     <Compile Include="FileSystem\SyncActionFile.cs" />
+    <Compile Include="Synchronization\SyncActions\GitSyncActionService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -116,9 +117,7 @@
       <Name>SyncTool.Synchronization</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Synchronization\SyncActions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

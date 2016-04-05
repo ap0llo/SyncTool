@@ -8,9 +8,9 @@ using System.Linq;
 using SyncTool.FileSystem;
 using SyncTool.Common;
 
-namespace SyncTool
+namespace SyncTool.FileSystem
 {
-    internal static class PathValidator
+    public static class PathValidator
     {
 
         public static void EnsureIsValidDirectoryPath(string path) => EnsureIsValidPath(path);
@@ -25,6 +25,16 @@ namespace SyncTool
                 throw new FormatException($"'{path}' is not a valid file path");
             }
         }
+
+
+        public static void EnsureIsRootedPath(string path)
+        {
+            if (!path.StartsWith(Constants.DirectorySeparatorChar))
+            {
+                throw new FormatException($"'{path}' is not rooted");
+            }
+        }
+
 
         private static void EnsureIsValidPath(string path)
         {
@@ -51,8 +61,9 @@ namespace SyncTool
             {
                 throw new FormatException("The path contains invalid characters");
             }
-
         }
+
+
 
 
 

@@ -3,22 +3,49 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using SyncTool.Common;
 
 namespace SyncTool.Synchronization.SyncActions
 {
     public interface ISyncActionService : IService
-    {        
-        void Add(IEnumerable<SyncAction> syncActions);
-
-        void Update(IEnumerable<SyncAction> syncActions);
-
-        void Remove(IEnumerable<SyncAction> syncActions);
-
+    {
+        /// <summary>
+        /// Gets all sync actions with the specified state
+        /// </summary>
         IEnumerable<SyncAction> this[SyncActionState state] { get; }
 
+        /// <summary>
+        /// Gets all sync actions for the specified state and file path
+        /// </summary>
+        /// <exception cref="ArgumentNullException"><paramref name="filePath"/> is null</exception>
+        /// <exception cref="FormatException"><paramref name="filePath"/> is not a valid file path</exception>
         IEnumerable<SyncAction> this[SyncActionState state, string filePath] { get; }
+
+        /// <summary>
+        /// Gets all sync actions for the specified file path
+        /// </summary>
+        IEnumerable<SyncAction> this[string filePath] { get; }
+
+
+        /// <summary>
+        /// Adds the specified sync actions to the service
+        /// </summary>
+        /// <exception cref="DuplicateSyncActionException"><paramref name="syncActions"/> contains a action with a id that already exists</exception>
+        void Add(IEnumerable<SyncAction> syncActions);
+
+        /// <summary>
+        /// Updates the specified sync actions
+        /// </summary>
+        /// <exception cref="SyncActionNotFoundException"><paramref name="syncActions"/> contains an action with an id that does not yet exist</exception>
+        void Update(IEnumerable<SyncAction> syncActions);
+
+        /// <summary>
+        /// Removes the specified sync actions
+        /// </summary>
+        /// <exception cref="SyncActionNotFoundException"><paramref name="syncActions"/> contains an action that does not exist</exception>
+        void Remove(IEnumerable<SyncAction> syncActions);
         
     }
 }
