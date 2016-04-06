@@ -82,7 +82,7 @@ namespace SyncTool.Git.Synchronization.State
             return root.FileExists(relativePath);
         }
 
-        public void AddSynchronizationState(ISyncPoint state)
+        public void AddItem(ISyncPoint state)
         {
             if (state == null)
             {

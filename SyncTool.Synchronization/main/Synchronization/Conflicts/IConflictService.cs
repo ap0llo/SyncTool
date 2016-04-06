@@ -10,9 +10,9 @@ namespace SyncTool.Synchronization.Conflicts
 {
     public interface IConflictService : IItemService<string, ConflictInfo>
     {
-        void Add(IEnumerable<ConflictInfo> conflicts);
+        void AddItems(IEnumerable<ConflictInfo> conflicts);
         
-        void Remove(IEnumerable<ConflictInfo> conflicts);
+        void RemoveItems(IEnumerable<ConflictInfo> conflicts);
              
     }
 }

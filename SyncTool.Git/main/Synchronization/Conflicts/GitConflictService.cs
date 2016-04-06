@@ -73,7 +73,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
         }
 
         
-        public void Add(IEnumerable<ConflictInfo> conflicts)
+        public void AddItems(IEnumerable<ConflictInfo> conflicts)
         {
             if (conflicts == null)
             {
@@ -116,7 +116,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
 
         }
 
-        public void Remove(IEnumerable<ConflictInfo> conflicts)
+        public void RemoveItems(IEnumerable<ConflictInfo> conflicts)
         {
             if (conflicts == null)
             {

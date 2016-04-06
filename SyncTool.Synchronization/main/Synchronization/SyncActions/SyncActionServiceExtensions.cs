@@ -8,19 +8,19 @@ namespace SyncTool.Synchronization.SyncActions
     public static class SyncActionServiceExtensions
     {
 
-        public static void Add(this ISyncActionService service, params SyncAction[] syncActions)
+        public static void AddItems(this ISyncActionService service, params SyncAction[] syncActions)
         {
-            service.Add(syncActions);
+            service.AddItems(syncActions);
         }
 
-        public static void Update(this ISyncActionService service, params SyncAction[] syncActions)
+        public static void UpdateItems(this ISyncActionService service, params SyncAction[] syncActions)
         {
-            service.Update(syncActions);
+            service.UpdateItems(syncActions);
         }
 
-        public static void Remove(this ISyncActionService service, params SyncAction[] syncActions)
+        public static void RemoveItems(this ISyncActionService service, params SyncAction[] syncActions)
         {
-            service.Remove(syncActions);
+            service.RemoveItems(syncActions);
         }
     }
 }

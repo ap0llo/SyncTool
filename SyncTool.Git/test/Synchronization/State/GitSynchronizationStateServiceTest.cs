@@ -36,29 +36,29 @@ namespace SyncTool.Git.Synchronization.State
             Assert.Empty(m_Service.Items);
         }
 
-        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddSynchronizationState() stores the state")]
-        public void AddSynchronizationState_stores_the_state()
+        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() stores the state")]
+        public void AddItem_stores_the_state()
         {
             var state = SynchronizationStateBuilder.NewSynchronizationState()
                 .WithId(1)
                 .WithoutFromSnapshots()
                 .WithToSnapshot("snapshot1", "value1");               
 
-            m_Service.AddSynchronizationState(state);
+            m_Service.AddItem(state);
 
             Assert.Single(m_Service.Items);
             Assert.True(m_Service.ItemExists(1));
             SynchronizationStateAssert.Equal(state, m_Service[1]);
         }
 
-        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddSynchronizationState() throws " + nameof(ArgumentNullException) + " if state is null")]
-        public void AddSynchronizationState_throws_ArgumentNullException_if_state_is_null()
+        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() throws " + nameof(ArgumentNullException) + " if state is null")]
+        public void AddItem_throws_ArgumentNullException_if_state_is_null()
         {
-            Assert.Throws<ArgumentNullException>(() => m_Service.AddSynchronizationState(null));
+            Assert.Throws<ArgumentNullException>(() => m_Service.AddItem(null));
         }
 
-        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddSynchronizationState() throws " + nameof(DuplicateSyncPointException) + " if state id already exists")]
-        public void AddSynchronizationState_throws_DuplicateSynchronizationStateException_if_state_id_already_exists()
+        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() throws " + nameof(DuplicateSyncPointException) + " if state id already exists")]
+        public void AddItem_throws_DuplicateSynchronizationStateException_if_state_id_already_exists()
         {
             var state1 = SynchronizationStateBuilder.NewSynchronizationState()
                 .WithId(1)
@@ -70,12 +70,12 @@ namespace SyncTool.Git.Synchronization.State
                 .WithoutFromSnapshots()
                 .WithToSnapshot("name", "id");
 
-            m_Service.AddSynchronizationState(state1);
-            Assert.Throws<DuplicateSyncPointException>(() => m_Service.AddSynchronizationState(state2));
+            m_Service.AddItem(state1);
+            Assert.Throws<DuplicateSyncPointException>(() => m_Service.AddItem(state2));
         }
         
-        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddSynchronizationState() correctly stores multiple states")]
-        public void AddSynchronizationState_correctly_stores_multiple_states()
+        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() correctly stores multiple states")]
+        public void AddItem_correctly_stores_multiple_states()
         {
             var state1 = SynchronizationStateBuilder.NewSynchronizationState()
                 .WithId(1)
@@ -87,8 +87,8 @@ namespace SyncTool.Git.Synchronization.State
                 .WithoutFromSnapshots()
                 .WithToSnapshot("name", "id");
 
-            m_Service.AddSynchronizationState(state1);
-            m_Service.AddSynchronizationState(state2);
+            m_Service.AddItem(state1);
+            m_Service.AddItem(state2);
 
             Assert.Equal(2, m_Service.Items.Count());
             Assert.True(m_Service.ItemExists(1));
@@ -108,8 +108,8 @@ namespace SyncTool.Git.Synchronization.State
                 .WithFromSnapshot("name2", "id2")
                 .WithToSnapshot("name3", "id3");
             
-            m_Service.AddSynchronizationState(state1);
-            m_Service.AddSynchronizationState(state2);
+            m_Service.AddItem(state1);
+            m_Service.AddItem(state2);
 
             // create another service instance that needs to load the state from disk
 
@@ -137,7 +137,7 @@ namespace SyncTool.Git.Synchronization.State
                 .WithoutFromSnapshots()
                 .WithToSnapshot("name", "id");                
 
-            m_Service.AddSynchronizationState(state);
+            m_Service.AddItem(state);
             SynchronizationStateAssert.Equal(state, m_Service[1]);
         }
 

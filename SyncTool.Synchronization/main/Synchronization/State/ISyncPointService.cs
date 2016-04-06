@@ -16,7 +16,7 @@ namespace SyncTool.Synchronization.State
         /// </summary>
         /// <param name="state">The state to add</param>
         /// <exception cref="DuplicateSyncPointException">Thrown if a state with the same id already exists</exception>
-        void AddSynchronizationState(ISyncPoint state);
+        void AddItem(ISyncPoint state);
 
 
 

@@ -50,7 +50,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
         {
             var expected = new ConflictInfo("/file1", null);
 
-            m_Service.Add(expected);
+            m_Service.AddItems(expected);
 
             Assert.Single(m_Service.Items);
             var actual = m_Service.Items.Single();
@@ -64,7 +64,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
         {
             var expected = new ConflictInfo("/file1", new Dictionary<string, string>() { {"name", "id"} });
 
-            m_Service.Add(expected);
+            m_Service.AddItems(expected);
 
             Assert.Single(m_Service.Items);
             var actual = m_Service.Items.Single();
@@ -99,7 +99,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
         public void T08_Indexer_throws_ItemNotFoundException_if_item_does_not_exist()
         {
             var conflict = new ConflictInfo("/file1", null);
-            m_Service.Add(conflict);
+            m_Service.AddItems(conflict);
 
             Assert.Throws<ItemNotFoundException>(() => m_Service["/some/other/path"]);
         }
@@ -109,7 +109,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
         public void T09_Indexer_returns_expected_result()
         {
             var expected = new ConflictInfo("/file1", null);
-            m_Service.Add(expected);
+            m_Service.AddItems(expected);
 
             var actual = m_Service[expected.FilePath];
 
@@ -121,25 +121,25 @@ namespace SyncTool.Git.Synchronization.Conflicts
         #endregion
 
 
-        #region Add
+        #region AddItems
 
         [Fact]
-        public void T08_Add_throws_DuplicateItemException_if_conflict_has_already_been_added()
+        public void T08_AddItems_throws_DuplicateItemException_if_conflict_has_already_been_added()
         {
             var conflict = new ConflictInfo("/file1", null);
-            m_Service.Add(conflict);
-            Assert.Throws<DuplicateItemException>(() => m_Service.Add(conflict));
+            m_Service.AddItems(conflict);
+            Assert.Throws<DuplicateItemException>(() => m_Service.AddItems(conflict));
         }
 
         [Fact]
-        public void T09_Add_properly_stores_added_conflicts()
+        public void T09_AddItems_properly_stores_added_conflicts()
         {
             var conflict1 = new ConflictInfo("/file1", null);
             var conflict2 = new ConflictInfo("/file2", null);
 
             var commitCount = m_Group.Repository.GetAllCommits().Count();
 
-            m_Service.Add(conflict1, conflict2);
+            m_Service.AddItems(conflict1, conflict2);
             Assert.Equal(commitCount +1 , m_Group.Repository.GetAllCommits().Count());
 
             var newServiceInstance = new GitConflictService(m_Group);
@@ -149,27 +149,27 @@ namespace SyncTool.Git.Synchronization.Conflicts
         #endregion
 
 
-        #region Remove
+        #region RemoveItems
 
         [Fact]
-        public void T10_Remove_throws_ItemNotFoundException_if_conflict_does_not_exist()
+        public void T10_RemoveItems_throws_ItemNotFoundException_if_conflict_does_not_exist()
         {
             var conflict = new ConflictInfo("/file1", null);            
-            Assert.Throws<ItemNotFoundException>(() => m_Service.Remove(conflict));
+            Assert.Throws<ItemNotFoundException>(() => m_Service.RemoveItems(conflict));
         }
 
         [Fact]
-        public void T11_Remove_removes_the_specified_items()
+        public void T11_RemoveItems_removes_the_specified_items()
         {
             var commitCount = m_Group.Repository.GetAllCommits().Count();
             var conflict1 = new ConflictInfo("/file1", null);
             var conflict2 = new ConflictInfo("/file2", null);
 
             Assert.Empty(m_Service.Items);
-            m_Service.Add(conflict1, conflict2);
+            m_Service.AddItems(conflict1, conflict2);
             Assert.NotEmpty(m_Service.Items);
 
-            m_Service.Remove(conflict1, conflict2);
+            m_Service.RemoveItems(conflict1, conflict2);
             Assert.Empty(m_Service.Items);
             Assert.Equal(commitCount + 2, m_Group.Repository.GetAllCommits().Count());
         }
@@ -193,7 +193,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
         public void T13_ItemExists_returns_the_expected_result()
         {
             var conflict = new ConflictInfo("/some/file/path", null);
-            m_Service.Add(conflict);
+            m_Service.AddItems(conflict);
 
             Assert.True(m_Service.ItemExists("/SOME/file/Path"));
             Assert.False(m_Service.ItemExists("/another/path"));

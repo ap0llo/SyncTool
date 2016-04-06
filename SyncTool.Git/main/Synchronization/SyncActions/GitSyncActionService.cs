@@ -105,7 +105,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
         }
 
 
-        public void Add(IEnumerable<SyncAction> syncActions)
+        public void AddItems(IEnumerable<SyncAction> syncActions)
         {
             syncActions = syncActions.ToArray();
 
@@ -151,7 +151,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             }
         }
 
-        public void Update(IEnumerable<SyncAction> syncActions)
+        public void UpdateItems(IEnumerable<SyncAction> syncActions)
         {
             syncActions = syncActions.ToList();
 
@@ -197,7 +197,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             }
         }
 
-        public void Remove(IEnumerable<SyncAction> syncActions)
+        public void RemoveItems(IEnumerable<SyncAction> syncActions)
         {
             syncActions = syncActions.ToList();
 
