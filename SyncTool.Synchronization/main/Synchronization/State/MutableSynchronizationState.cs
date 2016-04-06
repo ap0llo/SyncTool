@@ -4,9 +4,8 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using SyncTool.Synchronization.State;
 
-namespace SyncTool.Git.FileSystem
+namespace SyncTool.Synchronization.State
 {
     public class MutableSynchronizationState : ISynchronizationState
     {

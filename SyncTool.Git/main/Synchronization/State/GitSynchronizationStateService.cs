@@ -10,40 +10,78 @@ using SyncTool.FileSystem;
 using SyncTool.FileSystem.Local;
 using SyncTool.Git.Common;
 using SyncTool.Git.FileSystem;
+using SyncTool.Synchronization.Conflicts;
 using SyncTool.Synchronization.State;
 
 namespace SyncTool.Git.Synchronization.State
 {
     public class GitSynchronizationStateService : GitBasedService, ISynchronizationStateService
     {
-        static readonly BranchName s_BranchName = new BranchName("synchronization", "state");
+        internal static readonly BranchName BranchName = new BranchName("synchronization", "state");
         const string s_DirectoryName = "SynchronizationState";
-                
-        readonly Lazy<IDictionary<int, ISynchronizationState>> m_Items;
+        
 
+        public IEnumerable<ISynchronizationState> Items
+        {
+            get
+            {
+                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                {
+                    return Enumerable.Empty<ISynchronizationState>();
+                }
 
-        public IEnumerable<ISynchronizationState> Items => m_Items.Value.Values;
+                var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+
+                if (!root.DirectoryExists(s_DirectoryName))
+                {
+                    return Enumerable.Empty<ISynchronizationState>();
+                }
+
+                return LoadSynchronizationStates(root.GetDirectory(s_DirectoryName));
+            }
+        }
 
         public ISynchronizationState this[int id]
         {
             get
             {
-                if (!m_Items.Value.ContainsKey(id))
+                if (!GitGroup.Repository.LocalBranchExists(BranchName))
                 {
                     throw new SynchronizationStateNotFoundException(id);
                 }
-                return m_Items.Value[id];
+
+                var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+                var relativePath = GetRelativeSynchronizationStateFilePath(id);
+
+                if (!root.FileExists(relativePath))
+                {
+                    throw new SynchronizationStateNotFoundException(id);
+                }
+
+                return SynchronizationStateFile.Load(null, (IReadableFile)root.GetFile(relativePath)).Content;
             }
         }
 
 
         public GitSynchronizationStateService(GitBasedGroup gitGroup) : base(gitGroup)
         {
-            m_Items = new Lazy<IDictionary<int, ISynchronizationState>>(LoadItems);
+       
+
         }
 
 
-        public bool ItemExists(int key) => m_Items.Value.ContainsKey(key);
+        public bool ItemExists(int id)
+        {
+            if (!GitGroup.Repository.LocalBranchExists(BranchName))
+            {
+                return false;
+            }
+
+            var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+            var relativePath = GetRelativeSynchronizationStateFilePath(id);
+
+            return root.FileExists(relativePath);
+        }
 
         public void AddSynchronizationState(ISynchronizationState state)
         {
@@ -51,65 +89,51 @@ namespace SyncTool.Git.Synchronization.State
             {
                 throw new ArgumentNullException(nameof(state));
             }
-
+            
             if (ItemExists(state.Id))
             {
                 throw new DuplicateSynchronizationStateException(state.Id);
             }
 
-            // create synchronization state branch if neccessary
-            if (!GitGroup.Repository.LocalBranchExists(s_BranchName))
-            {
-                GitGroup.Repository.CreateBranch(s_BranchName, GitGroup.Repository.GetInitialCommit());
-            }
+            // create synchronization state branch if necessary
+            EnsureBranchExists();
 
-            var directory = new Directory(null,s_DirectoryName)
+            var directory = new Directory(null, s_DirectoryName)
             {
                 d => new SynchronizationStateFile(d, state)
             };
 
-            using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, s_BranchName.ToString()))
+            using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, BranchName.ToString()))
             {
                 var localItemCreator = new LocalItemCreator();
                 localItemCreator.CreateDirectory(directory, workingDirectory.Location);
 
-                workingDirectory.Commit($"Added SynchronizationState {state.Id}");
+                workingDirectory.Commit($"{nameof(GitSynchronizationStateService)}: Added SynchronizationState {state.Id}");
                 workingDirectory.Push();
-            }
-
-            m_Items.Value.Add(state.Id, state);
+            }            
         }
 
 
-        IDictionary<int, ISynchronizationState> LoadItems()
+        IEnumerable<ISynchronizationState> LoadSynchronizationStates(IDirectory directory)
         {
-            if (!GitGroup.Repository.LocalBranchExists(s_BranchName))
-            {                
-                return new Dictionary<int, ISynchronizationState>();
-            }
-            var directory = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(s_BranchName).Tip);
-
-            if (!directory.DirectoryExists(s_DirectoryName))
-            {
-                return new Dictionary<int, ISynchronizationState>();
-            }
-
-            return LoadItems(directory.GetDirectory(s_DirectoryName));
+            return directory
+               .EnumerateFilesRecursively()
+               .Where(f => f.Name.EndsWith(SynchronizationStateFile.FileNameSuffix, StringComparison.InvariantCultureIgnoreCase))
+               .Cast<IReadableFile>()
+               .Select(file => SynchronizationStateFile.Load(null, file).Content);
         }
 
-        IDictionary<int, ISynchronizationState> LoadItems(IDirectory directory)
+        void EnsureBranchExists()
         {
-            var parent = new Directory("root");
-            var result = new Dictionary<int, ISynchronizationState>();
-
-            foreach (var file in directory.Files.Where(f => f.Name.EndsWith(SynchronizationStateFile.FileNameSuffix)).Cast<IReadableFile>())
+            if (!GitGroup.Repository.LocalBranchExists(BranchName))
             {
-                var stateFile = SynchronizationStateFile.Load(parent, file);
-                result.Add(stateFile.Content.Id, stateFile.Content);
+                GitGroup.Repository.CreateBranch(BranchName, GitGroup.Repository.GetInitialCommit());
             }
-
-            return result;
         }
 
+        string GetRelativeSynchronizationStateFilePath(int id)
+        {            
+            return s_DirectoryName + "/" + SynchronizationStateFile.GetFileName(id);
+        }
     }
 }

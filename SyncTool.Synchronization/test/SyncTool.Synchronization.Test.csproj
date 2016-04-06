@@ -93,7 +93,8 @@
     <Compile Include="Synchronization\SyncActions\SyncActionSerializerTest.cs" />
     <Compile Include="Synchronization\SynchronizerResultTest.cs" />
     <Compile Include="Synchronization\SynchronizerTest.cs" />
-    <Compile Include="TestHelpers\SynchronizationStateMockingHelper.cs" />
+    <Compile Include="TestHelpers\SynchronizationStateAssert.cs" />
+    <Compile Include="TestHelpers\SynchronizationStateBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="FileSystem\" />

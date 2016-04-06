@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Win32;
 using SyncTool.Git.Common;
 using SyncTool.Git.FileSystem;
 using SyncTool.Git.TestHelpers;
@@ -40,18 +39,16 @@ namespace SyncTool.Git.Synchronization.State
         [Fact(DisplayName = nameof(GitSynchronizationStateService) + ".AddSynchronizationState() stores the state")]
         public void AddSynchronizationState_stores_the_state()
         {
-            var state = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
+            var state = SynchronizationStateBuilder.NewSynchronizationState()
                 .WithId(1)
                 .WithoutFromSnapshots()
-                .WithToSnapshot("snapshot1", "value1")
-                .Object;
-
+                .WithToSnapshot("snapshot1", "value1");               
 
             m_Service.AddSynchronizationState(state);
 
             Assert.Single(m_Service.Items);
             Assert.True(m_Service.ItemExists(1));
-            Assert.Equal(state, m_Service[1]);
+            SynchronizationStateAssert.Equal(state, m_Service[1]);
         }
 
         [Fact(DisplayName = nameof(GitSynchronizationStateService) + ".AddSynchronizationState() throws " + nameof(ArgumentNullException) + " if state is null")]
@@ -63,17 +60,15 @@ namespace SyncTool.Git.Synchronization.State
         [Fact(DisplayName = nameof(GitSynchronizationStateService) + ".AddSynchronizationState() throws " + nameof(DuplicateSynchronizationStateException) + " if state id already exists")]
         public void AddSynchronizationState_throws_DuplicateSynchronizationStateException_if_state_id_already_exists()
         {
-            var state1 = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
+            var state1 = SynchronizationStateBuilder.NewSynchronizationState()
                 .WithId(1)
                 .WithoutFromSnapshots()
-                .WithToSnapshot("name", "id")
-                .Object;
+                .WithToSnapshot("name", "id");
 
-            var state2 = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
+            var state2 = SynchronizationStateBuilder.NewSynchronizationState()
                 .WithId(1)
                 .WithoutFromSnapshots()
-                .WithToSnapshot("name", "id")
-                .Object;
+                .WithToSnapshot("name", "id");
 
             m_Service.AddSynchronizationState(state1);
             Assert.Throws<DuplicateSynchronizationStateException>(() => m_Service.AddSynchronizationState(state2));
@@ -82,17 +77,15 @@ namespace SyncTool.Git.Synchronization.State
         [Fact(DisplayName = nameof(GitSynchronizationStateService) + ".AddSynchronizationState() correctly stores multiple states")]
         public void AddSynchronizationState_correctly_stores_multiple_states()
         {
-            var state1 = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
+            var state1 = SynchronizationStateBuilder.NewSynchronizationState()
                 .WithId(1)
                 .WithoutFromSnapshots()
-                .WithToSnapshot("name", "id")
-                .Object;
+                .WithToSnapshot("name", "id");
 
-            var state2 = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
+            var state2 = SynchronizationStateBuilder.NewSynchronizationState()
                 .WithId(2)
                 .WithoutFromSnapshots()
-                .WithToSnapshot("name", "id")
-                .Object;
+                .WithToSnapshot("name", "id");
 
             m_Service.AddSynchronizationState(state1);
             m_Service.AddSynchronizationState(state2);
@@ -102,35 +95,21 @@ namespace SyncTool.Git.Synchronization.State
             Assert.True(m_Service.ItemExists(2));
         }
 
-        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": States from the repository are loaded correclty")]
+        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": States from the repository are loaded correctly")]
         public void Values_from_disk_are_loaded_correctly()
         {
-            var state1 = new MutableSynchronizationState()
-            {
-                Id = 1,
-                FromSnapshots = null,
-                ToSnapshots = new Dictionary<string, string>()
-                {
-                    {"name1", "id1" }
-                }
-            };
+            var state1 = SynchronizationStateBuilder.NewSynchronizationState()
+                .WithId(1)
+                .WithoutFromSnapshots()
+                .WithToSnapshot("name1", "id1");
 
-            var state2 = new MutableSynchronizationState()
-            {
-                Id = 2,
-                FromSnapshots = new Dictionary<string, string>()
-                {
-                    {"name2", "id2"}
-                },
-                ToSnapshots = new Dictionary<string, string>()
-                {
-                    {"name3", "id3"}
-                }
-            };
-
+            var state2 = SynchronizationStateBuilder.NewSynchronizationState()
+                .WithId(2)
+                .WithFromSnapshot("name2", "id2")
+                .WithToSnapshot("name3", "id3");
+            
             m_Service.AddSynchronizationState(state1);
             m_Service.AddSynchronizationState(state2);
-
 
             // create another service instance that needs to load the state from disk
 
@@ -139,34 +118,9 @@ namespace SyncTool.Git.Synchronization.State
             Assert.Equal(2, service.Items.Count());
             Assert.True(service.ItemExists(1));
             Assert.True(service.ItemExists(2));
-
-            {
-                var state1RoundTrip = service[1];
-
-                Assert.Equal(state1.Id, state1RoundTrip.Id);
-
-                Assert.Null(state1RoundTrip.FromSnapshots);
-
-                Assert.NotNull(state1RoundTrip.ToSnapshots);
-                Assert.Single(state1RoundTrip.ToSnapshots);
-                Assert.Equal("id1", state1RoundTrip.ToSnapshots["name1"]);
-            }
-            {
-
-                var state2RoundTrip = service[2];
-
-                Assert.Equal(state2.Id, state2RoundTrip.Id);
-
-                Assert.NotNull(state2RoundTrip.FromSnapshots);
-                Assert.Single(state2RoundTrip.FromSnapshots);
-                Assert.Equal("id2", state2RoundTrip.FromSnapshots["name2"]);
-
-                Assert.NotNull(state2RoundTrip.ToSnapshots);
-                Assert.Single(state2RoundTrip.ToSnapshots);
-                Assert.Equal("id3", state2RoundTrip.ToSnapshots["name3"]);
-            }
-
-
+            
+            SynchronizationStateAssert.Equal(state1, service[1]);            
+            SynchronizationStateAssert.Equal(state2, service[2]);            
         }       
 
         [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": Indexer throws " + nameof(SynchronizationStateNotFoundException) + " for unknown state")]
@@ -178,14 +132,13 @@ namespace SyncTool.Git.Synchronization.State
         [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": Indexer returns expected state")]
         public void Indexer_returns_expected_state()
         {
-            var state = SynchronizationStateMockingHelper.GetSynchronizationStateMock()
+            var state = SynchronizationStateBuilder.NewSynchronizationState()
                 .WithId(1)
                 .WithoutFromSnapshots()
-                .WithToSnapshot("name", "id")
-                .Object;
+                .WithToSnapshot("name", "id");                
 
             m_Service.AddSynchronizationState(state);
-            Assert.Equal(state, m_Service[1]);
+            SynchronizationStateAssert.Equal(state, m_Service[1]);
         }
 
 

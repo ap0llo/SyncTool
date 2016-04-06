@@ -46,6 +46,7 @@
     <Compile Include="Synchronization\Conflicts\IConflictService.cs" />
     <Compile Include="Synchronization\DI\SynchronizationModule.cs" />
     <Compile Include="Synchronization\State\DuplicateSynchronizationStateException.cs" />
+    <Compile Include="Synchronization\State\MutableSynchronizationState.cs" />
     <Compile Include="Synchronization\State\SynchronizationStateNotFoundException.cs" />
     <Compile Include="Synchronization\SyncActions\ISyncActionService.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionServiceExtensions.cs" />

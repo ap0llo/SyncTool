@@ -15,7 +15,7 @@ namespace SyncTool.Git.FileSystem
 
         public const string FileNameSuffix = ".SynchronizationState.json";
 
-        public SynchronizationStateFile(IDirectory parent, ISynchronizationState state) : base(parent, $"{state.Id}{FileNameSuffix}", state)
+        public SynchronizationStateFile(IDirectory parent, ISynchronizationState state) : base(parent, GetFileName(state.Id), state)
         {
         }
 
@@ -45,5 +45,8 @@ namespace SyncTool.Git.FileSystem
                 return new SynchronizationStateFile(parentDirectory, stream.Deserialize<MutableSynchronizationState>());
             }
         }
+
+        
+        public static string GetFileName(int id) => $"{id}{FileNameSuffix}";
     }
 }
