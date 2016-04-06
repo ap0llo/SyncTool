@@ -10,6 +10,7 @@ using SyncTool.Common;
 
 namespace SyncTool.FileSystem
 {
+    //TODO: Rename "Ensure.." methods to "Assert..."
     public static class PathValidator
     {
 

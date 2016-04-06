@@ -71,8 +71,15 @@ namespace SyncTool.Git.FileSystem.Versioning
             return snapshot;
         }
 
-        public IFileSystemDiff GetChanges(string toId)
+        public IFileSystemDiff GetChanges(string toId, string[] pathFilter = null)
         {
+            if (toId == null)
+            {
+                throw new ArgumentNullException(nameof(toId));
+            }
+
+            AssertIsValidPathFilter(pathFilter);
+
             var toSnapshot = GetSnapshot(toId);
             var initialCommit = m_Repository.GetInitialCommit();
 
@@ -118,13 +125,26 @@ namespace SyncTool.Git.FileSystem.Versioning
 
 
             // build change lists
-            var changeLists = GetChangeLists(initialCommit.Sha, toSnapshot);
+            var changeLists = GetChangeLists(initialCommit.Sha, toSnapshot, pathFilter);
 
             return new FileSystemDiff(this, toSnapshot, changes, changeLists);
         }
-
-        public IFileSystemDiff GetChanges(string fromId, string toId)
+      
+        public IFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null)
         {
+            if (fromId == null)
+            {
+                throw new ArgumentNullException(nameof(fromId));
+            }
+
+            if (toId == null)
+            {
+                throw new ArgumentNullException(nameof(toId));
+            }
+            
+            AssertIsValidPathFilter(pathFilter);
+
+            
             //TODO: Ensure, fromId is an ancestor of toId
 
             var fromSnapshot = GetSnapshot(fromId);
@@ -180,7 +200,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
 
             // build change lists
-            var changeLists = GetChangeLists(fromSnapshot.Commit.Sha, toSnapshot);
+            var changeLists = GetChangeLists(fromSnapshot.Commit.Sha, toSnapshot, null);
 
             return new FileSystemDiff(this, fromSnapshot, toSnapshot, changes, changeLists);
         }
@@ -205,32 +225,42 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         bool SnapshotExists(string id) => m_Snapshots.Value.ContainsKey(id);
 
-
-        IEnumerable<ChangeList> GetChangeLists(string fromCommit, GitBasedFileSystemSnapshot toSnapshot)
+        IEnumerable<ChangeList> GetChangeLists(string fromCommit, GitBasedFileSystemSnapshot toSnapshot, string[] paths)
         {
-            var changeLists = GetAllChanges(fromCommit, toSnapshot)
+            var changeLists = GetAllChanges(fromCommit, toSnapshot, paths)
                 .GroupBy(change => change.Path, StringComparer.InvariantCultureIgnoreCase)
                 .Select(group => new ChangeList(group.Reverse()));
                 
             return changeLists;
         }
 
-
-        IEnumerable<IChange> GetAllChanges(string fromCommit, GitBasedFileSystemSnapshot toSnapshot)
+        IEnumerable<IChange> GetAllChanges(string fromCommit, GitBasedFileSystemSnapshot toSnapshot, string[] paths)
         {
             var currentCommit = toSnapshot.Commit;
             var currentSnapshot = toSnapshot;
 
+            // empty path filter => result is empty
+            if (paths != null && !paths.Any())
+            {
+                yield break;
+            }
+
+            // paths refers to file in the snapshot, we need to "translate" the paths to the paths in the git repository
+            // assumes all paths are rooted
+            var pathFilter = paths?.Select(p => GitBasedFileSystemSnapshot.SnapshotDirectoryName + p + FilePropertiesFile.FileNameSuffix).ToArray();
+            
             while (currentCommit.Sha != fromCommit)
             {
                 var parentCommit = GetParentSnapshotCommit(currentCommit);
 
-                // parent commit is inital commit
+                    
+                // parent commit is initial commit
                 if (parentCommit.Sha == m_Repository.GetInitialCommit().Sha)
                 {
-                    var treeChanges = m_Repository.Diff.Compare<TreeChanges>(parentCommit.Tree, currentCommit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
-                    // build changes
 
+                    var treeChanges = m_Repository.Diff.Compare<TreeChanges>(parentCommit.Tree, currentCommit.Tree, pathFilter, null, new CompareOptions() { IncludeUnmodified = false });
+
+                    // build changes
                     foreach (var change in GetChanges(treeChanges, null, currentSnapshot))
                     {
                         yield return change;
@@ -244,7 +274,7 @@ namespace SyncTool.Git.FileSystem.Versioning
                 {    
                     var parentSnapshot = GetSnapshot(parentCommit.Sha);
 
-                    var treeChanges = m_Repository.Diff.Compare<TreeChanges>(parentCommit.Tree, currentCommit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
+                    var treeChanges = m_Repository.Diff.Compare<TreeChanges>(parentCommit.Tree, currentCommit.Tree, pathFilter, null, new CompareOptions() { IncludeUnmodified = false });
 
                     // build changes
                     foreach(var change in GetChanges(treeChanges, parentSnapshot, currentSnapshot))
@@ -312,7 +342,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         /// <summary>
         /// Gets the first parent of the specified commit that is a snapshot or
-        /// the inital commit of the repository if the specifed commit is the first snapshot in the history
+        /// the initial commit of the repository if the specified commit is the first snapshot in the history
         /// </summary>
         Commit GetParentSnapshotCommit(Commit commit)
         {
@@ -327,6 +357,22 @@ namespace SyncTool.Git.FileSystem.Versioning
                 }
                 currentCommit = currentCommit.Parents.Single();
             }
+        }
+
+
+        void AssertIsValidPathFilter(string[] pathFilter)
+        {
+            if (pathFilter == null)
+            {
+                return;                
+            }
+
+            foreach (var path in pathFilter)
+            {
+                PathValidator.EnsureIsValidFilePath(path);
+                PathValidator.EnsureIsRootedPath(path);
+            }
+
         }
 
     }

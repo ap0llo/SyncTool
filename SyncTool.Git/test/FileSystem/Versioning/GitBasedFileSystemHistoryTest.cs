@@ -168,8 +168,11 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges(snapshot1.Id, "someOtherId"));
             Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges("someId", snapshot2.Id));
-
             Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges("someId"));
+
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges(snapshot1.Id, "someOtherId", Array.Empty<string>()));
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges("someId", snapshot2.Id, Array.Empty<string>()));
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges("someId", Array.Empty<string>()));
 
         }
 
@@ -205,7 +208,6 @@ namespace SyncTool.Git.FileSystem.Versioning
             FileSystemAssert.FileEqual(state2.GetFile(s_File1), diff.Changes.Single().ToFile);
 
             // "new" changes API
-
             Assert.Single(diff.ChangeLists);
             Assert.Single(diff.ChangeLists.Single().Changes);
             Assert.Equal(ChangeType.Modified, diff.ChangeLists.Single().Changes.Single().Type);
@@ -297,7 +299,6 @@ namespace SyncTool.Git.FileSystem.Versioning
             FileSystemAssert.FileReferenceMatches(state1.GetFile(s_File1), changes.Single().FromVersion);
         }
 
-
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() ignores Additions of empty directories")]
         public void GetChanges_ignores_Additions_of_empty_directories()
         {
@@ -382,7 +383,6 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Single(diff.ChangeLists);
         }
 
-
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() with single id gets all changes since the initial commit")]
         public void GetChanges_with_single_id_gets_all_changes_since_the_initial_commit()
         {
@@ -410,10 +410,8 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Equal(ChangeType.Added, changes.Single().Type);           
         }
 
-
-
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): Multiple changes to the same file")]
-        public void GetChanges_Multiple_chamges_to_the_same_file()
+        public void GetChanges_Multiple_changes_to_the_same_file()
         {
             var lastWriteTime = DateTime.Now;
             var state1 = new Directory(s_Dir1)
@@ -456,7 +454,6 @@ namespace SyncTool.Git.FileSystem.Versioning
             FileSystemAssert.FileReferenceMatches(state1.GetFile("file1"), changes[1].FromVersion);
             FileSystemAssert.FileReferenceMatches(state2.GetFile("file1"), changes[1].ToVersion);
         }
-
 
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): A file gets added, modified and deleted ")]
         public void GetChanges_A_file_gets_added_modified_and_deleted()
@@ -510,7 +507,6 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Null(changes[2].ToVersion);
 
         }
-
 
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): A file gets added, modified and deleted betwen snapshots")]
         public void GetChanges_A_file_gets_added_modified_and_deleted_between_snapshots()
@@ -566,7 +562,69 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Null(changes[2].ToVersion);
 
         }
-       
+
+        [Fact]
+        public void GetChages_returns_empty_result_if_empty_path_filter_is_supplied()
+        {
+            var lastWriteTime = DateTime.Now;            
+            var state = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+            };
+            
+            var snapshot = m_Instance.CreateSnapshot(state);
+            
+            var diff = m_Instance.GetChanges(snapshot.Id, Array.Empty<string>());
+
+            // path if only applied to "new" Changes API
+            Assert.Empty(diff.ChangeLists);            
+        }
+
+        [Fact]
+        public void GetChanges_returns_filtered_list_of_changes_if_path_filter_is_supplied()
+        {
+            var lastWriteTime = DateTime.Now;
+            var state = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}, // Add file1
+                dir1 => new EmptyFile(dir1, "file2") { LastWriteTime = lastWriteTime.AddHours(1)},  // Add file2
+                dir1 => new Directory(dir1, s_Dir2)
+                {
+                    dir2 => new EmptyFile(dir2, "file3")
+                }
+            };
+
+
+            var snapshot = m_Instance.CreateSnapshot(state);
+            
+            // path if only applied to "new" Changes API            
+            Assert.Single(m_Instance.GetChanges(snapshot.Id, new[] { "/file1" }).ChangeLists);
+            Assert.Single(m_Instance.GetChanges(snapshot.Id, new[] { "/file2" }).ChangeLists);
+            Assert.Single(m_Instance.GetChanges(snapshot.Id, new[] { "/dir2/file3" }).ChangeLists);
+            Assert.Equal(3, m_Instance.GetChanges(snapshot.Id, null).ChangeLists.Count());
+
+        }
+
+        [Fact]
+        public void GetChanges_throws_FormatException_if_path_filter_contains_relative_paths()
+        {
+            // all paths passed to GetChanges() must be rooted
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "fileName" }));
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "relative/path/to/file" }));
+        }
+
+        [Fact]
+        public void GetChanges_throws_FormatException_if_path_filter_contains_invalid_paths()
+        {
+            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChanges("irrelevant", new string[] { null }));
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "" }));
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { " " }));
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "\t" }));
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "/" }));
+            
+        }
+
+
         #endregion
 
 

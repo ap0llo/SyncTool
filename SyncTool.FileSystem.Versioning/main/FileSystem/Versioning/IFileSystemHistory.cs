@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System.Collections.Generic;
@@ -39,15 +39,18 @@ namespace SyncTool.FileSystem.Versioning
         /// <summary>
         /// Gets all the changes from the initial commit up to the specified snapshot
         /// </summary>
+        /// <param name="toId">The id of the last snapshot in the range</param>
+        /// <param name="pathFilter">If specified limits the changes included in the diff to the supplied paths</param>
         /// <exception cref="SnapshotNotFoundException">Thrown if the specified snapshot could not be found</exception>
-        IFileSystemDiff GetChanges(string toId);
-
+        IFileSystemDiff GetChanges(string toId, string[] pathFilter = null);
+        
         /// <summary>
         /// Gets all changes between the specified snapshots
         /// </summary>
         /// <param name="fromId">The id of the snapshot marking the start of the range</param>
         /// <param name="toId">The id of the last snapshot in the range</param>
+        /// <param name="pathFilter">If specified limits the changes included in the diff to the supplied paths</param>
         /// <exception cref="SnapshotNotFoundException">Thrown if either if the specified snapshots could not be found</exception>
-        IFileSystemDiff GetChanges(string fromId, string toId);
+        IFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null);
     }
 }
