@@ -4,17 +4,22 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
-using SyncTool.FileSystem.Versioning;
+using System.Runtime.Serialization;
+using SyncTool.Common;
 
 namespace SyncTool.Synchronization.State
 {
-    public class DuplicateSynchronizationStateException : Exception
+    [Serializable]
+    public class DuplicateSyncPointException : DuplicateItemException
     {
 
-        public DuplicateSynchronizationStateException(int id) : base($"A synchronization state with id {id} already exists")
+        public DuplicateSyncPointException(int id) : base($"A synchronization state with id {id} already exists")
         {
             
         }
 
+        protected DuplicateSyncPointException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
     }
 }

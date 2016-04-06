@@ -45,9 +45,9 @@
     <Compile Include="Synchronization\Conflicts\ConflictServiceExtensions.cs" />
     <Compile Include="Synchronization\Conflicts\IConflictService.cs" />
     <Compile Include="Synchronization\DI\SynchronizationModule.cs" />
-    <Compile Include="Synchronization\State\DuplicateSynchronizationStateException.cs" />
-    <Compile Include="Synchronization\State\MutableSynchronizationState.cs" />
-    <Compile Include="Synchronization\State\SynchronizationStateNotFoundException.cs" />
+    <Compile Include="Synchronization\State\DuplicateSyncPointException.cs" />
+    <Compile Include="Synchronization\State\MutableSyncPoint.cs" />
+    <Compile Include="Synchronization\State\SyncPointNotFoundException.cs" />
     <Compile Include="Synchronization\SyncActions\ISyncActionService.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionServiceExtensions.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionState.cs" />
@@ -67,8 +67,8 @@
     <Compile Include="Synchronization\SyncActions\ReplaceFileSyncAction.cs" />
     <Compile Include="Synchronization\SyncActions\SyncAction.cs" />
     <Compile Include="Synchronization\SyncActions\SyncParticipant.cs" />
-    <Compile Include="Synchronization\State\ISynchronizationState.cs" />
-    <Compile Include="Synchronization\State\ISynchronizationStateService.cs" />
+    <Compile Include="Synchronization\State\ISyncPoint.cs" />
+    <Compile Include="Synchronization\State\ISyncPointService.cs" />
     <Compile Include="Synchronization\_Exceptions\SyncActionNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>

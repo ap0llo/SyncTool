@@ -66,9 +66,9 @@ namespace SyncTool.Git.Common
             {
                 return (T) (object) new GitBasedHistoryService(this);
             }
-            else if (typeof (T) == typeof (ISynchronizationStateService))
+            else if (typeof (T) == typeof (ISyncPointService))
             {
-                return (T)(object)new GitSynchronizationStateService(this);
+                return (T)(object)new GitSyncPointService(this);
             }
             else
             {

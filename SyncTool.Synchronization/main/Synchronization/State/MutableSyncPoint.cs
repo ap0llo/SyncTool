@@ -3,19 +3,16 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using SyncTool.Common;
+using System.Collections.Generic;
 
 namespace SyncTool.Synchronization.State
 {
-    public class SynchronizationStateNotFoundException : ItemNotFoundException
+    public class MutableSyncPoint : ISyncPoint
     {
+        public int Id { get; set; }
 
-        public int SynchronizationStateId { get; }
+        public IReadOnlyDictionary<string, string> FromSnapshots { get; set; }
 
-
-        public SynchronizationStateNotFoundException(int id) : base($"A SynchronizationState with id {id} could not be found")
-        {
-            SynchronizationStateId = id;
-        }
+        public IReadOnlyDictionary<string, string> ToSnapshots { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace SyncTool.TestHelpers
     {
 
 
-        public static void Equal(ISynchronizationState expected, ISynchronizationState actual)
+        public static void Equal(ISyncPoint expected, ISyncPoint actual)
         {
             Assert.Equal(expected.Id, actual.Id);   
             DictionaryAssert.Equal(expected.FromSnapshots, actual.FromSnapshots);

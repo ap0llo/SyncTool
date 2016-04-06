@@ -16,27 +16,27 @@ using Xunit;
 namespace SyncTool.Git.Synchronization.State
 {
     /// <summary>
-    /// Tests for <see cref="GitSynchronizationStateService" />
+    /// Tests for <see cref="GitSyncPointService" />
     /// </summary>
     public class GitSynchronizationStateServiceTest : GitGroupBasedTest
     {
         readonly GitBasedGroup m_Group;
-        readonly GitSynchronizationStateService m_Service;
+        readonly GitSyncPointService m_Service;
 
         public GitSynchronizationStateServiceTest()
         {
             m_Group = CreateGroup();
-            m_Service = new GitSynchronizationStateService(m_Group);
+            m_Service = new GitSyncPointService(m_Group);
         }
 
 
-        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ".Items is empty for empty repository")]
+        [Fact(DisplayName = nameof(GitSyncPointService) + ".Items is empty for empty repository")]
         public void Items_is_empty_for_empty_repository()
         {
             Assert.Empty(m_Service.Items);
         }
 
-        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ".AddSynchronizationState() stores the state")]
+        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddSynchronizationState() stores the state")]
         public void AddSynchronizationState_stores_the_state()
         {
             var state = SynchronizationStateBuilder.NewSynchronizationState()
@@ -51,13 +51,13 @@ namespace SyncTool.Git.Synchronization.State
             SynchronizationStateAssert.Equal(state, m_Service[1]);
         }
 
-        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ".AddSynchronizationState() throws " + nameof(ArgumentNullException) + " if state is null")]
+        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddSynchronizationState() throws " + nameof(ArgumentNullException) + " if state is null")]
         public void AddSynchronizationState_throws_ArgumentNullException_if_state_is_null()
         {
             Assert.Throws<ArgumentNullException>(() => m_Service.AddSynchronizationState(null));
         }
 
-        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ".AddSynchronizationState() throws " + nameof(DuplicateSynchronizationStateException) + " if state id already exists")]
+        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddSynchronizationState() throws " + nameof(DuplicateSyncPointException) + " if state id already exists")]
         public void AddSynchronizationState_throws_DuplicateSynchronizationStateException_if_state_id_already_exists()
         {
             var state1 = SynchronizationStateBuilder.NewSynchronizationState()
@@ -71,10 +71,10 @@ namespace SyncTool.Git.Synchronization.State
                 .WithToSnapshot("name", "id");
 
             m_Service.AddSynchronizationState(state1);
-            Assert.Throws<DuplicateSynchronizationStateException>(() => m_Service.AddSynchronizationState(state2));
+            Assert.Throws<DuplicateSyncPointException>(() => m_Service.AddSynchronizationState(state2));
         }
         
-        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ".AddSynchronizationState() correctly stores multiple states")]
+        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddSynchronizationState() correctly stores multiple states")]
         public void AddSynchronizationState_correctly_stores_multiple_states()
         {
             var state1 = SynchronizationStateBuilder.NewSynchronizationState()
@@ -95,7 +95,7 @@ namespace SyncTool.Git.Synchronization.State
             Assert.True(m_Service.ItemExists(2));
         }
 
-        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": States from the repository are loaded correctly")]
+        [Fact(DisplayName = nameof(GitSyncPointService) + ": States from the repository are loaded correctly")]
         public void Values_from_disk_are_loaded_correctly()
         {
             var state1 = SynchronizationStateBuilder.NewSynchronizationState()
@@ -113,7 +113,7 @@ namespace SyncTool.Git.Synchronization.State
 
             // create another service instance that needs to load the state from disk
 
-            var service  = new GitSynchronizationStateService(m_Group);
+            var service  = new GitSyncPointService(m_Group);
 
             Assert.Equal(2, service.Items.Count());
             Assert.True(service.ItemExists(1));
@@ -123,13 +123,13 @@ namespace SyncTool.Git.Synchronization.State
             SynchronizationStateAssert.Equal(state2, service[2]);            
         }       
 
-        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": Indexer throws " + nameof(SynchronizationStateNotFoundException) + " for unknown state")]
+        [Fact(DisplayName = nameof(GitSyncPointService) + ": Indexer throws " + nameof(SyncPointNotFoundException) + " for unknown state")]
         public void Indexer_throws_SynchronizationStateNotFoundException_for_unknown_state()
         {
-            Assert.Throws<SynchronizationStateNotFoundException>(() => m_Service[12]);
+            Assert.Throws<SyncPointNotFoundException>(() => m_Service[12]);
         }
 
-        [Fact(DisplayName = nameof(GitSynchronizationStateService) + ": Indexer returns expected state")]
+        [Fact(DisplayName = nameof(GitSyncPointService) + ": Indexer returns expected state")]
         public void Indexer_returns_expected_state()
         {
             var state = SynchronizationStateBuilder.NewSynchronizationState()

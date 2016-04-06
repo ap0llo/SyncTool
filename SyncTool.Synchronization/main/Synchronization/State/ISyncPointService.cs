@@ -8,15 +8,15 @@ using SyncTool.Common;
 
 namespace SyncTool.Synchronization.State
 {
-    public interface ISynchronizationStateService : IItemService<int, ISynchronizationState>
+    public interface ISyncPointService : IItemService<int, ISyncPoint>
     {
 
         /// <summary>
         /// Adds a new synchronization state
         /// </summary>
         /// <param name="state">The state to add</param>
-        /// <exception cref="DuplicateSynchronizationStateException">Thrown if a state with the same id already exists</exception>
-        void AddSynchronizationState(ISynchronizationState state);
+        /// <exception cref="DuplicateSyncPointException">Thrown if a state with the same id already exists</exception>
+        void AddSynchronizationState(ISyncPoint state);
 
 
 

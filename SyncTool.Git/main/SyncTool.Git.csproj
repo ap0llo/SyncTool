@@ -90,7 +90,7 @@
     <Compile Include="FileSystem\Versioning\MetaFileSystem\MetaFileSystemToFileSystemConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Synchronization\Conflicts\GitConflictService.cs" />
-    <Compile Include="Synchronization\State\GitSynchronizationStateService.cs" />
+    <Compile Include="Synchronization\State\GitSyncPointService.cs" />
     <Compile Include="FileSystem\SyncActionFile.cs" />
     <Compile Include="Synchronization\SyncActions\GitSyncActionService.cs" />
   </ItemGroup>

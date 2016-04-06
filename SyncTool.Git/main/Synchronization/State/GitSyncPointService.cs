@@ -10,44 +10,43 @@ using SyncTool.FileSystem;
 using SyncTool.FileSystem.Local;
 using SyncTool.Git.Common;
 using SyncTool.Git.FileSystem;
-using SyncTool.Synchronization.Conflicts;
 using SyncTool.Synchronization.State;
 
 namespace SyncTool.Git.Synchronization.State
 {
-    public class GitSynchronizationStateService : GitBasedService, ISynchronizationStateService
+    public class GitSyncPointService : GitBasedService, ISyncPointService
     {
         internal static readonly BranchName BranchName = new BranchName("synchronization", "state");
-        const string s_DirectoryName = "SynchronizationState";
+        const string s_DirectoryName = "SyncPoints";
         
 
-        public IEnumerable<ISynchronizationState> Items
+        public IEnumerable<ISyncPoint> Items
         {
             get
             {
                 if (!GitGroup.Repository.LocalBranchExists(BranchName))
                 {
-                    return Enumerable.Empty<ISynchronizationState>();
+                    return Enumerable.Empty<ISyncPoint>();
                 }
 
                 var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
 
                 if (!root.DirectoryExists(s_DirectoryName))
                 {
-                    return Enumerable.Empty<ISynchronizationState>();
+                    return Enumerable.Empty<ISyncPoint>();
                 }
 
                 return LoadSynchronizationStates(root.GetDirectory(s_DirectoryName));
             }
         }
 
-        public ISynchronizationState this[int id]
+        public ISyncPoint this[int id]
         {
             get
             {
                 if (!GitGroup.Repository.LocalBranchExists(BranchName))
                 {
-                    throw new SynchronizationStateNotFoundException(id);
+                    throw new SyncPointNotFoundException(id);
                 }
 
                 var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
@@ -55,7 +54,7 @@ namespace SyncTool.Git.Synchronization.State
 
                 if (!root.FileExists(relativePath))
                 {
-                    throw new SynchronizationStateNotFoundException(id);
+                    throw new SyncPointNotFoundException(id);
                 }
 
                 return SynchronizationStateFile.Load(null, (IReadableFile)root.GetFile(relativePath)).Content;
@@ -63,7 +62,7 @@ namespace SyncTool.Git.Synchronization.State
         }
 
 
-        public GitSynchronizationStateService(GitBasedGroup gitGroup) : base(gitGroup)
+        public GitSyncPointService(GitBasedGroup gitGroup) : base(gitGroup)
         {
        
 
@@ -83,7 +82,7 @@ namespace SyncTool.Git.Synchronization.State
             return root.FileExists(relativePath);
         }
 
-        public void AddSynchronizationState(ISynchronizationState state)
+        public void AddSynchronizationState(ISyncPoint state)
         {
             if (state == null)
             {
@@ -92,7 +91,7 @@ namespace SyncTool.Git.Synchronization.State
             
             if (ItemExists(state.Id))
             {
-                throw new DuplicateSynchronizationStateException(state.Id);
+                throw new DuplicateSyncPointException(state.Id);
             }
 
             // create synchronization state branch if necessary
@@ -108,13 +107,13 @@ namespace SyncTool.Git.Synchronization.State
                 var localItemCreator = new LocalItemCreator();
                 localItemCreator.CreateDirectory(directory, workingDirectory.Location);
 
-                workingDirectory.Commit($"{nameof(GitSynchronizationStateService)}: Added SynchronizationState {state.Id}");
+                workingDirectory.Commit($"{nameof(GitSyncPointService)}: Added SynchronizationState {state.Id}");
                 workingDirectory.Push();
             }            
         }
 
 
-        IEnumerable<ISynchronizationState> LoadSynchronizationStates(IDirectory directory)
+        IEnumerable<ISyncPoint> LoadSynchronizationStates(IDirectory directory)
         {
             return directory
                .EnumerateFilesRecursively()

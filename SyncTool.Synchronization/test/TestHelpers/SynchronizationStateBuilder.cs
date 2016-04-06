@@ -12,13 +12,13 @@ namespace SyncTool.TestHelpers
     public static class SynchronizationStateBuilder
     {
 
-        public static MutableSynchronizationState NewSynchronizationState()
+        public static MutableSyncPoint NewSynchronizationState()
         {
-            return new MutableSynchronizationState();
+            return new MutableSyncPoint();
         }
 
 
-        public static MutableSynchronizationState WithId(this MutableSynchronizationState state, int id)
+        public static MutableSyncPoint WithId(this MutableSyncPoint state, int id)
         {
             state.Id = id;
             return state;
@@ -26,13 +26,13 @@ namespace SyncTool.TestHelpers
 
 
 
-        public static MutableSynchronizationState WithoutFromSnapshots(this MutableSynchronizationState state)
+        public static MutableSyncPoint WithoutFromSnapshots(this MutableSyncPoint state)
         {
             state.FromSnapshots = null;            
             return state;
         }
 
-        public static MutableSynchronizationState WithToSnapshot(this MutableSynchronizationState state, string name, string id)
+        public static MutableSyncPoint WithToSnapshot(this MutableSyncPoint state, string name, string id)
         {
             Dictionary<string, string> current;
             try
@@ -51,7 +51,7 @@ namespace SyncTool.TestHelpers
             return state;
         }
 
-        public static MutableSynchronizationState WithFromSnapshot(this MutableSynchronizationState state, string name, string id)
+        public static MutableSyncPoint WithFromSnapshot(this MutableSyncPoint state, string name, string id)
         {
             Dictionary<string, string> current;
             try

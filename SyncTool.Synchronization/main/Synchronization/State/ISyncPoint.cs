@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace SyncTool.Synchronization.State
 {
-    public interface ISynchronizationState
+    public interface ISyncPoint
     {
         /// <summary>
         /// Gets the id of the synchronization point

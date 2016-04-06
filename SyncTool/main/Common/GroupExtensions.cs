@@ -18,6 +18,6 @@ namespace SyncTool.Common
 
         public static IHistoryService GetHistoryService(this IGroup group) => group.GetService<IHistoryService>();
 
-        public static ISynchronizationStateService GetSynchronizationStateService(this IGroup group) => group.GetService<ISynchronizationStateService>();
+        public static ISyncPointService GetSynchronizationStateService(this IGroup group) => group.GetService<ISyncPointService>();
     }
 }
