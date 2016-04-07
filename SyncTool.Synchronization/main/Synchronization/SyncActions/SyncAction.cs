@@ -18,11 +18,19 @@ namespace SyncTool.Synchronization.SyncActions
 
         public Guid Id { get; }
 
-        protected SyncAction(Guid id, string target, SyncActionState state)
+        public int SyncPointId { get; }
+
+        protected SyncAction(Guid id, string target, SyncActionState state, int syncPointId)
         {
+            if (syncPointId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(syncPointId), "Id must be a positive integer");
+            }
+
             this.Target = target;
             this.Id = id;
             this.State = state;
+            this.SyncPointId = syncPointId;
         }
         
     }

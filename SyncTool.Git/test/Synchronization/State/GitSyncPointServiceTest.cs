@@ -18,12 +18,12 @@ namespace SyncTool.Git.Synchronization.State
     /// <summary>
     /// Tests for <see cref="GitSyncPointService" />
     /// </summary>
-    public class GitSynchronizationStateServiceTest : GitGroupBasedTest
+    public class GitSyncPointServiceTest : GitGroupBasedTest
     {
         readonly GitBasedGroup m_Group;
         readonly GitSyncPointService m_Service;
 
-        public GitSynchronizationStateServiceTest()
+        public GitSyncPointServiceTest()
         {
             m_Group = CreateGroup();
             m_Service = new GitSyncPointService(m_Group);

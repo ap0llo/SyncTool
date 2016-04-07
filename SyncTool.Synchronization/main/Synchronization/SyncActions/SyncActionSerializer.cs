@@ -114,20 +114,41 @@ namespace SyncTool.Synchronization.SyncActions
 
         AddFileSyncAction DeserializeAddFileSyncAction(JObject json)
         {
-            var dto = JsonConvert.DeserializeObject<AddFileSyncActionDto>(json.ToString());
-            return new AddFileSyncAction(dto.Id, dto.Target, dto.State, DeserializeFileReference(dto.NewFile));
+            try
+            {
+                var dto = JsonConvert.DeserializeObject<AddFileSyncActionDto>(json.ToString());
+                return new AddFileSyncAction(dto.Id, dto.Target, dto.State, dto.SyncPointId, DeserializeFileReference(dto.NewFile));
+            }
+            catch (JsonReaderException ex)
+            {
+                throw new SerializationException($"Could not deserialize " + nameof(AddFileSyncAction), ex);
+            }
         }
 
         RemoveFileSyncAction DeserializeRemoveFileSyncAction(JObject json)
         {
-            var dto = JsonConvert.DeserializeObject<RemoveFileSyncActionDto>(json.ToString());
-            return new RemoveFileSyncAction(dto.Id, dto.Target, dto.State, DeserializeFileReference(dto.RemovedFile));            
+            try
+            {
+                var dto = JsonConvert.DeserializeObject<RemoveFileSyncActionDto>(json.ToString());
+                return new RemoveFileSyncAction(dto.Id, dto.Target, dto.State, dto.SyncPointId, DeserializeFileReference(dto.RemovedFile));
+            }
+            catch (JsonReaderException ex)
+            {
+                throw new SerializationException($"Could not deserialize " + nameof(RemoveFileSyncAction), ex);
+            }
         }
 
         ReplaceFileSyncAction DeserializeReplaceFileSyncAction(JObject json)
         {
-            var dto = JsonConvert.DeserializeObject<ReplaceFileSyncActionDto>(json.ToString());
-            return new ReplaceFileSyncAction(dto.Id, dto.Target, dto.State, DeserializeFileReference(dto.OldVersion), DeserializeFileReference(dto.NewVersion));
+            try
+            {
+                var dto = JsonConvert.DeserializeObject<ReplaceFileSyncActionDto>(json.ToString());
+                return new ReplaceFileSyncAction(dto.Id, dto.Target, dto.State, dto.SyncPointId, DeserializeFileReference(dto.OldVersion), DeserializeFileReference(dto.NewVersion));
+            }
+            catch (JsonReaderException ex)
+            {
+                throw new SerializationException($"Could not deserialize " + nameof(ReplaceFileSyncActionDto), ex);
+            }
         }
 
         JObject GetObjectProperty(JObject parent, string name)
@@ -170,6 +191,9 @@ namespace SyncTool.Synchronization.SyncActions
             [JsonRequired, JsonConverter(typeof(StringEnumConverter))]
             public SyncActionState State { get; set; }
 
+            [JsonRequired]
+            public int SyncPointId { get; set; }
+
             protected SyncActionDto()
             {
                 
@@ -180,6 +204,7 @@ namespace SyncTool.Synchronization.SyncActions
                 Target = action.Target;
                 Id = action.Id;
                 State = action.State;
+                SyncPointId = action.SyncPointId;
             }
         }
 

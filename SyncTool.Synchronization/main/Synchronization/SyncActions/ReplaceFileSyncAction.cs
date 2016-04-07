@@ -18,7 +18,7 @@ namespace SyncTool.Synchronization.SyncActions
         public IFileReference NewVersion { get; }
 
 
-        public ReplaceFileSyncAction(Guid id, string target, SyncActionState state, IFileReference oldVersion, IFileReference newVersion) : base(id, target, state)
+        public ReplaceFileSyncAction(Guid id, string target, SyncActionState state, int syncPointId, IFileReference oldVersion, IFileReference newVersion) : base(id, target, state, syncPointId)
         {
             if (oldVersion == null)
             {
@@ -30,7 +30,7 @@ namespace SyncTool.Synchronization.SyncActions
             }
             if (!StringComparer.InvariantCultureIgnoreCase.Equals(oldVersion.Path, newVersion.Path))
             {
-                throw new ArgumentException($"The paths of {nameof(oldVersion)} and {nameof(newVersion)} are differnet");
+                throw new ArgumentException($"The paths of {nameof(oldVersion)} and {nameof(newVersion)} are different");
             }
 
             this.OldVersion = oldVersion;

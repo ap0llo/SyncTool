@@ -89,6 +89,8 @@
     <Compile Include="Synchronization\Conflicts\ConflictInfoTest.cs" />
     <Compile Include="Synchronization\GroupedChangeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Synchronization\SyncActions\AddFileSyncActionTest.cs" />
+    <Compile Include="Synchronization\SyncActions\RemoveFileSyncActionTest.cs" />
     <Compile Include="Synchronization\SyncActions\ReplaceFileSyncActionTest.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionSerializerTest.cs" />
     <Compile Include="Synchronization\SynchronizerResultTest.cs" />

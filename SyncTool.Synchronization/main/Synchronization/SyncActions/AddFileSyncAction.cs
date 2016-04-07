@@ -14,7 +14,7 @@ namespace SyncTool.Synchronization.SyncActions
         public IFileReference NewFile { get; }
 
 
-        public AddFileSyncAction(Guid id, string target, SyncActionState state, IFileReference newFile) : base(id, target, state)
+        public AddFileSyncAction(Guid id, string target, SyncActionState state, int syncPointId, IFileReference newFile) : base(id, target, state, syncPointId)
         {
             if (newFile == null)
             {

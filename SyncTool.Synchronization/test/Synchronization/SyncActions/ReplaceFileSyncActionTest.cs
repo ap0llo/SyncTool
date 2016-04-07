@@ -16,6 +16,29 @@ namespace SyncTool.Synchronization.SyncActions
     {
 
 
+        [Fact]
+        public void Constructor_throws_ArgumentOutOfRangeException_if_SyncPointId_is_negative_or_zero()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => new ReplaceFileSyncAction(
+                            Guid.Empty, // irrelevant
+                            "target1",   // irrelevant
+                            default(SyncActionState), //irrelevant
+                            0, 
+                            new FileReference("path1"),
+                            new FileReference("path2")));
+
+
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => new ReplaceFileSyncAction(
+                            Guid.Empty, // irrelevant
+                            "target1",   // irrelevant
+                            default(SyncActionState), //irrelevant
+                            -1, 
+                            new FileReference("path1"),
+                            new FileReference("path2")));
+        }
+
         [Fact(DisplayName = nameof(ReplaceFileSyncAction) + "Constructor throws ArgumentException if file paths differ")]
         public void Constructor_throws_ArgumentException_if_file_paths_differ()
         {
@@ -24,6 +47,7 @@ namespace SyncTool.Synchronization.SyncActions
                             Guid.Empty, // irrelevant
                             "target1",   // irrelevant
                             default(SyncActionState), //irrelevant
+                            23, //irrelevant
                             new FileReference("path1"),
                             new FileReference("path2")));
         }

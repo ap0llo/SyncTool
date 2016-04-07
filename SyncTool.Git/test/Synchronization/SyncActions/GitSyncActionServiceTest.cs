@@ -85,7 +85,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer returns empty enumerable if no actions in the specified state exist")]
         public void Indexer_returns_empty_enumerable_if_no_actions_in_the_specified_state_exist()
         {
-            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, new FileReference("/path/to/file"));
+            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, 23, new FileReference("/path/to/file"));
 
             m_Service.AddItems(action);
 
@@ -97,7 +97,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer returns empty enumerable if no actions for the specified path exist")]
         public void Indexer_returns_empty_enumerable_if_no_actions_for_the_specified_path_exist()
         {
-            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, new FileReference("/path/to/file"));
+            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, 23, new FileReference("/path/to/file"));
 
             m_Service.AddItems(action);
 
@@ -108,7 +108,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer returns empty enumerable if no actions for the specified state and path exist")]
         public void Indexer_returns_empty_enumerable_if_no_actions_for_the_specified_state_and_path_exist()
         {
-            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, new FileReference("/path/to/file"));
+            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, 42, new FileReference("/path/to/file"));
 
             m_Service.AddItems(action);
 
@@ -122,8 +122,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer returns all actions for the specified state")]
         public void Indexer_returns_all_actions_for_the_specified_state()
         {
-            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, new FileReference("/path/to/file"));
-            var action2 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, new FileReference("/path/to/another/file"));
+            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, 42, new FileReference("/path/to/file"));
+            var action2 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, 42, new FileReference("/path/to/another/file"));
 
             m_Service.AddItems(action1, action2);
 
@@ -133,8 +133,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + "Indexer returns all actions for the specified path")]
         public void Indexer_returns_all_actions_for_the_specified_path()
         {
-            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, new FileReference("/path/to/file"));
-            var action2 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, new FileReference("/path/to/another/file"));
+            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued,42,  new FileReference("/path/to/file"));
+            var action2 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, 42, new FileReference("/path/to/another/file"));
 
             m_Service.AddItems(action1, action2);
 
@@ -145,8 +145,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + "Indexer returns all actions for the specified state and path")]
         public void Indexer_returns_all_actions_for_the_specified_state_and_path()
         {
-            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, new FileReference("/path/to/file"));
-            var action2 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, new FileReference("/path/to/another/file"));
+            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued,23, new FileReference("/path/to/file"));
+            var action2 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued,23, new FileReference("/path/to/another/file"));
 
             m_Service.AddItems(action1, action2);
 
@@ -162,8 +162,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + ".AddItems() stores new actions")]
         public void AddItems_stores_new_actions()
         {
-            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Active, new FileReference("/path/to/file"));
-            var action2 = new AddFileSyncAction(Guid.NewGuid(), "target2", SyncActionState.Active, new FileReference("/path/to/some/Other/file"));
+            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Active, 23,new FileReference("/path/to/file"));
+            var action2 = new AddFileSyncAction(Guid.NewGuid(), "target2", SyncActionState.Active, 23, new FileReference("/path/to/some/Other/file"));
 
             m_Service.AddItems(action1, action2);
 
@@ -177,8 +177,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + ".AddItems() throws " + nameof(DuplicateSyncActionException) + " if action already exists")]
         public void AddItems_throws_DuplicateSyncActionException_if_action_already_exists()
         {
-            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target", SyncActionState.Active, new FileReference("/path/to/file"));
-            var action2 = new AddFileSyncAction(action1.Id, "target", SyncActionState.Active, new FileReference("/path/to/file"));
+            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target", SyncActionState.Active, 23, new FileReference("/path/to/file"));
+            var action2 = new AddFileSyncAction(action1.Id, "target", SyncActionState.Active, 42, new FileReference("/path/to/file"));
 
             m_Service.AddItems(action1);
             Assert.Throws<DuplicateSyncActionException>(() => m_Service.AddItems(action2));
@@ -192,8 +192,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + ".UpdateItems() updates actions")]
         public void UpdateItems_updates_actions()
         {
-            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, new FileReference("/path/to/file"));
-            var updatedAction = new AddFileSyncAction(action.Id, "target1", SyncActionState.Active, new FileReference("/path/to/file"));
+            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued,42, new FileReference("/path/to/file"));
+            var updatedAction = new AddFileSyncAction(action.Id, "target1", SyncActionState.Active,42, new FileReference("/path/to/file"));
             
             m_Service.AddItems(action);
             Assert.Single(m_Service[SyncActionState.Queued]);
@@ -207,7 +207,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + ".UpdateItems() throws " + nameof(SyncActionNotFoundException) + " if action does not exist")]
         public void UpdateItems_throws_SyncActionNotFoundException_if_action_does_not_exist()
         {
-            var updatedAction = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Active, new FileReference("/path/to/file"));
+            var updatedAction = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Active,42, new FileReference("/path/to/file"));
             Assert.Throws<SyncActionNotFoundException>(() => m_Service.UpdateItems(updatedAction));
         }
 
@@ -219,15 +219,15 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + ".RemoveItems() throws " + nameof(SyncActionNotFoundException) + " if action does not exist")]
         public void RemoveItems_throws_SyncActionNotFoundException_if_action_does_not_exist()
         {
-            var removedAction = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Active, new FileReference("/path/to/file"));
+            var removedAction = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Active,42, new FileReference("/path/to/file"));
             Assert.Throws<SyncActionNotFoundException>(() => m_Service.RemoveItems(removedAction));
         }
 
         [Fact(DisplayName = nameof(GitSyncActionService) + ".RemoveItems() throws " + nameof(SyncActionNotFoundException) + " if action with the same state does not exist")]
         public void RemoveItems_throws_SyncActionNotFoundException_if_action_with_the_same_state_does_not_exist()
         {
-            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Active, new FileReference("/path/to/file"));
-            var removedAction = new AddFileSyncAction(action.Id, "target1", SyncActionState.Queued, new FileReference("/path/to/file"));
+            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Active,42, new FileReference("/path/to/file"));
+            var removedAction = new AddFileSyncAction(action.Id, "target1", SyncActionState.Queued, 42,new FileReference("/path/to/file"));
 
             Assert.Throws<SyncActionNotFoundException>(() => m_Service.RemoveItems(removedAction));
         }
@@ -235,7 +235,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + ".RemoveItems() removes an action")]
         public void RemoveItems_removes_an_action()
         {
-            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Active, new FileReference("/path/to/file"));
+            var action = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Active, 42, new FileReference("/path/to/file"));
 
             m_Service.AddItems(action);
             Assert.Single(m_Service[action.State]);
