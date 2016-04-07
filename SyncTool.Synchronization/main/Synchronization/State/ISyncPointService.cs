@@ -10,7 +10,12 @@ namespace SyncTool.Synchronization.State
 {
     public interface ISyncPointService : IItemService<int, ISyncPoint>
     {
+        /// <summary>
+        /// Gets the latest sync point (the point with the highest id) or null if no sync point exists
+        /// </summary>
+        ISyncPoint LatestSyncPoint { get; }
 
+        //TODO: check that new item has a valid id (LatestSyncPoint.Id + 1)
         /// <summary>
         /// Adds a new synchronization state
         /// </summary>

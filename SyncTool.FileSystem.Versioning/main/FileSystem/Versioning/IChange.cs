@@ -37,7 +37,7 @@ namespace SyncTool.FileSystem.Versioning
         IFileReference FromVersion { get; }
 
         /// <summary>
-        /// A referecne to the file after the modification
+        /// A reference to the file after the modification
         /// </summary>
         IFileReference ToVersion { get; }
     }

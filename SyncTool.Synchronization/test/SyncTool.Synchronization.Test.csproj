@@ -96,7 +96,7 @@
     <Compile Include="Synchronization\SynchronizerResultTest.cs" />
     <Compile Include="Synchronization\SynchronizerTest.cs" />
     <Compile Include="TestHelpers\SynchronizationStateAssert.cs" />
-    <Compile Include="TestHelpers\SynchronizationStateBuilder.cs" />
+    <Compile Include="TestHelpers\SyncPointBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="FileSystem\" />

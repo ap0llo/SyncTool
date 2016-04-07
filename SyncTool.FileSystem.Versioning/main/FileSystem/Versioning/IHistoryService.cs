@@ -8,7 +8,7 @@ using SyncTool.Common;
 
 namespace SyncTool.FileSystem.Versioning
 {
-    public interface IHistoryService : IItemService<String, IFileSystemHistory>
+    public interface IHistoryService : IItemService<string, IFileSystemHistory>
     {
         /// <summary>
         /// Creates a new filesystem history with the specified name

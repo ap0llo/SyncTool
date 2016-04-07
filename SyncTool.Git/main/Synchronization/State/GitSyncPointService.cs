@@ -18,7 +18,23 @@ namespace SyncTool.Git.Synchronization.State
     {
         internal static readonly BranchName BranchName = new BranchName("synchronization", "state");
         const string s_DirectoryName = "SyncPoints";
-        
+
+
+
+        public ISyncPoint LatestSyncPoint
+        {
+            get
+            {
+                var items = Items.ToList();
+                if (!items.Any())
+                {
+                    return null;
+                }
+
+                var id = items.Max(x => x.Id);
+                return items.Single(x => x.Id == id);
+            }            
+        }
 
         public IEnumerable<ISyncPoint> Items
         {
@@ -81,6 +97,7 @@ namespace SyncTool.Git.Synchronization.State
 
             return root.FileExists(relativePath);
         }
+
 
         public void AddItem(ISyncPoint state)
         {

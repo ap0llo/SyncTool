@@ -36,10 +36,16 @@ namespace SyncTool.Git.Synchronization.State
             Assert.Empty(m_Service.Items);
         }
 
+        [Fact]
+        public void LatestSyncPoint_is_null_for_empty_repository()
+        {
+            Assert.Null(m_Service.LatestSyncPoint);
+        }
+
         [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() stores the state")]
         public void AddItem_stores_the_state()
         {
-            var state = SynchronizationStateBuilder.NewSynchronizationState()
+            var state = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
                 .WithoutFromSnapshots()
                 .WithToSnapshot("snapshot1", "value1");               
@@ -60,12 +66,12 @@ namespace SyncTool.Git.Synchronization.State
         [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() throws " + nameof(DuplicateSyncPointException) + " if state id already exists")]
         public void AddItem_throws_DuplicateSynchronizationStateException_if_state_id_already_exists()
         {
-            var state1 = SynchronizationStateBuilder.NewSynchronizationState()
+            var state1 = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
                 .WithoutFromSnapshots()
                 .WithToSnapshot("name", "id");
 
-            var state2 = SynchronizationStateBuilder.NewSynchronizationState()
+            var state2 = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
                 .WithoutFromSnapshots()
                 .WithToSnapshot("name", "id");
@@ -77,12 +83,12 @@ namespace SyncTool.Git.Synchronization.State
         [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() correctly stores multiple states")]
         public void AddItem_correctly_stores_multiple_states()
         {
-            var state1 = SynchronizationStateBuilder.NewSynchronizationState()
+            var state1 = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
                 .WithoutFromSnapshots()
                 .WithToSnapshot("name", "id");
 
-            var state2 = SynchronizationStateBuilder.NewSynchronizationState()
+            var state2 = SyncPointBuilder.NewSyncPoint()
                 .WithId(2)
                 .WithoutFromSnapshots()
                 .WithToSnapshot("name", "id");
@@ -98,12 +104,12 @@ namespace SyncTool.Git.Synchronization.State
         [Fact(DisplayName = nameof(GitSyncPointService) + ": States from the repository are loaded correctly")]
         public void Values_from_disk_are_loaded_correctly()
         {
-            var state1 = SynchronizationStateBuilder.NewSynchronizationState()
+            var state1 = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
                 .WithoutFromSnapshots()
                 .WithToSnapshot("name1", "id1");
 
-            var state2 = SynchronizationStateBuilder.NewSynchronizationState()
+            var state2 = SyncPointBuilder.NewSyncPoint()
                 .WithId(2)
                 .WithFromSnapshot("name2", "id2")
                 .WithToSnapshot("name3", "id3");
@@ -132,13 +138,39 @@ namespace SyncTool.Git.Synchronization.State
         [Fact(DisplayName = nameof(GitSyncPointService) + ": Indexer returns expected state")]
         public void Indexer_returns_expected_state()
         {
-            var state = SynchronizationStateBuilder.NewSynchronizationState()
+            var state = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
                 .WithoutFromSnapshots()
                 .WithToSnapshot("name", "id");                
 
             m_Service.AddItem(state);
             SynchronizationStateAssert.Equal(state, m_Service[1]);
+        }
+
+        [Fact]
+        public void LatestSyncPoint_returns_the_expected_result()
+        {
+            {
+                var state1 = SyncPointBuilder.NewSyncPoint()
+                    .WithId(1)
+                    .WithoutFromSnapshots()
+                    .WithToSnapshot("name", "id");
+
+                m_Service.AddItem(state1);
+
+                SynchronizationStateAssert.Equal(state1, m_Service.LatestSyncPoint);
+            }
+            {
+                var state2 = SyncPointBuilder.NewSyncPoint()
+                    .WithId(2)
+                    .WithoutFromSnapshots()
+                    .WithToSnapshot("name", "id");
+
+                m_Service.AddItem(state2);
+
+                SynchronizationStateAssert.Equal(state2, m_Service.LatestSyncPoint);
+            }
+            
         }
 
 

@@ -9,10 +9,10 @@ using SyncTool.Synchronization.State;
 
 namespace SyncTool.TestHelpers
 {
-    public static class SynchronizationStateBuilder
+    public static class SyncPointBuilder
     {
 
-        public static MutableSyncPoint NewSynchronizationState()
+        public static MutableSyncPoint NewSyncPoint()
         {
             return new MutableSyncPoint();
         }
