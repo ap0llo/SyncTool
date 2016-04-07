@@ -601,9 +601,12 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Single(m_Instance.GetChanges(snapshot.Id, new[] { "/file1" }).ChangeLists);
             Assert.Single(m_Instance.GetChanges(snapshot.Id, new[] { "/file2" }).ChangeLists);
             Assert.Single(m_Instance.GetChanges(snapshot.Id, new[] { "/dir2/file3" }).ChangeLists);
+            Assert.Equal(2, m_Instance.GetChanges(snapshot.Id, new[] { "/dir2/file3", "/file1" }).ChangeLists.Count());
             Assert.Equal(3, m_Instance.GetChanges(snapshot.Id, null).ChangeLists.Count());
-
         }
+
+
+
 
         [Fact]
         public void GetChanges_throws_FormatException_if_path_filter_contains_relative_paths()
