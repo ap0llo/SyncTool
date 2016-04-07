@@ -9,7 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SyncTool.FileSystem.Versioning;
+using SyncTool.Synchronization.Conflicts;
 using SyncTool.Synchronization.State;
+using SyncTool.Synchronization.SyncActions;
 
 namespace SyncTool.Common
 {
@@ -18,6 +20,10 @@ namespace SyncTool.Common
 
         public static IHistoryService GetHistoryService(this IGroup group) => group.GetService<IHistoryService>();
 
-        public static ISyncPointService GetSynchronizationStateService(this IGroup group) => group.GetService<ISyncPointService>();
+        public static ISyncPointService GetSyncPointService(this IGroup group) => group.GetService<ISyncPointService>();
+
+        public static ISyncActionService GetSyncActionService(this IGroup group) => group.GetService<ISyncActionService>();
+
+        public static IConflictService GetSyncConflictService(this IGroup group) => group.GetService<IConflictService>();
     }
 }
