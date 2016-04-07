@@ -118,6 +118,7 @@
     <Compile Include="Synchronization\Conflicts\GitConflictServiceTest.cs" />
     <Compile Include="Synchronization\State\GitSyncPointServiceTest.cs" />
     <Compile Include="Synchronization\SyncActions\GitSyncActionServiceTest.cs" />
+    <Compile Include="Synchronization\SynchronizerTest.cs" />
     <Compile Include="TestHelpers\GroupSettingsProviderMockingHelper.cs" />
     <Compile Include="TestHelpers\GitGroupBasedTest.cs" />
   </ItemGroup>

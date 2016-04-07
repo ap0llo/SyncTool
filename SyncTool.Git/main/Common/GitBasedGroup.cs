@@ -10,8 +10,12 @@ using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Configuration;
 using SyncTool.Git.FileSystem;
 using SyncTool.Git.FileSystem.Versioning;
+using SyncTool.Git.Synchronization.Conflicts;
 using SyncTool.Git.Synchronization.State;
+using SyncTool.Git.Synchronization.SyncActions;
+using SyncTool.Synchronization.Conflicts;
 using SyncTool.Synchronization.State;
+using SyncTool.Synchronization.SyncActions;
 
 namespace SyncTool.Git.Common
 {
@@ -69,6 +73,14 @@ namespace SyncTool.Git.Common
             else if (typeof (T) == typeof (ISyncPointService))
             {
                 return (T)(object)new GitSyncPointService(this);
+            }
+            else if (typeof(T) == typeof(IConflictService))
+            {
+                return (T) (object) new GitConflictService(this);
+            }
+            else if (typeof(T) == typeof(ISyncActionService))
+            {
+                return (T)(object)new GitSyncActionService(this);
             }
             else
             {

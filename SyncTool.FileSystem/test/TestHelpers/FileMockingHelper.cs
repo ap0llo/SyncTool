@@ -71,7 +71,7 @@ namespace SyncTool.TestHelpers
             var dirMock = new Mock<IDirectory>();
             dirMock.Setup(m => m.Name).Returns(name);
             mock.Setup(m => m.Parent).Returns(dirMock.Object);
-            mock.Setup(m => m.Path).Returns(name + "/" + mock.Object.Name);
+            mock.Setup(m => m.Path).Returns("/" + name + "/" + mock.Object.Name);
             return mock;
         }
 

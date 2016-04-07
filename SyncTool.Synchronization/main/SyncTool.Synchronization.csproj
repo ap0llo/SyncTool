@@ -46,6 +46,7 @@
     <Compile Include="Synchronization\Conflicts\IConflictService.cs" />
     <Compile Include="Synchronization\DI\SynchronizationModule.cs" />
     <Compile Include="Synchronization\GraphExtensions.cs" />
+    <Compile Include="Synchronization\GroupExtensions.cs" />
     <Compile Include="Synchronization\State\DuplicateSyncPointException.cs" />
     <Compile Include="Synchronization\State\MutableSyncPoint.cs" />
     <Compile Include="Synchronization\State\SyncPointNotFoundException.cs" />

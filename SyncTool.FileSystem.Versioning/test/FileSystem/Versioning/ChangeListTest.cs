@@ -31,8 +31,8 @@ namespace SyncTool.FileSystem.Versioning
         [Fact(DisplayName = nameof(ChangeList) + " Constructor throws " + nameof(ArgumentException) + " if changes have different paths")]
         public void Construtor_throws_ArgumentNullException_if_changes_have_different_paths()
         {
-            var file1 = FileMockingHelper.GetMockedFile("path1", DateTime.MinValue, 23);
-            var file2 = FileMockingHelper.GetMockedFile("path2", DateTime.MinValue, 23);
+            var file1 = FileMockingHelper.GetMockedFile("/path1", DateTime.MinValue, 23);
+            var file2 = FileMockingHelper.GetMockedFile("/path2", DateTime.MinValue, 23);
 
             var change1 = new Change(ChangeType.Added, null, file1);
             var change2 = new Change(ChangeType.Deleted, file2,  null);

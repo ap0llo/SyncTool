@@ -23,7 +23,23 @@ namespace SyncTool.Git.Synchronization.SyncActions
         
         readonly SyncActionSerializer m_SyncActionSerializer = new SyncActionSerializer();
 
-        
+
+        public IEnumerable<SyncAction> AllItems
+        {
+            get
+            {
+                // branch does not exist => result is empty
+                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                {
+                    return Enumerable.Empty<SyncAction>();
+                }
+
+                // get actions for the file in any state
+                var allStates = Enum.GetValues(typeof(SyncActionState)).Cast<SyncActionState>();
+                return allStates.SelectMany(state => this[state]);
+            }
+        } 
+
         public IEnumerable<SyncAction> this[SyncActionState state]
         {
             get

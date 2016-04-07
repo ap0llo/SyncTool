@@ -26,7 +26,7 @@ namespace SyncTool.Synchronization.SyncActions
                 ""State"" : ""Active"",
                 ""SyncPointId"" : 23,
                 ""NewFile"": {
-                  ""Path"": ""dir1/file1"",
+                  ""Path"": ""/dir1/file1"",
                   ""LastWriteTime"": ""2015-12-27T17:02:17.8666998+01:00"",
                   ""Length"": 23
                 }
@@ -172,7 +172,7 @@ namespace SyncTool.Synchronization.SyncActions
         [Fact(DisplayName = nameof(SyncActionSerializer) + "AddFileSyncAction: Roundtrip")]
         public void AddFileSyncAction_Roundtrip()
         {
-            var fileReference = new FileReference("file1", DateTime.Now, 23);
+            var fileReference = new FileReference("/file1", DateTime.Now, 23);
             
             var expected = new AddFileSyncAction(Guid.Parse("A7226A4D-4BE8-4B10-B378-BEF72A29FD24"), "targetName", SyncActionState.Queued, 42, fileReference);
             var actual = (AddFileSyncAction) m_Instance.Deserialize(m_Instance.Serialize(expected));
@@ -188,7 +188,7 @@ namespace SyncTool.Synchronization.SyncActions
         [Fact(DisplayName = nameof(SyncActionSerializer) + "RemoveFileSyncAction: Roundtrip")]
         public void RemoveFileSyncAction_Roundtrip()
         {
-            var fileReference = new FileReference("file1", DateTime.Now, 23);
+            var fileReference = new FileReference("/file1", DateTime.Now, 23);
 
             var expected = new RemoveFileSyncAction(Guid.NewGuid(), "targetName", SyncActionState.Active,23, fileReference);
             var actual = (RemoveFileSyncAction) m_Instance.Deserialize(m_Instance.Serialize(expected));
@@ -206,8 +206,8 @@ namespace SyncTool.Synchronization.SyncActions
         {
             var lastWriteTime = DateTime.Now;
 
-            var oldVersion = new FileReference("file1", lastWriteTime, 23);
-            var newVersion = new FileReference( "file1", lastWriteTime.AddDays(1), 23 * 2);            
+            var oldVersion = new FileReference("/file1", lastWriteTime, 23);
+            var newVersion = new FileReference("/file1", lastWriteTime.AddDays(1), 23 * 2);            
             
             var expected = new ReplaceFileSyncAction(Guid.NewGuid(), Guid.NewGuid().ToString(), SyncActionState.Completed, 42,  oldVersion, newVersion);
             var actual = (ReplaceFileSyncAction) m_Instance.Deserialize(m_Instance.Serialize(expected));
@@ -225,8 +225,8 @@ namespace SyncTool.Synchronization.SyncActions
         public void State_property_is_serialized_as_string()
         {
             var lastWriteTime = DateTime.Now;
-            var oldVersion = new FileReference("file1", lastWriteTime, 23);
-            var newVersion = new FileReference("file1", lastWriteTime.AddDays(1), 23 * 2);
+            var oldVersion = new FileReference("/file1", lastWriteTime, 23);
+            var newVersion = new FileReference("/file1", lastWriteTime.AddDays(1), 23 * 2);
 
             var syncAction = new ReplaceFileSyncAction(Guid.NewGuid(), Guid.NewGuid().ToString(), SyncActionState.Completed, 1, oldVersion, newVersion);
 

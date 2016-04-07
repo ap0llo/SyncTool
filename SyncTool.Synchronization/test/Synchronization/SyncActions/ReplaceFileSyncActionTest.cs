@@ -25,8 +25,8 @@ namespace SyncTool.Synchronization.SyncActions
                             "target1",   // irrelevant
                             default(SyncActionState), //irrelevant
                             0, 
-                            new FileReference("path1"),
-                            new FileReference("path2")));
+                            new FileReference("/path1"),
+                            new FileReference("/path1")));
 
 
             Assert.Throws<ArgumentOutOfRangeException>(
@@ -35,8 +35,8 @@ namespace SyncTool.Synchronization.SyncActions
                             "target1",   // irrelevant
                             default(SyncActionState), //irrelevant
                             -1, 
-                            new FileReference("path1"),
-                            new FileReference("path2")));
+                            new FileReference("/path1"),
+                            new FileReference("/path1")));
         }
 
         [Fact(DisplayName = nameof(ReplaceFileSyncAction) + "Constructor throws ArgumentException if file paths differ")]
@@ -48,8 +48,8 @@ namespace SyncTool.Synchronization.SyncActions
                             "target1",   // irrelevant
                             default(SyncActionState), //irrelevant
                             23, //irrelevant
-                            new FileReference("path1"),
-                            new FileReference("path2")));
+                            new FileReference("/path1"),
+                            new FileReference("/path2")));
         }
 
 

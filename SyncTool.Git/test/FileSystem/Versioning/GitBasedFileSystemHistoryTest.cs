@@ -508,7 +508,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): A file gets added, modified and deleted betwen snapshots")]
+        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): A file gets added, modified and deleted between snapshots")]
         public void GetChanges_A_file_gets_added_modified_and_deleted_between_snapshots()
         {
             var lastWriteTime = DateTime.Now;
@@ -625,6 +625,22 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "\t" }));
             Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "/" }));
             
+        }
+
+
+        [Fact]
+        public void Gethanges_ChangeList_Paths_are_rooted()
+        {
+            var state = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1")
+                
+            };
+
+            var snapshot = m_Instance.CreateSnapshot(state);
+            
+            Assert.Single(m_Instance.GetChanges(snapshot.Id).ChangeLists);
+            Assert.True(m_Instance.GetChanges(snapshot.Id).ChangeLists.Single().Path.StartsWith("/"));
         }
 
 

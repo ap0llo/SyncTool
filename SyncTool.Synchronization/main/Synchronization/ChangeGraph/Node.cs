@@ -19,11 +19,7 @@ namespace SyncTool.Synchronization.ChangeGraph
 
         public Node(T value, IEqualityComparer<T> valueComparer)
         {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-            if (value == null)
+            if (valueComparer == null)
             {
                 throw new ArgumentNullException(nameof(valueComparer));
             }

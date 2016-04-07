@@ -20,6 +20,7 @@ namespace SyncTool.Synchronization.SyncActions
 
         public int SyncPointId { get; }
 
+
         protected SyncAction(Guid id, string target, SyncActionState state, int syncPointId)
         {
             if (syncPointId <= 0)
@@ -32,6 +33,9 @@ namespace SyncTool.Synchronization.SyncActions
             this.State = state;
             this.SyncPointId = syncPointId;
         }
-        
+
+
+        public abstract SyncAction WithState(SyncActionState state);
+
     }
 }

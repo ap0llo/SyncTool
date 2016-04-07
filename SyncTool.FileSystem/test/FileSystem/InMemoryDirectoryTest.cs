@@ -195,30 +195,30 @@ namespace SyncTool.FileSystem
         [Fact(DisplayName = nameof(InMemoryDirectory) + ".FileExists() using reference returns expected result")]
         public void FileExists_using_reference_returns_expected_result()
         {
-            Assert.False(m_Root.FileExists(new FileReference("someFileName")));
-            Assert.False(m_Root.FileExists(new FileReference("someFileName", DateTime.Now)));
-            Assert.False(m_Root.FileExists(new FileReference("someFileName", DateTime.Now, 23)));
-            Assert.False(m_Root.FileExists(new FileReference("someFileName", null, 42)));
+            Assert.False(m_Root.FileExists(new FileReference("/someFileName")));
+            Assert.False(m_Root.FileExists(new FileReference("/someFileName", DateTime.Now)));
+            Assert.False(m_Root.FileExists(new FileReference("/someFileName", DateTime.Now, 23)));
+            Assert.False(m_Root.FileExists(new FileReference("/someFileName", null, 42)));
 
-            Assert.False(m_Root.FileExists(new FileReference("file1")));
-            Assert.False(m_Root.FileExists(new FileReference("file1", DateTime.Now)));
-            Assert.False(m_Root.FileExists(new FileReference("file1", DateTime.Now, 23)));
-            Assert.False(m_Root.FileExists(new FileReference("file1", null, 23)));
+            Assert.False(m_Root.FileExists(new FileReference("/file1")));
+            Assert.False(m_Root.FileExists(new FileReference("/file1", DateTime.Now)));
+            Assert.False(m_Root.FileExists(new FileReference("/file1", DateTime.Now, 23)));
+            Assert.False(m_Root.FileExists(new FileReference("/file1", null, 23)));
 
-            Assert.False(m_Root.FileExists(new FileReference("someDir/someFile")));
-            Assert.False(m_Root.FileExists(new FileReference("someDir/someFile", DateTime.Now)));
-            Assert.False(m_Root.FileExists(new FileReference("someDir/someFile", DateTime.Now, 42)));
-            Assert.False(m_Root.FileExists(new FileReference("someDir/someFile", null, 23)));
+            Assert.False(m_Root.FileExists(new FileReference("/someDir/someFile")));
+            Assert.False(m_Root.FileExists(new FileReference("/someDir/someFile", DateTime.Now)));
+            Assert.False(m_Root.FileExists(new FileReference("/someDir/someFile", DateTime.Now, 42)));
+            Assert.False(m_Root.FileExists(new FileReference("/someDir/someFile", null, 23)));
 
-            Assert.True(m_Root.FileExists(new FileReference("dir1/file1")));
-            Assert.True(m_Root.FileExists(new FileReference("dir1/file1", m_File1.LastWriteTime)));
-            Assert.True(m_Root.FileExists(new FileReference("dir1/file1", m_File1.LastWriteTime, m_File1.Length)));
-            Assert.True(m_Root.FileExists(new FileReference("dir1/file1", null, m_File1.Length)));
+            Assert.True(m_Root.FileExists(new FileReference("/dir1/file1")));
+            Assert.True(m_Root.FileExists(new FileReference("/dir1/file1", m_File1.LastWriteTime)));
+            Assert.True(m_Root.FileExists(new FileReference("/dir1/file1", m_File1.LastWriteTime, m_File1.Length)));
+            Assert.True(m_Root.FileExists(new FileReference("/dir1/file1", null, m_File1.Length)));
+                                                             
 
-
-            Assert.False(m_Root.FileExists(new FileReference("dir1/file1", m_File1.LastWriteTime.AddHours(5))));
-            Assert.False(m_Root.FileExists(new FileReference("dir1/file1", m_File1.LastWriteTime, m_File1.Length + 23)));
-            Assert.False(m_Root.FileExists(new FileReference("dir1/file1", null, m_File1.Length + 42)));
+            Assert.False(m_Root.FileExists(new FileReference("/dir1/file1", m_File1.LastWriteTime.AddHours(5))));
+            Assert.False(m_Root.FileExists(new FileReference("/dir1/file1", m_File1.LastWriteTime, m_File1.Length + 23)));
+            Assert.False(m_Root.FileExists(new FileReference("/dir1/file1", null, m_File1.Length + 42)));
         }
 
         #endregion

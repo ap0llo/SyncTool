@@ -169,6 +169,11 @@ namespace SyncTool.Git.Synchronization.Conflicts
         {
             PathValidator.EnsureIsValidFilePath(filePath);
             PathValidator.EnsureIsRootedPath(filePath);
+            
+            if (!GitGroup.Repository.LocalBranchExists(BranchName))
+            {
+                return false;
+            }
 
             var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
             return root.FileExists(GetRelativeConflictInfoFilePath(filePath));

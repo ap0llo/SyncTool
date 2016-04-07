@@ -37,6 +37,9 @@ namespace SyncTool.Synchronization.SyncActions
             this.NewVersion = newVersion;
 
         }
-        
+
+
+        public override SyncAction WithState(SyncActionState state) => new ReplaceFileSyncAction(Id, Target, state, SyncPointId, OldVersion, NewVersion);
+
     }
 }

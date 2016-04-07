@@ -199,6 +199,21 @@ namespace SyncTool.Git.Synchronization.Conflicts
             Assert.False(m_Service.ItemExists("/another/path"));
         }
 
+        [Fact]
+        public void T14_ItemExists_returns_false_if_branch_does_not_exist()
+        {
+            Assert.False(m_Service.ItemExists("/SOME/file/Path"));
+            Assert.False(m_Service.ItemExists("/another/path"));
+        }
+
+        [Fact]
+        public void T15_ItemExists_returns_false_if_branch_is_empty()
+        {
+            m_Group.Repository.CreateBranch(GitConflictService.BranchName, m_Group.Repository.GetInitialCommit());
+
+            Assert.False(m_Service.ItemExists("/SOME/file/Path"));
+            Assert.False(m_Service.ItemExists("/another/path"));
+        }
 
         #endregion
 

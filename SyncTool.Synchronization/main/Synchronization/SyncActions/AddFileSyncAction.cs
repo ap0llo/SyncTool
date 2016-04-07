@@ -10,6 +10,7 @@ namespace SyncTool.Synchronization.SyncActions
     public sealed class AddFileSyncAction : SyncAction
     {
         public override string FilePath => NewFile.Path;
+        
 
         public IFileReference NewFile { get; }
 
@@ -22,5 +23,8 @@ namespace SyncTool.Synchronization.SyncActions
             }
             this.NewFile = newFile;
         }
+
+
+        public override SyncAction WithState(SyncActionState state) => new AddFileSyncAction(Id, Target, state, SyncPointId, NewFile);
     }
 }

@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SyncTool.Synchronization.ChangeGraph
 {
@@ -12,9 +13,25 @@ namespace SyncTool.Synchronization.ChangeGraph
     {       
         readonly IEqualityComparer<T> m_ValueComparer;        
         readonly IDictionary<T, Node<T>> m_Nodes;
+        bool m_ContainsNull = false;
+        readonly Node<T> m_NullNode;
 
-
-        public IEnumerable<Node<T>> Nodes => m_Nodes.Values;
+        public IEnumerable<Node<T>> Nodes
+        {
+            get
+            {
+                if (m_ContainsNull)
+                {
+                    return m_Nodes.Values.Union(new[]{m_NullNode});                    
+                }
+                else
+                {
+                    
+                return m_Nodes.Values;
+                }
+                
+            }
+        }
 
 
         public Graph(IEqualityComparer<T> valueComparer)
@@ -23,28 +40,45 @@ namespace SyncTool.Synchronization.ChangeGraph
             {
                 throw new ArgumentNullException(nameof(valueComparer));
             }
-            m_ValueComparer = valueComparer;
-            m_Nodes = new Dictionary<T, Node<T>>(valueComparer);            
+            m_ValueComparer = valueComparer;           
+            m_Nodes = new Dictionary<T, Node<T>>(valueComparer);
+            m_NullNode = new Node<T>((T)(object)null, valueComparer);
         }
 
 
         public void AddEdge(T start, T end)
         {
-            if (!m_Nodes.ContainsKey(start))
-            {
-                m_Nodes.Add(start, new Node<T>(start, m_ValueComparer));
-            }
-
-            if (m_Nodes.ContainsKey(end))
-            {
-                m_Nodes.Add(end, new Node<T>(end, m_ValueComparer));
-            }
-
-            var startNode = m_Nodes[start];
-            var endNode = m_Nodes[end];
+            var startNode = GetNodeForValue(start);
+            var endNode = GetNodeForValue(end);
 
             startNode.Successors.Add(endNode);
             endNode.Predecessors.Add(startNode);
         }
+        
+
+        public bool Contains(T value) => value == null ? m_ContainsNull : m_Nodes.ContainsKey(value);
+
+
+
+        private Node<T> GetNodeForValue(T value)
+        {
+            if (value == null)
+            {
+                m_ContainsNull = true;
+                return m_NullNode;
+            }
+            else
+            {
+                if (!m_Nodes.ContainsKey(value))
+                {
+                    m_Nodes.Add(value, new Node<T>(value, m_ValueComparer));
+                }
+                return m_Nodes[value];
+            }
+        }
+
+
+
+
     }
 }

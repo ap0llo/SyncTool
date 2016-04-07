@@ -23,5 +23,7 @@ namespace SyncTool.Synchronization.SyncActions
             this.RemovedFile = removedFile;
         }
 
+
+        public override SyncAction WithState(SyncActionState state) => new RemoveFileSyncAction(Id, Target, state, SyncPointId, RemovedFile);
     }
 }

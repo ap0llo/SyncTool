@@ -23,7 +23,7 @@ namespace SyncTool.Synchronization.SyncActions
                             "target1",   // irrelevant
                             default(SyncActionState), //irrelevant
                             0,
-                            new FileReference("path1")));
+                            new FileReference("/path1")));
 
 
             Assert.Throws<ArgumentOutOfRangeException>(
@@ -32,7 +32,7 @@ namespace SyncTool.Synchronization.SyncActions
                             "target1",   // irrelevant
                             default(SyncActionState), //irrelevant
                             -1,
-                            new FileReference("path1")));
+                            new FileReference("/path1")));
         }
     }
 }

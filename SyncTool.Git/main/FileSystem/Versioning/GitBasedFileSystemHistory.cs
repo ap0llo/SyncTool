@@ -252,7 +252,6 @@ namespace SyncTool.Git.FileSystem.Versioning
             while (currentCommit.Sha != fromCommit)
             {
                 var parentCommit = GetParentSnapshotCommit(currentCommit);
-
                     
                 // parent commit is initial commit
                 if (parentCommit.Sha == m_Repository.GetInitialCommit().Sha)

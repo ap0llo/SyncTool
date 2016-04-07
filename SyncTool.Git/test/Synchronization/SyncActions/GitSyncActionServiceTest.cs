@@ -30,8 +30,45 @@ namespace SyncTool.Git.Synchronization.SyncActions
         }
 
 
-        #region Indexer
+        #region AllItems
+
+        [Fact]
+        public void AllItems_returns_empty_enumerable_if_branch_does_not_exits()
+        {
+            Assert.Empty(m_Service.AllItems);
+        }
         
+
+        [Fact]
+        public void AllItems_returns_empty_enumerable_if_branch_is_empty()
+        {
+            m_Group.Repository.CreateBranch(GitSyncActionService.BranchName, m_Group.Repository.GetInitialCommit());
+            Assert.Empty(m_Service.AllItems);
+        }
+
+
+        [Fact]
+        public void AllItems_returns_expected_result()
+        {
+            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, 42, new FileReference("/path/to/file1"));
+            var action2 = new AddFileSyncAction(Guid.NewGuid(), "target2", SyncActionState.Cancelled, 42, new FileReference("/path/to/file2"));
+            var action3 = new AddFileSyncAction(Guid.NewGuid(), "target3", SyncActionState.Active, 42, new FileReference("/path/to/file3"));
+            
+            m_Service.AddItems(action1, action2, action3);
+
+            var allItems = m_Service.AllItems.ToList();
+            Assert.Equal(3, allItems.Count());
+
+            Assert.Single(allItems.Where(a => a.State == SyncActionState.Queued));            
+            Assert.Single(allItems.Where(a => a.State == SyncActionState.Cancelled));
+            Assert.Single(allItems.Where(a => a.State == SyncActionState.Active));
+
+        }
+
+        #endregion
+
+        #region Indexer
+
         [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer validates the file path")]
         public void Indexer_validates_the_file_path()
         {

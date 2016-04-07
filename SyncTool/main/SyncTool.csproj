@@ -52,7 +52,6 @@
     <Compile Include="Cli\Output\ConsoleOutputWriter.cs" />
     <Compile Include="Cli\Output\IOutputWriter.cs" />
     <Compile Include="Cli\Program.cs" />
-    <Compile Include="Common\GroupExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +83,9 @@
       <Project>{AA841AD1-C845-4C68-8AA8-B0572061868C}</Project>
       <Name>SyncTool.Synchronization</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

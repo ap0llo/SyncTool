@@ -11,7 +11,10 @@ namespace SyncTool.Synchronization.SyncActions
 {
     public interface ISyncActionService : IService
     {
-        /// <summary>
+
+        IEnumerable<SyncAction> AllItems { get; }
+
+            /// <summary>
         /// Gets all sync actions with the specified state
         /// </summary>
         IEnumerable<SyncAction> this[SyncActionState state] { get; }
