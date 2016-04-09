@@ -86,6 +86,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Synchronization\ChangeGraph\GraphTest.cs" />
     <Compile Include="Synchronization\Conflicts\ConflictInfoTest.cs" />
     <Compile Include="Synchronization\GroupedChangeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -94,7 +95,7 @@
     <Compile Include="Synchronization\SyncActions\ReplaceFileSyncActionTest.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionSerializerTest.cs" />
     <Compile Include="Synchronization\SynchronizerResultTest.cs" />
-    <Compile Include="TestHelpers\SynchronizationStateAssert.cs" />
+    <Compile Include="TestHelpers\SyncAssert.cs" />
     <Compile Include="TestHelpers\SyncPointBuilder.cs" />
   </ItemGroup>
   <ItemGroup>

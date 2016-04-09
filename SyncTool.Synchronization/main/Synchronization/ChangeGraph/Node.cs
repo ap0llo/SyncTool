@@ -12,12 +12,14 @@ namespace SyncTool.Synchronization.ChangeGraph
     {
         public T Value { get; }
 
+        public int Index { get; }
+
         public ISet<Node<T>> Successors { get; }
 
         public ISet<Node<T>> Predecessors { get; }
 
 
-        public Node(T value, IEqualityComparer<T> valueComparer)
+        public Node(T value, int index, IEqualityComparer<T> valueComparer)
         {
             if (valueComparer == null)
             {
@@ -25,6 +27,7 @@ namespace SyncTool.Synchronization.ChangeGraph
             }
 
             Value = value;
+            Index = index;
 
             var nodeComparer = new NodeComparer<T>(valueComparer);
             Successors = new HashSet<Node<T>>(nodeComparer);

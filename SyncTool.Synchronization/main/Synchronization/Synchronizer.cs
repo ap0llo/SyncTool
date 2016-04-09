@@ -159,11 +159,11 @@ namespace SyncTool.Synchronization
                 }
                 else
                 {          
-                    //TODO: Undo Application of pending sync actions (and update the conflict's ids accordingly)
+                    //TODO: Undo application of pending sync actions (and update the conflict's ids accordingly)
                     //TODO: cancel actions          
                     
                     // generate conflict
-                    var conflictInfo = new ConflictInfo(path, diffs.ToDictionary(d => d.Key, d => d.Value.FromSnapshot.Id));
+                    var conflictInfo = new ConflictInfo(path, diffs.Values.Where(d => d.FromSnapshot != null).ToDictionary(d => d.History.Name, d => d.FromSnapshot.Id));
                     newConflicts.Add(path, conflictInfo);
                 }
 
@@ -220,9 +220,13 @@ namespace SyncTool.Synchronization
 
         Graph<IFileReference> GetChangeGraph(IEnumerable<IChangeList> changeLists)
         {
+            var changes = changeLists.SelectMany(cl => cl.Changes).ToArray();
+
             var graph = new Graph<IFileReference>(m_FileReferenceComparer);
 
-            foreach (var change in changeLists.SelectMany(cl => cl.Changes))
+            graph.AddNodes(changes.Select(c => c.FromVersion));
+            graph.AddNodes(changes.Select(c => c.ToVersion));
+            foreach (var change in changes)
             {
                 graph.AddEdge(change.FromVersion, change.ToVersion);
             }

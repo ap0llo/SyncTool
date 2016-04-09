@@ -10,28 +10,13 @@ using System.Linq;
 namespace SyncTool.Synchronization.ChangeGraph
 {
     public class Graph<T>
-    {       
+    { 
         readonly IEqualityComparer<T> m_ValueComparer;        
-        readonly IDictionary<T, Node<T>> m_Nodes;
-        bool m_ContainsNull = false;
-        readonly Node<T> m_NullNode;
+        readonly IDictionary<T, IDictionary<int, Node<T>>> m_Nodes;            
+        int m_NextNodeIndex = 1;
+        bool m_EdgesAdded = false;
 
-        public IEnumerable<Node<T>> Nodes
-        {
-            get
-            {
-                if (m_ContainsNull)
-                {
-                    return m_Nodes.Values.Union(new[]{m_NullNode});                    
-                }
-                else
-                {
-                    
-                return m_Nodes.Values;
-                }
-                
-            }
-        }
+        public IEnumerable<Node<T>> Nodes => m_Nodes.Values.SelectMany(x => x.Values).OrderBy(x => x.Index);
 
 
         public Graph(IEqualityComparer<T> valueComparer)
@@ -41,44 +26,59 @@ namespace SyncTool.Synchronization.ChangeGraph
                 throw new ArgumentNullException(nameof(valueComparer));
             }
             m_ValueComparer = valueComparer;           
-            m_Nodes = new Dictionary<T, Node<T>>(valueComparer);
-            m_NullNode = new Node<T>((T)(object)null, valueComparer);
+            m_Nodes = new NullKeyDictionary<T, IDictionary<int, Node<T>>>(valueComparer);            
         }
 
+        public void AddNodes(params T[] values) => AddNodes((IEnumerable<T>) values);
+        
+        public void AddNodes(IEnumerable<T> values)
+        {
+            foreach (var value in values)
+            {
+                AddNode(value);
+            }
+        }
+
+        public void AddNode(T value)
+        {
+            if (m_EdgesAdded)
+            {
+                throw new InvalidOperationException("New nodes cannot be added, after edges were added to the graph");
+            }
+
+            if (!m_Nodes.ContainsKey(value))
+            {
+                m_Nodes.Add(value, new Dictionary<int, Node<T>>());
+                var newNode = CreateNode(value);
+                m_Nodes[value].Add(newNode.Index, newNode);
+            }
+        }
 
         public void AddEdge(T start, T end)
         {
-            var startNode = GetNodeForValue(start);
-            var endNode = GetNodeForValue(end);
+            m_EdgesAdded = true;
+
+            var startNode = m_Nodes[start][m_Nodes[start].Keys.Min()];
+            var endNode = m_Nodes[end][m_Nodes[end].Keys.Max()];
+
+            if (startNode.Index >= endNode.Index)
+            {
+                //Add new node for end value to prevent cycles
+                endNode = CreateNode(end);
+                m_Nodes[end].Add(endNode.Index, endNode);                
+            }
 
             startNode.Successors.Add(endNode);
             endNode.Predecessors.Add(startNode);
-        }
+        }        
+
+        public bool Contains(T value) => m_Nodes.ContainsKey(value);
+
         
-
-        public bool Contains(T value) => value == null ? m_ContainsNull : m_Nodes.ContainsKey(value);
-
-
-
-        private Node<T> GetNodeForValue(T value)
+        Node<T> CreateNode(T value)
         {
-            if (value == null)
-            {
-                m_ContainsNull = true;
-                return m_NullNode;
-            }
-            else
-            {
-                if (!m_Nodes.ContainsKey(value))
-                {
-                    m_Nodes.Add(value, new Node<T>(value, m_ValueComparer));
-                }
-                return m_Nodes[value];
-            }
+            return new Node<T>(value, m_NextNodeIndex++, m_ValueComparer);
         }
-
-
-
 
     }
 }

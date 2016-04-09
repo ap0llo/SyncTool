@@ -54,7 +54,7 @@ namespace SyncTool.Git.Synchronization.State
 
             Assert.Single(m_Service.Items);
             Assert.True(m_Service.ItemExists(1));
-            SynchronizationStateAssert.Equal(state, m_Service[1]);
+            SyncAssert.Equal(state, m_Service[1]);
         }
 
         [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() throws " + nameof(ArgumentNullException) + " if state is null")]
@@ -125,8 +125,8 @@ namespace SyncTool.Git.Synchronization.State
             Assert.True(service.ItemExists(1));
             Assert.True(service.ItemExists(2));
             
-            SynchronizationStateAssert.Equal(state1, service[1]);            
-            SynchronizationStateAssert.Equal(state2, service[2]);            
+            SyncAssert.Equal(state1, service[1]);            
+            SyncAssert.Equal(state2, service[2]);            
         }       
 
         [Fact(DisplayName = nameof(GitSyncPointService) + ": Indexer throws " + nameof(SyncPointNotFoundException) + " for unknown state")]
@@ -144,7 +144,7 @@ namespace SyncTool.Git.Synchronization.State
                 .WithToSnapshot("name", "id");                
 
             m_Service.AddItem(state);
-            SynchronizationStateAssert.Equal(state, m_Service[1]);
+            SyncAssert.Equal(state, m_Service[1]);
         }
 
         [Fact]
@@ -158,7 +158,7 @@ namespace SyncTool.Git.Synchronization.State
 
                 m_Service.AddItem(state1);
 
-                SynchronizationStateAssert.Equal(state1, m_Service.LatestSyncPoint);
+                SyncAssert.Equal(state1, m_Service.LatestSyncPoint);
             }
             {
                 var state2 = SyncPointBuilder.NewSyncPoint()
@@ -168,7 +168,7 @@ namespace SyncTool.Git.Synchronization.State
 
                 m_Service.AddItem(state2);
 
-                SynchronizationStateAssert.Equal(state2, m_Service.LatestSyncPoint);
+                SyncAssert.Equal(state2, m_Service.LatestSyncPoint);
             }
             
         }

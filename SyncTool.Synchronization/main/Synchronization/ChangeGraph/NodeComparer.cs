@@ -23,7 +23,20 @@ namespace SyncTool.Synchronization.ChangeGraph
         }
 
 
-        public bool Equals(Node<T> x, Node<T> y) => m_ValueComparer.Equals(x.Value, y.Value);
+        public bool Equals(Node<T> x, Node<T> y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+
+            if (x == null || y == null)
+            {
+                return false;
+            }
+
+            return x.Index == y.Index && m_ValueComparer.Equals(x.Value, y.Value);
+        }
 
         public int GetHashCode(Node<T> obj) => m_ValueComparer.GetHashCode(obj.Value);
     }
