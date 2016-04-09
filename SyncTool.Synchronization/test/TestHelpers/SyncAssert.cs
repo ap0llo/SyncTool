@@ -13,16 +13,13 @@ using Xunit;
 namespace SyncTool.TestHelpers
 {
     public static class SyncAssert
-    {
-
-
+    {    
         public static void Equal(ISyncPoint expected, ISyncPoint actual)
         {
             Assert.Equal(expected.Id, actual.Id);   
             DictionaryAssert.Equal(expected.FromSnapshots, actual.FromSnapshots);
             DictionaryAssert.Equal(expected.ToSnapshots, actual.ToSnapshots);
         }
-
 
         public static void ActionsExist<T>(ISyncActionService service, string path, SyncActionState? expectedState = null, int? expectedCount = null)
         {
@@ -52,7 +49,6 @@ namespace SyncTool.TestHelpers
 
         }
 
-
         public static void IsInState(SyncActionState expectedState, params SyncAction[] actions)
         {
             foreach (var action in actions)
@@ -68,7 +64,6 @@ namespace SyncTool.TestHelpers
                 Assert.IsType(type, obj);
             }
         }
-
 
         public static void NewFileMacthes(IFile file, params SyncAction[] actions)
         {

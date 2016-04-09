@@ -13,6 +13,7 @@ using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization;
 using SyncTool.Synchronization.Conflicts;
+using SyncTool.Synchronization.State;
 using SyncTool.Synchronization.SyncActions;
 using SyncTool.TestHelpers;
 using Xunit;
@@ -46,7 +47,6 @@ namespace SyncTool.Git.Synchronization
             Assert.Empty(m_Group.GetSyncPointService().Items);
 
         }
-
 
         [Fact]
         public void Running_Synchronize_without_at_two_histories_has_no_effect()
@@ -97,30 +97,54 @@ namespace SyncTool.Git.Synchronization
             
         }
 
-
-        #region Simple Tests (initial sync, no conflicts)
-
-
         [Fact]
-        public void Synchronize_without_previous_sync_single_snapshots_and_no_conflicts_Addition()
+        public void Running_Sychronize_without_any_changes_since_the_last_sync_point_produces_no_actions_or_conflicts()
         {
             //ARRANGE
-            var left = new Directory(null, "root")
-            {
-                d => new EmptyFile(d, "file1")
-            };
-
-            var right = new Directory(null, "root")
-            {
-                d => new EmptyFile(d, "file2")
-            };
+            var state1 = new Directory(null, "root") { d => new EmptyFile(d, "file1") };
+            var state2 = new Directory(null, "root") { d => new EmptyFile(d, "file2")};
 
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("history1");
             historyService.CreateHistory("history2");
-            historyService["history1"].CreateSnapshot(left);
-            historyService["history2"].CreateSnapshot(right);
+            var snapshot1 = historyService["history1"].CreateSnapshot(state1);
+            var snapshot2 = historyService["history2"].CreateSnapshot(state2);
 
+            // save a sync point
+            var syncPoint = new MutableSyncPoint()
+            {
+                Id = 1,
+                FromSnapshots = null,
+                ToSnapshots = new Dictionary<string, string>()
+                {
+                    {"history1", snapshot1.Id},
+                    {"history2", snapshot2.Id}
+                }
+            };
+
+            m_Group.GetSyncPointService().AddItem(syncPoint);
+
+            //ACT
+            m_Instance.Synchronize(m_Group);
+
+            //ASSERT
+            Assert.Empty(m_Group.GetSyncConflictService().Items);
+            Assert.Empty(m_Group.GetSyncActionService().AllItems);
+            Assert.Equal(2, m_Group.GetSyncPointService().Items.Count());
+        }
+ 
+        [Fact]
+        public void Synchronize_without_previous_sync_single_snapshots_and_no_conflicts()
+        {
+            //ARRANGE
+            var left = new HistoryBuilder(m_Group, "left");
+            var right = new HistoryBuilder(m_Group, "right");
+
+            left.AddFile("file1");
+            right.AddFile("file2");
+                     
+            var snapshot1 = left.CreateSnapshot();
+            var snapshot2 = right.CreateSnapshot();
 
             //ACT
             m_Instance.Synchronize(m_Group);
@@ -135,49 +159,46 @@ namespace SyncTool.Git.Synchronization
                 expectedState: SyncActionState.Queued
                 );
 
-            SyncAssert.NewFileMacthes(left.GetFile("/file1"), syncActionService["/file1"].Single());            
+            SyncAssert.NewFileMacthes(left.CurrentState.GetFile("/file1"), syncActionService["/file1"].Single());            
 
             SyncAssert.ActionsExist<AddFileSyncAction>(syncActionService, "/file2",
                 expectedCount:1,
                 expectedState: SyncActionState.Queued);
 
-            SyncAssert.NewFileMacthes(right.GetFile("/file2"), syncActionService["/file2"].Single());
+            SyncAssert.NewFileMacthes(right.CurrentState.GetFile("/file2"), syncActionService["/file2"].Single());
             
             Assert.Empty(m_Group.GetSyncConflictService().Items);
             Assert.Single(m_Group.GetSyncPointService().Items);
+
+            var syncPoint = m_Group.GetSyncPointService().Items.Single();
+            Assert.Equal(1, syncPoint.Id);
+            Assert.Null(syncPoint.FromSnapshots);
+            var expectedToSnapshots = new Dictionary<string, string>()
+            {
+                { "left", snapshot1.Id },
+                { "right", snapshot2.Id }
+            };
+            DictionaryAssert.Equal(expectedToSnapshots, syncPoint.ToSnapshots);
         }
 
         [Fact]
-        public void Synchronize_without_previous_sync_no_conflicts_Deletion()
+        public void Synchronize_without_previous_sync_no_conflicts()
         {
             // ARRANGE
-            var left1 = new Directory(null, "root")
-            {
-                d => new EmptyFile(d, "file1")
-            };
-            var left2 = new Directory(null, "root") 
-            {
-                // file 1 deleted
-            };
+            var left = new HistoryBuilder(m_Group, "left");
+            left.AddFile("file1");
+            left.CreateSnapshot();
 
-            var right1 = new Directory(null, "root")
-            {
-                d => new EmptyFile(d, "file2")
-            };
+            left.RemoveFile("file1");
+            left.CreateSnapshot();
 
-            var right2 = new Directory(null, "root")
-            {
-                // file 2 deleted
-            };
+            var right = new HistoryBuilder(m_Group, "right");
 
-            var historyService = m_Group.GetHistoryService();
-            historyService.CreateHistory("history1");
-            historyService.CreateHistory("history2");
-            historyService["history1"].CreateSnapshot(left1);
-            historyService["history1"].CreateSnapshot(left2);
-            historyService["history2"].CreateSnapshot(right1);
-            historyService["history2"].CreateSnapshot(right2);
+            right.AddFile("file2");
+            right.CreateSnapshot();
 
+            right.RemoveFile("file2");
+            right.CreateSnapshot();
 
             //ACT
             m_Instance.Synchronize(m_Group);
@@ -187,17 +208,8 @@ namespace SyncTool.Git.Synchronization
             var syncActions = m_Group.GetSyncActionService().AllItems.ToArray();
             Assert.Empty(syncActions);
             Assert.Single(m_Group.GetSyncPointService().Items);
-
-
         }
-
-
         
-
-        #endregion
-
-        //TODO: More tests
-
         [Fact]
         public void Synchronize_Cycle_with_conflict()
         {
@@ -236,7 +248,6 @@ namespace SyncTool.Git.Synchronization
 
         }
 
-
         [Fact]
         public void Synchronize_Cycle_without_conflict()
         {
@@ -261,6 +272,7 @@ namespace SyncTool.Git.Synchronization
             historyService["right"].CreateSnapshot(c);
             historyService["right"].CreateSnapshot(a);
 
+
             //ACT
             m_Instance.Synchronize(m_Group);
 
@@ -272,10 +284,117 @@ namespace SyncTool.Git.Synchronization
 
         }
 
+        [Fact]
+        public void Synchronize_with_previous_sync_point_01()
+        {
+            // ARRANGE      
+            var historyService = m_Group.GetHistoryService();
+
+            var left = new HistoryBuilder(m_Group, "left");
+            var right = new HistoryBuilder(m_Group, "right");
+
+            // left: add file 1
+            // right: empty
+            left.AddFile("file1");
+            left.CreateSnapshot();
+            right.AddFiles();
+            right.CreateSnapshot();
+
+            m_Instance.Synchronize(m_Group);
+            Assert.Equal(1, m_Group.GetSyncActionService().AllItems.Count());
+
+            // left: add file 2
+            left.AddFiles("file2");
+            left.CreateSnapshot();         
+
+            //ACT
+            m_Instance.Synchronize(m_Group);
+
+            Assert.Equal(2, m_Group.GetSyncPointService().Items.Count());
+            Assert.Equal(2, m_Group.GetSyncActionService().AllItems.Count());
+            //TODO: Check ids in syncpoints
+        }
+
+
+        //TODO: More tests
+
+
         public override void Dispose()
         {
             m_Group.Dispose();
             base.Dispose();
         }
+
+
+
+
+
+        class HistoryBuilder
+        {
+            readonly IGroup m_Group;
+            readonly string m_Name;
+            IDictionary<string, File> m_Files = new Dictionary<string, File>(StringComparer.InvariantCultureIgnoreCase);
+
+
+            public IDirectory CurrentState { get; private set; }
+
+            public HistoryBuilder(IGroup group, string name)
+            {
+                m_Group = @group;
+                m_Name = name;
+                m_Group.GetHistoryService().CreateHistory(m_Name);
+            }
+
+            
+            public void AddFile(string file) => AddFiles(file);
+
+            public void AddFiles(params string[] files)
+            {
+                foreach (var fileName in files)
+                {
+                    if (!m_Files.ContainsKey(fileName))
+                    {
+                        m_Files.Add(fileName, new File(null, fileName) { LastWriteTime = DateTime.Now });
+                    }
+                }  
+                UpdateCurrentState();              
+            }
+
+            public void RemoveFile(string file) => RemoveFiles(file);
+
+            public void RemoveFiles(params string[] files)
+            {
+                foreach (var fileName in files)
+                {
+                    m_Files.Remove(fileName);
+                }
+                UpdateCurrentState();
+            }
+
+            public void SetLastWriteTime(string fileName, DateTime lastWriteTime)
+            {
+                m_Files[fileName].LastWriteTime = lastWriteTime;
+                UpdateCurrentState();
+            }
+
+
+            public IFileSystemSnapshot CreateSnapshot()
+            {
+
+                return m_Group.GetHistoryService()[m_Name].CreateSnapshot(CurrentState);
+            }
+
+
+            void UpdateCurrentState()
+            {
+                var dir = new Directory(null, "root");
+                foreach (var file in m_Files.Values)
+                {
+                    dir.Add(d => file.WithParent(d));
+                }
+                CurrentState = dir;
+            }
+        }
+
     }
 }
