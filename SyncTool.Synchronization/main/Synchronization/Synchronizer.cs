@@ -21,6 +21,7 @@ namespace SyncTool.Synchronization
     {        
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
 
+
         public Synchronizer(IEqualityComparer<IFileReference> fileReferenceComparer)
         {
             if (fileReferenceComparer == null)
@@ -29,8 +30,7 @@ namespace SyncTool.Synchronization
             }
             m_FileReferenceComparer = fileReferenceComparer;
         }
-
-
+        
 
         public void Synchronize(IGroup group)
         {
@@ -48,7 +48,7 @@ namespace SyncTool.Synchronization
                 return;                
             }
 
-
+            // get required services
             var syncPointService = group.GetService<ISyncPointService>();
             var conflictService = group.GetService<IConflictService>();
             var syncActionService = group.GetService<ISyncActionService>();
@@ -68,8 +68,7 @@ namespace SyncTool.Synchronization
                 .SelectMany(diff => diff.ChangeLists.Select(cl => new ChangeListWithHistoryName(diff.History.Name, cl)))
                 .GroupBy(x => x.Path);
             
-            //TODO: Auto-resolve conflicts when possible
-
+            
             var newConflicts = new Dictionary<string, ConflictInfo>();
             var newSyncActions = new List<SyncAction>();
             var updatedSyncActions = new List<SyncAction>();
@@ -87,26 +86,20 @@ namespace SyncTool.Synchronization
                 // build change graph from lists
                 var changeGraph = GetChangeGraph(diffs, changeLists);
 
-                // try to apply pending actions to the graph
-                var nonApplicaleSyncActions = new List<SyncAction>();
-                foreach (var syncAction in syncActionService[path])
-                {
-                    if (!TryApplySyncAction(changeGraph, syncAction))
-                    {
-                        // a pending action cannot be applied to the graph => a conflict exists
-                        nonApplicaleSyncActions.Add(syncAction);     
-                        
-                        // this sync action is no longer applicable and will be canceled
-                        updatedSyncActions.Add(syncAction.WithState(SyncActionState.Cancelled));
-                    }
-                }
+                // check if all pending sync actions can be applied to the change grpah
+                var unapplicaleSyncActions = GetUnapplicableSyncActions(changeGraph, syncActionService[path].Where(IsPendingSyncAction));
+
 
                 // pending sync actions could not be applied => skip file
-                if (nonApplicaleSyncActions.Any())
+                if (unapplicaleSyncActions.Any())
                 {
-                    var oldestSyncPointId = nonApplicaleSyncActions.Min(a => a.SyncPointId);
-                    var oldestSyncAction = nonApplicaleSyncActions.Single(a => a.SyncPointId == oldestSyncPointId);
-                    newConflicts.Add(path, CreateConflictInfo(syncPointService, oldestSyncAction));
+                    // cancel unapplicable actions
+                    updatedSyncActions.AddRange(unapplicaleSyncActions.Select(a => a.WithState(SyncActionState.Cancelled)));
+                   
+                    // add a conflict for the file (the snapshot id of the conflict can be determined from the oldest unapplicable sync action)
+                    var oldestSyncPointId = unapplicaleSyncActions.Min(a => a.SyncPointId);                    
+                    var syncPoint = syncPointService[oldestSyncPointId];                    
+                    newConflicts.Add(path, new ConflictInfo(unapplicaleSyncActions.First().FilePath, syncPoint.FromSnapshots));
                                         
                     continue;
                 }
@@ -117,7 +110,7 @@ namespace SyncTool.Synchronization
                 var sinks = changeGraph.GetSinks().ToArray();
                 if (!sinks.Any())
                 {
-                    // not possible
+                    // not possible (in this case the graph would be empty, which cannot happen)
                     throw new InvalidOperationException();
                 }
 
@@ -125,7 +118,7 @@ namespace SyncTool.Synchronization
                 {
                     //TODO: do we need to check if the sink is reachable from all current node????
 
-                    // no conflict => generate sync actions
+                    // no conflict => generate sync actions, to replace the outdated file versions or add the file to a target
 
                     var sink = sinks.Single();
 
@@ -135,57 +128,32 @@ namespace SyncTool.Synchronization
                         var currentRoot = diff.ToSnapshot.RootDirectory;
                         var currentVersion = currentRoot.FileExists(path) ? currentRoot.GetFile(path).ToReference() : null;
 
-                        if (!m_FileReferenceComparer.Equals(currentVersion, sink))
+                        var syncAction = GetSyncAction(targetName, newSyncPoint.Id, currentVersion, sink);
+                        if (syncAction != null)
                         {
-                            if (currentVersion != null)
-                            {
-                                if (sink == null)
-                                {
-                                    newSyncActions.Add(new RemoveFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, newSyncPoint.Id, currentVersion));
-                                }
-                                else
-                                {
-                                    newSyncActions.Add(new ReplaceFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, newSyncPoint.Id, currentVersion, sink));
-                                }
-                            }
-                            else
-                            {
-                                if (sink != null)
-                                {
-                                    newSyncActions.Add(new AddFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, newSyncPoint.Id, sink));
-                                }
-                                else
-                                {
-                                    throw new InvalidOperationException();
-                                }
-                            }                         
-                        }                        
+                            newSyncActions.Add(syncAction);
+                        }
                     } 
                 }
                 else
                 {
                     // multiple sinks in the change graph => conflict
 
-
                     // if there are pending actions for this file, they need to be cancelled
                     var pendingSyncActions = syncActionService[path]
-                        .Where(a => a.State == SyncActionState.Queued || a.State == SyncActionState.Active)
+                        .Where(IsPendingSyncAction)
                         .ToArray();
 
                     if (pendingSyncActions.Any())
                     {
                         //cancel actions          
-                        foreach (var syncAction in pendingSyncActions)
-                        {
-                            updatedSyncActions.Add(syncAction.WithState(SyncActionState.Cancelled));
-                        }
+                        updatedSyncActions.AddRange(pendingSyncActions.Select(a => a.WithState(SyncActionState.Cancelled)));                        
 
                         //determine the oldest sync action to determine the snapshot ids for the conflict
                         var syncPointId = pendingSyncActions.Min(x => x.SyncPointId);
-                        var ids = syncPointService[syncPointId].FromSnapshots;
-
+                       
                         // generate conflict
-                        var conflictInfo = new ConflictInfo(path, ids);
+                        var conflictInfo = new ConflictInfo(path, syncPointService[syncPointId].FromSnapshots);
                         newConflicts.Add(path, conflictInfo);
                     }
                     else
@@ -196,53 +164,53 @@ namespace SyncTool.Synchronization
                         var conflictInfo = new ConflictInfo(path, diffs.Where(d => d.FromSnapshot != null).ToDictionary(d => d.History.Name, d => d.FromSnapshot.Id));
                         newConflicts.Add(path, conflictInfo);
                     }
-
                 }
-
             }
 
             // save actions, conflicts and sync point
-
           
             syncPointService.AddItem(newSyncPoint);
 
             conflictService.AddItems(newConflicts.Values);
 
             syncActionService.AddItems(newSyncActions);
-            syncActionService.UpdateItems(updatedSyncActions);
-            
+            syncActionService.UpdateItems(updatedSyncActions);            
         }
+        
 
-
-
-
-
+        /// <summary>
+        /// Gets the diffs relevant for the next synchronization (all changes since the last sync point)
+        /// </summary>
         IEnumerable<IFileSystemDiff> GetDiffs(IHistoryService historyService, ISyncPoint syncPoint)
         {
             //TODO: Handle histories added since the last sync
 
+            // no sync point found => sync was never executed before
             if (syncPoint == null)
             {
-                // no sync point found => sync was never executed before
-                return historyService.Items
-                    .Select(h => h.GetChanges(h.LatestFileSystemSnapshot.Id));
+                return historyService.Items.Select(h => h.GetChanges(h.LatestFileSystemSnapshot.Id));
             }
+            // last sync point != null => get all the changes since the last sync
             else
             {
-                return historyService.Items
-                    .Select(h => h.GetChanges(syncPoint.ToSnapshots[h.Name], h.LatestFileSystemSnapshot.Id));
+                return historyService.Items.Select(h => h.GetChanges(syncPoint.ToSnapshots[h.Name], h.LatestFileSystemSnapshot.Id));
             }            
         }
 
-
+        /// <summary>
+        /// Determine the id of the next sync point to be stored
+        /// </summary>
         int GetNextSyncPointId(ISyncPoint currentSyncPoint)
         {
             // currentSyncPoint may be null
             return currentSyncPoint?.Id + 1 ?? 1;
         }
 
-
-
+        /// <summary>
+        /// Builds a graph of all file versions based on the specified changes
+        /// </summary>
+        /// <param name="diffs">The diffs the changes were taken from</param>
+        /// <param name="changeLists">The changes to be included in the graph</param>
         Graph<IFileReference> GetChangeGraph(IEnumerable<IFileSystemDiff> diffs, IEnumerable<ChangeListWithHistoryName> changeLists)
         {
             changeLists = changeLists.ToList();
@@ -258,7 +226,6 @@ namespace SyncTool.Synchronization
             graph.AddNodes(changes.Select(c => c.ToVersion));
 
             // for each diff which has no changes, add the current file as node
-
             var historiesWithoutChanges = diffs
                 .Select(d => d.History.Name)
                 .Except(changeLists.Select(cl => cl.HistoryName), StringComparer.InvariantCultureIgnoreCase);
@@ -285,6 +252,26 @@ namespace SyncTool.Synchronization
             return graph;
         }
 
+        IList<SyncAction> GetUnapplicableSyncActions(Graph<IFileReference> changeGraph, IEnumerable<SyncAction> syncActions)
+        {
+            // try to apply pending actions to the graph
+            var unapplicableSyncActions = new List<SyncAction>();
+            foreach (var syncAction in syncActions)
+            {
+                if (!TryApplySyncAction(changeGraph, syncAction))
+                {
+                    // a pending action cannot be applied to the graph => a conflict exists
+                    unapplicableSyncActions.Add(syncAction);
+                }
+            }
+
+            return unapplicableSyncActions;
+        }
+
+        /// <summary>
+        /// Tries to apply the specified sync action to the change grpah
+        /// </summary>
+        /// <returns>Retruns true if the action could be added to the graph, otherwise return false</returns>
         bool TryApplySyncAction(Graph<IFileReference> changeGraph, SyncAction action)
         {
             dynamic dynamicAction = action;
@@ -308,9 +295,10 @@ namespace SyncTool.Synchronization
                 changeGraph.AddEdge(action.OldVersion, action.NewVersion);
                 return true;
             }
-            return false;
 
+            return false;
         }
+
         bool TryApplySyncAction(Graph<IFileReference> changeGraph, RemoveFileSyncAction action)
         {
             if (changeGraph.Contains(action.RemovedFile) && changeGraph.Contains(null))
@@ -320,13 +308,39 @@ namespace SyncTool.Synchronization
             }
             return false;
         }
+        
+        bool IsPendingSyncAction(SyncAction action) => action.State == SyncActionState.Active || action.State == SyncActionState.Queued;
 
-        ConflictInfo CreateConflictInfo(ISyncPointService syncPointService, SyncAction action)
+        SyncAction GetSyncAction(string targetName, int syncPointId, IFileReference currentFileVersion, IFileReference newFileVersion)
         {
-            var syncPoint = syncPointService[action.SyncPointId];
-            return new ConflictInfo(action.FilePath, syncPoint.FromSnapshots);
+            if (m_FileReferenceComparer.Equals(currentFileVersion, newFileVersion))
+            {
+                return null;
+            }
+
+            if (currentFileVersion != null)
+            {
+                if (newFileVersion == null)
+                {
+                    return new RemoveFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, syncPointId, currentFileVersion);
+                }
+                else
+                {
+                    return new ReplaceFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, syncPointId, currentFileVersion, newFileVersion);
+                }
+            }
+            else
+            {
+                if (newFileVersion != null)
+                {
+                    return new AddFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, syncPointId, newFileVersion);
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
         }
 
-        
     }
 }
