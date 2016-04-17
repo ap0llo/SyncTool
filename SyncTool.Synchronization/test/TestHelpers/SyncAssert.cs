@@ -39,7 +39,7 @@ namespace SyncTool.TestHelpers
 
             if (expectedState.HasValue)
             {                                   
-                SyncAssert.IsInState(expectedState.Value, service["/file1"].ToArray());
+                SyncAssert.IsInState(expectedState.Value, actions);
             }
 
             if (expectedType != null)

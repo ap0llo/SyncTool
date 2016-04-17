@@ -60,6 +60,11 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         public IFileSystemSnapshot CreateSnapshot(IDirectory fileSystemState)
         {
+            if (fileSystemState == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystemState));
+            }
+
             var snapshots = m_Snapshots.Value;
 
             var snapshot = GitBasedFileSystemSnapshot.Create(m_Repository, m_BranchName, this, fileSystemState);

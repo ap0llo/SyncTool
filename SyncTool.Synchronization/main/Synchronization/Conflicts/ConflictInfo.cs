@@ -23,7 +23,7 @@ namespace SyncTool.Synchronization.Conflicts
             PathValidator.EnsureIsRootedPath(filePath);
 
             FilePath = filePath;
-            SnapshotIds = snapshotIds ?? new Dictionary<string, string>();
+            SnapshotIds = snapshotIds;
         }
 
         

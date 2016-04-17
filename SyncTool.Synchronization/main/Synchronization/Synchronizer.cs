@@ -55,14 +55,18 @@ namespace SyncTool.Synchronization
             
             // for all histories, get the changes since the last sync
             var latestSyncPoint = syncPointService.LatestSyncPoint;
-            var nextSyncPointId = GetNextSyncPointId(latestSyncPoint);
-
-            var diffs = GetDiffs(historyService, latestSyncPoint);
+            var diffs = GetDiffs(historyService, latestSyncPoint).ToList();            
+            var newSyncPoint = new MutableSyncPoint()
+            {
+                Id = GetNextSyncPointId(latestSyncPoint),
+                FromSnapshots = latestSyncPoint?.ToSnapshots,
+                ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id)
+            };
 
             // group changes by files
-            var changeListsByFile = diffs.Values
-                .SelectMany(diff => diff.ChangeLists.Select(cl => new { HistoryName = diff.History.Name, ChangeList = cl}))
-                .GroupBy(x => x.ChangeList.Path);
+            var changeListsByFile = diffs
+                .SelectMany(diff => diff.ChangeLists.Select(cl => new ChangeListWithHistoryName(diff.History.Name, cl)))
+                .GroupBy(x => x.Path);
             
             //TODO: Auto-resolve conflicts when possible
 
@@ -81,7 +85,7 @@ namespace SyncTool.Synchronization
                 }
 
                 // build change graph from lists
-                var changeGraph = GetChangeGraph(changeLists.Select(x => x.ChangeList));
+                var changeGraph = GetChangeGraph(diffs, changeLists);
 
                 // try to apply pending actions to the graph
                 var nonApplicaleSyncActions = new List<SyncAction>();
@@ -102,7 +106,7 @@ namespace SyncTool.Synchronization
                 {
                     var oldestSyncPointId = nonApplicaleSyncActions.Min(a => a.SyncPointId);
                     var oldestSyncAction = nonApplicaleSyncActions.Single(a => a.SyncPointId == oldestSyncPointId);
-                    newConflicts.Add(path, CreateConflictInfo(oldestSyncAction));
+                    newConflicts.Add(path, CreateConflictInfo(syncPointService, oldestSyncAction));
                                         
                     continue;
                 }
@@ -125,9 +129,10 @@ namespace SyncTool.Synchronization
 
                     var sink = sinks.Single();
 
-                    foreach (var target in diffs.Keys)
+                    foreach (var diff in diffs)
                     {
-                        var currentRoot = diffs[target].ToSnapshot.RootDirectory;
+                        var targetName = diff.History.Name;
+                        var currentRoot = diff.ToSnapshot.RootDirectory;
                         var currentVersion = currentRoot.FileExists(path) ? currentRoot.GetFile(path).ToReference() : null;
 
                         if (!m_FileReferenceComparer.Equals(currentVersion, sink))
@@ -136,18 +141,18 @@ namespace SyncTool.Synchronization
                             {
                                 if (sink == null)
                                 {
-                                    newSyncActions.Add(new RemoveFileSyncAction(Guid.NewGuid(), target, SyncActionState.Queued, nextSyncPointId, currentVersion));
+                                    newSyncActions.Add(new RemoveFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, newSyncPoint.Id, currentVersion));
                                 }
                                 else
                                 {
-                                    newSyncActions.Add(new ReplaceFileSyncAction(Guid.NewGuid(), target, SyncActionState.Queued, nextSyncPointId, currentVersion, sink));
+                                    newSyncActions.Add(new ReplaceFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, newSyncPoint.Id, currentVersion, sink));
                                 }
                             }
                             else
                             {
                                 if (sink != null)
                                 {
-                                    newSyncActions.Add(new AddFileSyncAction(Guid.NewGuid(), target, SyncActionState.Queued, nextSyncPointId, sink));
+                                    newSyncActions.Add(new AddFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, newSyncPoint.Id, sink));
                                 }
                                 else
                                 {
@@ -158,25 +163,47 @@ namespace SyncTool.Synchronization
                     } 
                 }
                 else
-                {          
-                    //TODO: Undo application of pending sync actions (and update the conflict's ids accordingly)
-                    //TODO: cancel actions          
-                    
-                    // generate conflict
-                    var conflictInfo = new ConflictInfo(path, diffs.Values.Where(d => d.FromSnapshot != null).ToDictionary(d => d.History.Name, d => d.FromSnapshot.Id));
-                    newConflicts.Add(path, conflictInfo);
+                {
+                    // multiple sinks in the change graph => conflict
+
+
+                    // if there are pending actions for this file, they need to be cancelled
+                    var pendingSyncActions = syncActionService[path]
+                        .Where(a => a.State == SyncActionState.Queued || a.State == SyncActionState.Active)
+                        .ToArray();
+
+                    if (pendingSyncActions.Any())
+                    {
+                        //cancel actions          
+                        foreach (var syncAction in pendingSyncActions)
+                        {
+                            updatedSyncActions.Add(syncAction.WithState(SyncActionState.Cancelled));
+                        }
+
+                        //determine the oldest sync action to determine the snapshot ids for the conflict
+                        var syncPointId = pendingSyncActions.Min(x => x.SyncPointId);
+                        var ids = syncPointService[syncPointId].FromSnapshots;
+
+                        // generate conflict
+                        var conflictInfo = new ConflictInfo(path, ids);
+                        newConflicts.Add(path, conflictInfo);
+                    }
+                    else
+                    {
+                        // no pending action => the snapshot ids for the conflict are the start snapshots of the current sync
+
+                        // generate conflict
+                        var conflictInfo = new ConflictInfo(path, diffs.Where(d => d.FromSnapshot != null).ToDictionary(d => d.History.Name, d => d.FromSnapshot.Id));
+                        newConflicts.Add(path, conflictInfo);
+                    }
+
                 }
 
             }
 
             // save actions, conflicts and sync point
 
-            var newSyncPoint = new MutableSyncPoint()
-            {
-                Id = nextSyncPointId,
-                FromSnapshots = latestSyncPoint?.ToSnapshots,
-                ToSnapshots = diffs.ToDictionary(d => d.Key, d => d.Value.ToSnapshot.Id)
-            };
+          
             syncPointService.AddItem(newSyncPoint);
 
             conflictService.AddItems(newConflicts.Values);
@@ -190,7 +217,7 @@ namespace SyncTool.Synchronization
 
 
 
-        IDictionary<string, IFileSystemDiff> GetDiffs(IHistoryService historyService, ISyncPoint syncPoint)
+        IEnumerable<IFileSystemDiff> GetDiffs(IHistoryService historyService, ISyncPoint syncPoint)
         {
             //TODO: Handle histories added since the last sync
 
@@ -198,14 +225,12 @@ namespace SyncTool.Synchronization
             {
                 // no sync point found => sync was never executed before
                 return historyService.Items
-                    .Select(h => h.GetChanges(h.LatestFileSystemSnapshot.Id))
-                    .ToDictionary(diff => diff.History.Name);
+                    .Select(h => h.GetChanges(h.LatestFileSystemSnapshot.Id));
             }
             else
             {
                 return historyService.Items
-                    .Select(h => h.GetChanges(syncPoint.ToSnapshots[h.Name], h.LatestFileSystemSnapshot.Id))
-                    .ToDictionary(diff => diff.History.Name);
+                    .Select(h => h.GetChanges(syncPoint.ToSnapshots[h.Name], h.LatestFileSystemSnapshot.Id));
             }            
         }
 
@@ -218,14 +243,40 @@ namespace SyncTool.Synchronization
 
 
 
-        Graph<IFileReference> GetChangeGraph(IEnumerable<IChangeList> changeLists)
+        Graph<IFileReference> GetChangeGraph(IEnumerable<IFileSystemDiff> diffs, IEnumerable<ChangeListWithHistoryName> changeLists)
         {
-            var changes = changeLists.SelectMany(cl => cl.Changes).ToArray();
+            changeLists = changeLists.ToList();
+            diffs = diffs.ToList();
+
+            var path = changeLists.First().Path;
 
             var graph = new Graph<IFileReference>(m_FileReferenceComparer);
-
+            
+            // add ToVersion and FromVersion for every change to the graph
+            var changes = changeLists.SelectMany(cl => cl.Changes).ToArray();            
             graph.AddNodes(changes.Select(c => c.FromVersion));
             graph.AddNodes(changes.Select(c => c.ToVersion));
+
+            // for each diff which has no changes, add the current file as node
+
+            var historiesWithoutChanges = diffs
+                .Select(d => d.History.Name)
+                .Except(changeLists.Select(cl => cl.HistoryName), StringComparer.InvariantCultureIgnoreCase);
+        
+            foreach (var historyName in historiesWithoutChanges)
+            {
+                var rootDirectory = diffs.Single(d => d.History.Name.Equals(historyName)).ToSnapshot.RootDirectory;
+                if (rootDirectory.FileExists(path))
+                {
+                    graph.AddNodes(rootDirectory.GetFile(path).ToReference());
+                }
+                else
+                {
+                    graph.AddNodes((IFileReference)null);
+                }
+            }
+
+            // add all edges to the graph
             foreach (var change in changes)
             {
                 graph.AddEdge(change.FromVersion, change.ToVersion);
@@ -270,9 +321,10 @@ namespace SyncTool.Synchronization
             return false;
         }
 
-        ConflictInfo CreateConflictInfo(SyncAction action)
+        ConflictInfo CreateConflictInfo(ISyncPointService syncPointService, SyncAction action)
         {
-            throw new NotImplementedException();
+            var syncPoint = syncPointService[action.SyncPointId];
+            return new ConflictInfo(action.FilePath, syncPoint.FromSnapshots);
         }
 
         

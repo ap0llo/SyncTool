@@ -316,6 +316,156 @@ namespace SyncTool.Git.Synchronization
         }
 
 
+        [Fact]
+        public void Synchronize_non_applicable_sync_actions_yields_conflict_and_get_cancelled()
+        {
+            //ARRANGE
+            // Left: A -> Sync ------> Sync -> Conflict
+            // Right:     Sync -> B -> Sync -> Conflict
+            var lastWriteTime = DateTime.Now;
+            var a = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(1) } };
+            var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(2) } };
+            
+            
+            var historyService = m_Group.GetHistoryService();
+            historyService.CreateHistory("left");
+            historyService.CreateHistory("right");
+
+            historyService["left"].CreateSnapshot(a);
+            historyService["right"].CreateSnapshot(new Directory(null, "root"));
+
+            // ACT
+
+            // first sync
+            m_Instance.Synchronize(m_Group);
+
+            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file", 
+                expectedState: SyncActionState.Queued, 
+                expectedCount: 1);
+            Assert.Empty(m_Group.GetSyncConflictService().Items);
+
+            historyService["right"].CreateSnapshot(b);
+
+            // second sync
+            
+            m_Instance.Synchronize(m_Group);
+
+            // ASSERT
+
+            // the sync action needs to be cancelled, a conflcit should exist
+            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file",
+                expectedState: SyncActionState.Cancelled,
+                expectedCount: 1);
+
+            Assert.Single(m_Group.GetSyncConflictService().Items);
+            var conflict = m_Group.GetSyncConflictService().Items.Single();
+            Assert.Equal("/file", conflict.FilePath);
+            Assert.Null(conflict.SnapshotIds);
+        }
+
+
+        [Fact]
+        public void Synchronize_pending_actions_are_cancelled_if_a_conflict_is_detected()
+        {
+            //ARRANGE
+            // 1: A -> Sync -> B -> Sync
+            // 2: A -> Sync -> C -> Sync
+            // 3: * -> Sync -> ---> Sync
+            var lastWriteTime = DateTime.Now;
+            var a = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(1) } };
+            var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(2) } };
+            var c = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(3) } };
+
+
+            var historyService = m_Group.GetHistoryService();
+            historyService.CreateHistory("1");
+            historyService.CreateHistory("2");
+            historyService.CreateHistory("3");
+
+           var snapshot1 = historyService["1"].CreateSnapshot(a);
+           var snapshot2 = historyService["2"].CreateSnapshot(a);
+           var snapshot3 = historyService["3"].CreateSnapshot(new Directory(null, "root"));
+
+            // ACT
+
+            // first sync
+            m_Instance.Synchronize(m_Group);
+
+            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file",
+                expectedState: SyncActionState.Queued,
+                expectedCount: 1);
+            Assert.Empty(m_Group.GetSyncConflictService().Items);
+
+
+            historyService["1"].CreateSnapshot(b);
+            historyService["2"].CreateSnapshot(c);
+            
+
+            // second sync
+
+            m_Instance.Synchronize(m_Group);
+
+            // ASSERT
+
+            // the sync action needs to be cancelled, a conflcit should exist
+            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file",
+                expectedState: SyncActionState.Cancelled,
+                expectedCount: 1);
+
+            Assert.Single(m_Group.GetSyncConflictService().Items);
+            var conflict = m_Group.GetSyncConflictService().Items.Single();
+            Assert.Equal("/file", conflict.FilePath);            
+            Assert.Null(conflict.SnapshotIds);
+        }
+
+
+        [Fact]
+        public void Synchronize_Unrelated_sync_actions_stay_unchanged()
+        {
+            // ARRANGE      
+            var historyService = m_Group.GetHistoryService();
+
+            var left = new HistoryBuilder(m_Group, "left");
+            var right = new HistoryBuilder(m_Group, "right");
+
+            left.AddFile("file1");
+
+            left.CreateSnapshot();
+            right.CreateSnapshot();
+
+
+            //ACT
+
+            // first sync
+            m_Instance.Synchronize(m_Group);
+
+            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file1",
+                    expectedState: SyncActionState.Queued,
+                    expectedCount: 1);
+
+            Assert.Empty(m_Group.GetSyncConflictService().Items);
+
+            left.AddFile("file2");
+            left.CreateSnapshot();
+
+            m_Instance.Synchronize(m_Group);
+
+
+            //ASSERT
+            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file1",
+                    expectedState: SyncActionState.Queued,
+                    expectedCount: 1);
+
+            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file2",
+                    expectedState: SyncActionState.Queued,
+                    expectedCount: 1);
+
+            Assert.Empty(m_Group.GetSyncConflictService().Items);
+        }
+
+
+        //unrelated sync actions stay unchanged
+
         //TODO: More tests
 
 
@@ -356,8 +506,8 @@ namespace SyncTool.Git.Synchronization
                     {
                         m_Files.Add(fileName, new File(null, fileName) { LastWriteTime = DateTime.Now });
                     }
-                }  
-                UpdateCurrentState();              
+                }
+                UpdateCurrentState();
             }
 
             public void RemoveFile(string file) => RemoveFiles(file);
@@ -380,7 +530,7 @@ namespace SyncTool.Git.Synchronization
 
             public IFileSystemSnapshot CreateSnapshot()
             {
-
+                UpdateCurrentState();
                 return m_Group.GetHistoryService()[m_Name].CreateSnapshot(CurrentState);
             }
 
