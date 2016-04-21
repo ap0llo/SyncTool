@@ -37,6 +37,8 @@ namespace SyncTool.Git.Common
             }
 
             CreateLocalBranches();
+
+            State = TransactionState.Active;            
         }
 
         /// <summary>

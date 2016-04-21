@@ -223,6 +223,22 @@ namespace SyncTool.Git.Common
             }
         }
 
+        [Fact]
+        public void Begin_sets_the_State_to_active_when_reusing_a_previous_repository()
+        {
+            var transaction1 = CreateTransaction();
+            transaction1.Begin();
+
+            //do not commit the changes from the transaction (leaves the local directory intact (with a new commit))        
+
+            var cachingTransaction = CreateCachingTransaction(transaction1.LocalPath);
+            cachingTransaction.Begin();
+
+            Assert.Equal(TransactionState.Active, cachingTransaction.State);
+
+
+        }
+
         #endregion
 
 
