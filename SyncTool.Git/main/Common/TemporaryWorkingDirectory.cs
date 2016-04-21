@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Linq;
 using LibGit2Sharp;
 using SyncTool.FileSystem.Local;
 
@@ -44,7 +45,7 @@ namespace SyncTool.Git.Common
         /// </summary>
         public string Commit(string commitMessage = "SyncTool Commit")
         {
-            StageAllChanges();
+            m_Repository.Stage("*");
 
             var signature = new Signature("SyncTool", "SyncTool@example.com", DateTimeOffset.Now);
 
@@ -69,15 +70,6 @@ namespace SyncTool.Git.Common
             m_Repository.Dispose();
             m_TempDirectory.Dispose();
         }
-        
-
-        void StageAllChanges()
-        {
-            var status = m_Repository.RetrieveStatus();
-            foreach (var statusEntry in status)
-            {
-                m_Repository.Stage(statusEntry.FilePath);
-            }
-        }
+             
     }
 }
