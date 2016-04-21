@@ -18,26 +18,21 @@ using SyncTool.Synchronization.State;
 namespace SyncTool.Cli.Commands
 {    
 
-    [Verb("Sync")]
-    public class SyncOptions
+    [Verb("Sync-Group")]
+    public class SyncGroupOptions
     {
         [Option('g', "group", Required = true)]
         public string Group { get; set; }
-
-        [Option('f', "folder", Required = true)]
-        public string Folder { get; set; }
-
+     
     }
 
-    public class SyncCommand : CommandBase, ICommand<SyncOptions>
+    public class SyncGroupCommand : CommandBase, ICommand<SyncGroupOptions>
     {
-        //TODO: Ensure this name cannot be used as syncfolder name
-        const string s_Global = "Global";
-
+        
         readonly IGroupManager m_GroupManager;
         readonly ISynchronizer m_Synchronizer;
 
-        public SyncCommand(IOutputWriter outputWriter, IGroupManager groupManager, ISynchronizer synchronizer) : base(outputWriter)
+        public SyncGroupCommand(IOutputWriter outputWriter, IGroupManager groupManager, ISynchronizer synchronizer) : base(outputWriter)
         {
             if (groupManager == null)
             {
@@ -52,13 +47,14 @@ namespace SyncTool.Cli.Commands
         }
 
 
-        public int Run(SyncOptions opts)
+        public int Run(SyncGroupOptions opts)
         {
             using (var group = m_GroupManager.GetGroup(opts.Group))
-            {
-                //TODO
-                throw new NotImplementedException();
-            }            
+            {            
+                m_Synchronizer.Synchronize(group);
+            }
+
+            return 0;
         }
 
      
