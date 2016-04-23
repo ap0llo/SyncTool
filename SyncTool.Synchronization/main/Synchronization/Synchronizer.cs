@@ -49,19 +49,48 @@ namespace SyncTool.Synchronization
             }
 
             // get required services
-            var syncPointService = group.GetService<ISyncPointService>();
-            var conflictService = group.GetService<IConflictService>();
-            var syncActionService = group.GetService<ISyncActionService>();
+            var syncPointService = group.GetSyncPointService();
+            var conflictService = group.GetSyncConflictService();
+            var syncActionService = group.GetSyncActionService();
             
             // for all histories, get the changes since the last sync
             var latestSyncPoint = syncPointService.LatestSyncPoint;
-            var diffs = GetDiffs(historyService, latestSyncPoint).ToList();            
-            var newSyncPoint = new MutableSyncPoint()
+
+            List<IFileSystemDiff> diffs;
+            MutableSyncPoint newSyncPoint;
+
+            if (ContainsNewHistory(historyService, latestSyncPoint))
+            {                
+                diffs = GetDiffs(historyService, null).ToList();
+
+                newSyncPoint = new MutableSyncPoint()
+                {
+                    Id = GetNextSyncPointId(latestSyncPoint),
+                    FromSnapshots = null,
+                    ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id)
+                };
+
+                // cancel all pending sync actions
+                var cancelledSyncActions = syncActionService.AllItems
+                    .Where(IsPendingSyncAction)
+                    .Select(a => a.WithState(SyncActionState.Cancelled));
+
+                syncActionService.UpdateItems(cancelledSyncActions);
+
+                // remove all conflicts                
+                conflictService.RemoveItems(conflictService.Items.ToArray());
+            }
+            else
             {
-                Id = GetNextSyncPointId(latestSyncPoint),
-                FromSnapshots = latestSyncPoint?.ToSnapshots,
-                ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id)
-            };
+                diffs = GetDiffs(historyService, latestSyncPoint?.ToSnapshots).ToList();
+                
+                newSyncPoint = new MutableSyncPoint()
+                {
+                    Id = GetNextSyncPointId(latestSyncPoint),
+                    FromSnapshots = latestSyncPoint?.ToSnapshots,
+                    ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id)
+                };
+            }                                              
 
             // group changes by files
             var changeListsByFile = diffs
@@ -115,9 +144,7 @@ namespace SyncTool.Synchronization
                 }
 
                 if (sinks.Length == 1)
-                {
-                    //TODO: do we need to check if the sink is reachable from all current node????
-
+                {                 
                     // no conflict => generate sync actions, to replace the outdated file versions or add the file to a target
 
                     var sink = sinks.Single();
@@ -181,20 +208,32 @@ namespace SyncTool.Synchronization
         /// <summary>
         /// Gets the diffs relevant for the next synchronization (all changes since the last sync point)
         /// </summary>
-        IEnumerable<IFileSystemDiff> GetDiffs(IHistoryService historyService, ISyncPoint syncPoint)
+        IEnumerable<IFileSystemDiff> GetDiffs(IHistoryService historyService, IReadOnlyDictionary<string, string> toSnapshots )
         {
-            //TODO: Handle histories added since the last sync
-
-            // no sync point found => sync was never executed before
-            if (syncPoint == null)
+            // no saved snapshot ids from last sync => get all the changes from the initial commit
+            if (toSnapshots == null)
             {
                 return historyService.Items.Select(h => h.GetChanges(h.LatestFileSystemSnapshot.Id));
             }
             // last sync point != null => get all the changes since the last sync
             else
-            {
-                return historyService.Items.Select(h => h.GetChanges(syncPoint.ToSnapshots[h.Name], h.LatestFileSystemSnapshot.Id));
+            {               
+                return historyService.Items.Select(h => h.GetChanges(toSnapshots[h.Name], h.LatestFileSystemSnapshot.Id));
             }            
+        }
+
+
+        bool ContainsNewHistory(IHistoryService historyService, ISyncPoint syncPoint)
+        {
+            if (syncPoint == null)
+            {
+                return false;
+            }
+            else
+            {
+                var historyNames = historyService.Items.Select(h => h.Name).ToArray();
+                return historyNames.Any(name => !syncPoint.ToSnapshots.ContainsKey(name));
+            }
         }
 
         /// <summary>

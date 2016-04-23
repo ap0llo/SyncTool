@@ -464,10 +464,63 @@ namespace SyncTool.Git.Synchronization
         }
 
 
-        //unrelated sync actions stay unchanged
+        //TODO: unrelated sync actions stay unchanged
 
         //TODO: More tests
 
+            //TODO: Synchronize has no effect, if no new snapshots were added since the last sync
+
+        [Fact]
+        public void Sychronize_resets_the_sync_state_by_inserting_a_new_sync_point()
+        {
+            // ARRANGE
+            var left = new HistoryBuilder(m_Group, "left");
+            var right = new HistoryBuilder(m_Group, "right");
+
+            left.AddFile("file1");
+
+            left.CreateSnapshot();
+            right.CreateSnapshot();
+
+            m_Instance.Synchronize(m_Group);
+
+            var firstSyncActions = m_Group.GetSyncActionService().AllItems.ToArray();
+
+            // ACT
+
+            var newHistory = new HistoryBuilder(m_Group, "history3");
+            newHistory.CreateSnapshot();
+
+            m_Group.GetSyncConflictService().AddItems(new ConflictInfo("/file2", null));
+
+            m_Instance.Synchronize(m_Group);
+
+
+            //ASSERT
+
+            var syncPointService = m_Group.GetSyncPointService();
+            
+            // there should be 2 sync points 
+            Assert.Equal(2, syncPointService.Items.Count());
+
+            // first sync
+            Assert.Null(syncPointService[1].FromSnapshots);
+            Assert.NotNull(syncPointService[1].ToSnapshots);
+            
+            // second sync (FromSnapshots needs to be reset to null)
+            Assert.Null(syncPointService[2].FromSnapshots);
+            Assert.NotNull(syncPointService[2].ToSnapshots);
+
+            // all sync actions from previous syncs need to be cancelled
+            var syncActions = m_Group.GetSyncActionService().AllItems.ToDictionary(a => a.Id);
+            Assert.True(firstSyncActions.All(a => syncActions[a.Id].State == SyncActionState.Cancelled));
+
+            // all conflicts need to be removed            
+            Assert.Empty(m_Group.GetSyncConflictService().Items);
+        }
+
+        
+        //TODO: Reset occurs when a histroy is removed
 
         public override void Dispose()
         {

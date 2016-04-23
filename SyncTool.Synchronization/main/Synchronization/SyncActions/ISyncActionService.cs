@@ -11,7 +11,7 @@ namespace SyncTool.Synchronization.SyncActions
 {
     public interface ISyncActionService : IService
     {
-
+        //TODO: Rename to 'Items' to make naming consistent with IItemService
         IEnumerable<SyncAction> AllItems { get; }
 
             /// <summary>
