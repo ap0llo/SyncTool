@@ -14,6 +14,8 @@ namespace SyncTool.Synchronization.SyncActions
         //TODO: Rename to 'Items' to make naming consistent with IItemService
         IEnumerable<SyncAction> AllItems { get; }
 
+        IEnumerable<SyncAction> PendingItems { get; }
+
             /// <summary>
         /// Gets all sync actions with the specified state
         /// </summary>

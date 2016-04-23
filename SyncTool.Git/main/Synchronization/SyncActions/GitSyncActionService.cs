@@ -38,6 +38,24 @@ namespace SyncTool.Git.Synchronization.SyncActions
                 var allStates = Enum.GetValues(typeof(SyncActionState)).Cast<SyncActionState>();
                 return allStates.SelectMany(state => this[state]);
             }
+        }
+
+        public IEnumerable<SyncAction> PendingItems
+        {
+            get
+            {
+                // branch does not exist => result is empty
+                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                {
+                    return Enumerable.Empty<SyncAction>();
+                }
+
+                var pendingStates = Enum.GetValues(typeof(SyncActionState))
+                    .Cast<SyncActionState>()
+                    .Where(s => s.IsPendingState());
+
+                return pendingStates.SelectMany(state => this[state]);
+            }
         } 
 
         public IEnumerable<SyncAction> this[SyncActionState state]

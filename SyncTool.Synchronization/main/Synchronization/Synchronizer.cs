@@ -71,8 +71,7 @@ namespace SyncTool.Synchronization
                 };
 
                 // cancel all pending sync actions
-                var cancelledSyncActions = syncActionService.AllItems
-                    .Where(IsPendingSyncAction)
+                var cancelledSyncActions = syncActionService.PendingItems                    
                     .Select(a => a.WithState(SyncActionState.Cancelled));
 
                 syncActionService.UpdateItems(cancelledSyncActions);
@@ -347,8 +346,8 @@ namespace SyncTool.Synchronization
             }
             return false;
         }
-        
-        bool IsPendingSyncAction(SyncAction action) => action.State == SyncActionState.Active || action.State == SyncActionState.Queued;
+
+        bool IsPendingSyncAction(SyncAction action) => action.State.IsPendingState();
 
         SyncAction GetSyncAction(string targetName, int syncPointId, IFileReference currentFileVersion, IFileReference newFileVersion)
         {

@@ -36,8 +36,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
         public void AllItems_returns_empty_enumerable_if_branch_does_not_exits()
         {
             Assert.Empty(m_Service.AllItems);
-        }
-        
+        }        
+
 
         [Fact]
         public void AllItems_returns_empty_enumerable_if_branch_is_empty()
@@ -66,6 +66,44 @@ namespace SyncTool.Git.Synchronization.SyncActions
         }
 
         #endregion
+
+
+        #region PendingItems
+
+
+        [Fact]
+        public void PendingItems_returns_empty_enumerable_if_branch_does_not_exits()
+        {
+            Assert.Empty(m_Service.PendingItems);
+        }
+
+        [Fact]
+        public void PendingItems_returns_empty_enumerable_if_branch_is_empty()
+        {
+            m_Group.Repository.CreateBranch(GitSyncActionService.BranchName, m_Group.Repository.GetInitialCommit());
+            Assert.Empty(m_Service.PendingItems);
+        }
+
+
+        [Fact]
+        public void PendingItems_returns_expected_result()
+        {
+            var action1 = new AddFileSyncAction(Guid.NewGuid(), "target1", SyncActionState.Queued, 42, new FileReference("/path/to/file1"));
+            var action2 = new AddFileSyncAction(Guid.NewGuid(), "target2", SyncActionState.Cancelled, 42, new FileReference("/path/to/file2"));
+            var action3 = new AddFileSyncAction(Guid.NewGuid(), "target3", SyncActionState.Active, 42, new FileReference("/path/to/file3"));
+            var action4 = new AddFileSyncAction(Guid.NewGuid(), "target3", SyncActionState.Completed, 42, new FileReference("/path/to/file3"));
+
+            m_Service.AddItems(action1, action2, action3, action4);
+
+            var pendingItems = m_Service.PendingItems.ToList();
+            Assert.Equal(2, pendingItems.Count());
+
+            Assert.Single(pendingItems.Where(a => a.State == SyncActionState.Queued));            
+            Assert.Single(pendingItems.Where(a => a.State == SyncActionState.Active));
+        }
+
+        #endregion  
+
 
         #region Indexer
 
