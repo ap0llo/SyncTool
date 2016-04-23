@@ -56,14 +56,11 @@
     <Compile Include="Synchronization\SyncActions\SyncActionServiceExtensions.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionState.cs" />
     <Compile Include="Synchronization\_Exceptions\DuplicateSyncActionException.cs" />
-    <Compile Include="Synchronization\_Exceptions\NotApplicableException.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionSerializer.cs" />
-    <Compile Include="Synchronization\SynchronizerResult.cs" />
     <Compile Include="Synchronization\Synchronizer.cs" />
     <Compile Include="Synchronization\SyncActions\AddFileSyncAction.cs" />
     <Compile Include="Synchronization\Conflicts\ConflictInfo.cs" />
     <Compile Include="FileSystem\Versioning\FilteredFileSystemDiff.cs" />
-    <Compile Include="Synchronization\GroupedChange.cs" />
     <Compile Include="Synchronization\ISynchronizer.cs" />
     <Compile Include="FileSystem\NullDirectory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

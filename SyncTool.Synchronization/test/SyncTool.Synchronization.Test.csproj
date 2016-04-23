@@ -88,19 +88,15 @@
   <ItemGroup>
     <Compile Include="Synchronization\ChangeGraph\GraphTest.cs" />
     <Compile Include="Synchronization\Conflicts\ConflictInfoTest.cs" />
-    <Compile Include="Synchronization\GroupedChangeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Synchronization\SyncActions\AddFileSyncActionTest.cs" />
     <Compile Include="Synchronization\SyncActions\RemoveFileSyncActionTest.cs" />
     <Compile Include="Synchronization\SyncActions\ReplaceFileSyncActionTest.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionSerializerTest.cs" />
-    <Compile Include="Synchronization\SynchronizerResultTest.cs" />
     <Compile Include="TestHelpers\SyncAssert.cs" />
     <Compile Include="TestHelpers\SyncPointBuilder.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="FileSystem\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
