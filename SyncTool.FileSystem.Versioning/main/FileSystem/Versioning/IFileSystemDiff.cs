@@ -26,13 +26,7 @@ namespace SyncTool.FileSystem.Versioning
         /// </summary>
         IFileSystemSnapshot ToSnapshot { get; }
 
-
-        /// <summary>
-        /// The list of changes between the two snapshots
-        /// </summary>
-        [Obsolete(nameof(Changes) + " is obsolete. Use " + nameof(ChangeLists) + " instead")]
-        IEnumerable<IChange> Changes { get; } 
-
+        
         /// <summary>
         /// Gets a change list for every file that changed between the two snapshots
         /// </summary>

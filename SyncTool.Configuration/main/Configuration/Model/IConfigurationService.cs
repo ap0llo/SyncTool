@@ -11,6 +11,7 @@ namespace SyncTool.Configuration.Model
     /// </summary>
     public interface IConfigurationService : IItemService<string, SyncFolder>
     {
+        //TODO: rename to AddItem so naming is more consistent with ither IItemService implementations
         /// <summary>
         /// Adds the specified <see cref="SyncFolder"/> to the group
         /// </summary>

@@ -178,7 +178,10 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() detects modification of files")]
         public void GetChanges_detects_modification_of_files()
-        {            
+        {
+
+            //ARRANGE
+
             var state1 = new Directory(s_Dir1)
             {
                 d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
@@ -194,20 +197,16 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
 
+            //ACT
+
             var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
 
+
+            //ASSERT
+
             Assert.Equal(diff.FromSnapshot, snapshot1);
-            Assert.Equal(diff.ToSnapshot, snapshot2);
+            Assert.Equal(diff.ToSnapshot, snapshot2);        
 
-            // "old" Changes API
-
-            Assert.Single(diff.Changes);
-            Assert.Equal(ChangeType.Modified, diff.Changes.Single().Type);
-            
-            FileSystemAssert.FileEqual(state1.GetFile(s_File1), diff.Changes.Single().FromFile);
-            FileSystemAssert.FileEqual(state2.GetFile(s_File1), diff.Changes.Single().ToFile);
-
-            // "new" changes API
             Assert.Single(diff.ChangeLists);
             Assert.Single(diff.ChangeLists.Single().Changes);
             Assert.Equal(ChangeType.Modified, diff.ChangeLists.Single().Changes.Single().Type);
@@ -219,6 +218,8 @@ namespace SyncTool.Git.FileSystem.Versioning
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() detects additions of files")]
         public void GetChanges_detects_additions_of_files()
         {
+            //ARRANGE
+
             var writeTime1 = DateTime.Now.AddDays(-2);
 
             var state1 = new Directory(s_Dir1)
@@ -236,26 +237,19 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
 
+            //ACT
+
             var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
 
 
+            //ASSERT
+
             Assert.Equal(diff.FromSnapshot, snapshot1);
             Assert.Equal(diff.ToSnapshot, snapshot2);
-
-            // "old" Changes API 
-
-            Assert.Equal(1, diff.Changes.Count());
-            Assert.Equal(ChangeType.Added, diff.Changes.Single().Type);
-
-            Assert.Null(diff.Changes.Single().FromFile);            
-            FileSystemAssert.FileEqual(state2.GetFile(s_File2), diff.Changes.Single().ToFile);
-        
-            // "new" Changes API
-
+            
             Assert.Single(diff.ChangeLists);
 
             var changes = diff.ChangeLists.Single().Changes.ToList();
-
             Assert.Single(changes);
             Assert.Equal(ChangeType.Added, changes.Single().Type);
             FileSystemAssert.FileReferenceMatches(state2.GetFile(s_File2), changes.Single().ToVersion);
@@ -264,6 +258,8 @@ namespace SyncTool.Git.FileSystem.Versioning
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() detects deletions of files")]
         public void GetChanges_detects_deletions_of_files()
         {
+            //ARRANGE
+
             var state1 = new Directory(s_Dir1)
             {
                 d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
@@ -275,21 +271,15 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
 
+            //ACT
+
             var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT
 
             Assert.Equal(diff.FromSnapshot, snapshot1);
             Assert.Equal(diff.ToSnapshot, snapshot2);
-
-            // "old" Changes API
-
-            Assert.Equal(1, diff.Changes.Count());
-            Assert.Equal(ChangeType.Deleted, diff.Changes.Single().Type);
-
-            Assert.Null(diff.Changes.Single().ToFile);
-            FileSystemAssert.FileEqual(state1.GetFile(s_File1), diff.Changes.Single().FromFile);
-
-            //´"new" Changes API
-
+            
             Assert.Single(diff.ChangeLists);
             var changes = diff.ChangeLists.Single().Changes.ToList();
             Assert.Single(changes);
@@ -302,8 +292,9 @@ namespace SyncTool.Git.FileSystem.Versioning
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() ignores Additions of empty directories")]
         public void GetChanges_ignores_Additions_of_empty_directories()
         {
-            var state1 = new Directory(s_Dir1);
+            //ARRANGE
 
+            var state1 = new Directory(s_Dir1);
             var state2 = new Directory(s_Dir1)
             {
                 dir1 => new Directory(dir1, s_Dir2)
@@ -314,19 +305,18 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
 
+            //ACT
             var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
 
-            // "old" Changes API
-            Assert.Empty(diff.Changes);
-
-            // "new" Changes API
-            Assert.Empty(diff.ChangeLists);
-
+            //ASSERT
+            Assert.Empty(diff.ChangeLists);       
         }
 
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() ignores Deletions of empty directories")]
         public void GetChanges_ignores_Deletions_of_empty_directories()
         {            
+            //ARRANGE
+
             var state1 = new Directory(s_Dir1)
             {
                 dir1 => new Directory(dir1, s_Dir2)
@@ -339,19 +329,18 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
 
+            //ACT
             var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
 
-            // "old" Changes API
-            Assert.Empty(diff.Changes);
-
-            // "new" Changes API
+            //ASSERT
             Assert.Empty(diff.ChangeLists);
-
         }
 
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() ignores changes outside of the Snapshot directory")]
         public void GetChanges_ignores_Changes_outside_of_the_Snapshot_directory()
         {
+            //ARRANGE
+
             var state1 = new Directory(s_Dir1);
             var state2 = new Directory(s_Dir1)
             {
@@ -372,20 +361,19 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
 
+            //ACT
+
             var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
 
-            // there should only be a single change (the addition of 'file1')
-
-            // "old" Changes API
-            Assert.Single(diff.Changes);
-
-            // "new" Changes API
+            //ASSERT
             Assert.Single(diff.ChangeLists);
         }
 
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() with single id gets all changes since the initial commit")]
         public void GetChanges_with_single_id_gets_all_changes_since_the_initial_commit()
         {
+            //ARRANGE
+
             var state2 = new Directory(s_Dir1)
             {
                 dir1 => new EmptyFile(dir1, "file1")
@@ -393,17 +381,16 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             var snapshot = m_Instance.CreateSnapshot(state2);
 
+            //ACT
+
             var diff = m_Instance.GetChanges(snapshot.Id);
 
+            //ASSERT
 
             Assert.NotNull(diff);
             Assert.Null(diff.FromSnapshot);
             Assert.NotNull(diff.ToSnapshot);
             
-            // "old" Changes API
-            Assert.Single(diff.Changes);
-            Assert.Equal(ChangeType.Added, diff.Changes.Single().Type);            
-
             // "new" Changes API
             Assert.Single(diff.ChangeLists);
             var changes = diff.ChangeLists.Single().Changes.ToList();
@@ -413,6 +400,8 @@ namespace SyncTool.Git.FileSystem.Versioning
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): Multiple changes to the same file")]
         public void GetChanges_Multiple_changes_to_the_same_file()
         {
+            //ARRANGE
+
             var lastWriteTime = DateTime.Now;
             var state1 = new Directory(s_Dir1)
             { 
@@ -426,19 +415,16 @@ namespace SyncTool.Git.FileSystem.Versioning
             var snapshot1 = m_Instance.CreateSnapshot(state1);
             var snapshot2 = m_Instance.CreateSnapshot(state2);
 
+            //ACT
+
             var diff = m_Instance.GetChanges(snapshot2.Id);
+
+            //ASSERT
 
             Assert.NotNull(diff);
             Assert.Null(diff.FromSnapshot);
             Assert.NotNull(diff.ToSnapshot);
-
-            // "old" Changes API combines addition and modification to a single addition change
-
-            Assert.Single(diff.Changes);
-            Assert.Equal(ChangeType.Added, diff.Changes.Single().Type);
-
-            // "new" Changes API gets all the changes to the file (both the addition and the modification)
-
+            
             Assert.Single(diff.ChangeLists);
             var changes = diff.ChangeLists.Single().Changes.ToArray();
             // both changes should be contained in a single ChangeList
@@ -458,6 +444,8 @@ namespace SyncTool.Git.FileSystem.Versioning
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): A file gets added, modified and deleted ")]
         public void GetChanges_A_file_gets_added_modified_and_deleted()
         {
+            //ARRANGE
+
             var lastWriteTime = DateTime.Now;
             var state1 = new Directory(s_Dir1)
             {
@@ -473,18 +461,18 @@ namespace SyncTool.Git.FileSystem.Versioning
             var snapshot2 = m_Instance.CreateSnapshot(state2);
             var snapshot3 = m_Instance.CreateSnapshot(state3);
 
+            //ACT
+
             var diff = m_Instance.GetChanges(snapshot3.Id);
+
+            //ASSERT
 
 
             Assert.NotNull(diff);
             Assert.Null(diff.FromSnapshot);
             Assert.NotNull(diff.ToSnapshot);
-
-            // "old" Changes API ignores the file (no change between latest snapshot and before first snapshot)            
-
-            Assert.Empty(diff.Changes);            
-
-            // "new" Changes API gets all the changes to the file 
+            
+            // GetChanges() gets all the changes to the file 
 
             Assert.Single(diff.ChangeLists);
             var changes = diff.ChangeLists.Single().Changes.ToArray();
@@ -511,6 +499,8 @@ namespace SyncTool.Git.FileSystem.Versioning
         [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): A file gets added, modified and deleted between snapshots")]
         public void GetChanges_A_file_gets_added_modified_and_deleted_between_snapshots()
         {
+            //ARRANGE
+
             var lastWriteTime = DateTime.Now;
             var state0 = new Directory(s_Dir1);
             var state1 = new Directory(s_Dir1)
@@ -528,19 +518,17 @@ namespace SyncTool.Git.FileSystem.Versioning
             var snapshot2 = m_Instance.CreateSnapshot(state2);
             var snapshot3 = m_Instance.CreateSnapshot(state3);
 
+            //ACT
+
             var diff = m_Instance.GetChanges(snapshot0.Id, snapshot3.Id);
 
+
+            //ASSERT
 
             Assert.NotNull(diff);
             Assert.Equal(snapshot0, diff.FromSnapshot);
             Assert.Equal(snapshot3, diff.ToSnapshot);
-
-            // "old" Changes API ignores the file (no change between latest snapshot and before first snapshot)            
-
-            Assert.Empty(diff.Changes);
-
-            // "new" Changes API gets all the changes to the file 
-
+            
             Assert.Single(diff.ChangeLists);
             var changes = diff.ChangeLists.Single().Changes.ToArray();
             // both changes should be contained in a single ChangeList
@@ -566,37 +554,36 @@ namespace SyncTool.Git.FileSystem.Versioning
         [Fact]
         public void GetChages_returns_empty_result_if_empty_path_filter_is_supplied()
         {
-            var lastWriteTime = DateTime.Now;            
-            var state = new Directory(s_Dir1)
-            {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
-            };
-            
+            //ARRANGE            
+            var state = new Directory(s_Dir1) { dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = DateTime.Now} };            
             var snapshot = m_Instance.CreateSnapshot(state);
             
+            //ACT
             var diff = m_Instance.GetChanges(snapshot.Id, Array.Empty<string>());
 
-            // path if only applied to "new" Changes API
+            //ASSERT            
             Assert.Empty(diff.ChangeLists);            
         }
 
         [Fact]
         public void GetChanges_returns_filtered_list_of_changes_if_path_filter_is_supplied()
         {
-            var lastWriteTime = DateTime.Now;
+            //ARRANGE
+
             var state = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}, // Add file1
-                dir1 => new EmptyFile(dir1, "file2") { LastWriteTime = lastWriteTime.AddHours(1)},  // Add file2
+                dir1 => new EmptyFile(dir1, "file1"),   // Add file1
+                dir1 => new EmptyFile(dir1, "file2"),   // Add file2
                 dir1 => new Directory(dir1, s_Dir2)
                 {
                     dir2 => new EmptyFile(dir2, "file3")
                 }
-            };
-
+            };            
 
             var snapshot = m_Instance.CreateSnapshot(state);
             
+            //ACT + ASSERT
+
             // path if only applied to "new" Changes API            
             Assert.Single(m_Instance.GetChanges(snapshot.Id, new[] { "/file1" }).ChangeLists);
             Assert.Single(m_Instance.GetChanges(snapshot.Id, new[] { "/file2" }).ChangeLists);

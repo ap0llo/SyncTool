@@ -5,18 +5,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SyncTool.Synchronization;
 
 namespace SyncTool.FileSystem.Versioning
 {
     /// <summary>
-    /// Implementation of <see cref="IFileSystemDiff"/> that filters out changes if the file 
-    /// before and after the change is considered equal according to the specified equality comparer
+    /// Implementation of <see cref="IFileSystemDiff"/> that filters out changes 
+    /// based on a <see cref="IChangeFilter"/>
     /// </summary>
     class FilteredFileSystemDiff : IFileSystemDiff
     {
         readonly IFileSystemDiff m_WrappedDiff;
-        readonly IEqualityComparer<IFile> m_FileComparer;
-
+        readonly IChangeFilter m_Filter;
 
 
         public IFileSystemHistory History => m_WrappedDiff.History;
@@ -24,30 +24,35 @@ namespace SyncTool.FileSystem.Versioning
         public IFileSystemSnapshot FromSnapshot => m_WrappedDiff.FromSnapshot;
 
         public IFileSystemSnapshot ToSnapshot => m_WrappedDiff.ToSnapshot;
+        
 
-        public IEnumerable<IChange> Changes => FilterChanges(m_WrappedDiff.Changes);
+        public IEnumerable<IChangeList> ChangeLists => FilterChanges(m_WrappedDiff.ChangeLists);
 
-        public IEnumerable<IChangeList> ChangeLists {  get { throw new NotImplementedException();} } 
 
-        public FilteredFileSystemDiff(IFileSystemDiff wrappedDiff, IEqualityComparer<IFile> fileComparer)
+        public FilteredFileSystemDiff(IFileSystemDiff wrappedDiff, IChangeFilter filter)
         {
             if (wrappedDiff == null)
             {
                 throw new ArgumentNullException(nameof(wrappedDiff));
             }
-            if (fileComparer == null)
+            if (filter == null)
             {
-                throw new ArgumentNullException(nameof(fileComparer));
+                throw new ArgumentNullException(nameof(filter));
             }
+
             m_WrappedDiff = wrappedDiff;
-            m_FileComparer = fileComparer;
+            m_Filter = filter;
         }
 
 
         IEnumerable<IChange> FilterChanges(IEnumerable<IChange> changes)
         {
-            return changes.Where(change => !m_FileComparer.Equals(change.FromFile, change.ToFile));
+            throw new NotImplementedException();
         }
 
+        IEnumerable<IChangeList> FilterChanges(IEnumerable<IChangeList> changes)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
