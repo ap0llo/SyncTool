@@ -43,16 +43,13 @@ namespace SyncTool.FileSystem.Versioning
             m_WrappedDiff = wrappedDiff;
             m_Filter = filter;
         }
-
-
-        IEnumerable<IChange> FilterChanges(IEnumerable<IChange> changes)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         IEnumerable<IChangeList> FilterChanges(IEnumerable<IChangeList> changes)
         {
-            throw new NotImplementedException();
+            foreach (var changeList in changes)
+            {
+                yield return new FilteredChangeList(changeList, m_Filter);
+            }
         }
     }
 }

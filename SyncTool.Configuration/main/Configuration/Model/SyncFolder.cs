@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
@@ -13,6 +13,9 @@ namespace SyncTool.Configuration.Model
     /// </summary>
     public class SyncFolder : IEquatable<SyncFolder>
     {
+
+        FilterConfiguration m_Filter;
+
         /// <summary>
         /// Gets the name of the folder
         /// </summary>
@@ -26,7 +29,11 @@ namespace SyncTool.Configuration.Model
         /// <summary>
         /// Gets or sets the filesystem filter for this folder
         /// </summary>        
-        public FilterConfiguration Filter { get; set; }
+        public FilterConfiguration Filter
+        {
+            get { return m_Filter ?? FilterConfiguration.Empty; }
+            set { m_Filter = value; }
+        }
 
 
         public SyncFolder(string name)

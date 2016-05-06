@@ -10,6 +10,10 @@
     <AssemblyName>SyncTool.Synchronization</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microscope, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microscope.1.2.3\lib\net45\Microscope.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -39,6 +43,10 @@
     <Compile Include="FileSystem\FilePropertiesComparer.cs" />
     <Compile Include="FileSystem\MutableDirectory.cs" />
     <Compile Include="FileSystem\MutableDirectoryExtensions.cs" />
+    <Compile Include="Synchronization\ChangeFilterFactory.cs" />
+    <Compile Include="Synchronization\EmptyChangeFilter.cs" />
+    <Compile Include="FileSystem\Versioning\FilteredChangeList.cs" />
+    <Compile Include="Synchronization\IChangeFilterFactory.cs" />
     <Compile Include="Synchronization\ChangeGraph\Graph.cs" />
     <Compile Include="Synchronization\ChangeGraph\Node.cs" />
     <Compile Include="Synchronization\ChangeGraph\NodeComparer.cs" />
@@ -50,6 +58,7 @@
     <Compile Include="Synchronization\GraphExtensions.cs" />
     <Compile Include="Synchronization\GroupExtensions.cs" />
     <Compile Include="Synchronization\IChangeFilter.cs" />
+    <Compile Include="Synchronization\MicroscopeChangeFilter.cs" />
     <Compile Include="Synchronization\State\DuplicateSyncPointException.cs" />
     <Compile Include="Synchronization\State\MutableSyncPoint.cs" />
     <Compile Include="Synchronization\State\SyncPointNotFoundException.cs" />

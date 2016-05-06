@@ -3,13 +3,12 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using System;
-using SyncTool.FileSystem.Versioning;
+using SyncTool.Configuration.Model;
 
 namespace SyncTool.Synchronization
 {
-    public interface IChangeFilter : IEquatable<IChangeFilter>
+    public interface IChangeFilterFactory
     {
-        bool IncludeInResult(IChange change);
+        IChangeFilter GetFilter(FilterConfiguration configuration);
     }
 }

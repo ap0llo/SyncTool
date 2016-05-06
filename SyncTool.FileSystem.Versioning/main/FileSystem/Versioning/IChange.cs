@@ -20,18 +20,6 @@ namespace SyncTool.FileSystem.Versioning
         ChangeType Type { get; }
 
         /// <summary>
-        /// The file before the change (Not available for changes of type 'Addded')
-        /// </summary>
-        [Obsolete]
-        IFile FromFile { get; }
-
-        /// <summary>
-        /// The file after the change (Not available for changes of type 'Deleted')
-        /// </summary>
-        [Obsolete]
-        IFile ToFile { get; }
-
-        /// <summary>
         /// A reference to the file before the modification
         /// </summary>
         IFileReference FromVersion { get; }
