@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="FileSystem\FileReferenceExtensionsTest.cs" />
     <Compile Include="FileSystem\FileReferenceTest.cs" />
-    <Compile Include="FileSystem\Filtering\FilteringConverterTest.cs" />
     <Compile Include="FileSystem\InMemoryDirectoryTest.cs" />
     <Compile Include="FileSystem\Local\LocalItemCreatorTest.cs" />
     <Compile Include="FileSystem\Local\LocalDirectoryTest.cs" />

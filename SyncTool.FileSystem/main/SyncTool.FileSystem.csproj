@@ -36,8 +36,6 @@
     <Compile Include="FileSystem\FileReference.cs" />
     <Compile Include="FileSystem\FileReferenceExtensions.cs" />
     <Compile Include="FileSystem\FileSystemItem.cs" />
-    <Compile Include="FileSystem\Filtering\FilteringConverter.cs" />
-    <Compile Include="FileSystem\Filtering\IFileSystemFilter.cs" />
     <Compile Include="FileSystem\IFileReference.cs" />
     <Compile Include="FileSystem\InMemoryDirectory.cs" />
     <Compile Include="FileSystem\DataFile.cs" />
