@@ -34,11 +34,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\GroupExtensions.cs" />
-    <Compile Include="Configuration\_Exceptions\ConfigurationException.cs" />
     <Compile Include="Configuration\_Exceptions\DuplicateSyncFolderException.cs" />
     <Compile Include="Configuration\Model\FileSystemFilterType.cs" />
     <Compile Include="Configuration\Model\FileSystemFilterConfiguration.cs" />
     <Compile Include="Configuration\Model\IConfigurationService.cs" />
+    <Compile Include="Configuration\_Exceptions\SyncFolderNotFoundException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\Model\SyncFolder.cs" />
   </ItemGroup>

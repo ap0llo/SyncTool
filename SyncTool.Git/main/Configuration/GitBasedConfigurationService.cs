@@ -72,7 +72,7 @@ namespace SyncTool.Git.Configuration
         }
 
 
-        public void AddSyncFolder(SyncFolder folder)
+        public void AddItem(SyncFolder folder)
         {
             if (this.Items.Any(f => f.Name.Equals(folder.Name, StringComparison.CurrentCultureIgnoreCase)))
             {
@@ -99,6 +99,33 @@ namespace SyncTool.Git.Configuration
                 workingDirectory.Push();
             }
             
+        }
+
+        public void UpdateItem(SyncFolder folder)
+        {
+            if (folder == null)
+            {
+                throw new ArgumentNullException(nameof(folder));
+            }
+
+            if (!ItemExists(folder.Name))
+            {
+                throw new SyncFolderNotFoundException($"A sync folder named '{folder.Name}' could not be found");
+            }
+
+            using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
+            {
+                var syncFoldersPath = Path.Combine(workingDirectory.Location, s_SyncFolders);
+                
+                var filePath = Path.Combine(syncFoldersPath, $"{folder.Name}.{s_Json}");
+                using (var stream = NativeFile.Open(filePath, FileMode.Open, FileAccess.Write))
+                {
+                    folder.WriteTo(stream);
+                }
+
+                workingDirectory.Commit($"Updated SyncFolder '{folder.Name}'");
+                workingDirectory.Push();
+            }
         }
 
         public bool ItemExists(string name)

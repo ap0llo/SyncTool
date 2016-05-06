@@ -11,11 +11,16 @@ namespace SyncTool.Configuration.Model
     /// </summary>
     public interface IConfigurationService : IItemService<string, SyncFolder>
     {
-        //TODO: rename to AddItem so naming is more consistent with ither IItemService implementations
         /// <summary>
         /// Adds the specified <see cref="SyncFolder"/> to the group
         /// </summary>
         /// <exception cref="DuplicateSyncFolderException">Thrown if the folder cannot be added because an item with the same name already exists</exception>
-        void AddSyncFolder(SyncFolder folder);        
+        void AddItem(SyncFolder folder);
+
+        /// <summary>
+        /// Updates the specified sync folder
+        /// </summary>
+        /// <exception cref="SyncFolderNotFoundException">Thrown when no sync folder to update could be found</exception>
+        void UpdateItem(SyncFolder updatedItem);
     }
 }

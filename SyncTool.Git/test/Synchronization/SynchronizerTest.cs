@@ -78,7 +78,7 @@ namespace SyncTool.Git.Synchronization
             };
 
             var configurationService = m_Group.GetConfigurationService();
-            configurationService.AddSyncFolder(new SyncFolder() { Name = "history1" });
+            configurationService.AddItem(new SyncFolder() { Name = "history1" });
 
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("history1");
@@ -123,8 +123,8 @@ namespace SyncTool.Git.Synchronization
             var state2 = new Directory(null, "root") { d => new EmptyFile(d, "file2")};
 
             var configService = m_Group.GetConfigurationService();
-            configService.AddSyncFolder(new SyncFolder() { Name = "folder1", Path = "Irrelevant"});
-            configService.AddSyncFolder(new SyncFolder() { Name = "folder2", Path = "Irrelevant"});
+            configService.AddItem(new SyncFolder() { Name = "folder1", Path = "Irrelevant"});
+            configService.AddItem(new SyncFolder() { Name = "folder2", Path = "Irrelevant"});
 
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("folder1");
@@ -247,8 +247,8 @@ namespace SyncTool.Git.Synchronization
             var d =  new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(4) } };
 
             var configurationService = m_Group.GetConfigurationService();
-            configurationService.AddSyncFolder(new SyncFolder() { Name = "left"});
-            configurationService.AddSyncFolder(new SyncFolder() { Name = "right"});
+            configurationService.AddItem(new SyncFolder() { Name = "left"});
+            configurationService.AddItem(new SyncFolder() { Name = "right"});
 
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("left");
@@ -288,8 +288,8 @@ namespace SyncTool.Git.Synchronization
             var c = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(3) } };
 
             var configurationService = m_Group.GetConfigurationService();
-            configurationService.AddSyncFolder(new SyncFolder() { Name = "left" });
-            configurationService.AddSyncFolder(new SyncFolder() { Name = "right" });
+            configurationService.AddItem(new SyncFolder() { Name = "left" });
+            configurationService.AddItem(new SyncFolder() { Name = "right" });
 
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("left");
@@ -355,8 +355,8 @@ namespace SyncTool.Git.Synchronization
             var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(2) } };
 
             var configurationService = m_Group.GetConfigurationService();
-            configurationService.AddSyncFolder(new SyncFolder() { Name = "left" });
-            configurationService.AddSyncFolder(new SyncFolder() { Name = "right" });
+            configurationService.AddItem(new SyncFolder() { Name = "left" });
+            configurationService.AddItem(new SyncFolder() { Name = "right" });
 
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("left");
@@ -408,9 +408,9 @@ namespace SyncTool.Git.Synchronization
             var c = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(3) } };
 
             var configurationService = m_Group.GetConfigurationService();
-            configurationService.AddSyncFolder(new SyncFolder() { Name = "1" });
-            configurationService.AddSyncFolder(new SyncFolder() { Name = "2" });
-            configurationService.AddSyncFolder(new SyncFolder() { Name = "3" });
+            configurationService.AddItem(new SyncFolder() { Name = "1" });
+            configurationService.AddItem(new SyncFolder() { Name = "2" });
+            configurationService.AddItem(new SyncFolder() { Name = "3" });
 
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("1");
@@ -579,7 +579,7 @@ namespace SyncTool.Git.Synchronization
                 m_Group = @group;
                 m_Name = name;
                 m_Group.GetHistoryService().CreateHistory(m_Name);
-                m_Group.GetConfigurationService().AddSyncFolder(new SyncFolder() { Name = m_Name, Path = "Irrelevant"});
+                m_Group.GetConfigurationService().AddItem(new SyncFolder() { Name = m_Name, Path = "Irrelevant"});
             }
 
             

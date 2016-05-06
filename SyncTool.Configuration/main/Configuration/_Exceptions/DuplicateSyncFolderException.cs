@@ -4,11 +4,12 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using SyncTool.Common;
 
 namespace SyncTool.Configuration
 {
     [Serializable]
-    public class DuplicateSyncFolderException : ConfigurationException
+    public class DuplicateSyncFolderException : DuplicateItemException
     {
 
 

@@ -19,7 +19,8 @@ namespace SyncTool.Git.Configuration
     /// </summary>
     public class GitBasedConfigurationServiceTest : GitGroupBasedTest
     {
-      
+
+        #region Items
 
         [Fact(DisplayName = nameof(GitBasedConfigurationService) + ".Items is empty for new directory")]
         public void Items_is_empty_for_new_directory()
@@ -31,10 +32,13 @@ namespace SyncTool.Git.Configuration
             }            
         }
 
+        #endregion
 
 
-        [Fact(DisplayName = nameof(GitBasedConfigurationService) + ".AddSyncGroup creates a new commit in the underlying repository")]
-        public void AddSyncGroup_creates_a_new_commit_in_the_underlying_repository()
+        #region AddItem
+
+        [Fact]
+        public void AddItem_creates_a_new_commit_in_the_underlying_repository()
         {
 
             
@@ -50,7 +54,7 @@ namespace SyncTool.Git.Configuration
             using (var group = CreateGroup())
             {
                 var service = new GitBasedConfigurationService(group);
-                service.AddSyncFolder(syncFolder);
+                service.AddItem(syncFolder);
 
                 Assert.Single(service.Items);
                 Assert.Equal(syncFolder, service.Items.Single());
@@ -63,8 +67,8 @@ namespace SyncTool.Git.Configuration
 
         }
 
-        [Fact(DisplayName = nameof(GitBasedConfigurationService) + ".AddSyncGroup throws " + nameof(DuplicateSyncFolderException))]
-        public void AddSyncGroup_throws_DuplicateSyncFolderException()
+        [Fact]
+        public void AddItem_throws_DuplicateSyncFolderException()
         {
             
             var syncFolder1 = new SyncFolder() { Name = "folder1", Path = "foo", Filter = null };
@@ -73,12 +77,49 @@ namespace SyncTool.Git.Configuration
             using (var group = CreateGroup())
             {
                 var service = new GitBasedConfigurationService(group);
-                service.AddSyncFolder(syncFolder1);
-                Assert.Throws<DuplicateSyncFolderException>(() => service.AddSyncFolder(syncFolder2));
+                service.AddItem(syncFolder1);
+                Assert.Throws<DuplicateSyncFolderException>(() => service.AddItem(syncFolder2));
             }            
         }
 
+        #endregion
 
+
+        #region UpdateItem
+
+        [Fact]
+        public void UpdateItem_throws_SyncFolderNotFoundException_if_folder_does_not_exist()
+        {
+            var updatedFolder = new SyncFolder() { Name = "NewFolder" };
+
+            using (var group = CreateGroup())
+            {
+                var service = new GitBasedConfigurationService(group);                
+                Assert.Throws<SyncFolderNotFoundException>(() => service.UpdateItem(updatedFolder));            
+            }
+        }
+
+        [Fact]
+        public void UpdateItem_stores_the_updated_item_in_the_underlying_repository()
+        {
+            var folder = new SyncFolder() { Name = "SyncFolder", Path = "Path"};
+            using (var group = CreateGroup())
+            {
+                var service = new GitBasedConfigurationService(group);
+                service.AddItem(folder);
+
+                folder.Path = "UpdatedPath";
+                service.UpdateItem(folder);
+
+                var service2 = new GitBasedConfigurationService(group);
+                Assert.Equal(folder.Path, service2["SyncFolder"].Path);
+            }
+
+        }
+
+        #endregion
+
+        #region Indexer
 
         [Fact(DisplayName = nameof(GitBasedConfigurationService) + ": Indexer.Get throws ArgumentNullException if name is null or whitespace")]
         public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
@@ -110,7 +151,7 @@ namespace SyncTool.Git.Configuration
             using (var group = CreateGroup())
             {
                 var service = new GitBasedConfigurationService(group);
-                service.AddSyncFolder(new SyncFolder() { Name = "folder1"});
+                service.AddItem(new SyncFolder() { Name = "folder1"});
                 Assert.NotNull(service["folder1"]);
                 // name has to be treated case-invariant
                 Assert.NotNull(service["foLDEr1"]);
@@ -118,8 +159,8 @@ namespace SyncTool.Git.Configuration
         }
 
 
+        #endregion
 
 
-      
     }
 }

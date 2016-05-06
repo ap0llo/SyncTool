@@ -77,7 +77,7 @@ namespace SyncTool.Cli.Commands
                 }
 
                 var configService = group.GetService<IConfigurationService>();
-                configService.AddSyncFolder(new SyncFolder() { Name = opts.Name, Path = opts.Path, Filter = filter });
+                configService.AddItem(new SyncFolder() { Name = opts.Name, Path = opts.Path, Filter = filter });
 
                 var historyService = group.GetService<IHistoryService>();
                 historyService.CreateHistory(opts.Name);
