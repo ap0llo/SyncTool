@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SyncTool.Common;
+using SyncTool.Configuration;
+using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Synchronization.ChangeGraph;
@@ -34,16 +36,17 @@ namespace SyncTool.Synchronization
 
         public void Synchronize(IGroup group)
         {
-            var historyService = group.GetService<IHistoryService>();
+            var syncFolders = group.GetConfigurationService().Items.ToArray();
 
-            // there need to be at least 2 histories, otherwise, syncing makes no sense
-            if (historyService.Items.Count() < 2)
+            // there need to be at least 2 sync folders, otherwise, syncing makes no sense
+            if (syncFolders.Length < 2)
             {
                 return;
             }
 
-            // for every history, there needs to be at least one snapshot
-            if(!historyService.Items.All(h => h.Snapshots.Any()))
+            // for every folder, there needs to be at least one snapshot
+            var historyService = group.GetService<IHistoryService>();
+            if(!syncFolders.All(f => historyService.ItemExists(f.Name) && historyService[f.Name].Snapshots.Any()))
             {
                 return;                
             }
@@ -59,7 +62,7 @@ namespace SyncTool.Synchronization
             List<IFileSystemDiff> diffs;
             MutableSyncPoint newSyncPoint;
 
-            if (ContainsNewHistory(historyService, latestSyncPoint))
+            if (ContainsNewFolders(syncFolders, latestSyncPoint))
             {                
                 diffs = GetDiffs(historyService, null).ToList();
 
@@ -150,11 +153,13 @@ namespace SyncTool.Synchronization
 
                     foreach (var diff in diffs)
                     {
-                        var targetName = diff.History.Name;
+                        var targetSyncFolderName = diff.History.Name;
                         var currentRoot = diff.ToSnapshot.RootDirectory;
-                        var currentVersion = currentRoot.FileExists(path) ? currentRoot.GetFile(path).ToReference() : null;
+                        var currentVersion = currentRoot.FileExists(path) 
+                            ? currentRoot.GetFile(path).ToReference() 
+                            : null;
 
-                        var syncAction = GetSyncAction(targetName, newSyncPoint.Id, currentVersion, sink);
+                        var syncAction = GetSyncAction(targetSyncFolderName, newSyncPoint.Id, currentVersion, sink);
                         if (syncAction != null)
                         {
                             newSyncActions.Add(syncAction);
@@ -222,7 +227,7 @@ namespace SyncTool.Synchronization
         }
 
 
-        bool ContainsNewHistory(IHistoryService historyService, ISyncPoint syncPoint)
+        bool ContainsNewFolders(IEnumerable<SyncFolder> syncFolders , ISyncPoint syncPoint)
         {
             if (syncPoint == null)
             {
@@ -230,8 +235,8 @@ namespace SyncTool.Synchronization
             }
             else
             {
-                var historyNames = historyService.Items.Select(h => h.Name).ToArray();
-                return historyNames.Any(name => !syncPoint.ToSnapshots.ContainsKey(name));
+                var syncFolderNames = syncFolders.Select(f => f.Name).ToArray();
+                return syncFolderNames.Any(name => !syncPoint.ToSnapshots.ContainsKey(name));
             }
         }
 

@@ -3,12 +3,13 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using System;
+using SyncTool.Common;
+using SyncTool.Configuration.Model;
 
-namespace SyncTool.Synchronization
+namespace SyncTool.Configuration
 {
-    public interface IChangeFilter : IEquatable<IChangeFilter>
+    public static class GroupExtensions
     {
-         
+        public static IConfigurationService GetConfigurationService(this IGroup group) => group.GetService<IConfigurationService>();
     }
 }

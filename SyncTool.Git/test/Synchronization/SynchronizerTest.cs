@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using SyncTool.Common;
+using SyncTool.Configuration;
+using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.TestHelpers;
@@ -36,7 +38,7 @@ namespace SyncTool.Git.Synchronization
         }
 
         [Fact]
-        public void Running_Synchronize_without_histories_has_no_effect()
+        public void Running_Synchronize_without_sync_folders_has_no_effect()
         {            
             m_Instance.Synchronize(m_Group);
 
@@ -49,7 +51,25 @@ namespace SyncTool.Git.Synchronization
         }
 
         [Fact]
-        public void Running_Synchronize_without_at_two_histories_has_no_effect()
+        public void Running_Synchronize_has_no_effect_if_there_is_a_sync_folder_without_history()
+        {
+            var historyBuilder1 = new HistoryBuilder(m_Group, "folder1");
+            historyBuilder1.AddFile("file1");
+            historyBuilder1.CreateSnapshot();
+
+            var historyBuilder2 = new HistoryBuilder(m_Group, "folder2");
+
+            m_Instance.Synchronize(m_Group);
+
+            // check that no actions / conflicts or sync points have been stored
+
+            Assert.Empty(m_Group.GetSyncConflictService().Items);
+            Assert.Empty(m_Group.GetSyncActionService().AllItems);
+            Assert.Empty(m_Group.GetSyncPointService().Items);
+        }
+
+        [Fact]
+        public void Running_Synchronize_without_at_two_sync_folders_has_no_effect()
         {
             // ARRANGE
             var state = new Directory(null, "root")
@@ -57,10 +77,12 @@ namespace SyncTool.Git.Synchronization
                 d => new EmptyFile(d, "file1")
             };
 
+            var configurationService = m_Group.GetConfigurationService();
+            configurationService.AddSyncFolder(new SyncFolder() { Name = "history1" });
+
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("history1");
             historyService["history1"].CreateSnapshot(state);
-
 
             // ACT
             m_Instance.Synchronize(m_Group);
@@ -76,15 +98,12 @@ namespace SyncTool.Git.Synchronization
         public void Running_Synchronize_without_at_least_one_snapshot_per_history_has_no_effect()
         {
             //ARRANGE
-            var state = new Directory(null, "root")
-            {
-                d => new EmptyFile(d, "file1")
-            };
             
-            var historyService = m_Group.GetHistoryService();
-            historyService.CreateHistory("history1");
-            historyService.CreateHistory("history2");
-            historyService["history1"].CreateSnapshot(state);
+            var historyBuilder1 = new HistoryBuilder(m_Group, "history1");
+            historyBuilder1.AddFile("file1");
+            historyBuilder1.CreateSnapshot();            
+
+            var historyBuilder2 = new HistoryBuilder(m_Group, "history2");
 
             //ACT
             m_Instance.Synchronize(m_Group);
@@ -93,7 +112,6 @@ namespace SyncTool.Git.Synchronization
             Assert.Empty(m_Group.GetSyncConflictService().Items);
             Assert.Empty(m_Group.GetSyncActionService().AllItems);
             Assert.Empty(m_Group.GetSyncPointService().Items);
-
             
         }
 
@@ -104,11 +122,15 @@ namespace SyncTool.Git.Synchronization
             var state1 = new Directory(null, "root") { d => new EmptyFile(d, "file1") };
             var state2 = new Directory(null, "root") { d => new EmptyFile(d, "file2")};
 
+            var configService = m_Group.GetConfigurationService();
+            configService.AddSyncFolder(new SyncFolder() { Name = "folder1", Path = "Irrelevant"});
+            configService.AddSyncFolder(new SyncFolder() { Name = "folder2", Path = "Irrelevant"});
+
             var historyService = m_Group.GetHistoryService();
-            historyService.CreateHistory("history1");
-            historyService.CreateHistory("history2");
-            var snapshot1 = historyService["history1"].CreateSnapshot(state1);
-            var snapshot2 = historyService["history2"].CreateSnapshot(state2);
+            historyService.CreateHistory("folder1");
+            historyService.CreateHistory("folder2");
+            var snapshot1 = historyService["folder1"].CreateSnapshot(state1);
+            var snapshot2 = historyService["folder2"].CreateSnapshot(state2);
 
             // save a sync point
             var syncPoint = new MutableSyncPoint()
@@ -117,8 +139,8 @@ namespace SyncTool.Git.Synchronization
                 FromSnapshots = null,
                 ToSnapshots = new Dictionary<string, string>()
                 {
-                    {"history1", snapshot1.Id},
-                    {"history2", snapshot2.Id}
+                    {"folder1", snapshot1.Id},
+                    {"folder2", snapshot2.Id}
                 }
             };
 
@@ -224,6 +246,10 @@ namespace SyncTool.Git.Synchronization
             var c =  new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(3) } };
             var d =  new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(4) } };
 
+            var configurationService = m_Group.GetConfigurationService();
+            configurationService.AddSyncFolder(new SyncFolder() { Name = "left"});
+            configurationService.AddSyncFolder(new SyncFolder() { Name = "right"});
+
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("left");
             historyService.CreateHistory("right");
@@ -259,7 +285,11 @@ namespace SyncTool.Git.Synchronization
             var lastWriteTime = DateTime.Now;
             var a = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(1) } };
             var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(2) } };
-            var c = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(3) } };            
+            var c = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(3) } };
+
+            var configurationService = m_Group.GetConfigurationService();
+            configurationService.AddSyncFolder(new SyncFolder() { Name = "left" });
+            configurationService.AddSyncFolder(new SyncFolder() { Name = "right" });
 
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("left");
@@ -288,8 +318,6 @@ namespace SyncTool.Git.Synchronization
         public void Synchronize_with_previous_sync_point_01()
         {
             // ARRANGE      
-            var historyService = m_Group.GetHistoryService();
-
             var left = new HistoryBuilder(m_Group, "left");
             var right = new HistoryBuilder(m_Group, "right");
 
@@ -325,8 +353,11 @@ namespace SyncTool.Git.Synchronization
             var lastWriteTime = DateTime.Now;
             var a = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(1) } };
             var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(2) } };
-            
-            
+
+            var configurationService = m_Group.GetConfigurationService();
+            configurationService.AddSyncFolder(new SyncFolder() { Name = "left" });
+            configurationService.AddSyncFolder(new SyncFolder() { Name = "right" });
+
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("left");
             historyService.CreateHistory("right");
@@ -376,6 +407,10 @@ namespace SyncTool.Git.Synchronization
             var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(2) } };
             var c = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(3) } };
 
+            var configurationService = m_Group.GetConfigurationService();
+            configurationService.AddSyncFolder(new SyncFolder() { Name = "1" });
+            configurationService.AddSyncFolder(new SyncFolder() { Name = "2" });
+            configurationService.AddSyncFolder(new SyncFolder() { Name = "3" });
 
             var historyService = m_Group.GetHistoryService();
             historyService.CreateHistory("1");
@@ -422,9 +457,7 @@ namespace SyncTool.Git.Synchronization
         [Fact]
         public void Synchronize_Unrelated_sync_actions_stay_unchanged()
         {
-            // ARRANGE      
-            var historyService = m_Group.GetHistoryService();
-
+            // ARRANGE                  
             var left = new HistoryBuilder(m_Group, "left");
             var right = new HistoryBuilder(m_Group, "right");
 
@@ -468,7 +501,7 @@ namespace SyncTool.Git.Synchronization
 
         //TODO: More tests
 
-            //TODO: Synchronize has no effect, if no new snapshots were added since the last sync
+        //TODO: Synchronize has no effect, if no new snapshots were added since the last sync
 
         [Fact]
         public void Sychronize_resets_the_sync_state_by_inserting_a_new_sync_point()
@@ -546,6 +579,7 @@ namespace SyncTool.Git.Synchronization
                 m_Group = @group;
                 m_Name = name;
                 m_Group.GetHistoryService().CreateHistory(m_Name);
+                m_Group.GetConfigurationService().AddSyncFolder(new SyncFolder() { Name = m_Name, Path = "Irrelevant"});
             }
 
             

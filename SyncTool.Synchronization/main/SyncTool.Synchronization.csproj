@@ -78,6 +78,10 @@
       <Project>{8495c561-6553-45f8-ba04-72486273ae47}</Project>
       <Name>SyncTool.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.Configuration\main\SyncTool.Configuration.csproj">
+      <Project>{4c4dfbc8-1dd7-4ea3-9ef5-c06693560784}</Project>
+      <Name>SyncTool.Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\main\SyncTool.FileSystem.Versioning.csproj">
       <Project>{70919335-5f89-4324-bcdb-8b41c7a2ca7e}</Project>
       <Name>SyncTool.FileSystem.Versioning</Name>
