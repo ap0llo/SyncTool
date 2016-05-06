@@ -57,13 +57,13 @@ namespace SyncTool.Cli.Commands
                 throw new InvalidOperationException("Unexpected code path. Should have been handled by commandline parser.");
             }
 
-
             using (var group = m_GroupManager.GetGroup(opts.Group))            
             {
-                var filter = new FileSystemFilterConfiguration() { Type = FileSystemFilterType.MicroscopeQuery };
+                var filter = FilterConfiguration.Empty;
+                                
                 if (opts.Filter != null)
                 {
-                    filter.Query = opts.Filter;
+                    filter = new FilterConfiguration(FilterType.MicroscopeQuery, opts.Filter);
                 }
                 else if (opts.FilterFilePath != null)
                 {
@@ -73,11 +73,11 @@ namespace SyncTool.Cli.Commands
                         return 1;
                     }
 
-                    filter.Query = File.ReadAllText(opts.FilterFilePath);
+                    filter = new FilterConfiguration(FilterType.MicroscopeQuery, File.ReadAllText(opts.FilterFilePath));                    
                 }
 
                 var configService = group.GetService<IConfigurationService>();
-                configService.AddItem(new SyncFolder() { Name = opts.Name, Path = opts.Path, Filter = filter });
+                configService.AddItem(new SyncFolder(opts.Name) { Path = opts.Path, Filter = filter });
 
                 var historyService = group.GetService<IHistoryService>();
                 historyService.CreateHistory(opts.Name);

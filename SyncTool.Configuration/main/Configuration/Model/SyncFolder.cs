@@ -4,18 +4,19 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 
 namespace SyncTool.Configuration.Model
 {
     /// <summary>
-    /// Configuration object for a folder that#s being synced within a group
+    /// Configuration object for a folder that's being synced within a group
     /// </summary>
     public class SyncFolder : IEquatable<SyncFolder>
     {
         /// <summary>
-        /// Gets or sets the name of the folder
+        /// Gets the name of the folder
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; }
       
         /// <summary>
         /// Gets or sets the path of the folders root directory in the filesystem
@@ -24,9 +25,24 @@ namespace SyncTool.Configuration.Model
 
         /// <summary>
         /// Gets or sets the filesystem filter for this folder
-        /// </summary>
-        public FileSystemFilterConfiguration Filter { get; set; }
+        /// </summary>        
+        public FilterConfiguration Filter { get; set; }
 
+
+        public SyncFolder(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Value must not be empty or whitespace", nameof(name));
+            }
+
+            Name = name;
+        }
 
         public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(this.Name);
 
@@ -39,10 +55,9 @@ namespace SyncTool.Configuration.Model
                 return false;                
             }
 
-            var comparer = StringComparer.InvariantCultureIgnoreCase;
-
-            return comparer.Equals(this.Name, other.Name) && comparer.Equals(this.Path, other.Path) &&
-                   (Object.ReferenceEquals(this.Filter, other.Filter) || (this.Filter != null && this.Filter.Equals(other.Filter)));
+            return StringComparer.InvariantCultureIgnoreCase.Equals(this.Name, other.Name) &&
+                   StringComparer.InvariantCultureIgnoreCase.Equals(this.Path, other.Path) &&
+                   EqualityComparer<FilterConfiguration>.Default.Equals(Filter, other.Filter);                   
         }
     }
 }

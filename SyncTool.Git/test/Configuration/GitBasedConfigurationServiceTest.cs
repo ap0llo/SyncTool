@@ -49,7 +49,7 @@ namespace SyncTool.Git.Configuration
                 previousCommitCount = repo.GetAllCommits().Count();
             }
             
-            var syncFolder = new SyncFolder() { Name = "folder1", Path = "foo", Filter = null };
+            var syncFolder = new SyncFolder("folder1") { Path = "foo", Filter = null };
 
             
             using (var group = CreateGroup())
@@ -72,8 +72,8 @@ namespace SyncTool.Git.Configuration
         public void AddItem_throws_DuplicateSyncFolderException()
         {
             
-            var syncFolder1 = new SyncFolder() { Name = "folder1", Path = "foo", Filter = null };
-            var syncFolder2 = new SyncFolder() { Name = "folder1", Path = "bar", Filter = null };
+            var syncFolder1 = new SyncFolder("folder1") { Path = "foo", Filter = null };
+            var syncFolder2 = new SyncFolder("folder1") { Path = "bar", Filter = null };
 
             using (var group = CreateGroup())
             {
@@ -91,7 +91,7 @@ namespace SyncTool.Git.Configuration
         [Fact]
         public void UpdateItem_throws_SyncFolderNotFoundException_if_folder_does_not_exist()
         {
-            var updatedFolder = new SyncFolder() { Name = "NewFolder" };
+            var updatedFolder = new SyncFolder("NewFolder");
 
             using (var group = CreateGroup())
             {
@@ -103,7 +103,7 @@ namespace SyncTool.Git.Configuration
         [Fact]
         public void UpdateItem_stores_the_updated_item_in_the_underlying_repository()
         {
-            var folder = new SyncFolder() { Name = "SyncFolder", Path = "Path"};
+            var folder = new SyncFolder("SyncFolder") { Path = "Path" };
             using (var group = CreateGroup())
             {
                 var service = new GitBasedConfigurationService(group);
@@ -152,7 +152,7 @@ namespace SyncTool.Git.Configuration
             using (var group = CreateGroup())
             {
                 var service = new GitBasedConfigurationService(group);
-                service.AddItem(new SyncFolder() { Name = "folder1"});
+                service.AddItem(new SyncFolder("folder1"));
                 Assert.NotNull(service["folder1"]);
                 // name has to be treated case-invariant
                 Assert.NotNull(service["foLDEr1"]);

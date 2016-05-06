@@ -74,7 +74,7 @@ namespace SyncTool.Cli.Commands
                     {
                         service.Items.Select(x => x.Name).ToArray(),
                         service.Items.Select(x => x.Path).ToArray(),
-                        service.Items.Select(x => x.Filter?.Query).Select(x => x ?? "").ToArray(),
+                        service.Items.Select(x => x.Filter?.CustomData).Select(x => x ?? "").ToArray(),
                     });
             }
             else
