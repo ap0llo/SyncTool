@@ -10,25 +10,25 @@ using SyncTool.Synchronization.State;
 
 namespace SyncTool.Git.FileSystem
 {
-    public class SynchronizationStateFile : DataFile<ISyncPoint>
+    public class SyncPointStateFile : DataFile<ISyncPoint>
     {
 
         public const string FileNameSuffix = ".SynchronizationState.json";
 
-        public SynchronizationStateFile(IDirectory parent, ISyncPoint state) : base(parent, GetFileName(state.Id), state)
+        public SyncPointStateFile(IDirectory parent, ISyncPoint state) : base(parent, GetFileName(state.Id), state)
         {
         }
 
         public override IFile WithParent(IDirectory newParent)
         {
-            return new  SynchronizationStateFile(newParent, Content);
+            return new  SyncPointStateFile(newParent, Content);
         }
 
 
         /// <summary>
-        /// Loads a <see cref="SynchronizationStateFile"/> written out into a file 
+        /// Loads a <see cref="SyncPointStateFile"/> written out into a file 
         /// </summary>
-        public static SynchronizationStateFile Load(IDirectory parentDirectory, IReadableFile file)
+        public static SyncPointStateFile Load(IDirectory parentDirectory, IReadableFile file)
         {
             if (file == null)
             {
@@ -42,7 +42,7 @@ namespace SyncTool.Git.FileSystem
 
             using (var stream = file.OpenRead())
             {
-                return new SynchronizationStateFile(parentDirectory, stream.Deserialize<MutableSyncPoint>());
+                return new SyncPointStateFile(parentDirectory, stream.Deserialize<MutableSyncPoint>());
             }
         }
 

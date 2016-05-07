@@ -19,6 +19,7 @@ namespace SyncTool.TestHelpers
             Assert.Equal(expected.Id, actual.Id);   
             DictionaryAssert.Equal(expected.FromSnapshots, actual.FromSnapshots);
             DictionaryAssert.Equal(expected.ToSnapshots, actual.ToSnapshots);
+            DictionaryAssert.Equal(expected.FilterConfigurations, actual.FilterConfigurations);            
         }
 
         public static void ActionsExist<T>(ISyncActionService service, string path, SyncActionState? expectedState = null, int? expectedCount = null)

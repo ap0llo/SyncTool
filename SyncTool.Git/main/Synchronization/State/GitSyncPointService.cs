@@ -73,7 +73,7 @@ namespace SyncTool.Git.Synchronization.State
                     throw new SyncPointNotFoundException(id);
                 }
 
-                return SynchronizationStateFile.Load(null, (IReadableFile)root.GetFile(relativePath)).Content;
+                return SyncPointStateFile.Load(null, (IReadableFile)root.GetFile(relativePath)).Content;
             }
         }
 
@@ -116,7 +116,7 @@ namespace SyncTool.Git.Synchronization.State
 
             var directory = new Directory(null, s_DirectoryName)
             {
-                d => new SynchronizationStateFile(d, state)
+                d => new SyncPointStateFile(d, state)
             };
 
             using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, BranchName.ToString()))
@@ -124,7 +124,7 @@ namespace SyncTool.Git.Synchronization.State
                 var localItemCreator = new LocalItemCreator();
                 localItemCreator.CreateDirectory(directory, workingDirectory.Location);
 
-                workingDirectory.Commit($"{nameof(GitSyncPointService)}: Added SynchronizationState {state.Id}");
+                workingDirectory.Commit($"{nameof(GitSyncPointService)}: Added SyncPoint {state.Id}");
                 workingDirectory.Push();
             }            
         }
@@ -134,9 +134,9 @@ namespace SyncTool.Git.Synchronization.State
         {
             return directory
                .EnumerateFilesRecursively()
-               .Where(f => f.Name.EndsWith(SynchronizationStateFile.FileNameSuffix, StringComparison.InvariantCultureIgnoreCase))
+               .Where(f => f.Name.EndsWith(SyncPointStateFile.FileNameSuffix, StringComparison.InvariantCultureIgnoreCase))
                .Cast<IReadableFile>()
-               .Select(file => SynchronizationStateFile.Load(null, file).Content);
+               .Select(file => SyncPointStateFile.Load(null, file).Content);
         }
 
         void EnsureBranchExists()
@@ -149,7 +149,7 @@ namespace SyncTool.Git.Synchronization.State
 
         string GetRelativeSynchronizationStateFilePath(int id)
         {            
-            return s_DirectoryName + "/" + SynchronizationStateFile.GetFileName(id);
+            return s_DirectoryName + "/" + SyncPointStateFile.GetFileName(id);
         }
     }
 }

@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SyncTool.Configuration.Model;
 using SyncTool.Git.Common;
 using SyncTool.Git.FileSystem;
 using SyncTool.Git.TestHelpers;
@@ -48,7 +49,8 @@ namespace SyncTool.Git.Synchronization.State
             var state = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
                 .WithoutFromSnapshots()
-                .WithToSnapshot("snapshot1", "value1");               
+                .WithToSnapshot("folder1", "value1")
+                .WithFilterConfiguration("folder1", new FilterConfiguration(FilterType.MicroscopeQuery, null));               
 
             m_Service.AddItem(state);
 
@@ -86,12 +88,14 @@ namespace SyncTool.Git.Synchronization.State
             var state1 = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
                 .WithoutFromSnapshots()
-                .WithToSnapshot("name", "id");
+                .WithToSnapshot("name", "id")
+                .WithFilterConfiguration("name", new FilterConfiguration(FilterType.MicroscopeQuery, "Ireelevant"));
 
             var state2 = SyncPointBuilder.NewSyncPoint()
                 .WithId(2)
                 .WithoutFromSnapshots()
-                .WithToSnapshot("name", "id");
+                .WithToSnapshot("name", "id")
+                .WithFilterConfiguration("name", FilterConfiguration.Empty);
 
             m_Service.AddItem(state1);
             m_Service.AddItem(state2);
@@ -107,12 +111,14 @@ namespace SyncTool.Git.Synchronization.State
             var state1 = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
                 .WithoutFromSnapshots()
-                .WithToSnapshot("name1", "id1");
+                .WithToSnapshot("name1", "id1")
+                .WithFilterConfiguration("name", FilterConfiguration.Empty);
 
             var state2 = SyncPointBuilder.NewSyncPoint()
                 .WithId(2)
                 .WithFromSnapshot("name2", "id2")
-                .WithToSnapshot("name3", "id3");
+                .WithToSnapshot("name3", "id3")
+                .WithFilterConfiguration("name", new FilterConfiguration(FilterType.MicroscopeQuery, "Ireelevant"));
             
             m_Service.AddItem(state1);
             m_Service.AddItem(state2);
@@ -141,7 +147,8 @@ namespace SyncTool.Git.Synchronization.State
             var state = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
                 .WithoutFromSnapshots()
-                .WithToSnapshot("name", "id");                
+                .WithToSnapshot("name", "id")
+                .WithFilterConfiguration("name", new FilterConfiguration(FilterType.MicroscopeQuery, "Ireelevant"));                
 
             m_Service.AddItem(state);
             SyncAssert.Equal(state, m_Service[1]);
@@ -154,7 +161,8 @@ namespace SyncTool.Git.Synchronization.State
                 var state1 = SyncPointBuilder.NewSyncPoint()
                     .WithId(1)
                     .WithoutFromSnapshots()
-                    .WithToSnapshot("name", "id");
+                    .WithToSnapshot("name", "id")
+                    .WithFilterConfiguration("name", FilterConfiguration.Empty);
 
                 m_Service.AddItem(state1);
 
@@ -164,7 +172,8 @@ namespace SyncTool.Git.Synchronization.State
                 var state2 = SyncPointBuilder.NewSyncPoint()
                     .WithId(2)
                     .WithoutFromSnapshots()
-                    .WithToSnapshot("name", "id");
+                    .WithToSnapshot("name", "id")
+                    .WithFilterConfiguration("name", new FilterConfiguration(FilterType.MicroscopeQuery, "Ireelevant"));
 
                 m_Service.AddItem(state2);
 

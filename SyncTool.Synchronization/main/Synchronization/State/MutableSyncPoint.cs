@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using SyncTool.Configuration.Model;
 
 namespace SyncTool.Synchronization.State
 {
@@ -14,5 +15,7 @@ namespace SyncTool.Synchronization.State
         public IReadOnlyDictionary<string, string> FromSnapshots { get; set; }
 
         public IReadOnlyDictionary<string, string> ToSnapshots { get; set; }
+
+        public IReadOnlyDictionary<string, FilterConfiguration> FilterConfigurations { get; set; }
     }
 }

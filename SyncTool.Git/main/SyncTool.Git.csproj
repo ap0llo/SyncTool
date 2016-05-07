@@ -68,7 +68,7 @@
     <Compile Include="FileSystem\IFileSystemMapping.cs" />
     <Compile Include="Common\IRepositoryPathProvider.cs" />
     <Compile Include="Common\SingleDirectoryRepositoryPathProvider.cs" />
-    <Compile Include="FileSystem\SynchronizationStateFile.cs" />
+    <Compile Include="FileSystem\SyncPointStateFile.cs" />
     <Compile Include="FileSystem\Utilities\FileSystemConverter.cs" />
     <Compile Include="Common\GitTransaction.cs" />
     <Compile Include="Common\_Exceptions\GitTransactionException.cs" />

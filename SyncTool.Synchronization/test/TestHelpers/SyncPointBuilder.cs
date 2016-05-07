@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using SyncTool.Configuration.Model;
 using SyncTool.Synchronization.State;
 
 namespace SyncTool.TestHelpers
@@ -70,6 +71,26 @@ namespace SyncTool.TestHelpers
             return state;
         }
 
+
+        public static MutableSyncPoint WithFilterConfiguration(this MutableSyncPoint state, string name, FilterConfiguration filterConfiguration)
+        {
+            Dictionary<string, FilterConfiguration> current;
+            try
+            {
+                current = (Dictionary<string, FilterConfiguration>)state.FilterConfigurations;
+            }
+            catch (Exception)
+            {
+                current = null;
+            }
+            current = current ?? new Dictionary<string, FilterConfiguration>();
+
+            current.Add(name, filterConfiguration);
+
+            state.FilterConfigurations = current;
+
+            return state;
+        }
 
     }
 }

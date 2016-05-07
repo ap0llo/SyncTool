@@ -15,12 +15,12 @@ namespace SyncTool.Configuration.Model
         public static readonly FilterConfiguration Empty = new FilterConfiguration(FilterType.None,null);
 
          /// <summary>
-         /// Gets or sets the Type of the filter
+         /// Gets the Type of the filter
          /// </summary>
         public FilterType Type { get;  }
 
         /// <summary>
-        /// Gets or sets the filter's settings string. 
+        /// Gets the filter's settings string. 
         /// The semantics of this property depends on the filter type
         /// </summary>
         public string CustomData { get; }

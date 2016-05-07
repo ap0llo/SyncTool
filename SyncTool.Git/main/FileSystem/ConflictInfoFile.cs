@@ -26,7 +26,7 @@ namespace SyncTool.Git.FileSystem
 
 
         /// <summary>
-        /// Loads a <see cref="SynchronizationStateFile"/> written out into a file 
+        /// Loads a <see cref="ConflictInfoFile"/> written out into a file 
         /// </summary>
         public static ConflictInfoFile Load(IDirectory parentDirectory, IReadableFile file)
         {

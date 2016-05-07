@@ -554,6 +554,15 @@ namespace SyncTool.Git.Synchronization
         
         //TODO: Reset occurs when a histroy is removed
 
+        //TODO: filter configurations are stored in the sync point
+
+        //TODO: Reset occurs when a filter is modified
+
+        //TODO: Changes excluded by the filter are not applied to other folders
+
+        //TODO: Changes from other folders excluded by the filter are not applied to the folder the filter is defined for
+
+
         public override void Dispose()
         {
             m_Group.Dispose();
