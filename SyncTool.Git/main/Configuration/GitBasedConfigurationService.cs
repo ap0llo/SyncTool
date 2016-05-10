@@ -123,8 +123,12 @@ namespace SyncTool.Git.Configuration
                     folder.WriteTo(stream);
                 }
 
-                workingDirectory.Commit($"Updated SyncFolder '{folder.Name}'");
-                workingDirectory.Push();
+                if (workingDirectory.HasChanges)
+                {                    
+                    workingDirectory.Commit($"Updated SyncFolder '{folder.Name}'");
+                    workingDirectory.Push();
+                }
+
             }
         }
 

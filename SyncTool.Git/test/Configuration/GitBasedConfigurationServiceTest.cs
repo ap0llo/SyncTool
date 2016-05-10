@@ -41,7 +41,6 @@ namespace SyncTool.Git.Configuration
         [Fact]
         public void AddItem_creates_a_new_commit_in_the_underlying_repository()
         {
-
             
             int previousCommitCount;
             using (var repo = new Repository(m_RemotePath))
@@ -118,7 +117,35 @@ namespace SyncTool.Git.Configuration
 
         }
 
+        [Fact]
+        public void UpdateItem_does_not_create_a_commit_if_the_item_was_not_changed()
+        {
+            using (var group = CreateGroup())
+            {
+                var service = new GitBasedConfigurationService(group);                
+
+                // ARRANGE
+                {
+                    var folder = new SyncFolder("SyncFolder") { Path = "Path" };
+                    service.AddItem(folder);
+                }
+                var expectedCommitCount = group.Repository.GetAllCommits().Count();
+
+                //ACT: Call UpdateItem() with an unchanged sync folder
+                {
+                    var folder = service["SyncFolder"];
+                    service.UpdateItem(folder);
+                }
+
+                //ASSERT: no commit was created (becuase nothing changed)
+                {
+                    Assert.Equal(expectedCommitCount, group.Repository.GetAllCommits().Count());
+                }
+            }
+        }
+
         #endregion
+
 
         #region Indexer
 
