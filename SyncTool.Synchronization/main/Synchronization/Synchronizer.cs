@@ -70,7 +70,8 @@ namespace SyncTool.Synchronization
                 {
                     Id = GetNextSyncPointId(latestSyncPoint),
                     FromSnapshots = null,
-                    ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id)
+                    ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id),
+                    FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
                 };
 
                 // cancel all pending sync actions
@@ -90,7 +91,8 @@ namespace SyncTool.Synchronization
                 {
                     Id = GetNextSyncPointId(latestSyncPoint),
                     FromSnapshots = latestSyncPoint?.ToSnapshots,
-                    ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id)
+                    ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id),
+                    FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
                 };
             }                                              
 

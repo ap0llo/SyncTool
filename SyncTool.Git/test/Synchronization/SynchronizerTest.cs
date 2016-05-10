@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using SyncTool.Common;
 using SyncTool.Configuration;
 using SyncTool.Configuration.Model;
@@ -495,15 +496,14 @@ namespace SyncTool.Git.Synchronization
             Assert.Empty(m_Group.GetSyncConflictService().Items);
         }
 
+        //TODO: More tests
 
         //TODO: unrelated sync actions stay unchanged
-
-        //TODO: More tests
 
         //TODO: Synchronize has no effect, if no new snapshots were added since the last sync
 
         [Fact]
-        public void Sychronize_resets_the_sync_state_by_inserting_a_new_sync_point()
+        public void Sychronize_resets_the_sync_state_when_a_new_folder_was_added()
         {
             // ARRANGE
             var left = new HistoryBuilder(m_Group, "left");
@@ -518,7 +518,7 @@ namespace SyncTool.Git.Synchronization
 
             var firstSyncActions = m_Group.GetSyncActionService().AllItems.ToArray();
 
-            // ACT
+            // ACT: Add a new sync folder
 
             var newHistory = new HistoryBuilder(m_Group, "history3");
             newHistory.CreateSnapshot();
@@ -552,9 +552,44 @@ namespace SyncTool.Git.Synchronization
         }
 
         
-        //TODO: Reset occurs when a histroy is removed
+        //TODO: Reset occurs when a folder is removed
+        
+        [Fact]
+        public void Synchronize_stores_the_filter_configuration_in_the_sync_point()
+        {
+            //ARRANGE
+            var historyBuilder1 = new HistoryBuilder(m_Group, "folder1");
+            historyBuilder1.AddFile("file1");
+            historyBuilder1.CreateSnapshot();
 
-        //TODO: filter configurations are stored in the sync point
+            var historyBuilder2 = new HistoryBuilder(m_Group, "folder2");
+            historyBuilder2.AddFile("file2");
+            historyBuilder2.CreateSnapshot();
+
+            var configurationService = m_Group.GetConfigurationService();
+            var folder1 = configurationService["folder1"];
+            folder1.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "Irrelevant");
+            configurationService.UpdateItem(folder1);
+
+            var folder2 = configurationService["folder2"];
+            folder2.Filter = FilterConfiguration.Empty;
+            configurationService.UpdateItem(folder2);
+
+            //ACT
+            m_Instance.Synchronize(m_Group);
+
+            //ASSERT
+            var syncPointService = m_Group.GetSyncPointService();
+            var syncPoint = syncPointService.Items.Single();
+            
+            var expected = new Dictionary<string, FilterConfiguration>()
+            {
+                {"folder1", folder1.Filter},
+                {"folder2", folder2.Filter}
+            };
+            DictionaryAssert.Equal(expected, syncPoint.FilterConfigurations);
+        }
+
 
         //TODO: Reset occurs when a filter is modified
 
