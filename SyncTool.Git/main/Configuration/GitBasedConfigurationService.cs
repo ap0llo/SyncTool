@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.Configuration;
 using SyncTool.Configuration.Model;
@@ -124,9 +125,19 @@ namespace SyncTool.Git.Configuration
                 }
 
                 if (workingDirectory.HasChanges)
-                {                    
-                    workingDirectory.Commit($"Updated SyncFolder '{folder.Name}'");
-                    workingDirectory.Push();
+                {
+                    try
+                    {
+                        workingDirectory.Commit($"Updated SyncFolder '{folder.Name}'");
+                        workingDirectory.Push();
+                    }
+                    catch (EmptyCommitException)
+                    {
+                        // no changes after all (HasChanges does not seem to be a 100% accurate)
+                        // => ignore exception
+                    }
+
+                    
                 }
 
             }
