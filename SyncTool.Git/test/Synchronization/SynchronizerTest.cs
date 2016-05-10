@@ -33,7 +33,7 @@ namespace SyncTool.Git.Synchronization
 
         public SynchronizerTest()
         {
-            m_Instance = new Synchronizer(EqualityComparer<IFileReference>.Default);
+            m_Instance = new Synchronizer(EqualityComparer<IFileReference>.Default, new ChangeFilterFactory());
             m_Group = CreateGroup();
         }
 
@@ -573,7 +573,10 @@ namespace SyncTool.Git.Synchronization
 
             var configurationService = m_Group.GetConfigurationService();
             var folder1 = configurationService["folder1"];
-            folder1.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "Irrelevant");
+
+            //"not isEmpty()" will always be true for file paths
+            folder1.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "not isEmpty()");
+
             configurationService.UpdateItem(folder1);
 
             var folder2 = configurationService["folder2"];
@@ -616,7 +619,10 @@ namespace SyncTool.Git.Synchronization
             {
                 var configurationService = m_Group.GetConfigurationService();
                 var folder = configurationService["folder2"];
-                folder.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "Irrelevant");
+
+                //"not isEmpty()" will always be true for file paths
+                folder.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "not isEmpty()");
+
                 configurationService.UpdateItem(folder);
             }
 
@@ -653,10 +659,99 @@ namespace SyncTool.Git.Synchronization
 
         //TODO: Reset occurs when a filter is modified
 
-        //TODO: Changes excluded by the filter are not applied to other folders
+        [Fact]
+        public void Synchronize_ignores_changes_from_a_folder_excluded_by_the_folders_filter()
+        {
+            //ARRANGE
 
-        //TODO: Changes from other folders excluded by the filter are not applied to the folder the filter is defined for
+            var configurationService = m_Group.GetConfigurationService();
 
+            // set up folder 1
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "folder1");
+                historyBuilder.AddFile("file.excluded");
+                historyBuilder.AddFile("file.included");
+                historyBuilder.CreateSnapshot();
+
+                // set up filter
+                historyBuilder.SyncFolder.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "not endsWith('excluded')");
+                configurationService.UpdateItem(historyBuilder.SyncFolder);
+            }
+
+            // set up folder 2 
+            {
+                new HistoryBuilder(m_Group, "folder2").CreateSnapshot();
+            }
+            // set up folder 3
+            {
+                new HistoryBuilder(m_Group, "folder3").CreateSnapshot();
+            }
+
+
+            //ACT
+            m_Instance.Synchronize(m_Group);
+
+            //ASSERT: file.excluded is added to no folder (filtered from source, but file.included needs to be added to both folder 2 and 3)
+
+            var syncActionService = m_Group.GetSyncActionService();
+            var pendingItems = syncActionService.PendingItems.ToArray();
+            
+                    
+            Assert.Equal(2, syncActionService.PendingItems.Count());
+
+            SyncAssert.ActionsExist<AddFileSyncAction>(syncActionService, 
+                path: "/file.included",
+                expectedState:SyncActionState.Queued,
+                expectedCount:2);
+        }
+
+        [Fact]
+        public void Synchronize_does_not_apply_changes_to_a_folder_that_are_excluced_by_its_filter()
+        {
+            // ARRANGE
+
+            var configurationService = m_Group.GetConfigurationService();
+
+            // set up folder 1
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "folder1");
+                historyBuilder.AddFile("file1");
+                historyBuilder.AddFile("file2");
+                historyBuilder.CreateSnapshot();
+                
+            }
+            // set up folder 2
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "folder2");
+                historyBuilder.CreateSnapshot();
+
+                // set up filter
+                historyBuilder.SyncFolder.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "endsWith('file1')");
+                configurationService.UpdateItem(historyBuilder.SyncFolder);
+            }
+
+            // set up folder 3
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "folder3");
+                historyBuilder.CreateSnapshot();
+            }
+
+            //ACT
+            m_Instance.Synchronize(m_Group);
+
+            //ASSERT: file1 is added to both folder2 and folder3, file2 is only added to folder3 (excluded by folder2's filter)
+            var syncActionService = m_Group.GetSyncActionService();
+
+            SyncAssert.ActionsExist<AddFileSyncAction>(syncActionService, "/file1",
+                expectedState: SyncActionState.Queued,
+                expectedCount:2);
+
+            SyncAssert.ActionsExist<AddFileSyncAction>(syncActionService, "/file2",
+                expectedState: SyncActionState.Queued,
+                expectedCount: 1);
+        }
+
+        
 
         public override void Dispose()
         {
@@ -675,6 +770,8 @@ namespace SyncTool.Git.Synchronization
             readonly IDictionary<string, File> m_Files = new Dictionary<string, File>(StringComparer.InvariantCultureIgnoreCase);
 
 
+            public SyncFolder SyncFolder { get; }
+
             public IDirectory CurrentState { get; private set; }
 
             public HistoryBuilder(IGroup group, string name)
@@ -682,7 +779,10 @@ namespace SyncTool.Git.Synchronization
                 m_Group = @group;
                 m_Name = name;
                 m_Group.GetHistoryService().CreateHistory(m_Name);
-                m_Group.GetConfigurationService().AddItem(new SyncFolder(m_Name) { Path = "Irrelevant"});
+
+                SyncFolder = new SyncFolder(m_Name) {Path = "Irrelevant"};
+
+                m_Group.GetConfigurationService().AddItem(SyncFolder);
             }
 
             

@@ -22,15 +22,21 @@ namespace SyncTool.Synchronization
     public class Synchronizer : ISynchronizer
     {        
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
+        readonly IChangeFilterFactory m_FilterFactory;
 
 
-        public Synchronizer(IEqualityComparer<IFileReference> fileReferenceComparer)
+        public Synchronizer(IEqualityComparer<IFileReference> fileReferenceComparer, IChangeFilterFactory filterFactory)
         {
             if (fileReferenceComparer == null)
             {
                 throw new ArgumentNullException(nameof(fileReferenceComparer));
             }
+            if (filterFactory == null)
+            {
+                throw new ArgumentNullException(nameof(filterFactory));
+            }
             m_FileReferenceComparer = fileReferenceComparer;
+            m_FilterFactory = filterFactory;
         }
         
 
@@ -64,7 +70,7 @@ namespace SyncTool.Synchronization
 
             if (ContainsNewFolders(syncFolders, latestSyncPoint) || WasFilterModified(syncFolders, latestSyncPoint))
             {                
-                diffs = GetDiffs(historyService, null).ToList();
+                diffs = GetDiffs(syncFolders, historyService, null).ToList();
 
                 newSyncPoint = new MutableSyncPoint()
                 {
@@ -85,7 +91,7 @@ namespace SyncTool.Synchronization
             }
             else
             {
-                diffs = GetDiffs(historyService, latestSyncPoint?.ToSnapshots).ToList();
+                diffs = GetDiffs(syncFolders, historyService, latestSyncPoint?.ToSnapshots).ToList();
                 
                 newSyncPoint = new MutableSyncPoint()
                 {
@@ -95,6 +101,13 @@ namespace SyncTool.Synchronization
                     FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
                 };
             }                                              
+
+
+            var filters = syncFolders.ToDictionary(
+                f => f.Name, 
+                f => m_FilterFactory.GetFilter(f.Filter),
+                StringComparer.InvariantCultureIgnoreCase);
+                                                   
 
             // group changes by files
             var changeListsByFile = diffs
@@ -121,7 +134,6 @@ namespace SyncTool.Synchronization
 
                 // check if all pending sync actions can be applied to the change grpah
                 var unapplicaleSyncActions = GetUnapplicableSyncActions(changeGraph, syncActionService[path].Where(IsPendingSyncAction));
-
 
                 // pending sync actions could not be applied => skip file
                 if (unapplicaleSyncActions.Any())
@@ -152,7 +164,7 @@ namespace SyncTool.Synchronization
                     // no conflict => generate sync actions, to replace the outdated file versions or add the file to a target
 
                     var sink = sinks.Single();
-
+                    
                     foreach (var diff in diffs)
                     {
                         var targetSyncFolderName = diff.History.Name;
@@ -162,7 +174,7 @@ namespace SyncTool.Synchronization
                             : null;
 
                         var syncAction = GetSyncAction(targetSyncFolderName, newSyncPoint.Id, currentVersion, sink);
-                        if (syncAction != null)
+                        if (syncAction != null && filters[targetSyncFolderName].IncludeInResult(syncAction))
                         {
                             newSyncActions.Add(syncAction);
                         }
@@ -214,18 +226,23 @@ namespace SyncTool.Synchronization
         /// <summary>
         /// Gets the diffs relevant for the next synchronization (all changes since the last sync point)
         /// </summary>
-        IEnumerable<IFileSystemDiff> GetDiffs(IHistoryService historyService, IReadOnlyDictionary<string, string> toSnapshots )
+        IEnumerable<IFileSystemDiff> GetDiffs(IEnumerable<SyncFolder> syncFolders, IHistoryService historyService, IReadOnlyDictionary<string, string> toSnapshots )
         {
-            // no saved snapshot ids from last sync => get all the changes from the initial commit
-            if (toSnapshots == null)
+            foreach (var syncFolder in syncFolders)
             {
-                return historyService.Items.Select(h => h.GetChanges(h.LatestFileSystemSnapshot.Id));
-            }
-            // last sync point != null => get all the changes since the last sync
-            else
-            {               
-                return historyService.Items.Select(h => h.GetChanges(toSnapshots[h.Name], h.LatestFileSystemSnapshot.Id));
-            }            
+                var history = historyService[syncFolder.Name];
+
+                var diff = toSnapshots == null
+                    // no saved snapshot ids from last sync => get all the changes from the initial commit
+                    ? history.GetChanges(history.LatestFileSystemSnapshot.Id)
+                    // toSnapshots != null => get all the changes since the last sync
+                    : history.GetChanges(toSnapshots[syncFolder.Name], history.LatestFileSystemSnapshot.Id);
+
+                var filter = m_FilterFactory.GetFilter(syncFolder.Filter);
+
+                yield return new FilteredFileSystemDiff(diff, filter);
+            }                
+            
         }
 
 

@@ -18,6 +18,8 @@ namespace SyncTool.Synchronization
 
         public bool Equals(IChangeFilter other) => other is EmptyChangeFilter;
 
+        public bool IncludeInResult(IChangeList changeList) => true;
+
         public bool IncludeInResult(IChange change) => true;
     }
 }

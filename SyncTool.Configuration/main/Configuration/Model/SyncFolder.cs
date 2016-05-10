@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace SyncTool.Configuration.Model
 {
+    //TODO: make class immutable
     /// <summary>
     /// Configuration object for a folder that's being synced within a group
     /// </summary>

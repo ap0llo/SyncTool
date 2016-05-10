@@ -4,12 +4,20 @@
 // -----------------------------------------------------------------------------------------------------------
 using System;
 using SyncTool.FileSystem;
+using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Synchronization.SyncActions
 {
     public sealed class RemoveFileSyncAction : SyncAction
     {
         public override string FilePath => RemovedFile.Path;
+
+        public override ChangeType Type => ChangeType.Deleted;
+
+        public override IFileReference FromVersion => RemovedFile;
+
+        public override IFileReference ToVersion => null;
+
 
         public IFileReference RemovedFile { get; }
 

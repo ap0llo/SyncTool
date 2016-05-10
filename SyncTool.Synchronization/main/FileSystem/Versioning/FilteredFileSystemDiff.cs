@@ -48,7 +48,10 @@ namespace SyncTool.FileSystem.Versioning
         {
             foreach (var changeList in changes)
             {
-                yield return new FilteredChangeList(changeList, m_Filter);
+                if (m_Filter.IncludeInResult(changeList))
+                {
+                    yield return new FilteredChangeList(changeList, m_Filter);                    
+                }
             }
         }
     }

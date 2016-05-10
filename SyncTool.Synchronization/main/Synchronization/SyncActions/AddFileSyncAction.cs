@@ -4,13 +4,20 @@
 // -----------------------------------------------------------------------------------------------------------
 using System;
 using SyncTool.FileSystem;
+using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Synchronization.SyncActions
 {
     public sealed class AddFileSyncAction : SyncAction
     {
         public override string FilePath => NewFile.Path;
-        
+
+        public override ChangeType Type => ChangeType.Added;
+
+        public override IFileReference FromVersion => null;
+
+        public override IFileReference ToVersion => NewFile;
+
 
         public IFileReference NewFile { get; }
 

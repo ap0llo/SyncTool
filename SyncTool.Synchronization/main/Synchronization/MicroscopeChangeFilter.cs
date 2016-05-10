@@ -43,5 +43,7 @@ namespace SyncTool.Synchronization
         }
 
         public bool IncludeInResult(IChange change) => m_Evaluator.Evaluate(change.Path);
+
+        public bool IncludeInResult(IChangeList changeList) => m_Evaluator.Evaluate(changeList.Path);
     }
 }

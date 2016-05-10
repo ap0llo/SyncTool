@@ -5,6 +5,7 @@
 using System;
 using Newtonsoft.Json;
 using SyncTool.FileSystem;
+using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Synchronization.SyncActions
 {
@@ -13,6 +14,12 @@ namespace SyncTool.Synchronization.SyncActions
         [JsonIgnore]
         public override string FilePath => OldVersion.Path;
 
+        public override ChangeType Type => ChangeType.Modified;
+
+        public override IFileReference FromVersion => OldVersion;
+
+        public override IFileReference ToVersion => NewVersion;
+        
         public IFileReference OldVersion { get; }
 
         public IFileReference NewVersion { get; }
