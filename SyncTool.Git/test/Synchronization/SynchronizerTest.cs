@@ -141,6 +141,11 @@ namespace SyncTool.Git.Synchronization
                 {
                     {"folder1", snapshot1.Id},
                     {"folder2", snapshot2.Id}
+                },
+                FilterConfigurations = new Dictionary<string, FilterConfiguration>()
+                {
+                    {"folder1", FilterConfiguration.Empty },
+                    {"folder2", FilterConfiguration.Empty }
                 }
             };
 
@@ -590,6 +595,61 @@ namespace SyncTool.Git.Synchronization
             DictionaryAssert.Equal(expected, syncPoint.FilterConfigurations);
         }
 
+        [Fact]
+        public void Synchronizer_resets_the_sync_state_if_a_filter_was_modified_since_the_lasr_sync()
+        {
+            //ARRANGE
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "folder1");
+                historyBuilder.AddFile("file1");
+                historyBuilder.CreateSnapshot();
+            }
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "folder2");
+                historyBuilder.AddFile("file2");
+                historyBuilder.CreateSnapshot();
+            }
+
+            m_Instance.Synchronize(m_Group);
+
+            // change filter for folder2
+            {
+                var configurationService = m_Group.GetConfigurationService();
+                var folder = configurationService["folder2"];
+                folder.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "Irrelevant");
+                configurationService.UpdateItem(folder);
+            }
+
+            var firstSyncActions = m_Group.GetSyncActionService().AllItems.ToArray();
+
+            //ACT
+            m_Instance.Synchronize(m_Group);
+
+            //ASSERT
+            {
+                //ASSERT
+
+                var syncPointService = m_Group.GetSyncPointService();
+
+                // there should be 2 sync points 
+                Assert.Equal(2, syncPointService.Items.Count());
+
+                // first sync
+                Assert.Null(syncPointService[1].FromSnapshots);
+                Assert.NotNull(syncPointService[1].ToSnapshots);
+
+                // second sync (FromSnapshots needs to be reset to null)
+                Assert.Null(syncPointService[2].FromSnapshots);
+                Assert.NotNull(syncPointService[2].ToSnapshots);
+
+                // all sync actions from previous syncs need to be cancelled
+                var syncActions = m_Group.GetSyncActionService().AllItems.ToDictionary(a => a.Id);
+                Assert.True(firstSyncActions.All(a => syncActions[a.Id].State == SyncActionState.Cancelled));
+
+                // all conflicts need to be removed            
+                Assert.Empty(m_Group.GetSyncConflictService().Items);
+            }
+        }
 
         //TODO: Reset occurs when a filter is modified
 

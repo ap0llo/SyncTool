@@ -62,7 +62,7 @@ namespace SyncTool.Synchronization
             List<IFileSystemDiff> diffs;
             MutableSyncPoint newSyncPoint;
 
-            if (ContainsNewFolders(syncFolders, latestSyncPoint))
+            if (ContainsNewFolders(syncFolders, latestSyncPoint) || WasFilterModified(syncFolders, latestSyncPoint))
             {                
                 diffs = GetDiffs(historyService, null).ToList();
 
@@ -239,6 +239,21 @@ namespace SyncTool.Synchronization
             {
                 var syncFolderNames = syncFolders.Select(f => f.Name).ToArray();
                 return syncFolderNames.Any(name => !syncPoint.ToSnapshots.ContainsKey(name));
+            }
+        }
+
+        bool WasFilterModified(IEnumerable<SyncFolder> syncFolders, ISyncPoint lastSyncPoint)
+        {
+            if (lastSyncPoint == null)
+            {
+                return false;
+            }
+            else
+            {
+                var filters = lastSyncPoint.FilterConfigurations;
+                return syncFolders.Any(folder =>                
+                    !filters.ContainsKey(folder.Name) || !filters[folder.Name].Equals(folder.Filter)
+                );
             }
         }
 
