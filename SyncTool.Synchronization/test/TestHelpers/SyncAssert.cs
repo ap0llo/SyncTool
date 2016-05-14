@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using SyncTool.FileSystem;
+using SyncTool.FileSystem.Versioning;
 using SyncTool.Synchronization.State;
 using SyncTool.Synchronization.SyncActions;
 using Xunit;
@@ -21,13 +22,9 @@ namespace SyncTool.TestHelpers
             DictionaryAssert.Equal(expected.ToSnapshots, actual.ToSnapshots);
             DictionaryAssert.Equal(expected.FilterConfigurations, actual.FilterConfigurations);            
         }
+        
 
-        public static void ActionsExist<T>(ISyncActionService service, string path, SyncActionState? expectedState = null, int? expectedCount = null)
-        {
-            ActionsExist(service, path, expectedState, expectedCount, typeof(T));
-        }
-
-        public static void ActionsExist(ISyncActionService service, string path, SyncActionState? expectedState = null, int? expectedCount = null, Type expectedType = null)
+        public static void ActionsExist(ISyncActionService service, string path, SyncActionState? expectedState = null, int? expectedCount = null, ChangeType? expectedChangeType = null)
         {
             var actions = service[path].ToArray();
 
@@ -43,9 +40,9 @@ namespace SyncTool.TestHelpers
                 SyncAssert.IsInState(expectedState.Value, actions);
             }
 
-            if (expectedType != null)
+            if (expectedChangeType != null)
             {
-                SyncAssert.IsType(expectedType, actions);
+                SyncAssert.HasChangeType(expectedChangeType.Value, actions);
             }
 
         }
@@ -58,11 +55,11 @@ namespace SyncTool.TestHelpers
             }
         }
 
-        public static void IsType(Type type, params SyncAction[] objects)
+        public static void HasChangeType(ChangeType type, params SyncAction[] objects)
         {
             foreach (var obj in objects)
             {
-                Assert.IsType(type, obj);
+                Assert.Equal(type, obj.Type);
             }
         }
 

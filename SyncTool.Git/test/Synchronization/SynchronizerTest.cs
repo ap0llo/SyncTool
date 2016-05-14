@@ -181,16 +181,18 @@ namespace SyncTool.Git.Synchronization
             var syncActionService = m_Group.GetSyncActionService();
             Assert.Equal(2, syncActionService.AllItems.Count());            
 
-            SyncAssert.ActionsExist<AddFileSyncAction> (syncActionService, "/file1",
+            SyncAssert.ActionsExist(syncActionService, "/file1",
                 expectedCount:1,
-                expectedState: SyncActionState.Queued
+                expectedState: SyncActionState.Queued,
+                expectedChangeType: ChangeType.Added
                 );
 
             SyncAssert.NewFileMacthes(left.CurrentState.GetFile("/file1"), syncActionService["/file1"].Single());            
 
-            SyncAssert.ActionsExist<AddFileSyncAction>(syncActionService, "/file2",
+            SyncAssert.ActionsExist(syncActionService, "/file2",
                 expectedCount:1,
-                expectedState: SyncActionState.Queued);
+                expectedState: SyncActionState.Queued,
+                expectedChangeType: ChangeType.Added);
 
             SyncAssert.NewFileMacthes(right.CurrentState.GetFile("/file2"), syncActionService["/file2"].Single());
             
@@ -375,9 +377,10 @@ namespace SyncTool.Git.Synchronization
             // first sync
             m_Instance.Synchronize(m_Group);
 
-            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file", 
+            SyncAssert.ActionsExist(m_Group.GetSyncActionService(), "/file", 
                 expectedState: SyncActionState.Queued, 
-                expectedCount: 1);
+                expectedCount: 1,
+                expectedChangeType: ChangeType.Added);
             Assert.Empty(m_Group.GetSyncConflictService().Items);
 
             historyService["right"].CreateSnapshot(b);
@@ -389,9 +392,10 @@ namespace SyncTool.Git.Synchronization
             // ASSERT
 
             // the sync action needs to be cancelled, a conflcit should exist
-            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file",
+            SyncAssert.ActionsExist(m_Group.GetSyncActionService(), "/file",
                 expectedState: SyncActionState.Cancelled,
-                expectedCount: 1);
+                expectedCount: 1,
+                expectedChangeType: ChangeType.Added);
 
             Assert.Single(m_Group.GetSyncConflictService().Items);
             var conflict = m_Group.GetSyncConflictService().Items.Single();
@@ -431,9 +435,10 @@ namespace SyncTool.Git.Synchronization
             // first sync
             m_Instance.Synchronize(m_Group);
 
-            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file",
+            SyncAssert.ActionsExist(m_Group.GetSyncActionService(), "/file",
                 expectedState: SyncActionState.Queued,
-                expectedCount: 1);
+                expectedCount: 1,
+                expectedChangeType: ChangeType.Added);
             Assert.Empty(m_Group.GetSyncConflictService().Items);
 
 
@@ -448,9 +453,10 @@ namespace SyncTool.Git.Synchronization
             // ASSERT
 
             // the sync action needs to be cancelled, a conflcit should exist
-            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file",
+            SyncAssert.ActionsExist(m_Group.GetSyncActionService(), "/file",
                 expectedState: SyncActionState.Cancelled,
-                expectedCount: 1);
+                expectedCount: 1,
+                expectedChangeType: ChangeType.Added);
 
             Assert.Single(m_Group.GetSyncConflictService().Items);
             var conflict = m_Group.GetSyncConflictService().Items.Single();
@@ -477,9 +483,10 @@ namespace SyncTool.Git.Synchronization
             // first sync
             m_Instance.Synchronize(m_Group);
 
-            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file1",
+            SyncAssert.ActionsExist(m_Group.GetSyncActionService(), "/file1",
                     expectedState: SyncActionState.Queued,
-                    expectedCount: 1);
+                    expectedCount: 1,
+                    expectedChangeType: ChangeType.Added);
 
             Assert.Empty(m_Group.GetSyncConflictService().Items);
 
@@ -490,13 +497,15 @@ namespace SyncTool.Git.Synchronization
 
 
             //ASSERT
-            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file1",
+            SyncAssert.ActionsExist(m_Group.GetSyncActionService(), "/file1",
                     expectedState: SyncActionState.Queued,
-                    expectedCount: 1);
+                    expectedCount: 1,
+                    expectedChangeType: ChangeType.Added);
 
-            SyncAssert.ActionsExist<AddFileSyncAction>(m_Group.GetSyncActionService(), "/file2",
+            SyncAssert.ActionsExist(m_Group.GetSyncActionService(), "/file2",
                     expectedState: SyncActionState.Queued,
-                    expectedCount: 1);
+                    expectedCount: 1,
+                    expectedChangeType: ChangeType.Added);
 
             Assert.Empty(m_Group.GetSyncConflictService().Items);
         }
@@ -699,10 +708,11 @@ namespace SyncTool.Git.Synchronization
                     
             Assert.Equal(2, syncActionService.PendingItems.Count());
 
-            SyncAssert.ActionsExist<AddFileSyncAction>(syncActionService, 
+            SyncAssert.ActionsExist(syncActionService, 
                 path: "/file.included",
                 expectedState:SyncActionState.Queued,
-                expectedCount:2);
+                expectedCount:2,
+                expectedChangeType: ChangeType.Added);
         }
 
         [Fact]
@@ -742,13 +752,15 @@ namespace SyncTool.Git.Synchronization
             //ASSERT: file1 is added to both folder2 and folder3, file2 is only added to folder3 (excluded by folder2's filter)
             var syncActionService = m_Group.GetSyncActionService();
 
-            SyncAssert.ActionsExist<AddFileSyncAction>(syncActionService, "/file1",
+            SyncAssert.ActionsExist(syncActionService, "/file1",
                 expectedState: SyncActionState.Queued,
-                expectedCount:2);
+                expectedCount:2,
+                expectedChangeType: ChangeType.Added);
 
-            SyncAssert.ActionsExist<AddFileSyncAction>(syncActionService, "/file2",
+            SyncAssert.ActionsExist(syncActionService, "/file2",
                 expectedState: SyncActionState.Queued,
-                expectedCount: 1);
+                expectedCount: 1,
+                expectedChangeType: ChangeType.Added);
         }
 
         

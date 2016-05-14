@@ -351,36 +351,9 @@ namespace SyncTool.Synchronization
         /// <returns>Retruns true if the action could be added to the graph, otherwise return false</returns>
         bool TryApplySyncAction(Graph<IFileReference> changeGraph, SyncAction action)
         {
-            dynamic dynamicAction = action;
-            return TryApplySyncAction(changeGraph, dynamicAction);
-        }
-
-        bool TryApplySyncAction(Graph<IFileReference> changeGraph, AddFileSyncAction action)
-        {
-            if (changeGraph.Contains(null) && changeGraph.Contains(action.ToVersion))
-            {
-                changeGraph.AddEdge(null, action.ToVersion);
-                return true;
-            }
-            return false;
-        }
-
-        bool TryApplySyncAction(Graph<IFileReference> changeGraph, ReplaceFileSyncAction action)
-        {
             if (changeGraph.Contains(action.FromVersion) && changeGraph.Contains(action.ToVersion))
             {
                 changeGraph.AddEdge(action.FromVersion, action.ToVersion);
-                return true;
-            }
-
-            return false;
-        }
-
-        bool TryApplySyncAction(Graph<IFileReference> changeGraph, RemoveFileSyncAction action)
-        {
-            if (changeGraph.Contains(action.FromVersion) && changeGraph.Contains(null))
-            {
-                changeGraph.AddEdge(action.FromVersion, null);
                 return true;
             }
             return false;
