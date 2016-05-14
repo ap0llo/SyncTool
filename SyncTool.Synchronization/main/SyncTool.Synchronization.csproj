@@ -73,8 +73,6 @@
     <Compile Include="Synchronization\ISynchronizer.cs" />
     <Compile Include="FileSystem\NullDirectory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Synchronization\SyncActions\RemoveFileSyncAction.cs" />
-    <Compile Include="Synchronization\SyncActions\ReplaceFileSyncAction.cs" />
     <Compile Include="Synchronization\SyncActions\SyncAction.cs" />
     <Compile Include="Synchronization\State\ISyncPoint.cs" />
     <Compile Include="Synchronization\State\ISyncPointService.cs" />

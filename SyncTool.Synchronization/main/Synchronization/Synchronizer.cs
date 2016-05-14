@@ -372,11 +372,11 @@ namespace SyncTool.Synchronization
             {
                 if (newFileVersion == null)
                 {
-                    return new RemoveFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, syncPointId, currentFileVersion);
+                    return SyncAction.CreateRemoveFileSyncAction(targetName, SyncActionState.Queued, syncPointId, currentFileVersion);
                 }
                 else
                 {
-                    return new ReplaceFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, syncPointId, currentFileVersion, newFileVersion);
+                    return SyncAction.CreateReplaceFileSyncAction(targetName, SyncActionState.Queued, syncPointId, currentFileVersion, newFileVersion);
                 }
             }
             else

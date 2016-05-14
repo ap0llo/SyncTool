@@ -193,7 +193,7 @@ namespace SyncTool.Synchronization.SyncActions
             var oldVersion = new FileReference("/file1", lastWriteTime, 23);
             var newVersion = new FileReference("/file1", lastWriteTime.AddDays(1), 23 * 2);
 
-            var syncAction = new ReplaceFileSyncAction(Guid.NewGuid(), Guid.NewGuid().ToString(), SyncActionState.Completed, 1, oldVersion, newVersion);
+            var syncAction = SyncAction.CreateReplaceFileSyncAction(Guid.NewGuid().ToString(), SyncActionState.Completed, 1, oldVersion, newVersion);
 
             var serialized = JObject.Parse(m_Instance.Serialize(syncAction));
 
@@ -208,7 +208,7 @@ namespace SyncTool.Synchronization.SyncActions
             var oldVersion = new FileReference("/file1", lastWriteTime, 23);
             var newVersion = new FileReference("/file1", lastWriteTime.AddDays(1), 23 * 2);
 
-            var syncAction = new ReplaceFileSyncAction(Guid.NewGuid(), Guid.NewGuid().ToString(), SyncActionState.Completed, 1, oldVersion, newVersion);
+            var syncAction = SyncAction.CreateReplaceFileSyncAction(Guid.NewGuid().ToString(), SyncActionState.Completed, 1, oldVersion, newVersion);
 
             var serialized = JObject.Parse(m_Instance.Serialize(syncAction));
 
