@@ -11,22 +11,11 @@ namespace SyncTool.Synchronization.SyncActions
     public sealed class AddFileSyncAction : SyncAction
     {
         public override string Path => ToVersion.Path;
-
-        public override ChangeType Type => ChangeType.Added;
-
-        public override IFileReference FromVersion => null;
-
-        public override IFileReference ToVersion { get; }
         
 
-
-        public AddFileSyncAction(Guid id, string target, SyncActionState state, int syncPointId, IFileReference toVersion) : base(id, target, state, syncPointId)
+        public AddFileSyncAction(Guid id, string target, SyncActionState state, int syncPointId, IFileReference toVersion) 
+            : base(ChangeType.Added,null, toVersion, id, target, state, syncPointId)
         {
-            if (toVersion == null)
-            {
-                throw new ArgumentNullException(nameof(toVersion));
-            }
-            this.ToVersion = toVersion;
         }
 
 

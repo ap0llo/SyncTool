@@ -14,11 +14,11 @@ namespace SyncTool.Synchronization.SyncActions
     {
         public abstract string Path { get; }
 
-        public abstract ChangeType Type { get; }
+        public ChangeType Type { get; }
 
-        public abstract IFileReference FromVersion { get; }
+        public IFileReference FromVersion { get; }
         
-        public abstract IFileReference ToVersion { get; }
+        public IFileReference ToVersion { get; }
 
 
         public SyncActionState State { get; }
@@ -30,12 +30,16 @@ namespace SyncTool.Synchronization.SyncActions
         public int SyncPointId { get; }
 
 
-        protected SyncAction(Guid id, string target, SyncActionState state, int syncPointId)
+        protected SyncAction(ChangeType type, IFileReference fromVersion, IFileReference toVersion,  Guid id, string target, SyncActionState state, int syncPointId)
         {
             if (syncPointId <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(syncPointId), "Id must be a positive integer");
             }
+
+            this.Type = type;
+            this.FromVersion = fromVersion;
+            this.ToVersion = toVersion;
 
             this.Target = target;
             this.Id = id;
