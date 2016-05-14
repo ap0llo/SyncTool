@@ -180,7 +180,8 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.NotNull(actual);
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Target, actual.Target);
-            Assert.Equal(expected.NewFile, actual.NewFile);
+            Assert.Equal(expected.FromVersion, actual.FromVersion);
+            Assert.Equal(expected.ToVersion, actual.ToVersion);
             Assert.Equal(expected.State, actual.State);
             Assert.Equal(expected.SyncPointId, actual.SyncPointId);
         }
@@ -196,7 +197,8 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.NotNull(actual);
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Target, actual.Target);
-            Assert.Equal(expected.RemovedFile, actual.RemovedFile);
+            Assert.Equal(expected.ToVersion, actual.ToVersion);
+            Assert.Equal(expected.FromVersion, actual.FromVersion);
             Assert.Equal(expected.State, actual.State);
             Assert.Equal(expected.SyncPointId, actual.SyncPointId);
         }
@@ -215,8 +217,8 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.NotNull(actual);
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Target, actual.Target);
-            Assert.Equal(expected.OldVersion, actual.OldVersion);
-            Assert.Equal(expected.NewVersion, actual.NewVersion);
+            Assert.Equal(expected.FromVersion, actual.FromVersion);
+            Assert.Equal(expected.ToVersion, actual.ToVersion);
             Assert.Equal(expected.State, actual.State);
             Assert.Equal(expected.SyncPointId, actual.SyncPointId);
         }

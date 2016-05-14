@@ -220,7 +220,7 @@ namespace SyncTool.Synchronization.SyncActions
 
             public AddFileSyncActionDto(AddFileSyncAction action) : base(action)
             {
-                NewFile = new FileReferenceDto(action.NewFile);   
+                NewFile = new FileReferenceDto(action.ToVersion);   
             }
         }
 
@@ -236,7 +236,7 @@ namespace SyncTool.Synchronization.SyncActions
 
             public RemoveFileSyncActionDto(RemoveFileSyncAction action) : base(action)
             {
-                RemovedFile = new FileReferenceDto(action.RemovedFile);
+                RemovedFile = new FileReferenceDto(action.FromVersion);
             }
         }
 
@@ -249,8 +249,8 @@ namespace SyncTool.Synchronization.SyncActions
 
             public ReplaceFileSyncActionDto(ReplaceFileSyncAction action) : base(action)
             {
-                OldVersion = new FileReferenceDto(action.OldVersion);
-                NewVersion = new FileReferenceDto(action.NewVersion);
+                OldVersion = new FileReferenceDto(action.FromVersion);
+                NewVersion = new FileReferenceDto(action.ToVersion);
             }
 
             [JsonRequired]

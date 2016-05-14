@@ -151,7 +151,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             // make sure, the action does not already exist
             foreach (var action in syncActions)
             {
-                var exisitingActions = this[action.State, action.FilePath].Where(a => a.Id == action.Id);
+                var exisitingActions = this[action.State, action.Path].Where(a => a.Id == action.Id);
                 if (exisitingActions.Any())
                 {
                     throw new DuplicateSyncActionException($"A sync action with id {action.Id} already exists");
@@ -165,7 +165,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             var root = new Directory(null, "root");
             foreach (var syncAction in syncActions)
             {
-                PathValidator.EnsureIsRootedPath(syncAction.FilePath);
+                PathValidator.EnsureIsRootedPath(syncAction.Path);
 
                 var directory = DirectoryHelper.GetOrAddDirectory(root, GetRelativeSyncActionDirectoryPath(syncAction));
                 directory.Add(d => new SyncActionFile(d, syncAction));
@@ -203,12 +203,12 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
                 foreach (var syncAction in syncActions)
                 {
-                    PathValidator.EnsureIsRootedPath(syncAction.FilePath);
+                    PathValidator.EnsureIsRootedPath(syncAction.Path);
 
                     // remove existing files for this sync action
                     var filesToDelete = Enum.GetValues(typeof (SyncActionState)).Cast<SyncActionState>()
                         .Where(state => state != syncAction.State)
-                        .Select(state => GetRelativeSyncActionDirectoryPath(state, syncAction.FilePath))
+                        .Select(state => GetRelativeSyncActionDirectoryPath(state, syncAction.Path))
                         .Select(relativeDirectoryPath => Path.Combine(relativeDirectoryPath, SyncActionFile.GetFileName(syncAction)))
                         .Select(relativePath => Path.Combine(workingDir.Location, relativePath))
                         .Where(System.IO.File.Exists).ToList();
@@ -250,7 +250,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
                 // delete the file                 
                 foreach (var syncAction in syncActions)
                 {
-                    PathValidator.EnsureIsRootedPath(syncAction.FilePath);
+                    PathValidator.EnsureIsRootedPath(syncAction.Path);
 
                     var directory = localDirectory.GetDirectory(GetRelativeSyncActionDirectoryPath(syncAction));
                     var file = (ILocalFile) directory.GetFile(SyncActionFile.GetFileName(syncAction));
@@ -286,7 +286,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             {
                 foreach (var action in syncActions)
                 {
-                    var exisitingActions = this[action.State, action.FilePath].Where(a => a.Id == action.Id);
+                    var exisitingActions = this[action.State, action.Path].Where(a => a.Id == action.Id);
                     if (!exisitingActions.Any())
                     {
                         throw new SyncActionNotFoundException($"A sync action with id {action.Id} and state {action.State} was not found and cannot be updated");
@@ -297,7 +297,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             {
                 foreach (var action in syncActions)
                 {
-                    var exisitingActions = this[action.FilePath].Where(a => a.Id == action.Id);
+                    var exisitingActions = this[action.Path].Where(a => a.Id == action.Id);
                     if (!exisitingActions.Any())
                     {
                         throw new SyncActionNotFoundException($"A sync action with id {action.Id} was not found and cannot be updated");
@@ -320,7 +320,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
 
 
-        string GetRelativeSyncActionDirectoryPath(SyncAction action) => GetRelativeSyncActionDirectoryPath(action.State, action.FilePath);
+        string GetRelativeSyncActionDirectoryPath(SyncAction action) => GetRelativeSyncActionDirectoryPath(action.State, action.Path);
 
         string GetRelativeSyncActionDirectoryPath(SyncActionState state, string filePath) => state + filePath;
 

@@ -11,18 +11,14 @@ namespace SyncTool.Synchronization.SyncActions
 {
     public sealed class ReplaceFileSyncAction : SyncAction
     {
-        [JsonIgnore]
-        public override string FilePath => OldVersion.Path;
+        public override string Path => FromVersion.Path;
 
         public override ChangeType Type => ChangeType.Modified;
 
-        public override IFileReference FromVersion => OldVersion;
+        public override IFileReference FromVersion { get; }
 
-        public override IFileReference ToVersion => NewVersion;
-        
-        public IFileReference OldVersion { get; }
-
-        public IFileReference NewVersion { get; }
+        public override IFileReference ToVersion { get; }
+       
 
 
         public ReplaceFileSyncAction(Guid id, string target, SyncActionState state, int syncPointId, IFileReference oldVersion, IFileReference newVersion) : base(id, target, state, syncPointId)
@@ -40,13 +36,13 @@ namespace SyncTool.Synchronization.SyncActions
                 throw new ArgumentException($"The paths of {nameof(oldVersion)} and {nameof(newVersion)} are different");
             }
 
-            this.OldVersion = oldVersion;
-            this.NewVersion = newVersion;
+            this.FromVersion = oldVersion;
+            this.ToVersion = newVersion;
 
         }
 
 
-        public override SyncAction WithState(SyncActionState state) => new ReplaceFileSyncAction(Id, Target, state, SyncPointId, OldVersion, NewVersion);
+        public override SyncAction WithState(SyncActionState state) => new ReplaceFileSyncAction(Id, Target, state, SyncPointId, FromVersion, ToVersion);
 
     }
 }

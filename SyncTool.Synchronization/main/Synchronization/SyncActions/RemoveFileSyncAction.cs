@@ -10,16 +10,14 @@ namespace SyncTool.Synchronization.SyncActions
 {
     public sealed class RemoveFileSyncAction : SyncAction
     {
-        public override string FilePath => RemovedFile.Path;
+        public override string Path => FromVersion.Path;
 
         public override ChangeType Type => ChangeType.Deleted;
 
-        public override IFileReference FromVersion => RemovedFile;
+        public override IFileReference FromVersion { get; }
 
         public override IFileReference ToVersion => null;
-
-
-        public IFileReference RemovedFile { get; }
+        
 
 
         public RemoveFileSyncAction(Guid id, string target,SyncActionState state, int syncPointId, IFileReference removedFile) : base(id, target, state, syncPointId)
@@ -28,10 +26,10 @@ namespace SyncTool.Synchronization.SyncActions
             {
                 throw new ArgumentNullException(nameof(removedFile));
             }
-            this.RemovedFile = removedFile;
+            this.FromVersion = removedFile;
         }
 
 
-        public override SyncAction WithState(SyncActionState state) => new RemoveFileSyncAction(Id, Target, state, SyncPointId, RemovedFile);
+        public override SyncAction WithState(SyncActionState state) => new RemoveFileSyncAction(Id, Target, state, SyncPointId, FromVersion);
     }
 }

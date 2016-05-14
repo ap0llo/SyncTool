@@ -10,28 +10,26 @@ namespace SyncTool.Synchronization.SyncActions
 {
     public sealed class AddFileSyncAction : SyncAction
     {
-        public override string FilePath => NewFile.Path;
+        public override string Path => ToVersion.Path;
 
         public override ChangeType Type => ChangeType.Added;
 
         public override IFileReference FromVersion => null;
 
-        public override IFileReference ToVersion => NewFile;
+        public override IFileReference ToVersion { get; }
+        
 
 
-        public IFileReference NewFile { get; }
-
-
-        public AddFileSyncAction(Guid id, string target, SyncActionState state, int syncPointId, IFileReference newFile) : base(id, target, state, syncPointId)
+        public AddFileSyncAction(Guid id, string target, SyncActionState state, int syncPointId, IFileReference toVersion) : base(id, target, state, syncPointId)
         {
-            if (newFile == null)
+            if (toVersion == null)
             {
-                throw new ArgumentNullException(nameof(newFile));
+                throw new ArgumentNullException(nameof(toVersion));
             }
-            this.NewFile = newFile;
+            this.ToVersion = toVersion;
         }
 
 
-        public override SyncAction WithState(SyncActionState state) => new AddFileSyncAction(Id, Target, state, SyncPointId, NewFile);
+        public override SyncAction WithState(SyncActionState state) => new AddFileSyncAction(Id, Target, state, SyncPointId, ToVersion);
     }
 }

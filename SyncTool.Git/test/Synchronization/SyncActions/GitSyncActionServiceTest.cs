@@ -176,7 +176,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
             m_Service.AddItems(action);
 
-            Assert.NotEmpty(m_Service[action.FilePath]);
+            Assert.NotEmpty(m_Service[action.Path]);
             Assert.Empty(m_Service["/some/path"]);            
         }
 
@@ -187,7 +187,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
             m_Service.AddItems(action);
 
-            Assert.NotEmpty(m_Service[SyncActionState.Queued, action.FilePath]);
+            Assert.NotEmpty(m_Service[SyncActionState.Queued, action.Path]);
 
             Assert.Empty(m_Service[SyncActionState.Queued, "/some/path"]);
             Assert.Empty(m_Service[SyncActionState.Active, "/some/path"]);
@@ -213,8 +213,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
             m_Service.AddItems(action1, action2);
 
-            Assert.Single(m_Service[action1.FilePath]);
-            Assert.Single(m_Service[action2.FilePath]);
+            Assert.Single(m_Service[action1.Path]);
+            Assert.Single(m_Service[action2.Path]);
         }
 
         [Fact(DisplayName = nameof(GitSyncActionService) + "Indexer returns all actions for the specified state and path")]
@@ -225,8 +225,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
             m_Service.AddItems(action1, action2);
 
-            Assert.Single(m_Service[SyncActionState.Queued, action1.FilePath]);
-            Assert.Single(m_Service[SyncActionState.Queued, action2.FilePath]);
+            Assert.Single(m_Service[SyncActionState.Queued, action1.Path]);
+            Assert.Single(m_Service[SyncActionState.Queued, action2.Path]);
         }
 
         #endregion
@@ -245,8 +245,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
             var newService = new GitSyncActionService(m_Group);
 
             Assert.Equal(2, newService[SyncActionState.Active].Count());
-            Assert.Single(newService[SyncActionState.Active, action1.FilePath]);
-            Assert.Single(newService[SyncActionState.Active, action2.FilePath]);
+            Assert.Single(newService[SyncActionState.Active, action1.Path]);
+            Assert.Single(newService[SyncActionState.Active, action2.Path]);
         }
 
         [Fact(DisplayName = nameof(GitSyncActionService) + ".AddItems() throws " + nameof(DuplicateSyncActionException) + " if action already exists")]

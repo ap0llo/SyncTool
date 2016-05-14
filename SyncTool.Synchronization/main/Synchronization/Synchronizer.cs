@@ -144,7 +144,7 @@ namespace SyncTool.Synchronization
                     // add a conflict for the file (the snapshot id of the conflict can be determined from the oldest unapplicable sync action)
                     var oldestSyncPointId = unapplicaleSyncActions.Min(a => a.SyncPointId);                    
                     var syncPoint = syncPointService[oldestSyncPointId];                    
-                    newConflicts.Add(path, new ConflictInfo(unapplicaleSyncActions.First().FilePath, syncPoint.FromSnapshots));
+                    newConflicts.Add(path, new ConflictInfo(unapplicaleSyncActions.First().Path, syncPoint.FromSnapshots));
                                         
                     continue;
                 }
@@ -357,9 +357,9 @@ namespace SyncTool.Synchronization
 
         bool TryApplySyncAction(Graph<IFileReference> changeGraph, AddFileSyncAction action)
         {
-            if (changeGraph.Contains(null) && changeGraph.Contains(action.NewFile))
+            if (changeGraph.Contains(null) && changeGraph.Contains(action.ToVersion))
             {
-                changeGraph.AddEdge(null, action.NewFile);
+                changeGraph.AddEdge(null, action.ToVersion);
                 return true;
             }
             return false;
@@ -367,9 +367,9 @@ namespace SyncTool.Synchronization
 
         bool TryApplySyncAction(Graph<IFileReference> changeGraph, ReplaceFileSyncAction action)
         {
-            if (changeGraph.Contains(action.OldVersion) && changeGraph.Contains(action.NewVersion))
+            if (changeGraph.Contains(action.FromVersion) && changeGraph.Contains(action.ToVersion))
             {
-                changeGraph.AddEdge(action.OldVersion, action.NewVersion);
+                changeGraph.AddEdge(action.FromVersion, action.ToVersion);
                 return true;
             }
 
@@ -378,9 +378,9 @@ namespace SyncTool.Synchronization
 
         bool TryApplySyncAction(Graph<IFileReference> changeGraph, RemoveFileSyncAction action)
         {
-            if (changeGraph.Contains(action.RemovedFile) && changeGraph.Contains(null))
+            if (changeGraph.Contains(action.FromVersion) && changeGraph.Contains(null))
             {
-                changeGraph.AddEdge(action.RemovedFile, null);
+                changeGraph.AddEdge(action.FromVersion, null);
                 return true;
             }
             return false;

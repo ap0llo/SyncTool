@@ -70,7 +70,7 @@ namespace SyncTool.TestHelpers
         {
             foreach (var action in actions.Cast<AddFileSyncAction>())
             {
-                Assert.True(action.NewFile.Matches(file));
+                Assert.True(action.ToVersion.Matches(file));
             }
         }
 

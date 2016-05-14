@@ -10,22 +10,16 @@ using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Synchronization.SyncActions
 {
-    //TODO: Remove redundant properties (only use the IChange properties going forward)
     public abstract class SyncAction : IChange
-    {        
-        public abstract string FilePath { get; }
+    {
+        public abstract string Path { get; }
 
-        [JsonIgnore]
-        public string Path => FilePath;
-
-        [JsonIgnore]
         public abstract ChangeType Type { get; }
 
-        [JsonIgnore]
         public abstract IFileReference FromVersion { get; }
-
-        [JsonIgnore]
+        
         public abstract IFileReference ToVersion { get; }
+
 
         public SyncActionState State { get; }
 
