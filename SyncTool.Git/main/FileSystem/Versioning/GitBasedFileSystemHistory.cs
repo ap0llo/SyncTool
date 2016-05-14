@@ -86,53 +86,12 @@ namespace SyncTool.Git.FileSystem.Versioning
             AssertIsValidPathFilter(pathFilter);
 
             var toSnapshot = GetSnapshot(toId);
-            var initialCommit = m_Repository.GetInitialCommit();
-
-            var treeChanges = m_Repository.Diff.Compare<TreeChanges>(initialCommit.Tree, toSnapshot.Commit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
-
-            var changes = treeChanges
-                .Where(treeChange => treeChange.Status != ChangeKind.Unmodified)
-                .Select(treeChange =>
-                {
-                    var path = treeChange.Path.Split("\\/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-                    // ignore changes in the repository outside of the "Snapshot" directory
-                    var dirName = path.First();
-                    if (!StringComparer.InvariantCultureIgnoreCase.Equals(dirName, GitBasedFileSystemSnapshot.SnapshotDirectoryName))
-                    {
-                        return Option.None;
-                    }
-
-                    // ignore directory property files
-                    var fileName = path.Last();
-                    if (StringComparer.InvariantCultureIgnoreCase.Equals(fileName, DirectoryPropertiesFile.FileName))
-                    {
-                        return Option.None;
-                    }
-
-                    switch (treeChange.Status)
-                    {
-                        case ChangeKind.Unmodified:
-                            throw new InvalidOperationException("Unmodified changes should have been filtered out");
-
-                        //since we're getting all changes from the initial commit (which is empty) to the snapshot
-                        // only additions of files are possible
-                        case ChangeKind.Added:
-                            return (Option<Change>)new Change(ChangeType.Added, null, toSnapshot.GetFileForGitRelativePath(treeChange.Path));
-                        
-                        default:
-                            throw new NotImplementedException();
-                    }
-                })
-                .Where(change => change.HasValue)
-                .Select(change => change.Value)
-                .ToList();
-
+            var initialCommit = m_Repository.GetInitialCommit();            
 
             // build change lists
             var changeLists = GetChangeLists(initialCommit.Sha, toSnapshot, pathFilter);
 
-            return new FileSystemDiff(this, toSnapshot, changes, changeLists);
+            return new FileSystemDiff(this, toSnapshot, changeLists);
         }
       
         public IFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null)
@@ -153,61 +112,12 @@ namespace SyncTool.Git.FileSystem.Versioning
             //TODO: Ensure, fromId is an ancestor of toId
 
             var fromSnapshot = GetSnapshot(fromId);
-            var toSnapshot = GetSnapshot(toId);
-            
-            var treeChanges = m_Repository.Diff.Compare<TreeChanges>(fromSnapshot.Commit.Tree, toSnapshot.Commit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
-
-            // build changes
-            var changes = treeChanges
-                .Where(treeChange => treeChange.Status != ChangeKind.Unmodified)
-                .Select(treeChange =>
-                {
-                    var path = treeChange.Path.Split("\\/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-                    // ignore changes in the repository outside of the "Snapshot" directory
-                    var dirName = path.First();
-                    if (!StringComparer.InvariantCultureIgnoreCase.Equals(dirName, GitBasedFileSystemSnapshot.SnapshotDirectoryName))
-                    {
-                        return Option.None;
-                    }
-
-                    // ignore directory property files
-                    var fileName = path.Last();
-                    if (StringComparer.InvariantCultureIgnoreCase.Equals(fileName, DirectoryPropertiesFile.FileName))
-                    {
-                        return Option.None;
-                    }
-
-
-                    switch (treeChange.Status)
-                    {
-                        case ChangeKind.Unmodified:
-                            throw new InvalidOperationException("Unmodified changes should have been filtered out");
-
-                        case ChangeKind.Modified:
-                            var fromFile = fromSnapshot.GetFileForGitRelativePath(treeChange.Path);
-                            var toFile = toSnapshot.GetFileForGitRelativePath(treeChange.Path);
-                            return (Option<Change>)new Change(ChangeType.Modified, fromFile, toFile);                            
-
-                        case ChangeKind.Added:
-                            return (Option<Change>)new Change(ChangeType.Added, null, toSnapshot.GetFileForGitRelativePath(treeChange.Path));
-
-                        case ChangeKind.Deleted:
-                            return (Option<Change>)new Change(ChangeType.Deleted, fromSnapshot.GetFileForGitRelativePath(treeChange.Path), null); 
-                                                   
-                        default:
-                            throw new NotImplementedException();
-                    }
-                })
-                .Where(change => change.HasValue)
-                .Select(change => change.Value)
-                .ToList();            
-
+            var toSnapshot = GetSnapshot(toId);           
 
             // build change lists
             var changeLists = GetChangeLists(fromSnapshot.Commit.Sha, toSnapshot, null);
 
-            return new FileSystemDiff(this, fromSnapshot, toSnapshot, changes, changeLists);
+            return new FileSystemDiff(this, fromSnapshot, toSnapshot, changeLists);
         }
 
 
@@ -326,15 +236,15 @@ namespace SyncTool.Git.FileSystem.Versioning
                     case ChangeKind.Modified:
                         var fromFile = fromSnapshot.GetFileForGitRelativePath(treeChange.Path);
                         var toFile = toSnapshot.GetFileForGitRelativePath(treeChange.Path);
-                        yield return new Change(ChangeType.Modified, fromFile, toFile);
+                        yield return new Change(ChangeType.Modified, fromFile.ToReference(), toFile.ToReference());
                         break;                        
 
                     case ChangeKind.Added:
-                        yield return new Change(ChangeType.Added, null, toSnapshot.GetFileForGitRelativePath(treeChange.Path));
+                        yield return new Change(ChangeType.Added, null, toSnapshot.GetFileForGitRelativePath(treeChange.Path).ToReference());
                         break;
 
                     case ChangeKind.Deleted:
-                        yield return new Change(ChangeType.Deleted, fromSnapshot.GetFileForGitRelativePath(treeChange.Path), null);
+                        yield return new Change(ChangeType.Deleted, fromSnapshot.GetFileForGitRelativePath(treeChange.Path).ToReference(), null);
                         break;
 
                     default:

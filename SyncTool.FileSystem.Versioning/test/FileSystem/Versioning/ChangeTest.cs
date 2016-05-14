@@ -18,27 +18,27 @@ namespace SyncTool.FileSystem.Versioning
         public void Constructor_checks_validity_of_file_parameters_for_change_type()
         {
             Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Added, null, null));   
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Added, FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42), FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42)));   
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Added, FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42), null));
-            new Change(ChangeType.Added, null, FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42));
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Added, new FileReference("/path1", DateTime.Now, 42), new FileReference("/path1", DateTime.Now, 42)));   
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Added, new FileReference("/path1", DateTime.Now, 42), null));
+            new Change(ChangeType.Added, null, new FileReference("/path1", DateTime.Now, 42));
 
             Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Deleted, null, null));
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Deleted, FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42), FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42)));
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Deleted, null, FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42)));
-            new Change(ChangeType.Deleted, FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42), null);
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Deleted, new FileReference("/path1", DateTime.Now, 42), new FileReference("/path1", DateTime.Now, 42)));
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Deleted, null, new FileReference("/path1", DateTime.Now, 42)));
+            new Change(ChangeType.Deleted, new FileReference("/path1", DateTime.Now, 42), null);
 
             Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, null, null));
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42), null));
-            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, null, FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42)));
-            new Change(ChangeType.Modified, FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42), FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42));
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, new FileReference("/path1", DateTime.Now, 42), null));
+            Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Modified, null, new FileReference("/path1", DateTime.Now, 42)));
+            new Change(ChangeType.Modified, new FileReference("/path1", DateTime.Now, 42), new FileReference("/path1", DateTime.Now, 42));
 
         }
 
         [Fact(DisplayName = nameof(Change) + ": Constructor checks that paths of file parameters match")]
         public void Constructor_checks_that_paths_of_file_parameters_match()
         {
-            Assert.Throws<ArgumentException>(() => new Change(ChangeType.Modified, FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42), FileMockingHelper.GetMockedFile("/path2", DateTime.Now, 42)));
-            new Change(ChangeType.Modified, FileMockingHelper.GetMockedFile("/path1", DateTime.Now, 42), FileMockingHelper.GetMockedFile("/pATh1", DateTime.Now, 42));
+            Assert.Throws<ArgumentException>(() => new Change(ChangeType.Modified, new FileReference("/path1", DateTime.Now, 42), new FileReference("/path2", DateTime.Now, 42)));
+            new Change(ChangeType.Modified, new FileReference("/path1", DateTime.Now, 42), new FileReference("/pATh1", DateTime.Now, 42));
         }
 
 

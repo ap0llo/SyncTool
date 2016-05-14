@@ -17,13 +17,11 @@ namespace SyncTool.FileSystem.Versioning
 
         public IFileSystemSnapshot FromSnapshot { get; }
 
-        public IFileSystemSnapshot ToSnapshot { get; }
-
-        public IEnumerable<IChange> Changes { get; }
+        public IFileSystemSnapshot ToSnapshot { get; }        
 
         public IEnumerable<IChangeList> ChangeLists { get; } 
 
-        public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot toSnapshot, IEnumerable<IChange> changes, IEnumerable<IChangeList> changeLists )
+        public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot toSnapshot, IEnumerable<IChangeList> changeLists )
         {
             if (history == null)
             {
@@ -33,25 +31,19 @@ namespace SyncTool.FileSystem.Versioning
             {
                 throw new ArgumentNullException(nameof(toSnapshot));
             }
-            if (changes == null)
-            {
-                throw new ArgumentNullException(nameof(changes));
-            }
             if (changeLists == null)
             {
                 throw new ArgumentNullException(nameof(changeLists));
             }
 
-            changes = changes.ToList();
             changeLists = changeLists.ToList();
 
             History = history;
             ToSnapshot = toSnapshot;
-            Changes = changes;
             ChangeLists = changeLists;
         }
 
-        public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot fromSnapshot, IFileSystemSnapshot toSnapshot, IEnumerable<IChange> changes, IEnumerable<IChangeList> changeLists)
+        public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot fromSnapshot, IFileSystemSnapshot toSnapshot, IEnumerable<IChangeList> changeLists)
         {
             if (history == null)
             {
@@ -64,23 +56,17 @@ namespace SyncTool.FileSystem.Versioning
             if (toSnapshot == null)
             {
                 throw new ArgumentNullException(nameof(toSnapshot));
-            }
-            if (changes == null)
-            {
-                throw new ArgumentNullException(nameof(changes));
-            }
+            }            
             if (changeLists == null)
             {
                 throw new ArgumentNullException(nameof(changeLists));
             }
-
-            changes = changes.ToList();
+            
             changeLists = changeLists.ToList();
             
             History = history;
             FromSnapshot = fromSnapshot;
-            ToSnapshot = toSnapshot;
-            Changes = changes;
+            ToSnapshot = toSnapshot;            
             ChangeLists = changeLists;
         }
     }

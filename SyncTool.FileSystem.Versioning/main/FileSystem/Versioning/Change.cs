@@ -10,15 +10,8 @@ namespace SyncTool.FileSystem.Versioning
     /// Default, immutable implementation of <see cref="IChange"/>
     /// </summary>
     public class Change : IChange
-    {        
-        public Change(ChangeType type, IFile fromFile, IFile toFile) : this(type, fromFile?.ToReference(), toFile?.ToReference())
-        {
-            FromFile = fromFile;
-            ToFile = toFile;
-        }
-
-        //This will become the new constructor, once the obsolete IFile properties are removed
-        private Change(ChangeType type, IFileReference fromFile, IFileReference toFile)
+    {                
+        public Change(ChangeType type, IFileReference fromFile, IFileReference toFile)
         {
             AssertIsValidChange(type, fromFile, toFile);
             AssertPathsAreEqual(fromFile, toFile);
@@ -28,14 +21,10 @@ namespace SyncTool.FileSystem.Versioning
             ToVersion = toFile;            
         }
 
-        public string Path => FromFile?.Path ?? ToFile.Path;
+        public string Path => FromVersion?.Path ?? ToVersion.Path;
 
         public ChangeType Type { get; }
-
-        public IFile FromFile { get; }
-
-        public IFile ToFile { get; }
-
+        
         public IFileReference FromVersion { get; }
 
         public IFileReference ToVersion { get; }
