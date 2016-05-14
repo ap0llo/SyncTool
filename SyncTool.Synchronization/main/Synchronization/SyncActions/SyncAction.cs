@@ -41,5 +41,15 @@ namespace SyncTool.Synchronization.SyncActions
         {
             return new SyncAction(Type, FromVersion, ToVersion, Id, Target, state, SyncPointId);
         }
+
+        public static SyncAction CreateAddFileSyncAction(string target, SyncActionState state, int syncPointId, IFileReference toVersion)
+        {
+            return CreateAddFileSyncAction(Guid.NewGuid(), target, state, syncPointId, toVersion);
+        }
+
+        public static SyncAction CreateAddFileSyncAction(Guid id, string target, SyncActionState state, int syncPointId, IFileReference toVersion)
+        {
+            return new SyncAction(ChangeType.Added, null, toVersion, id, target, state, syncPointId);
+        }
     }
 }

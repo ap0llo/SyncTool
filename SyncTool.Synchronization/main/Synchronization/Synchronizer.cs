@@ -383,7 +383,7 @@ namespace SyncTool.Synchronization
             {
                 if (newFileVersion != null)
                 {
-                    return new AddFileSyncAction(Guid.NewGuid(), targetName, SyncActionState.Queued, syncPointId, newFileVersion);
+                    return SyncAction.CreateAddFileSyncAction(targetName, SyncActionState.Queued, syncPointId, newFileVersion);
                 }
                 else
                 {
