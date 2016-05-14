@@ -63,9 +63,9 @@ namespace SyncTool.TestHelpers
             }
         }
 
-        public static void NewFileMacthes(IFile file, params SyncAction[] actions)
+        public static void ToVersionMatches(IFile file, params SyncAction[] actions)
         {
-            foreach (var action in actions.Cast<AddFileSyncAction>())
+            foreach (var action in actions)
             {
                 Assert.True(action.ToVersion.Matches(file));
             }

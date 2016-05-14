@@ -187,14 +187,14 @@ namespace SyncTool.Git.Synchronization
                 expectedChangeType: ChangeType.Added
                 );
 
-            SyncAssert.NewFileMacthes(left.CurrentState.GetFile("/file1"), syncActionService["/file1"].Single());            
+            SyncAssert.ToVersionMatches(left.CurrentState.GetFile("/file1"), syncActionService["/file1"].Single());            
 
             SyncAssert.ActionsExist(syncActionService, "/file2",
                 expectedCount:1,
                 expectedState: SyncActionState.Queued,
                 expectedChangeType: ChangeType.Added);
 
-            SyncAssert.NewFileMacthes(right.CurrentState.GetFile("/file2"), syncActionService["/file2"].Single());
+            SyncAssert.ToVersionMatches(right.CurrentState.GetFile("/file2"), syncActionService["/file2"].Single());
             
             Assert.Empty(m_Group.GetSyncConflictService().Items);
             Assert.Single(m_Group.GetSyncPointService().Items);
