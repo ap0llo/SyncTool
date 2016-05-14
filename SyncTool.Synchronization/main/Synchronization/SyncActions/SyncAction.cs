@@ -22,7 +22,7 @@ namespace SyncTool.Synchronization.SyncActions
         public int SyncPointId { get; }
 
 
-        protected SyncAction(ChangeType type, IFileReference fromVersion, IFileReference toVersion,  Guid id, string target, SyncActionState state, int syncPointId)
+        public SyncAction(ChangeType type, IFileReference fromVersion, IFileReference toVersion,  Guid id, string target, SyncActionState state, int syncPointId)
             : base(type, fromVersion, toVersion)
         {
             if (syncPointId <= 0)
