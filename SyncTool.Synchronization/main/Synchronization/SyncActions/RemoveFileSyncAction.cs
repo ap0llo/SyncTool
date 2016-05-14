@@ -9,17 +9,12 @@ using SyncTool.FileSystem.Versioning;
 namespace SyncTool.Synchronization.SyncActions
 {
     public sealed class RemoveFileSyncAction : SyncAction
-    {
-        public override string Path => FromVersion.Path;
-        
-
+    {     
         public RemoveFileSyncAction(Guid id, string target,SyncActionState state, int syncPointId, IFileReference removedFile) 
             : base(ChangeType.Deleted, removedFile, null, id, target, state, syncPointId)
         {
         
         }
-
-
-        public override SyncAction WithState(SyncActionState state) => new RemoveFileSyncAction(Id, Target, state, SyncPointId, FromVersion);
+        
     }
 }

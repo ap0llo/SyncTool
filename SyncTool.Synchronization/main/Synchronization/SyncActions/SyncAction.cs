@@ -10,16 +10,8 @@ using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Synchronization.SyncActions
 {
-    public abstract class SyncAction : IChange
+    public class SyncAction : Change
     {
-        public abstract string Path { get; }
-
-        public ChangeType Type { get; }
-
-        public IFileReference FromVersion { get; }
-        
-        public IFileReference ToVersion { get; }
-
 
         public SyncActionState State { get; }
 
@@ -31,16 +23,13 @@ namespace SyncTool.Synchronization.SyncActions
 
 
         protected SyncAction(ChangeType type, IFileReference fromVersion, IFileReference toVersion,  Guid id, string target, SyncActionState state, int syncPointId)
+            : base(type, fromVersion, toVersion)
         {
             if (syncPointId <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(syncPointId), "Id must be a positive integer");
             }
-
-            this.Type = type;
-            this.FromVersion = fromVersion;
-            this.ToVersion = toVersion;
-
+            
             this.Target = target;
             this.Id = id;
             this.State = state;
@@ -48,7 +37,9 @@ namespace SyncTool.Synchronization.SyncActions
         }
 
 
-        public abstract SyncAction WithState(SyncActionState state);
-
+        public SyncAction WithState(SyncActionState state)
+        {
+            return new SyncAction(Type, FromVersion, ToVersion, Id, Target, state, SyncPointId);
+        }
     }
 }

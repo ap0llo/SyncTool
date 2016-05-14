@@ -9,16 +9,13 @@ using SyncTool.FileSystem.Versioning;
 namespace SyncTool.Synchronization.SyncActions
 {
     public sealed class AddFileSyncAction : SyncAction
-    {
-        public override string Path => ToVersion.Path;
-        
-
+    {      
         public AddFileSyncAction(Guid id, string target, SyncActionState state, int syncPointId, IFileReference toVersion) 
             : base(ChangeType.Added,null, toVersion, id, target, state, syncPointId)
         {
         }
 
 
-        public override SyncAction WithState(SyncActionState state) => new AddFileSyncAction(Id, Target, state, SyncPointId, ToVersion);
+        
     }
 }

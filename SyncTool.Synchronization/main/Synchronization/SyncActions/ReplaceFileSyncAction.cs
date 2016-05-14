@@ -8,30 +8,16 @@ using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Synchronization.SyncActions
 {
+    
     public sealed class ReplaceFileSyncAction : SyncAction
-    {
-        public override string Path => FromVersion.Path;
-        
-
+    {       
         public ReplaceFileSyncAction(Guid id, string target, SyncActionState state, int syncPointId, IFileReference oldVersion, IFileReference newVersion) 
             : base(ChangeType.Modified, oldVersion, newVersion, id, target, state, syncPointId)
         {
-            if (oldVersion == null)
-            {
-                throw new ArgumentNullException(nameof(oldVersion));
-            }
-            if (newVersion == null)
-            {
-                throw new ArgumentNullException(nameof(newVersion));
-            }
-            if (!StringComparer.InvariantCultureIgnoreCase.Equals(oldVersion.Path, newVersion.Path))
-            {
-                throw new ArgumentException($"The paths of {nameof(oldVersion)} and {nameof(newVersion)} are different");
-            }            
+             
         }
 
-
-        public override SyncAction WithState(SyncActionState state) => new ReplaceFileSyncAction(Id, Target, state, SyncPointId, FromVersion, ToVersion);
+        
 
     }
 }
