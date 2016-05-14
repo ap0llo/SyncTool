@@ -77,7 +77,6 @@
     <Compile Include="Synchronization\SyncActions\RemoveFileSyncAction.cs" />
     <Compile Include="Synchronization\SyncActions\ReplaceFileSyncAction.cs" />
     <Compile Include="Synchronization\SyncActions\SyncAction.cs" />
-    <Compile Include="Synchronization\SyncActions\SyncParticipant.cs" />
     <Compile Include="Synchronization\State\ISyncPoint.cs" />
     <Compile Include="Synchronization\State\ISyncPointService.cs" />
     <Compile Include="Synchronization\_Exceptions\SyncActionNotFoundException.cs" />
