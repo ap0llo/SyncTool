@@ -57,50 +57,24 @@ namespace SyncTool.Synchronization
                 return;                
             }
 
+            ResetSyncStateIfNecessary(group);
+
             // get required services
             var syncPointService = group.GetSyncPointService();
             var conflictService = group.GetSyncConflictService();
-            var syncActionService = group.GetSyncActionService();
+            var syncActionService = group.GetSyncActionService();            
             
-            // for all histories, get the changes since the last sync
+            // for all folders, get the changes since the last sync
             var latestSyncPoint = syncPointService.LatestSyncPoint;
-
-            List<IFileSystemDiff> diffs;
-            MutableSyncPoint newSyncPoint;
-
-            if (ContainsNewFolders(syncFolders, latestSyncPoint) || WasFilterModified(syncFolders, latestSyncPoint))
-            {                
-                diffs = GetDiffs(syncFolders, historyService, null).ToList();
-
-                newSyncPoint = new MutableSyncPoint()
-                {
-                    Id = GetNextSyncPointId(latestSyncPoint),
-                    FromSnapshots = null,
-                    ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id),
-                    FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
-                };
-
-                // cancel all pending sync actions
-                var cancelledSyncActions = syncActionService.PendingItems                    
-                    .Select(a => a.WithState(SyncActionState.Cancelled));
-
-                syncActionService.UpdateItems(cancelledSyncActions);
-
-                // remove all conflicts                
-                conflictService.RemoveItems(conflictService.Items.ToArray());
-            }
-            else
-            {
-                diffs = GetDiffs(syncFolders, historyService, latestSyncPoint?.ToSnapshots).ToList();
+            var diffs = GetDiffs(syncFolders, historyService, latestSyncPoint?.ToSnapshots).ToList();
                 
-                newSyncPoint = new MutableSyncPoint()
-                {
-                    Id = GetNextSyncPointId(latestSyncPoint),
-                    FromSnapshots = latestSyncPoint?.ToSnapshots,
-                    ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id),
-                    FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
-                };
-            }                                              
+            var newSyncPoint = new MutableSyncPoint()
+            {
+                Id = GetNextSyncPointId(latestSyncPoint),
+                FromSnapshots = latestSyncPoint?.ToSnapshots,
+                ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id),
+                FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
+            };                                                         
 
 
             var filters = syncFolders.ToDictionary(
@@ -238,6 +212,41 @@ namespace SyncTool.Synchronization
             
         }
 
+
+        void ResetSyncStateIfNecessary(IGroup group)
+        {
+            var syncPointService = group.GetSyncPointService();
+            var syncActionService = group.GetSyncActionService();
+            var conflictService = group.GetSyncConflictService();
+
+            var syncFolders = group.GetConfigurationService().Items.ToArray();
+                
+            var latestSyncPoint = syncPointService.LatestSyncPoint;
+
+            if (ContainsNewFolders(syncFolders, latestSyncPoint) || WasFilterModified(syncFolders, latestSyncPoint))
+            {
+                // insert "Reset" sync pint
+                var resetSyncPoint = new MutableSyncPoint()
+                {
+                    Id = GetNextSyncPointId(latestSyncPoint),
+                    FromSnapshots = latestSyncPoint?.ToSnapshots,
+                    ToSnapshots = null,
+                    FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
+                };
+
+                syncPointService.AddItem(resetSyncPoint);
+
+                // cancel all pending sync actions
+                var cancelledSyncActions = syncActionService.PendingItems
+                    .Select(a => a.WithState(SyncActionState.Cancelled));
+
+                syncActionService.UpdateItems(cancelledSyncActions);
+
+                // remove all conflicts                
+                conflictService.RemoveItems(conflictService.Items.ToArray());                
+            }
+
+        }
 
         bool ContainsNewFolders(IEnumerable<SyncFolder> syncFolders , ISyncPoint syncPoint)
         {

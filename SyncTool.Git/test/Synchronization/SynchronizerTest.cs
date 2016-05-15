@@ -546,16 +546,20 @@ namespace SyncTool.Git.Synchronization
 
             var syncPointService = m_Group.GetSyncPointService();
             
-            // there should be 2 sync points 
-            Assert.Equal(2, syncPointService.Items.Count());
+            // there should be 3 sync points (2 "regular" syncpoints and a "reset point")
+            Assert.Equal(3, syncPointService.Items.Count());
 
             // first sync
             Assert.Null(syncPointService[1].FromSnapshots);
             Assert.NotNull(syncPointService[1].ToSnapshots);
-            
+
+            // reset
+            Assert.NotNull(syncPointService[2].FromSnapshots);
+            Assert.Null(syncPointService[2].ToSnapshots);
+
             // second sync (FromSnapshots needs to be reset to null)
-            Assert.Null(syncPointService[2].FromSnapshots);
-            Assert.NotNull(syncPointService[2].ToSnapshots);
+            Assert.Null(syncPointService[3].FromSnapshots);
+            Assert.NotNull(syncPointService[3].ToSnapshots);
 
             // all sync actions from previous syncs need to be cancelled
             var syncActions = m_Group.GetSyncActionService().AllItems.ToDictionary(a => a.Id);
@@ -608,7 +612,7 @@ namespace SyncTool.Git.Synchronization
         }
 
         [Fact]
-        public void Synchronizer_resets_the_sync_state_if_a_filter_was_modified_since_the_lasr_sync()
+        public void Synchronizer_resets_the_sync_state_if_a_filter_was_modified_since_the_last_sync()
         {
             //ARRANGE
             {
@@ -642,20 +646,23 @@ namespace SyncTool.Git.Synchronization
 
             //ASSERT
             {
-                //ASSERT
-
                 var syncPointService = m_Group.GetSyncPointService();
 
-                // there should be 2 sync points 
-                Assert.Equal(2, syncPointService.Items.Count());
+                // there should be 3 sync points 
+                Assert.Equal(3, syncPointService.Items.Count());
 
                 // first sync
                 Assert.Null(syncPointService[1].FromSnapshots);
                 Assert.NotNull(syncPointService[1].ToSnapshots);
 
+                // reset
+                Assert.NotNull(syncPointService[2].FromSnapshots);
+                Assert.Null(syncPointService[2].ToSnapshots);
+
                 // second sync (FromSnapshots needs to be reset to null)
-                Assert.Null(syncPointService[2].FromSnapshots);
-                Assert.NotNull(syncPointService[2].ToSnapshots);
+                Assert.Null(syncPointService[3].FromSnapshots);
+                Assert.NotNull(syncPointService[3].ToSnapshots);
+
 
                 // all sync actions from previous syncs need to be cancelled
                 var syncActions = m_Group.GetSyncActionService().AllItems.ToDictionary(a => a.Id);
@@ -665,8 +672,7 @@ namespace SyncTool.Git.Synchronization
                 Assert.Empty(m_Group.GetSyncConflictService().Items);
             }
         }
-
-        //TODO: Reset occurs when a filter is modified
+        
 
         [Fact]
         public void Synchronize_ignores_changes_from_a_folder_excluded_by_the_folders_filter()
