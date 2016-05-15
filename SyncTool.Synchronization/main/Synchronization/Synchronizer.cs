@@ -114,10 +114,8 @@ namespace SyncTool.Synchronization
                 .SelectMany(diff => diff.ChangeLists.Select(cl => new ChangeListWithHistoryName(diff.History.Name, cl)))
                 .GroupBy(x => x.Path);
             
+            var syncStateUpdater = new SyncActionUpdateBuilder();
             
-            var newConflicts = new Dictionary<string, ConflictInfo>();
-            var newSyncActions = new List<SyncAction>();
-            var updatedSyncActions = new List<SyncAction>();
 
             foreach (var changeLists in changeListsByFile)
             {
@@ -139,12 +137,12 @@ namespace SyncTool.Synchronization
                 if (unapplicaleSyncActions.Any())
                 {
                     // cancel unapplicable actions
-                    updatedSyncActions.AddRange(unapplicaleSyncActions.Select(a => a.WithState(SyncActionState.Cancelled)));
+                    syncStateUpdater.UpdateSyncActions(unapplicaleSyncActions.Select(a => a.WithState(SyncActionState.Cancelled)));
                    
                     // add a conflict for the file (the snapshot id of the conflict can be determined from the oldest unapplicable sync action)
                     var oldestSyncPointId = unapplicaleSyncActions.Min(a => a.SyncPointId);                    
                     var syncPoint = syncPointService[oldestSyncPointId];                    
-                    newConflicts.Add(path, new ConflictInfo(unapplicaleSyncActions.First().Path, syncPoint.FromSnapshots));
+                    syncStateUpdater.AddConflict(new ConflictInfo(unapplicaleSyncActions.First().Path, syncPoint.FromSnapshots));
                                         
                     continue;
                 }
@@ -176,7 +174,7 @@ namespace SyncTool.Synchronization
                         var syncAction = GetSyncAction(targetSyncFolderName, newSyncPoint.Id, currentVersion, sink);
                         if (syncAction != null && filters[targetSyncFolderName].IncludeInResult(syncAction))
                         {
-                            newSyncActions.Add(syncAction);
+                            syncStateUpdater.AddSyncAction(syncAction);
                         }
                     } 
                 }
@@ -192,14 +190,13 @@ namespace SyncTool.Synchronization
                     if (pendingSyncActions.Any())
                     {
                         //cancel actions          
-                        updatedSyncActions.AddRange(pendingSyncActions.Select(a => a.WithState(SyncActionState.Cancelled)));                        
+                        syncStateUpdater.UpdateSyncActions(pendingSyncActions.Select(a => a.WithState(SyncActionState.Cancelled)));                        
 
                         //determine the oldest sync action to determine the snapshot ids for the conflict
                         var syncPointId = pendingSyncActions.Min(x => x.SyncPointId);
                        
-                        // generate conflict
-                        var conflictInfo = new ConflictInfo(path, syncPointService[syncPointId].FromSnapshots);
-                        newConflicts.Add(path, conflictInfo);
+                        // generate conflict;
+                        syncStateUpdater.AddConflict(new ConflictInfo(path, syncPointService[syncPointId].FromSnapshots));
                     }
                     else
                     {
@@ -207,19 +204,15 @@ namespace SyncTool.Synchronization
 
                         // generate conflict
                         var conflictInfo = new ConflictInfo(path, diffs.Where(d => d.FromSnapshot != null).ToDictionary(d => d.History.Name, d => d.FromSnapshot.Id));
-                        newConflicts.Add(path, conflictInfo);
+                        syncStateUpdater.AddConflict(conflictInfo);
                     }
                 }
             }
 
-            // save actions, conflicts and sync point
-          
-            syncPointService.AddItem(newSyncPoint);
-
-            conflictService.AddItems(newConflicts.Values);
-
-            syncActionService.AddItems(newSyncActions);
-            syncActionService.UpdateItems(updatedSyncActions);            
+            // save actions, conflicts and sync point          
+            syncPointService.AddItem(newSyncPoint);            
+            syncStateUpdater.Apply(syncActionService, conflictService);
+                        
         }
         
 

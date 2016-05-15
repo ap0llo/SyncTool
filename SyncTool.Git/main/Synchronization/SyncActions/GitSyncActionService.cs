@@ -20,8 +20,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
     public class GitSyncActionService : GitBasedService, ISyncActionService
     {
         internal static readonly BranchName BranchName = new BranchName("synchronization", "actions");
-        
-        readonly SyncActionSerializer m_SyncActionSerializer = new SyncActionSerializer();
+               
 
 
         public IEnumerable<SyncAction> AllItems
