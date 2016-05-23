@@ -83,29 +83,25 @@ namespace SyncTool.Synchronization
                 StringComparer.InvariantCultureIgnoreCase);
                                                    
 
-            // group changes by files
-            var changeListsByFile = diffs
-                .SelectMany(diff => diff.ChangeLists.Select(cl => new ChangeListWithHistoryName(diff.History.Name, cl)))
-                .GroupBy(x => x.Path);
+            // group changes by files            
             
             var syncStateUpdater = new SyncActionUpdateBuilder();
+
+            var changeGraphBuilder = new ChangeGraphBuilder(m_FileReferenceComparer);
             
 
-            foreach (var changeLists in changeListsByFile)
+            foreach (var graph in changeGraphBuilder.GetChangeGraphs(diffs))
             {
-                var path = changeLists.Key;
+                var path = graph.Nodes.First(node => node.Value != null).Value.Path;
 
                 // skip if there is a conflict for the current file
                 if (conflictService.ItemExists(path))
                 {
                     continue;                    
-                }
-
-                // build change graph from lists
-                var changeGraph = GetChangeGraph(diffs, changeLists);
+                }                
 
                 // check if all pending sync actions can be applied to the change grpah
-                var unapplicaleSyncActions = GetUnapplicableSyncActions(changeGraph, syncActionService[path].Where(IsPendingSyncAction));
+                var unapplicaleSyncActions = GetUnapplicableSyncActions(graph, syncActionService[path].Where(IsPendingSyncAction));
 
                 // pending sync actions could not be applied => skip file
                 if (unapplicaleSyncActions.Any())
@@ -120,11 +116,10 @@ namespace SyncTool.Synchronization
                                         
                     continue;
                 }
-
                 
                 //in the change graph, detect conflicts
                 // if there is only one sink, no conflicts exist
-                var sinks = changeGraph.GetSinks().ToArray();
+                var sinks = graph.GetSinks().ToArray();
                 if (!sinks.Any())
                 {
                     // not possible (in this case the graph would be empty, which cannot happen)
@@ -290,46 +285,6 @@ namespace SyncTool.Synchronization
         /// </summary>
         /// <param name="diffs">The diffs the changes were taken from</param>
         /// <param name="changeLists">The changes to be included in the graph</param>
-        Graph<IFileReference> GetChangeGraph(IEnumerable<IFileSystemDiff> diffs, IEnumerable<ChangeListWithHistoryName> changeLists)
-        {
-            changeLists = changeLists.ToList();
-            diffs = diffs.ToList();
-
-            var path = changeLists.First().Path;
-
-            var graph = new Graph<IFileReference>(m_FileReferenceComparer);
-            
-            // add ToVersion and FromVersion for every change to the graph
-            var changes = changeLists.SelectMany(cl => cl.Changes).ToArray();            
-            graph.AddNodes(changes.Select(c => c.FromVersion));
-            graph.AddNodes(changes.Select(c => c.ToVersion));
-
-            // for each diff which has no changes, add the current file as node
-            var historiesWithoutChanges = diffs
-                .Select(d => d.History.Name)
-                .Except(changeLists.Select(cl => cl.HistoryName), StringComparer.InvariantCultureIgnoreCase);
-        
-            foreach (var historyName in historiesWithoutChanges)
-            {
-                var rootDirectory = diffs.Single(d => d.History.Name.Equals(historyName)).ToSnapshot.RootDirectory;
-                if (rootDirectory.FileExists(path))
-                {
-                    graph.AddNodes(rootDirectory.GetFile(path).ToReference());
-                }
-                else
-                {
-                    graph.AddNodes((IFileReference)null);
-                }
-            }
-
-            // add all edges to the graph
-            foreach (var change in changes)
-            {
-                graph.AddEdge(change.FromVersion, change.ToVersion);
-            }
-
-            return graph;
-        }
 
         IList<SyncAction> GetUnapplicableSyncActions(Graph<IFileReference> changeGraph, IEnumerable<SyncAction> syncActions)
         {
