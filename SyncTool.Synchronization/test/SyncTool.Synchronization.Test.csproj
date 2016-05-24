@@ -99,6 +99,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionTest.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionSerializerTest.cs" />
+    <Compile Include="TestHelpers\HistoryBuilder.cs" />
     <Compile Include="TestHelpers\SyncAssert.cs" />
     <Compile Include="TestHelpers\SyncPointBuilder.cs" />
   </ItemGroup>

@@ -47,7 +47,6 @@ namespace SyncTool.Git.Synchronization
             Assert.Empty(m_Group.GetSyncConflictService().Items);
             Assert.Empty(m_Group.GetSyncActionService().AllItems);
             Assert.Empty(m_Group.GetSyncPointService().Items);
-
         }
 
         [Fact]
@@ -776,77 +775,7 @@ namespace SyncTool.Git.Synchronization
             m_Group.Dispose();
             base.Dispose();
         }
-
-
-
-
-
-        class HistoryBuilder
-        {
-            readonly IGroup m_Group;
-            readonly string m_Name;
-            readonly IDictionary<string, File> m_Files = new Dictionary<string, File>(StringComparer.InvariantCultureIgnoreCase);
-
-
-            public SyncFolder SyncFolder { get; }
-
-            public IDirectory CurrentState { get; private set; }
-
-            public HistoryBuilder(IGroup group, string name)
-            {
-                m_Group = @group;
-                m_Name = name;
-                m_Group.GetHistoryService().CreateHistory(m_Name);
-
-                SyncFolder = new SyncFolder(m_Name) {Path = "Irrelevant"};
-
-                m_Group.GetConfigurationService().AddItem(SyncFolder);
-            }
-
-            
-            public void AddFile(string file) => AddFiles(file);
-
-            public void AddFiles(params string[] files)
-            {
-                foreach (var fileName in files)
-                {
-                    if (!m_Files.ContainsKey(fileName))
-                    {
-                        m_Files.Add(fileName, new File(null, fileName) { LastWriteTime = DateTime.Now });
-                    }
-                }
-                UpdateCurrentState();
-            }
-
-            public void RemoveFile(string file) => RemoveFiles(file);
-
-            public void RemoveFiles(params string[] files)
-            {
-                foreach (var fileName in files)
-                {
-                    m_Files.Remove(fileName);
-                }
-                UpdateCurrentState();
-            }
-                   
-
-            public IFileSystemSnapshot CreateSnapshot()
-            {
-                UpdateCurrentState();
-                return m_Group.GetHistoryService()[m_Name].CreateSnapshot(CurrentState);
-            }
-
-
-            void UpdateCurrentState()
-            {
-                var dir = new Directory(null, "root");
-                foreach (var file in m_Files.Values)
-                {
-                    dir.Add(d => file.WithParent(d));
-                }
-                CurrentState = dir;
-            }
-        }
+        
 
     }
 }
