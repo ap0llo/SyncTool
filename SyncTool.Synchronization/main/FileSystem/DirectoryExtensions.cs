@@ -15,6 +15,15 @@ namespace SyncTool.FileSystem
     internal static class DirectoryExtensions
     {
         /// <summary>
+        /// Gets a file reference for the file with the specified path from the directory
+        /// or null if the file does not exist
+        /// </summary>
+        public static IFileReference GetFileReferenceOrDefault(this IDirectory directory, string path)
+        {
+            return directory.FileExists(path) ? directory.GetFile(path).ToReference() : default(IFileReference);
+        }
+
+        /// <summary>
         /// Creates a new mutable directory from the specified directory
         /// </summary>
         public static MutableDirectory ToMutableDirectory(this IDirectory directory)

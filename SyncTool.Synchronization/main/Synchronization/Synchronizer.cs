@@ -133,18 +133,15 @@ namespace SyncTool.Synchronization
                     
                     foreach (var diff in diffs)
                     {
-                        var targetSyncFolderName = diff.History.Name;
-                        var currentRoot = diff.ToSnapshot.RootDirectory;
-                        var currentVersion = currentRoot.FileExists(path) 
-                            ? currentRoot.GetFile(path).ToReference() 
-                            : null;
+                        var targetSyncFolderName = diff.History.Name;                        
+                        var currentVersion = diff.ToSnapshot.RootDirectory.GetFileReferenceOrDefault(path);
 
                         var syncAction = GetSyncAction(targetSyncFolderName, newSyncPoint.Id, currentVersion, sink);
                         if (syncAction != null && filters[targetSyncFolderName].IncludeInResult(syncAction))
                         {
                             syncStateUpdater.AddSyncAction(syncAction);
                         }
-                    } 
+                    }
                 }
                 else
                 {
@@ -171,7 +168,8 @@ namespace SyncTool.Synchronization
                         // no pending action => the snapshot ids for the conflict are the start snapshots of the current sync
 
                         // generate conflict
-                        var conflictInfo = new ConflictInfo(path, diffs.Where(d => d.FromSnapshot != null).ToDictionary(d => d.History.Name, d => d.FromSnapshot.Id));
+                        var fromSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.FromSnapshot?.Id);
+                        var conflictInfo = new ConflictInfo(path, fromSnapshots);
                         syncStateUpdater.AddConflict(conflictInfo);
                     }
                 }

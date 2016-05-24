@@ -70,7 +70,7 @@ namespace SyncTool.Synchronization
             foreach (var folderName in foldersWithoutChanges)
             {
                 var rootDirectory = diffsByFolderName[folderName].ToSnapshot.RootDirectory;
-                graph.AddNode(GetFileReferenceOrDefault(rootDirectory, path));
+                graph.AddNode(rootDirectory.GetFileReferenceOrDefault(path));
             }
 
 
@@ -83,9 +83,6 @@ namespace SyncTool.Synchronization
             return graph;
         }
         
-        IFileReference GetFileReferenceOrDefault(IDirectory directory, string path)
-        {
-            return directory.FileExists(path) ? directory.GetFile(path).ToReference() : default(IFileReference);
-        }
+       
     }
 }
