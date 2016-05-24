@@ -52,7 +52,6 @@
     <Compile Include="Synchronization\ChangeGraph\Node.cs" />
     <Compile Include="Synchronization\ChangeGraph\NodeComparer.cs" />
     <Compile Include="Synchronization\ChangeGraph\NullKeyDictionary.cs" />
-    <Compile Include="Synchronization\ChangeListWithHistoryName.cs" />
     <Compile Include="Synchronization\Conflicts\ConflictServiceExtensions.cs" />
     <Compile Include="Synchronization\Conflicts\IConflictService.cs" />
     <Compile Include="Synchronization\DI\SynchronizationModule.cs" />

@@ -23,7 +23,7 @@ namespace SyncTool.Synchronization
     {        
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
         readonly IChangeFilterFactory m_FilterFactory;
-
+        readonly ChangeGraphBuilder m_ChangeGraphBuilder;
 
         public Synchronizer(IEqualityComparer<IFileReference> fileReferenceComparer, IChangeFilterFactory filterFactory)
         {
@@ -37,6 +37,7 @@ namespace SyncTool.Synchronization
             }
             m_FileReferenceComparer = fileReferenceComparer;
             m_FilterFactory = filterFactory;
+            m_ChangeGraphBuilder = new ChangeGraphBuilder(fileReferenceComparer);
         }
         
 
@@ -86,11 +87,9 @@ namespace SyncTool.Synchronization
             // group changes by files            
             
             var syncStateUpdater = new SyncActionUpdateBuilder();
-
-            var changeGraphBuilder = new ChangeGraphBuilder(m_FileReferenceComparer);
             
 
-            foreach (var graph in changeGraphBuilder.GetChangeGraphs(diffs))
+            foreach (var graph in m_ChangeGraphBuilder.GetChangeGraphs(diffs))
             {
                 var path = graph.Nodes.First(node => node.Value != null).Value.Path;
 
@@ -100,7 +99,7 @@ namespace SyncTool.Synchronization
                     continue;                    
                 }                
 
-                // check if all pending sync actions can be applied to the change grpah
+                // check if all pending sync actions can be applied to the change graph
                 var unapplicaleSyncActions = GetUnapplicableSyncActions(graph, syncActionService[path].Where(IsPendingSyncAction));
 
                 // pending sync actions could not be applied => skip file
@@ -280,11 +279,6 @@ namespace SyncTool.Synchronization
             return currentSyncPoint?.Id + 1 ?? 1;
         }
 
-        /// <summary>
-        /// Builds a graph of all file versions based on the specified changes
-        /// </summary>
-        /// <param name="diffs">The diffs the changes were taken from</param>
-        /// <param name="changeLists">The changes to be included in the graph</param>
 
         IList<SyncAction> GetUnapplicableSyncActions(Graph<IFileReference> changeGraph, IEnumerable<SyncAction> syncActions)
         {
