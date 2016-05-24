@@ -15,6 +15,8 @@ namespace SyncTool.Synchronization
         readonly LinkedList<SyncAction> m_AddedSyncActions = new LinkedList<SyncAction>();     
         readonly List<SyncAction> m_UpdatedSyncActions = new List<SyncAction>(); 
         readonly List<ConflictInfo> m_AddedConflicts = new List<ConflictInfo>(); 
+        readonly List<ConflictInfo> m_RemovedConflicts = new List<ConflictInfo>(); 
+
 
         public void AddSyncAction(SyncAction action)
         {
@@ -25,7 +27,6 @@ namespace SyncTool.Synchronization
         {
             m_UpdatedSyncActions.Add(syncAction);
         }
-
 
         public void UpdateSyncActions(IEnumerable<SyncAction> syncActions)
         {
@@ -38,6 +39,11 @@ namespace SyncTool.Synchronization
             m_AddedConflicts.Add(conflictInfo);
         }
 
+        public void RemoveConflict(ConflictInfo conflictInfo)
+        {
+            m_RemovedConflicts.Add(conflictInfo);
+        }
+
 
         public void Apply(ISyncActionService syncActionService, IConflictService conflictService)
         {
@@ -45,6 +51,7 @@ namespace SyncTool.Synchronization
             syncActionService.UpdateItems(m_UpdatedSyncActions);
 
             conflictService.AddItems(m_AddedConflicts);
+            conflictService.RemoveItems(m_RemovedConflicts);
         }
     }
 }

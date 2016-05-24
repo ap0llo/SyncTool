@@ -45,6 +45,7 @@
     <Compile Include="FileSystem\MutableDirectoryExtensions.cs" />
     <Compile Include="Synchronization\ChangeFilterFactory.cs" />
     <Compile Include="Synchronization\ChangeGraphBuilder.cs" />
+    <Compile Include="Synchronization\ConflictResolverBase.cs" />
     <Compile Include="Synchronization\EmptyChangeFilter.cs" />
     <Compile Include="FileSystem\Versioning\FilteredChangeList.cs" />
     <Compile Include="Synchronization\IChangeFilterFactory.cs" />
@@ -58,7 +59,9 @@
     <Compile Include="Synchronization\GraphExtensions.cs" />
     <Compile Include="Synchronization\GroupExtensions.cs" />
     <Compile Include="Synchronization\IChangeFilter.cs" />
+    <Compile Include="Synchronization\IConflictResolver.cs" />
     <Compile Include="Synchronization\MicroscopeChangeFilter.cs" />
+    <Compile Include="Synchronization\SimpleConflictResolver.cs" />
     <Compile Include="Synchronization\State\DuplicateSyncPointException.cs" />
     <Compile Include="Synchronization\State\MutableSyncPoint.cs" />
     <Compile Include="Synchronization\State\SyncPointNotFoundException.cs" />
