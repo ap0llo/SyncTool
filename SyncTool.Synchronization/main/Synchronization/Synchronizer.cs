@@ -24,6 +24,7 @@ namespace SyncTool.Synchronization
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
         readonly IChangeFilterFactory m_FilterFactory;
         readonly ChangeGraphBuilder m_ChangeGraphBuilder;
+        readonly SyncActionFactory m_SyncActionFactory;
 
         public Synchronizer(IEqualityComparer<IFileReference> fileReferenceComparer, IChangeFilterFactory filterFactory)
         {
@@ -38,6 +39,7 @@ namespace SyncTool.Synchronization
             m_FileReferenceComparer = fileReferenceComparer;
             m_FilterFactory = filterFactory;
             m_ChangeGraphBuilder = new ChangeGraphBuilder(fileReferenceComparer);
+            m_SyncActionFactory = new SyncActionFactory(fileReferenceComparer);
         }
         
 
@@ -136,7 +138,7 @@ namespace SyncTool.Synchronization
                         var targetSyncFolderName = diff.History.Name;                        
                         var currentVersion = diff.ToSnapshot.RootDirectory.GetFileReferenceOrDefault(path);
 
-                        var syncAction = GetSyncAction(targetSyncFolderName, newSyncPoint.Id, currentVersion, sink);
+                        var syncAction = m_SyncActionFactory.GetSyncAction(targetSyncFolderName, newSyncPoint.Id, currentVersion, sink);
                         if (syncAction != null && filters[targetSyncFolderName].IncludeInResult(syncAction))
                         {
                             syncStateUpdater.AddSyncAction(syncAction);
@@ -310,36 +312,6 @@ namespace SyncTool.Synchronization
 
         bool IsPendingSyncAction(SyncAction action) => action.State.IsPendingState();
 
-        SyncAction GetSyncAction(string targetName, int syncPointId, IFileReference currentFileVersion, IFileReference newFileVersion)
-        {
-            if (m_FileReferenceComparer.Equals(currentFileVersion, newFileVersion))
-            {
-                return null;
-            }
-
-            if (currentFileVersion != null)
-            {
-                if (newFileVersion == null)
-                {
-                    return SyncAction.CreateRemoveFileSyncAction(targetName, SyncActionState.Queued, syncPointId, currentFileVersion);
-                }
-                else
-                {
-                    return SyncAction.CreateReplaceFileSyncAction(targetName, SyncActionState.Queued, syncPointId, currentFileVersion, newFileVersion);
-                }
-            }
-            else
-            {
-                if (newFileVersion != null)
-                {
-                    return SyncAction.CreateAddFileSyncAction(targetName, SyncActionState.Queued, syncPointId, newFileVersion);
-                }
-                else
-                {
-                    throw new InvalidOperationException();
-                }
-            }
-        }
 
     }
 }

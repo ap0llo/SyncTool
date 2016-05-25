@@ -1,0 +1,58 @@
+﻿// -----------------------------------------------------------------------------------------------------------
+//  Copyright (c) 2016, Andreas Grünwald
+//  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
+// -----------------------------------------------------------------------------------------------------------
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using SyncTool.FileSystem;
+using SyncTool.Synchronization.SyncActions;
+
+namespace SyncTool.Synchronization
+{
+    public class SyncActionFactory
+    {
+        readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
+
+        public SyncActionFactory(IEqualityComparer<IFileReference> fileReferenceComparer)
+        {
+            if (fileReferenceComparer == null)
+            {
+                throw new ArgumentNullException(nameof(fileReferenceComparer));
+            }
+            m_FileReferenceComparer = fileReferenceComparer;
+        }
+
+        public SyncAction GetSyncAction(string targetName, int syncPointId, IFileReference currentFileVersion, IFileReference newFileVersion)
+        {
+            if (m_FileReferenceComparer.Equals(currentFileVersion, newFileVersion))
+            {
+                return null;
+            }
+
+            if (currentFileVersion != null)
+            {
+                if (newFileVersion == null)
+                {
+                    return SyncAction.CreateRemoveFileSyncAction(targetName, SyncActionState.Queued, syncPointId, currentFileVersion);
+                }
+                else
+                {
+                    return SyncAction.CreateReplaceFileSyncAction(targetName, SyncActionState.Queued, syncPointId, currentFileVersion, newFileVersion);
+                }
+            }
+            else
+            {
+                if (newFileVersion != null)
+                {
+                    return SyncAction.CreateAddFileSyncAction(targetName, SyncActionState.Queued, syncPointId, newFileVersion);
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
+        }
+    }
+}
