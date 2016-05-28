@@ -69,7 +69,6 @@ namespace SyncTool.Synchronization.ChangeGraph
             }
 
             startNode.Successors.Add(endNode);
-            endNode.Predecessors.Add(startNode);
         }        
 
         public bool Contains(T value) => m_Nodes.ContainsKey(value);

@@ -721,7 +721,7 @@ namespace SyncTool.Git.Synchronization
         }
 
         [Fact]
-        public void Synchronize_does_not_apply_changes_to_a_folder_that_are_excluced_by_its_filter()
+        public void Synchronize_does_not_apply_changes_to_a_folder_that_are_excluded_by_its_filter()
         {
             // ARRANGE
 
@@ -767,8 +767,57 @@ namespace SyncTool.Git.Synchronization
                 expectedCount: 1,
                 expectedChangeType: ChangeType.Added);
         }
-
         
+
+        [Fact]
+        public void Synchronizer_creates_conflict_if_a_file_with_pending_syncactions_is_modified()
+        {
+            // SCENARIO
+            // left: A -> B *Sync* -> C  *Sync*
+            // right A      *Sync*       *Sync*
+            // 3: A
+
+            // ARRANGE
+            var writeTimeA = DateTime.Now;
+            var writeTimeB = writeTimeA.AddHours(1);
+            var writeTimeC = writeTimeA.AddHours(2);
+
+            var historyBuilder1 = new HistoryBuilder(m_Group, "history1");
+            historyBuilder1.AddFile("file1", writeTimeA);
+            historyBuilder1.CreateSnapshot();
+            historyBuilder1.RemoveFile("file1");
+            historyBuilder1.AddFile("file1", writeTimeB);
+            historyBuilder1.CreateSnapshot();
+
+            var historyBuilder2 = new HistoryBuilder(m_Group, "history2");
+            historyBuilder2.AddFile("file1", writeTimeA);
+            historyBuilder2.CreateSnapshot();
+
+            var historyBuilder3 = new HistoryBuilder(m_Group, "history3");
+            historyBuilder3.AddFile("file1", writeTimeA);
+            historyBuilder3.CreateSnapshot();
+
+            m_Instance.Synchronize(m_Group);
+
+            historyBuilder1.RemoveFile("file1");
+            historyBuilder1.AddFile("file1", writeTimeC);
+            historyBuilder1.CreateSnapshot();
+
+            // ACT
+            m_Instance.Synchronize(m_Group);
+
+            // ASSERT: The pending sync action cannot be applied => create a conflict for the file
+
+            var conflicts = m_Group.GetSyncConflictService().Items.ToArray();
+            Assert.Single(conflicts);
+
+            // snapshot ids must be null (there were no previous sync at the time the non-applicable sync action was created)
+            Assert.Null(conflicts.Single().SnapshotIds);
+
+            Assert.Empty(m_Group.GetSyncActionService().PendingItems);
+
+        }
+
 
         public override void Dispose()
         {
