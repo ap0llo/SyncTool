@@ -93,7 +93,7 @@ namespace SyncTool.Synchronization
 
             foreach (var graph in m_ChangeGraphBuilder.GetChangeGraphs(diffs))
             {
-                var path = graph.Nodes.First(node => node.Value != null).Value.Path;
+                var path = graph.ValueNodes.First(node => node.Value != null).Value.Path;
 
                 // skip if there is a conflict for the current file
                 if (conflictService.ItemExists(path))

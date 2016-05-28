@@ -25,7 +25,7 @@ namespace SyncTool.Synchronization.ChangeGraph
 
             graph.AddEdge(null, obj);
 
-            Assert.Equal(2, graph.Nodes.Count());
+            Assert.Equal(2, graph.ValueNodes.Count());
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace SyncTool.Synchronization.ChangeGraph
             graph.AddEdge(1,2);
             graph.AddEdge(2,1);
 
-            Assert.Equal(4, graph.Nodes.Count());
+            Assert.Equal(4, graph.ValueNodes.Count());
 
         }
 
@@ -58,7 +58,7 @@ namespace SyncTool.Synchronization.ChangeGraph
 
 
             // ASSERT
-            var nodes = graph.Nodes.ToArray();
+            var nodes = graph.ValueNodes.ToArray();
             Assert.Equal(4, nodes.Length);
             Assert.Equal(expectedValuesInOrder, nodes.Select(n => n.Value).ToArray());
 
@@ -87,7 +87,7 @@ namespace SyncTool.Synchronization.ChangeGraph
 
 
             // ASSERT
-            var nodes = graph.Nodes.ToArray();
+            var nodes = graph.ValueNodes.ToArray();
             Assert.Equal(4, nodes.Length);
             Assert.Equal(expectedValuesInOrder, nodes.Select(n => n.Value).ToArray());
 

@@ -8,31 +8,22 @@ using System.Collections.Generic;
 
 namespace SyncTool.Synchronization.ChangeGraph
 {
-    public class Node<T>
+    public class StartNode<T>
     {
-        public T Value { get; }
+        public int Index { get; } = 0;
 
-        public int Index { get; }
+        public ISet<ValueNode<T>> Successors { get; }
 
-        public ISet<Node<T>> Successors { get; }
-        
 
-        public Node(T value, int index, IEqualityComparer<T> valueComparer)
+        public StartNode(IEqualityComparer<T> valueComparer)
         {
             if (valueComparer == null)
             {
                 throw new ArgumentNullException(nameof(valueComparer));
-            }
-
-            Value = value;
-            Index = index;
+            }            
 
             var nodeComparer = new NodeComparer<T>(valueComparer);
-            Successors = new HashSet<Node<T>>(nodeComparer);
+            Successors = new HashSet<ValueNode<T>>(nodeComparer);
         }
-        
-
-
-
     }
 }

@@ -12,11 +12,14 @@ namespace SyncTool.Synchronization.ChangeGraph
     public class Graph<T>
     { 
         readonly IEqualityComparer<T> m_ValueComparer;        
-        readonly IDictionary<T, IDictionary<int, Node<T>>> m_Nodes;            
+        readonly IDictionary<T, IDictionary<int, ValueNode<T>>> m_Nodes;            
         int m_NextNodeIndex = 1;
         bool m_EdgesAdded = false;
 
-        public IEnumerable<Node<T>> Nodes => m_Nodes.Values.SelectMany(x => x.Values).OrderBy(x => x.Index);
+
+        public StartNode<T> StartNode { get; } 
+
+        public IEnumerable<ValueNode<T>> ValueNodes => m_Nodes.Values.SelectMany(x => x.Values).OrderBy(x => x.Index);
 
 
         public Graph(IEqualityComparer<T> valueComparer)
@@ -25,19 +28,12 @@ namespace SyncTool.Synchronization.ChangeGraph
             {
                 throw new ArgumentNullException(nameof(valueComparer));
             }
-            m_ValueComparer = valueComparer;           
-            m_Nodes = new NullKeyDictionary<T, IDictionary<int, Node<T>>>(valueComparer);            
+            m_ValueComparer = valueComparer;
+            m_Nodes = new NullKeyDictionary<T, IDictionary<int, ValueNode<T>>>(valueComparer);   
+
+            StartNode = new StartNode<T>(valueComparer);         
         }
 
-        public void AddNodes(params T[] values) => AddNodes((IEnumerable<T>) values);
-        
-        public void AddNodes(IEnumerable<T> values)
-        {
-            foreach (var value in values)
-            {
-                AddNode(value);
-            }
-        }
 
         public void AddNode(T value)
         {
@@ -48,7 +44,7 @@ namespace SyncTool.Synchronization.ChangeGraph
 
             if (!m_Nodes.ContainsKey(value))
             {
-                m_Nodes.Add(value, new Dictionary<int, Node<T>>());
+                m_Nodes.Add(value, new Dictionary<int, ValueNode<T>>());
                 var newNode = CreateNode(value);
                 m_Nodes[value].Add(newNode.Index, newNode);
             }
@@ -69,14 +65,14 @@ namespace SyncTool.Synchronization.ChangeGraph
             }
 
             startNode.Successors.Add(endNode);
-        }        
+        }
 
         public bool Contains(T value) => m_Nodes.ContainsKey(value);
 
         
-        Node<T> CreateNode(T value)
+        ValueNode<T> CreateNode(T value)
         {
-            return new Node<T>(value, m_NextNodeIndex++, m_ValueComparer);
+            return new ValueNode<T>(value, m_NextNodeIndex++, m_ValueComparer);
         }
 
     }

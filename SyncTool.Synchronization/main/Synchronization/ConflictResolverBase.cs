@@ -10,6 +10,7 @@ using System.Linq;
 using SyncTool.Common;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
+using SyncTool.Synchronization.ChangeGraph;
 using SyncTool.Synchronization.Conflicts;
 
 namespace SyncTool.Synchronization

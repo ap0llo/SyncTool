@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace SyncTool.Synchronization.ChangeGraph
 {
-    public class NodeComparer<T> : IEqualityComparer<Node<T>>
+    public class NodeComparer<T> : IEqualityComparer<ValueNode<T>>
     {
         readonly IEqualityComparer<T> m_ValueComparer;
 
@@ -23,7 +23,7 @@ namespace SyncTool.Synchronization.ChangeGraph
         }
 
 
-        public bool Equals(Node<T> x, Node<T> y)
+        public bool Equals(ValueNode<T> x, ValueNode<T> y)
         {
             if (ReferenceEquals(x, y))
             {
@@ -38,6 +38,6 @@ namespace SyncTool.Synchronization.ChangeGraph
             return x.Index == y.Index && m_ValueComparer.Equals(x.Value, y.Value);
         }
 
-        public int GetHashCode(Node<T> obj) => m_ValueComparer.GetHashCode(obj.Value);
+        public int GetHashCode(ValueNode<T> obj) => m_ValueComparer.GetHashCode(obj.Value);
     }
 }
