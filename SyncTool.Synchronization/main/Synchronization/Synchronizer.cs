@@ -22,8 +22,7 @@ namespace SyncTool.Synchronization
     public class Synchronizer : ISynchronizer
     {        
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
-        readonly IChangeFilterFactory m_FilterFactory;
-        readonly ChangeGraphBuilder m_ChangeGraphBuilder;
+        readonly IChangeFilterFactory m_FilterFactory;        
         readonly SyncActionFactory m_SyncActionFactory;
 
         public Synchronizer(IEqualityComparer<IFileReference> fileReferenceComparer, IChangeFilterFactory filterFactory)
@@ -38,7 +37,7 @@ namespace SyncTool.Synchronization
             }
             m_FileReferenceComparer = fileReferenceComparer;
             m_FilterFactory = filterFactory;
-            m_ChangeGraphBuilder = new ChangeGraphBuilder(fileReferenceComparer);
+            
             m_SyncActionFactory = new SyncActionFactory(fileReferenceComparer);
         }
         
@@ -89,9 +88,9 @@ namespace SyncTool.Synchronization
             // group changes by files            
             
             var syncStateUpdater = new SyncActionUpdateBuilder();
-            
+            var changeGraphBuilder = new ChangeGraphBuilder(m_FileReferenceComparer, group);
 
-            foreach (var graph in m_ChangeGraphBuilder.GetChangeGraphs(diffs))
+            foreach (var graph in changeGraphBuilder.GetChangeGraphs(diffs))
             {
                 var path = graph.ValueNodes.First(node => node.Value != null).Value.Path;
 

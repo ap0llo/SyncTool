@@ -9,22 +9,29 @@ using SyncTool.Synchronization.ChangeGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SyncTool.Common;
 
 namespace SyncTool.Synchronization
 {
     class ChangeGraphBuilder
     {
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
+        readonly IGroup m_Group;
 
 
-        public ChangeGraphBuilder(IEqualityComparer<IFileReference> fileReferenceComparer)
+        public ChangeGraphBuilder(IEqualityComparer<IFileReference> fileReferenceComparer, IGroup group)
         {
             if(fileReferenceComparer == null)
             {
                 throw new ArgumentNullException(nameof(fileReferenceComparer));
             }
+            if (group == null)
+            {
+                throw new ArgumentNullException(nameof(@group));
+            }
 
             m_FileReferenceComparer = fileReferenceComparer;
+            m_Group = @group;
         }
 
 

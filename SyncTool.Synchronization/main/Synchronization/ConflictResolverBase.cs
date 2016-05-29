@@ -17,8 +17,8 @@ namespace SyncTool.Synchronization
 {
     public abstract class ConflictResolverBase
     {
-        readonly ChangeGraphBuilder m_ChangeGraphBuilder;
-
+        readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
+        
 
         public ConflictResolverBase(IEqualityComparer<IFileReference> fileReferenceComparer)
         {
@@ -26,8 +26,8 @@ namespace SyncTool.Synchronization
             {
                 throw new ArgumentNullException(nameof(fileReferenceComparer));
             }
-
-            m_ChangeGraphBuilder = new ChangeGraphBuilder(fileReferenceComparer);
+            m_FileReferenceComparer = fileReferenceComparer;
+            
         }
 
 
@@ -37,12 +37,14 @@ namespace SyncTool.Synchronization
             var syncActionService = group.GetSyncActionService();
             var historyService = group.GetHistoryService();
 
+            var changeGraphBuilder = new ChangeGraphBuilder(m_FileReferenceComparer, group);
+
             var syncStateUpdater = new SyncActionUpdateBuilder();
 
             foreach (var conflict in conflictService.Items)
             {
                 IFileReference resolved;
-                if (TryResolveConflict(historyService, conflict, out resolved))
+                if (TryResolveConflict(changeGraphBuilder, historyService, conflict, out resolved))
                 {
                     // remove the conflict
                     syncStateUpdater.RemoveConflict(conflict);
@@ -60,9 +62,9 @@ namespace SyncTool.Synchronization
         protected abstract bool TryResolveConflict(IEnumerable<IFileReference> versions, out IFileReference resolvedVersion);
 
 
-        bool TryResolveConflict(IHistoryService historyService, ConflictInfo conflict, out IFileReference resolved)
+        bool TryResolveConflict(ChangeGraphBuilder changeGraphBuilder, IHistoryService historyService, ConflictInfo conflict, out IFileReference resolved)
         {
-            var graph = m_ChangeGraphBuilder.GetChangeGraphs(GetDiffs(historyService, conflict)).Single();
+            var graph = changeGraphBuilder.GetChangeGraphs(GetDiffs(historyService, conflict)).Single();
 
             var sinks = graph.GetSinks().ToArray();
 
