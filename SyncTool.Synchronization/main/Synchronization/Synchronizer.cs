@@ -120,7 +120,8 @@ namespace SyncTool.Synchronization
                 
                 //in the change graph, detect conflicts
                 // if there is only one sink, no conflicts exist
-                var sinks = graph.GetSinks().ToArray();
+                var acylicGraph = graph.ToAcyclicGraph();
+                var sinks = acylicGraph.GetSinks().ToArray();
                 if (!sinks.Any())
                 {
                     // not possible (in this case the graph would be empty, which cannot happen)

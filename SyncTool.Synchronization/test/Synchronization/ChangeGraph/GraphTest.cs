@@ -29,36 +29,35 @@ namespace SyncTool.Synchronization.ChangeGraph
         }
 
         [Fact]
-        public void Graph_prevents_cycles_by_inserting_new_nodes_if_necessary()
+        public void Graph_can_be_converted_to_acyclic_graph_01()
         {
-            var graph = new Graph<int>(EqualityComparer<int>.Default);
+            var graph = new Graph<int>(EqualityComparer<int>.Default);            
 
-            graph.AddNodes(0,1,2);
-
+            graph.AddEdgeFromStartNode(0);
             graph.AddEdge(0,1);
             graph.AddEdge(1,2);
             graph.AddEdge(2,1);
 
-            Assert.Equal(4, graph.ValueNodes.Count());
+            Assert.Equal(4, graph.ToAcyclicGraph().ValueNodes.Count());
 
         }
 
         [Fact]
-        public void Graph_returns_the_expected_graph_01()
+        public void Graph_can_be_converted_to_acyclic_graph_02()
         {
             // ARRANGE
             var expectedValuesInOrder = new[] {0, 1, 2, 1};
             var graph = new Graph<int>(EqualityComparer<int>.Default);
 
             // ACT
-            graph.AddNodes(0, 1, 2);
+            graph.AddEdgeFromStartNode(0);            
             graph.AddEdge(0, 1);
             graph.AddEdge(1, 2);
             graph.AddEdge(2, 1);
 
+            var nodes = graph.ToAcyclicGraph().ValueNodes.ToArray();
 
             // ASSERT
-            var nodes = graph.ValueNodes.ToArray();
             Assert.Equal(4, nodes.Length);
             Assert.Equal(expectedValuesInOrder, nodes.Select(n => n.Value).ToArray());
 
@@ -73,21 +72,21 @@ namespace SyncTool.Synchronization.ChangeGraph
         }
 
         [Fact]
-        public void Graph_returns_the_expected_graph_02()
+        public void Graph_can_be_converted_to_acyclic_graph_03()
         {
             // ARRANGE
             var expectedValuesInOrder = new[] { 0, 1, 2, 0 };
             var graph = new Graph<int>(EqualityComparer<int>.Default);
 
             // ACT
-            graph.AddNodes(0, 1, 2);
+            graph.AddEdgeFromStartNode(0);            
             graph.AddEdge(0, 1);
             graph.AddEdge(1, 0);
             graph.AddEdge(2, 0);
 
+            var nodes = graph.ToAcyclicGraph().ValueNodes.ToArray();
 
             // ASSERT
-            var nodes = graph.ValueNodes.ToArray();
             Assert.Equal(4, nodes.Length);
             Assert.Equal(expectedValuesInOrder, nodes.Select(n => n.Value).ToArray());
 

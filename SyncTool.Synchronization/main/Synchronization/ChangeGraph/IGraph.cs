@@ -1,17 +1,15 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2016, Andreas Grünwald
+//  Copyright (c) 2016-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 
 namespace SyncTool.Synchronization.ChangeGraph
 {
-    public sealed class StartNode<T> : Node<T>
+    public interface IGraph<T>
     {
-        public StartNode(IEqualityComparer<T> valueComparer, int index) : base(valueComparer, index)
-        {
-        }
+        IEnumerable<ValueNode<T>> ValueNodes { get; }
     }
 }

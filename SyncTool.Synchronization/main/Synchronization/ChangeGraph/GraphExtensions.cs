@@ -11,7 +11,8 @@ namespace SyncTool.Synchronization.ChangeGraph
 {
     public static class GraphExtensions
     {
-        public static IEnumerable<T> GetSinks<T>(this Graph<T> graph)
+
+        public static IEnumerable<T> GetSinks<T>(this IGraph<T> graph)
         {
             return from node in graph.ValueNodes
                    where !node.Successors.Any()

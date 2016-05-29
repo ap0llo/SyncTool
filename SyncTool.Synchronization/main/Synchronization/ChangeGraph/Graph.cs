@@ -9,18 +9,17 @@ using System.Linq;
 
 namespace SyncTool.Synchronization.ChangeGraph
 {
-    public class Graph<T>
+    public class Graph<T> : IGraph<T>
     { 
         readonly IEqualityComparer<T> m_ValueComparer;        
-        readonly IDictionary<T, IDictionary<int, ValueNode<T>>> m_Nodes;            
-        int m_NextNodeIndex = 1;
-        bool m_EdgesAdded = false;
+        readonly IDictionary<T, ValueNode<T>> m_Nodes;
 
 
-        public StartNode<T> StartNode { get; } 
+        public StartNode<T> StartNode { get; }
 
-        public IEnumerable<ValueNode<T>> ValueNodes => m_Nodes.Values.SelectMany(x => x.Values).OrderBy(x => x.Index);
+        public IEnumerable<ValueNode<T>> ValueNodes => m_Nodes.Values;
 
+        
 
         public Graph(IEqualityComparer<T> valueComparer)
         {
@@ -29,51 +28,94 @@ namespace SyncTool.Synchronization.ChangeGraph
                 throw new ArgumentNullException(nameof(valueComparer));
             }
             m_ValueComparer = valueComparer;
-            m_Nodes = new NullKeyDictionary<T, IDictionary<int, ValueNode<T>>>(valueComparer);   
+            m_Nodes = new NullKeyDictionary<T, ValueNode<T>>(valueComparer);   
 
-            StartNode = new StartNode<T>(valueComparer);         
+            StartNode = new StartNode<T>(valueComparer, 0);         
         }
 
 
         public void AddNode(T value)
-        {
-            if (m_EdgesAdded)
-            {
-                throw new InvalidOperationException("New nodes cannot be added, after edges were added to the graph");
-            }
-
+        {           
             if (!m_Nodes.ContainsKey(value))
             {
-                m_Nodes.Add(value, new Dictionary<int, ValueNode<T>>());
-                var newNode = CreateNode(value);
-                m_Nodes[value].Add(newNode.Index, newNode);
+                m_Nodes.Add(value, new ValueNode<T>(value, m_ValueComparer, 0));                
             }
         }
 
+
         public void AddEdge(T start, T end)
-        {
-            m_EdgesAdded = true;
+        {            
+            AddNode(start);
+            AddNode(end);
 
-            var startNode = m_Nodes[start][m_Nodes[start].Keys.Min()];
-            var endNode = m_Nodes[end][m_Nodes[end].Keys.Max()];
-
-            if (startNode.Index >= endNode.Index)
-            {
-                //Add new node for end value to prevent cycles
-                endNode = CreateNode(end);
-                m_Nodes[end].Add(endNode.Index, endNode);                
-            }
+            var startNode = m_Nodes[start];
+            var endNode = m_Nodes[end];
 
             startNode.Successors.Add(endNode);
         }
 
-        public bool Contains(T value) => m_Nodes.ContainsKey(value);
-
-        
-        ValueNode<T> CreateNode(T value)
+        public void AddEdgeFromStartNode(T value)
         {
-            return new ValueNode<T>(value, m_NextNodeIndex++, m_ValueComparer);
+            AddNode(value);
+
+            var node = m_Nodes[value];
+            StartNode.Successors.Add(node);
         }
 
+        public bool Contains(T value) => m_Nodes.ContainsKey(value);
+
+
+
+        public AcyclicGraph<T> ToAcyclicGraph()
+        {
+            var nodeIndices = new Dictionary<Node<T>, int>();
+            ExecuteDfsNumbering(StartNode, nodeIndices, 1);
+
+            // eecute dfs search starting from every node for the case that the graph is not connected
+            foreach (var node in ValueNodes)
+            {
+                ExecuteDfsNumbering(node, nodeIndices, nodeIndices.Values.Max() +1);
+            }
+
+
+            var startNodeIndex = nodeIndices[StartNode];
+            var newGraph = new AcyclicGraph<T>(m_ValueComparer, startNodeIndex, nodeIndices.Values.Max());
+
+            foreach (var node in StartNode.Successors)
+            {
+                var nodeIndex = nodeIndices[node];
+                newGraph.AddEdgeFromStartNode(node.Value, nodeIndex);
+            }
+
+            foreach (var node in ValueNodes)
+            {
+                var nodeIndex = nodeIndices[node];
+                newGraph.AddNode(node.Value, nodeIndex);
+                foreach (var successor in node.Successors)
+                {
+                    var successorIndex = nodeIndices[successor];
+                    newGraph.AddEdge(node.Value, nodeIndex, successor.Value, successorIndex);
+                }
+            }
+            
+            return newGraph;
+        }
+
+
+
+        void ExecuteDfsNumbering(Node<T> currentNode, Dictionary<Node<T>, int> nodeIndices, int nextNodeId)
+        {
+            if (!nodeIndices.ContainsKey(currentNode))
+            {
+                nodeIndices.Add(currentNode, nextNodeId);
+
+                foreach (var node in currentNode.Successors)
+                {
+                    ExecuteDfsNumbering(node, nodeIndices, nextNodeId + 1);
+                }       
+            }
+        }
+
+ 
     }
 }

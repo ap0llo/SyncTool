@@ -58,26 +58,30 @@ namespace SyncTool.Synchronization
 
         Graph<IFileReference> GetChangeGraph(IDictionary<string, IFileSystemDiff> diffsByFolderName, string path, IDictionary<string, IChangeList> changeListsByFolderName)
         {            
-            var graph = new Graph<IFileReference>(m_FileReferenceComparer);                        
+            var graph = new Graph<IFileReference>(m_FileReferenceComparer);
 
-            // add ToVersion and FromVersion for every change to the graph
-            var changes = changeListsByFolderName.Values.SelectMany(cl => cl.Changes).ToArray();
-            graph.AddNodes(changes.Select(c => c.FromVersion));
-            graph.AddNodes(changes.Select(c => c.ToVersion));
-            
-            // for each diff which has no changes, add the current file as node
-            var foldersWithoutChanges = diffsByFolderName.Keys.Except(changeListsByFolderName.Keys, StringComparer.InvariantCultureIgnoreCase);
-            foreach (var folderName in foldersWithoutChanges)
+
+            foreach (var folderName in diffsByFolderName.Keys)
             {
-                var rootDirectory = diffsByFolderName[folderName].ToSnapshot.RootDirectory;
-                graph.AddNode(rootDirectory.GetFileReferenceOrDefault(path));
-            }
+                // add ToVersion and FromVersion for every change to the grap
+                if (changeListsByFolderName.ContainsKey(folderName))
+                {
+                    var changeList = changeListsByFolderName[folderName];
 
+                    graph.AddEdgeFromStartNode(changeList.Changes.First().FromVersion);
 
-            // add all edges to the graph
-            foreach (var change in changes)
-            {
-                graph.AddEdge(change.FromVersion, change.ToVersion);
+                    foreach (var change in changeList.Changes)
+                    {
+                        graph.AddEdge(change.FromVersion, change.ToVersion);
+                    }
+
+                }
+                // for each diff which has no changes, add the current file as node
+                else
+                {
+                    var rootDirectory = diffsByFolderName[folderName].ToSnapshot.RootDirectory;
+                    graph.AddEdgeFromStartNode(rootDirectory.GetFileReferenceOrDefault(path));
+                }
             }
 
             return graph;
