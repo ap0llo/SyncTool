@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,12 +12,19 @@ using System.Threading.Tasks;
 
 namespace SyncTool.Synchronization.State
 {
-    public sealed class HistorySnapshotIdCollection
-    {
+    public sealed class HistorySnapshotIdCollection : IEnumerable<HistorySnapshotId>
+    {        
+        public static readonly HistorySnapshotIdCollection Empty = new HistorySnapshotIdCollection(Enumerable.Empty<HistorySnapshotId>());
+
+
         readonly IDictionary<string, HistorySnapshotId> m_SnapshotIds;
 
         public IEnumerable<HistorySnapshotId> SnapshotIds => m_SnapshotIds.Values;
 
+        public HistorySnapshotIdCollection(params HistorySnapshotId[] snapshotIds) : this((IEnumerable<HistorySnapshotId>)snapshotIds)
+        {
+
+        }
 
         public HistorySnapshotIdCollection(IEnumerable<HistorySnapshotId> snapshotIds)
         {
@@ -28,7 +36,12 @@ namespace SyncTool.Synchronization.State
 
 
         public string GetSnapshotId(string historyName) => m_SnapshotIds[historyName].SnapshotId;
+
+        public bool ContainsHistoryName(string name) => m_SnapshotIds.ContainsKey(name);
+
+        public IEnumerator<HistorySnapshotId> GetEnumerator() => m_SnapshotIds.Values.GetEnumerator();
         
+        IEnumerator IEnumerable.GetEnumerator() => m_SnapshotIds.Values.GetEnumerator();
 
     }
 }

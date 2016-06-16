@@ -18,12 +18,12 @@ namespace SyncTool.Synchronization.State
         /// <summary>
         /// Gets the ids of the oldest snapshots that were included in the sync
         /// </summary>
-        IReadOnlyDictionary<string, string> FromSnapshots { get; }
+        HistorySnapshotIdCollection FromSnapshots { get; }
 
         /// <summary>
         /// Gets the ids for of the latest snapshots that were included in the sync
         /// </summary>
-        IReadOnlyDictionary<string, string> ToSnapshots { get; }
+        HistorySnapshotIdCollection ToSnapshots { get; }
 
         /// <summary>
         /// Gets the filter configurations at the time of the sync

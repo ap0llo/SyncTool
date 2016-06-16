@@ -136,11 +136,10 @@ namespace SyncTool.Git.Synchronization
             {
                 Id = 1,
                 FromSnapshots = null,
-                ToSnapshots = new Dictionary<string, string>()
-                {
-                    {"folder1", snapshot1.Id},
-                    {"folder2", snapshot2.Id}
-                },
+                ToSnapshots = new HistorySnapshotIdCollection(                
+                    new HistorySnapshotId("folder1", snapshot1.Id),
+                    new HistorySnapshotId("folder2", snapshot2.Id)
+                ),
                 FilterConfigurations = new Dictionary<string, FilterConfiguration>()
                 {
                     {"folder1", FilterConfiguration.Empty },
@@ -201,12 +200,11 @@ namespace SyncTool.Git.Synchronization
             var syncPoint = m_Group.GetSyncPointService().Items.Single();
             Assert.Equal(1, syncPoint.Id);
             Assert.Null(syncPoint.FromSnapshots);
-            var expectedToSnapshots = new Dictionary<string, string>()
-            {
-                { "left", snapshot1.Id },
-                { "right", snapshot2.Id }
-            };
-            DictionaryAssert.Equal(expectedToSnapshots, syncPoint.ToSnapshots);
+            var expectedToSnapshots = new HistorySnapshotIdCollection(           
+                new HistorySnapshotId("left", snapshot1.Id),
+                new HistorySnapshotId("right", snapshot2.Id)
+            );
+            HistorySnapshotIdCollectionAssert.Equal(expectedToSnapshots, syncPoint.ToSnapshots);
         }
 
         [Fact]
@@ -771,7 +769,7 @@ namespace SyncTool.Git.Synchronization
 
         [Fact]
         public void Synchronizer_creates_conflict_if_a_file_with_pending_syncactions_is_modified()
-        {
+        {                 
             // SCENARIO
             // left: A -> B *Sync* -> C  *Sync*
             // right A      *Sync*       *Sync*
@@ -804,7 +802,7 @@ namespace SyncTool.Git.Synchronization
             historyBuilder1.CreateSnapshot();
 
             // ACT
-            m_Instance.Synchronize(m_Group);
+            m_Instance.Synchronize(m_Group);            
 
             // ASSERT: The pending sync action cannot be applied => create a conflict for the file
 

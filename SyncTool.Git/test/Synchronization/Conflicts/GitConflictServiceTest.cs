@@ -12,6 +12,7 @@ using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization.Conflicts;
 using SyncTool.TestHelpers;
 using Xunit;
+using SyncTool.Synchronization.State;
 
 namespace SyncTool.Git.Synchronization.Conflicts
 {
@@ -48,28 +49,28 @@ namespace SyncTool.Git.Synchronization.Conflicts
         [Fact]
         public void T03_Items_returns_expected_conflicts()
         {
-            var expected = new ConflictInfo("/file1", null);
+            var expected = new ConflictInfo("/file1", HistorySnapshotIdCollection.Empty);
 
             m_Service.AddItems(expected);
 
             Assert.Single(m_Service.Items);
             var actual = m_Service.Items.Single();
             Assert.Equal(expected.FilePath, actual.FilePath);
-            DictionaryAssert.Equal(expected.SnapshotIds, actual.SnapshotIds);
+            HistorySnapshotIdCollectionAssert.Equal(expected.SnapshotIds, actual.SnapshotIds);
         }
 
 
         [Fact]
         public void T04_Items_returns_expected_conflicts()
         {
-            var expected = new ConflictInfo("/file1", new Dictionary<string, string>() { {"name", "id"} });
+            var expected = new ConflictInfo("/file1", new HistorySnapshotIdCollection( new HistorySnapshotId("name", "id")));
 
             m_Service.AddItems(expected);
 
             Assert.Single(m_Service.Items);
             var actual = m_Service.Items.Single();
             Assert.Equal(expected.FilePath, actual.FilePath);
-            DictionaryAssert.Equal(expected.SnapshotIds, actual.SnapshotIds);
+            HistorySnapshotIdCollectionAssert.Equal(expected.SnapshotIds, actual.SnapshotIds);
         }
 
         #endregion
@@ -108,14 +109,14 @@ namespace SyncTool.Git.Synchronization.Conflicts
         [Fact]
         public void T09_Indexer_returns_expected_result()
         {
-            var expected = new ConflictInfo("/file1", null);
+            var expected = new ConflictInfo("/file1", HistorySnapshotIdCollection.Empty);
             m_Service.AddItems(expected);
 
             var actual = m_Service[expected.FilePath];
 
             Assert.NotNull(actual);
             Assert.Equal(expected.FilePath,actual.FilePath);
-            DictionaryAssert.Equal(expected.SnapshotIds, actual.SnapshotIds);
+            HistorySnapshotIdCollectionAssert.Equal(expected.SnapshotIds, actual.SnapshotIds);
         }
 
         #endregion

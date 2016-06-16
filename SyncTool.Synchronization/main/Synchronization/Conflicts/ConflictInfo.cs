@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using SyncTool.FileSystem;
+using SyncTool.Synchronization.State;
 
 namespace SyncTool.Synchronization.Conflicts
 {
@@ -13,11 +14,11 @@ namespace SyncTool.Synchronization.Conflicts
     {        
         public string FilePath { get; }
         
-        public IReadOnlyDictionary<string, string> SnapshotIds { get; }
+        public HistorySnapshotIdCollection SnapshotIds { get; }
 
 
 
-        public ConflictInfo(string filePath, IReadOnlyDictionary<string, string> snapshotIds)
+        public ConflictInfo(string filePath, HistorySnapshotIdCollection snapshotIds)
         {
             PathValidator.EnsureIsValidFilePath(filePath);
             PathValidator.EnsureIsRootedPath(filePath);

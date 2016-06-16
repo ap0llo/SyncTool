@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using SyncTool.Configuration.Model;
 using SyncTool.Synchronization.State;
+using System.Linq;
 
 namespace SyncTool.TestHelpers
 {
@@ -29,24 +30,24 @@ namespace SyncTool.TestHelpers
 
         public static MutableSyncPoint WithoutFromSnapshots(this MutableSyncPoint state)
         {
-            state.FromSnapshots = null;            
+            state.FromSnapshots = HistorySnapshotIdCollection.Empty;            
             return state;
         }
 
         public static MutableSyncPoint WithToSnapshot(this MutableSyncPoint state, string name, string id)
         {
-            Dictionary<string, string> current;
+            HistorySnapshotIdCollection current;
             try
             {
-                current = (Dictionary<string, string>) state.ToSnapshots;
+                current = state.ToSnapshots;
             }
             catch (Exception)
             {
                 current = null;
             }
-            current = current ?? new Dictionary<string, string>();
-
-            current.Add(name, id);
+            current = current ?? HistorySnapshotIdCollection.Empty;
+            
+            current = new HistorySnapshotIdCollection(current.Union(new[] { new HistorySnapshotId(name, id) }));
             state.ToSnapshots = current;
             
             return state;
@@ -54,18 +55,18 @@ namespace SyncTool.TestHelpers
 
         public static MutableSyncPoint WithFromSnapshot(this MutableSyncPoint state, string name, string id)
         {
-            Dictionary<string, string> current;
+            HistorySnapshotIdCollection current;
             try
             {
-                current = (Dictionary<string, string>)state.FromSnapshots;
+                current = state.FromSnapshots;
             }
             catch (Exception)
             {
                 current = null;
             }
-            current = current ?? new Dictionary<string, string>();
+            current = current ?? HistorySnapshotIdCollection.Empty;
 
-            current.Add(name, id);
+            current = new HistorySnapshotIdCollection(current.Union(new[] { new HistorySnapshotId(name, id) }));
             state.FromSnapshots = current;
 
             return state;

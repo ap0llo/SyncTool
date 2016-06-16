@@ -23,7 +23,7 @@ namespace SyncTool.Synchronization.State
             if (String.IsNullOrWhiteSpace(historyName))
                 throw new ArgumentException("Value must not be empty", nameof(historyName));
 
-            if(String.IsNullOrWhiteSpace(snapshotId))
+            if(snapshotId != null && String.IsNullOrWhiteSpace(snapshotId))
                 throw new ArgumentException("Value must not be empty", nameof(snapshotId));
 
             HistoryName = historyName;

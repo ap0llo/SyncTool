@@ -73,10 +73,10 @@ namespace SyncTool.Synchronization
         
         IEnumerable<IFileSystemDiff> GetDiffs(IHistoryService historyService, ConflictInfo conflict)
         {
-            foreach (var folderName in conflict.SnapshotIds.Keys)
+            foreach (var historySnapshotId in conflict.SnapshotIds)
             {
-                var snapshotId = conflict.SnapshotIds[folderName];
-                var history = historyService[folderName];
+                var snapshotId = historySnapshotId.SnapshotId;
+                var history = historyService[historySnapshotId.HistoryName];
 
                 if (snapshotId == null)
                 {

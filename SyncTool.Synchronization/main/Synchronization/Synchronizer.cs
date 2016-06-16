@@ -74,7 +74,7 @@ namespace SyncTool.Synchronization
             {
                 Id = GetNextSyncPointId(latestSyncPoint),
                 FromSnapshots = latestSyncPoint?.ToSnapshots,
-                ToSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.ToSnapshot.Id),
+                ToSnapshots = new HistorySnapshotIdCollection(diffs.Select(d => new HistorySnapshotId(d.History.Name, d.ToSnapshot.Id))),
                 FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
             };                                                         
 
@@ -170,7 +170,7 @@ namespace SyncTool.Synchronization
                         // no pending action => the snapshot ids for the conflict are the start snapshots of the current sync
 
                         // generate conflict
-                        var fromSnapshots = diffs.ToDictionary(d => d.History.Name, d => d.FromSnapshot?.Id);
+                        var fromSnapshots = new HistorySnapshotIdCollection(diffs.Select(d => new HistorySnapshotId(d.History.Name, d.FromSnapshot?.Id)));
                         var conflictInfo = new ConflictInfo(path, fromSnapshots);
                         syncStateUpdater.AddConflict(conflictInfo);
                     }
@@ -187,7 +187,7 @@ namespace SyncTool.Synchronization
         /// <summary>
         /// Gets the diffs relevant for the next synchronization (all changes since the last sync point)
         /// </summary>
-        IEnumerable<IFileSystemDiff> GetDiffs(IEnumerable<SyncFolder> syncFolders, IHistoryService historyService, IReadOnlyDictionary<string, string> toSnapshots )
+        IEnumerable<IFileSystemDiff> GetDiffs(IEnumerable<SyncFolder> syncFolders, IHistoryService historyService, HistorySnapshotIdCollection toSnapshots )
         {
             foreach (var syncFolder in syncFolders)
             {
@@ -197,7 +197,7 @@ namespace SyncTool.Synchronization
                     // no saved snapshot ids from last sync => get all the changes from the initial commit
                     ? history.GetChanges(history.LatestFileSystemSnapshot.Id)
                     // toSnapshots != null => get all the changes since the last sync
-                    : history.GetChanges(toSnapshots[syncFolder.Name], history.LatestFileSystemSnapshot.Id);
+                    : history.GetChanges(toSnapshots.GetSnapshotId(syncFolder.Name), history.LatestFileSystemSnapshot.Id);
 
                 var filter = m_FilterFactory.GetFilter(syncFolder.Filter);
 
@@ -251,7 +251,7 @@ namespace SyncTool.Synchronization
             else
             {
                 var syncFolderNames = syncFolders.Select(f => f.Name).ToArray();
-                return syncFolderNames.Any(name => !syncPoint.ToSnapshots.ContainsKey(name));
+                return syncFolderNames.Any(name => !syncPoint.ToSnapshots.ContainsHistoryName(name));
             }
         }
 

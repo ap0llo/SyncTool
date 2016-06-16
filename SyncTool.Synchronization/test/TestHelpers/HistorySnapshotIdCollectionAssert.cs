@@ -3,19 +3,23 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
+using SyncTool.Synchronization.State;
+using System;
 using System.Collections.Generic;
-using SyncTool.Configuration.Model;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Xunit;
 
-namespace SyncTool.Synchronization.State
+namespace SyncTool.TestHelpers
 {
-    public class MutableSyncPoint : ISyncPoint
+    public static class HistorySnapshotIdCollectionAssert
     {
-        public int Id { get; set; }
+        public static void Equal(HistorySnapshotIdCollection expected, HistorySnapshotIdCollection actual)
+        {
+            Assert.Empty(expected.Except(actual));
+        }
 
-        public HistorySnapshotIdCollection FromSnapshots { get; set; }
 
-        public HistorySnapshotIdCollection ToSnapshots { get; set; }
-
-        public IReadOnlyDictionary<string, FilterConfiguration> FilterConfigurations { get; set; }
     }
 }
