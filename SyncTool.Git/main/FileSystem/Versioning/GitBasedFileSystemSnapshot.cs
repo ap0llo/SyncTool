@@ -21,8 +21,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         readonly MetaFileSystemLoader m_MetaFileSystemLoader = new MetaFileSystemLoader();
         readonly MetaFileSystemToFileSystemConverter m_MetaFileSystemConverter = new MetaFileSystemToFileSystemConverter();        
         readonly Commit m_Commit;
-        
-        IFileSystemMapping m_MetaFileSystemMapping;
+                
         IDirectory m_GitDirectory;
         IDirectory m_MetaFileSystem;
 
@@ -106,24 +105,24 @@ namespace SyncTool.Git.FileSystem.Versioning
         public static bool IsSnapshot(Commit commit) => commit.Tree[SnapshotDirectoryName] != null;
 
 
-        internal IFile GetFileForGitRelativePath(string relativePath)
+        internal IFile GetFileForGitPath(string relativePath)
         {
-            relativePath = relativePath.Replace("\\", "/");
-
-            var file = m_MetaFileSystem.GetFile(relativePath);
-            var mappedFile = m_MetaFileSystemMapping.GetMappedFile(file);
-
-            return mappedFile;
+            var filePath = GetPathForGitPath(relativePath);
+            return RootDirectory.GetFile(filePath);            
         }        
 
-        internal static string GetPathForGitPath(string gitPath)
+        /// <summary>
+        /// Translates the path of a git-tracked fileto the path of the corresponding file in the snapshot
+        /// </summary>
+        internal static string GetPathForGitPath(string path)
         {
-            gitPath = gitPath.Replace("\\", "/");
-
-            gitPath = gitPath.Substring(0, gitPath.Length - FilePropertiesFile.FileNameSuffix.Length);
-            gitPath = gitPath.Remove(0, SnapshotDirectoryName.Length);
-
-            return gitPath;
+            return path
+                // normalize slashes
+                .Replace("\\", "/")
+                // remove suffix added to the file name
+                .Substring(0, path.Length - FilePropertiesFile.FileNameSuffix.Length)
+                // remove the directory name at the beginning of the file (snapshots are created in a directory within the repository)
+                .Remove(0, SnapshotDirectoryName.Length);
         }
 
 
@@ -137,9 +136,9 @@ namespace SyncTool.Git.FileSystem.Versioning
             m_MetaFileSystem = m_MetaFileSystemLoader.Convert(m_GitDirectory);
 
             // convert to the originally stored file system (load file and directory properties files in the meta file system)
-            m_MetaFileSystemMapping = m_MetaFileSystemConverter.Convert(m_MetaFileSystem.GetDirectory(SnapshotDirectoryName));
+            RootDirectory= m_MetaFileSystemConverter.Convert(m_MetaFileSystem.GetDirectory(SnapshotDirectoryName));
 
-            RootDirectory = m_MetaFileSystemMapping.GetMappedDirectory(m_MetaFileSystem.GetDirectory(SnapshotDirectoryName));
+            
         }
 
     }

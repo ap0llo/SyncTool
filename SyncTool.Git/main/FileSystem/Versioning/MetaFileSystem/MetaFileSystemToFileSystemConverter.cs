@@ -12,18 +12,14 @@ namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
     /// </summary>
     internal class MetaFileSystemToFileSystemConverter
     {
-        public IFileSystemMapping Convert(IDirectory directory)
+        public IDirectory Convert(IDirectory directory)
         {
-            var result = new FileSystemMapping();
-            
-            ConvertDynamic(null, directory, result);
-
-            return result;
+            return ConvertDynamic(null, directory);         
         }
 
 
 
-        IDirectory Convert(IDirectory newParent, IDirectory toConvert, FileSystemMapping mapping)
+        IDirectory Convert(IDirectory newParent, IDirectory toConvert)
         {            
             // determine name of new directory
             var newDirectoryName = toConvert.Name;
@@ -37,12 +33,11 @@ namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
                 }
             }
            
-            var newDirectory = new Directory(newParent, newDirectoryName);
-            mapping.AddMapping(toConvert, newDirectory);
+            var newDirectory = new Directory(newParent, newDirectoryName);            
 
             foreach (var childDirectory in toConvert.Directories)
             {
-                var newChildDirectory = (IDirectory) ConvertDynamic(newDirectory, childDirectory, mapping);
+                var newChildDirectory = (IDirectory) ConvertDynamic(newDirectory, childDirectory);
                 if (newChildDirectory != null)
                 {
                     newDirectory.Add(_ => newChildDirectory);
@@ -53,7 +48,7 @@ namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
 
             foreach (var file in toConvert.Files)
             {
-                var newFile = (IFile) ConvertDynamic(newDirectory, file, mapping);
+                var newFile = (IFile) ConvertDynamic(newDirectory, file);
                 if (newFile != null)
                 {
                     newDirectory.Add(_ => newFile);
@@ -64,16 +59,14 @@ namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
             return newDirectory;
         }
 
-        IFile Convert(IDirectory newParent, FilePropertiesFile file,  FileSystemMapping mapping)
+        IFile Convert(IDirectory newParent, FilePropertiesFile file)
         {
             // load file properties            
-            var newFile = new File(newParent, file.Content.Name) { LastWriteTime =  file.Content.LastWriteTime, Length = file.Content.Length };
-            mapping.AddMapping(file, newFile);
-
+            var newFile = new File(newParent, file.Content.Name) { LastWriteTime =  file.Content.LastWriteTime, Length = file.Content.Length };            
             return newFile;
         }
 
-        IFile Convert(IDirectory newParent, DirectoryPropertiesFile file, FileSystemMapping mapping)
+        IFile Convert(IDirectory newParent, DirectoryPropertiesFile file)
         {          
             // remove file from result
             //mapping.AddMapping(file, null);
@@ -98,9 +91,9 @@ namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
             return file.Content.Name;
         }
 
-        dynamic ConvertDynamic(IDirectory newParent, dynamic toConvert, FileSystemMapping mapping)
+        dynamic ConvertDynamic(IDirectory newParent, dynamic toConvert)
         {
-            return ((dynamic) this).Convert(newParent, toConvert, mapping);
+            return ((dynamic) this).Convert(newParent, toConvert);
         }
 
 
