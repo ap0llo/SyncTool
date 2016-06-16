@@ -114,7 +114,18 @@ namespace SyncTool.Git.FileSystem.Versioning
             var mappedFile = m_MetaFileSystemMapping.GetMappedFile(file);
 
             return mappedFile;
+        }        
+
+        internal static string GetPathForGitPath(string gitPath)
+        {
+            gitPath = gitPath.Replace("\\", "/");
+
+            gitPath = gitPath.Substring(0, gitPath.Length - FilePropertiesFile.FileNameSuffix.Length);
+            gitPath = gitPath.Remove(0, SnapshotDirectoryName.Length);
+
+            return gitPath;
         }
+
 
         void LoadSnapshot()
         {

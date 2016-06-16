@@ -37,7 +37,17 @@ namespace SyncTool.FileSystem.Versioning
         IFileSystemSnapshot CreateSnapshot(IDirectory fileSystemState);
 
         /// <summary>
-        /// Gets all the changes from the initial commit up to the specified snapshot
+        /// Gets the paths of all changed files from the initial snapshot up to the specified snapshot
+        /// </summary>
+        string[] GetChangedFiles(string toId);
+
+        /// <summary>
+        /// Gets the paths of all changed files in the specified range
+        /// </summary>
+        string[] GetChangedFiles(string fromId, string toId);
+
+        /// <summary>
+        /// Gets all the changes from the initial snapshot up to the specified snapshot
         /// </summary>
         /// <param name="toId">The id of the last snapshot in the range</param>
         /// <param name="pathFilter">If specified limits the changes included in the diff to the supplied paths</param>

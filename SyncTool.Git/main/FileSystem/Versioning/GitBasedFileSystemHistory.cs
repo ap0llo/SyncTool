@@ -76,6 +76,43 @@ namespace SyncTool.Git.FileSystem.Versioning
             return snapshot;
         }
 
+        public string[] GetChangedFiles(string toId)
+        {
+            if (toId == null)
+            {
+                throw new ArgumentNullException(nameof(toId));
+            }
+            
+            var toSnapshot = GetSnapshot(toId);
+
+            return GetChangedPaths(m_Repository.GetInitialCommit().Sha, toId)
+                .Distinct(StringComparer.InvariantCultureIgnoreCase)
+                .ToArray();
+        }
+
+        public string[] GetChangedFiles(string fromId, string toId)
+        {
+            if (fromId == null)
+            {
+                throw new ArgumentNullException(nameof(fromId));
+            }
+
+            if (toId == null)
+            {
+                throw new ArgumentNullException(nameof(toId));
+            }
+            
+            //TODO: Ensure, fromId is an ancestor of toId
+
+            var fromSnapshot = GetSnapshot(fromId);
+            var toSnapshot = GetSnapshot(toId);
+            
+            return GetChangedPaths(fromId, toId)
+                .Distinct(StringComparer.InvariantCultureIgnoreCase)
+                .ToArray() ;            
+        }
+
+
         public IFileSystemDiff GetChanges(string toId, string[] pathFilter = null)
         {
             if (toId == null)
@@ -140,6 +177,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         bool SnapshotExists(string id) => m_Snapshots.Value.ContainsKey(id);
 
+        
         IEnumerable<ChangeList> GetChangeLists(string fromCommit, GitBasedFileSystemSnapshot toSnapshot, string[] paths)
         {
             var changeLists = GetAllChanges(fromCommit, toSnapshot, paths)
@@ -147,6 +185,46 @@ namespace SyncTool.Git.FileSystem.Versioning
                 .Select(group => new ChangeList(group.Reverse()));
                 
             return changeLists;
+        }
+
+        IEnumerable<string> GetChangedPaths(string fromCommitId, string toCommitId)
+        {        
+            var currentCommit = m_Repository.Lookup<Commit>(toCommitId);
+                     
+            while (currentCommit.Sha != fromCommitId)
+            {
+                var parentCommit = GetParentSnapshotCommit(currentCommit);
+
+                // parent commit is initial commit
+                if (parentCommit.Sha == m_Repository.GetInitialCommit().Sha)
+                {
+                    var treeChanges = m_Repository.Diff.Compare<TreeChanges>(parentCommit.Tree, currentCommit.Tree, null, new CompareOptions() { IncludeUnmodified = false });
+
+                   
+                    foreach (var change in GetChangedPaths(treeChanges))
+                    {
+                        yield return change;
+                    }
+
+                    // there won't be any commit after this (we already reached the inital commit) 
+                    // => abort the loop
+                    break;
+                }
+                else
+                {
+                    var parentSnapshot = GetSnapshot(parentCommit.Sha);
+
+                    var treeChanges = m_Repository.Diff.Compare<TreeChanges>(parentCommit.Tree, currentCommit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
+
+                    // build changes
+                    foreach (var change in GetChangedPaths(treeChanges))
+                    {
+                        yield return change;
+                    }
+
+                    currentCommit = parentCommit;
+                }
+            }           
         }
 
         IEnumerable<IChange> GetAllChanges(string fromCommit, GitBasedFileSystemSnapshot toSnapshot, string[] paths)
@@ -254,6 +332,49 @@ namespace SyncTool.Git.FileSystem.Versioning
             }
         }
 
+        IEnumerable<string> GetChangedPaths(TreeChanges treeChanges)
+        {
+            foreach (var treeChange in treeChanges)
+            {
+                if (treeChange.Status == ChangeKind.Unmodified)
+                {
+                    continue;
+                }
+
+                var path = treeChange.Path.Split("\\/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                // ignore changes in the repository outside of the "Snapshot" directory
+                var dirName = path.First();
+                if (!StringComparer.InvariantCultureIgnoreCase.Equals(dirName, GitBasedFileSystemSnapshot.SnapshotDirectoryName))
+                {
+                    continue;
+                }
+
+                // ignore directory property files
+                var fileName = path.Last();
+                if (StringComparer.InvariantCultureIgnoreCase.Equals(fileName, DirectoryPropertiesFile.FileName))
+                {
+                    continue;
+                }
+
+                switch (treeChange.Status)
+                {
+                    case ChangeKind.Unmodified:
+                        throw new InvalidOperationException("Unmodified changes should have been filtered out");
+
+                    case ChangeKind.Modified:
+                    case ChangeKind.Added:
+                    case ChangeKind.Deleted:
+                        yield return GitBasedFileSystemSnapshot.GetPathForGitPath(treeChange.Path);                        
+                        break;                        
+
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
+
         /// <summary>
         /// Gets the first parent of the specified commit that is a snapshot or
         /// the initial commit of the repository if the specified commit is the first snapshot in the history
@@ -272,7 +393,6 @@ namespace SyncTool.Git.FileSystem.Versioning
                 currentCommit = currentCommit.Parents.Single();
             }
         }
-
 
         void AssertIsValidPathFilter(string[] pathFilter)
         {

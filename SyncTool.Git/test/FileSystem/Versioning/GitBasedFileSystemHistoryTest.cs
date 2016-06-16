@@ -592,9 +592,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Equal(3, m_Instance.GetChanges(snapshot.Id, null).ChangeLists.Count());
         }
 
-
-
-
+        
         [Fact]
         public void GetChanges_throws_FormatException_if_path_filter_contains_relative_paths()
         {
@@ -630,6 +628,303 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.True(m_Instance.GetChanges(snapshot.Id).ChangeLists.Single().Path.StartsWith("/"));
         }
 
+
+        #endregion
+
+
+        #region GetChangedFiles
+
+        [Fact]
+        public void GetChangedFiles_throws_a_SnapshotNotFoundException_is_the_Id_is_unknown()
+        {
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChangedFiles("someId", "someOtherId"));
+
+            var directory1 = new Directory(s_Dir1)
+            {
+                d => new EmptyFile(d, s_File1)
+            };
+
+            var directory2 = new Directory(s_Dir2)
+            {
+                d => new EmptyFile(d, s_File1)
+            };
+
+            var snapshot1 = m_Instance.CreateSnapshot(directory1);
+            var snapshot2 = m_Instance.CreateSnapshot(directory2);
+
+
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChangedFiles(snapshot1.Id, "someOtherId"));
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChangedFiles("someId", snapshot2.Id));
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChangedFiles("someId"));            
+        }
+
+        [Fact]
+        public void GetChangedFiles_detects_modification_of_files()
+        {
+            //ARRANGE
+            var state1 = new Directory(s_Dir1)
+            {
+                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
+            };
+            var state2 = new Directory(s_Dir1)
+            {
+                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-1) }
+            };
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            Assert.NotEqual(snapshot1.Id, snapshot2.Id);
+
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT            
+            Assert.Single(changedFiles);
+            Assert.Equal(state2.GetFile(s_File1).Path, changedFiles.Single());
+        }
+
+        [Fact]
+        public void GetChangedFiles_detects_additions_of_files()
+        {
+            //ARRANGE
+            var writeTime1 = DateTime.Now.AddDays(-2);
+            var state1 = new Directory(s_Dir1)
+            {
+                d => new EmptyFile(d, s_File1) { LastWriteTime = writeTime1 }
+            };
+            var state2 = new Directory(s_Dir1)
+            {
+                d => new EmptyFile(d, s_File1) {LastWriteTime = writeTime1 },
+                d => new EmptyFile(d, s_File2) {LastWriteTime = DateTime.Now }
+            };
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            Assert.NotEqual(snapshot1.Id, snapshot2.Id);
+
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot1.Id, snapshot2.Id);
+            
+            //ASSERT        
+            
+            Assert.Single(changedFiles);
+            Assert.Equal(state2.GetFile(s_File2).Path, changedFiles.Single());
+        }
+
+        [Fact]
+        public void GetChangedFiles_detects_deletions_of_files()
+        {
+            //ARRANGE
+            var state1 = new Directory(s_Dir1)
+            {
+                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
+            };
+            var state2 = new Directory(s_Dir1);
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+            
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT
+            
+            Assert.Single(changedFiles);            
+            Assert.Equal(state1.GetFile(s_File1).Path, changedFiles.Single());
+        }
+
+        [Fact]
+        public void GetChangedFiles_ignores_Additions_of_empty_directories()
+        {
+            //ARRANGE
+            var state1 = new Directory(s_Dir1);
+            var state2 = new Directory(s_Dir1)
+            {
+                dir1 => new Directory(dir1, s_Dir2)
+            };
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+            
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT
+            Assert.Empty(changedFiles);
+        }
+
+        [Fact]
+        public void GetChangedFiles_ignores_Deletions_of_empty_directories()
+        {
+            //ARRANGE
+            var state1 = new Directory(s_Dir1)
+            {
+                dir1 => new Directory(dir1, s_Dir2)
+            };
+
+            var state2 = new Directory(s_Dir1);
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+            
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT
+            Assert.Empty(changedFiles);
+        }
+
+        [Fact]
+        public void GetChangedFiles_ignores_Changes_outside_of_the_Snapshot_directory()
+        {
+            //ARRANGE
+            var state1 = new Directory(s_Dir1);
+            var state2 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1")
+            };
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+
+            // create unrelated change between two snapshots
+            using (var workingDirectory = new TemporaryWorkingDirectory(m_Repository.Info.Path, m_Instance.Id))
+            {
+                NativeFile.WriteAllText(Path.Combine(workingDirectory.Location, "foo"), "Hello World");
+                workingDirectory.Commit();
+                workingDirectory.Push();
+            }
+
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            Assert.NotEqual(snapshot1.Id, snapshot2.Id);
+
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT
+            Assert.Single(changedFiles);
+        }
+
+        [Fact]
+        public void GetChangedFiles_with_single_id_gets_all_changes_since_the_initial_commit()
+        {
+            //ARRANGE
+
+            var state2 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1")
+            };
+
+            var snapshot = m_Instance.CreateSnapshot(state2);
+
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot.Id);
+
+            //ASSERT
+            Assert.Single(changedFiles);            
+        }
+
+        [Fact]
+        public void GetChangedFiles_Multiple_changes_to_the_same_file()
+        {
+            //ARRANGE
+            var lastWriteTime = DateTime.Now;
+            var state1 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+            };
+            var state2 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
+            };
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot2.Id);
+
+            //ASSERT                    
+            Assert.Single(changedFiles);                        
+        }
+
+        [Fact]
+        public void GetChangedFiles_A_file_gets_added_modified_and_deleted()
+        {
+            //ARRANGE
+            var lastWriteTime = DateTime.Now;
+            var state1 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+            };
+            var state2 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
+            };
+            var state3 = new Directory(s_Dir1); // file1 deleted
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+            var snapshot3 = m_Instance.CreateSnapshot(state3);
+
+            //ACT        
+
+            var changedFiles = m_Instance.GetChangedFiles(snapshot3.Id);
+
+            //ASSERT            
+            Assert.Single(changedFiles);
+
+            // addition            
+        }
+
+        [Fact]
+        public void GetChangedFiles_A_file_gets_added_modified_and_deleted_between_snapshots()
+        {
+            //ARRANGE
+
+            var lastWriteTime = DateTime.Now;
+            var state0 = new Directory(s_Dir1);
+            var state1 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+            };
+            var state2 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
+            };
+            var state3 = new Directory(s_Dir1); // file1 deleted
+
+            var snapshot0 = m_Instance.CreateSnapshot(state0);
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+            var snapshot3 = m_Instance.CreateSnapshot(state3);
+
+            //ACT
+
+            var changedFiles = m_Instance.GetChangedFiles(snapshot0.Id, snapshot3.Id);
+
+
+            //ASSERT
+            Assert.Single(changedFiles);            
+        }
+
+        [Fact]
+        public void GetChangedFiles_ChangeList_Paths_are_rooted()
+        {
+            var state = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1")
+            };
+
+            var snapshot = m_Instance.CreateSnapshot(state);
+
+            var changedFiles = m_Instance.GetChangedFiles(snapshot.Id);
+
+            Assert.Single(changedFiles);
+            Assert.True(changedFiles.Single().StartsWith("/"));
+        }
 
         #endregion
 
