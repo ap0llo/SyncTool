@@ -47,6 +47,9 @@ namespace SyncTool.Cli.Commands
             {
                 using (group)
                 {
+                    OutputWriter.WriteLine($"SyncGroup '{group.Name}'");
+                    OutputWriter.WriteLine();
+
                     var configurationService = group.GetService<IConfigurationService>();
                     Print(configurationService);
                 }
@@ -57,10 +60,7 @@ namespace SyncTool.Cli.Commands
 
 
         void Print(IConfigurationService service)
-        {                       
-            OutputWriter.WriteLine($"SyncGroup '{service.Group.Name}'");
-            OutputWriter.WriteLine();
-
+        {   
             if (service.Items.Any())
             {
                 OutputWriter.WriteTable(
