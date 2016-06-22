@@ -3,9 +3,11 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.Configuration.Model;
+using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Configuration;
 using SyncTool.Git.FileSystem;
@@ -13,6 +15,7 @@ using SyncTool.Git.FileSystem.Versioning;
 using SyncTool.Git.Synchronization.Conflicts;
 using SyncTool.Git.Synchronization.State;
 using SyncTool.Git.Synchronization.SyncActions;
+using SyncTool.Synchronization.ChangeGraph;
 using SyncTool.Synchronization.Conflicts;
 using SyncTool.Synchronization.State;
 using SyncTool.Synchronization.SyncActions;
@@ -21,6 +24,7 @@ namespace SyncTool.Git.Common
 {
     public class GitBasedGroup : IGroup
     {
+        readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
         readonly IRepositoryPathProvider m_PathProvider;
         readonly IGitTransaction m_Transaction;
 
@@ -28,8 +32,12 @@ namespace SyncTool.Git.Common
 
         public Repository Repository { get; }
 
-        public GitBasedGroup(IRepositoryPathProvider pathProvider, string name, string repositoryPath)
+        public GitBasedGroup(IEqualityComparer<IFileReference> fileReferenceComparer, IRepositoryPathProvider pathProvider, string name, string repositoryPath)
         {
+            if (fileReferenceComparer == null)
+            {
+                throw new ArgumentNullException(nameof(fileReferenceComparer));
+            }
             if (pathProvider == null)
             {
                 throw new ArgumentNullException(nameof(pathProvider));
@@ -49,6 +57,7 @@ namespace SyncTool.Git.Common
                 throw new ArgumentNullException(nameof(repositoryPath));
             }
 
+            m_FileReferenceComparer = fileReferenceComparer;
             m_PathProvider = pathProvider;
             Name = name;
 
@@ -81,6 +90,10 @@ namespace SyncTool.Git.Common
             else if (typeof(T) == typeof(ISyncActionService))
             {
                 return (T)(object)new GitSyncActionService(this);
+            }
+            else if (typeof(T) == typeof(IChangeGraphService))
+            {
+                return (T)(object)new ChangeGraphService(m_FileReferenceComparer, GetService<IHistoryService>());
             }
             else
             {

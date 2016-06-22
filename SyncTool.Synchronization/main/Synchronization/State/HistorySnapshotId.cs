@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace SyncTool.Synchronization.State
 {
+    //TODO: There needs to be a better name for this class
     public sealed class HistorySnapshotId : IEquatable<HistorySnapshotId>
     {
         public string HistoryName { get; }

@@ -46,6 +46,8 @@
     <Compile Include="Synchronization\ChangeFilterFactory.cs" />
     <Compile Include="Synchronization\ChangeGraphBuilder.cs" />
     <Compile Include="Synchronization\ChangeGraph\AcyclicGraph.cs" />
+    <Compile Include="Synchronization\ChangeGraph\ChangeGraphService.cs" />
+    <Compile Include="Synchronization\ChangeGraph\IChangeGraphService.cs" />
     <Compile Include="Synchronization\ChangeGraph\IGraph.cs" />
     <Compile Include="Synchronization\ChangeGraph\Node.cs" />
     <Compile Include="Synchronization\ChangeGraph\StartNode.cs" />

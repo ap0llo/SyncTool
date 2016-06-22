@@ -13,6 +13,7 @@ using SyncTool.Common;
 
 namespace SyncTool.Synchronization
 {
+    [Obsolete]
     class ChangeGraphBuilder
     {
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
@@ -67,10 +68,9 @@ namespace SyncTool.Synchronization
         {            
             var graph = new Graph<IFileReference>(m_FileReferenceComparer);
 
-
             foreach (var folderName in diffsByFolderName.Keys)
             {
-                // add ToVersion and FromVersion for every change to the grap
+                // add ToVersion and FromVersion for every change to the graph
                 if (changeListsByFolderName.ContainsKey(folderName))
                 {
                     var changeList = changeListsByFolderName[folderName];
