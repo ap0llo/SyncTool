@@ -8,11 +8,13 @@ using System.Linq;
 using LibGit2Sharp;
 using Moq;
 using SyncTool.Common;
+using SyncTool.FileSystem;
 using SyncTool.Git.Configuration.Model;
 using SyncTool.Git.Configuration.Reader;
 using SyncTool.TestHelpers;
 using Xunit;
 using static SyncTool.Git.TestHelpers.GroupSettingsProviderMockingHelper;
+using Directory = System.IO.Directory;
 
 namespace SyncTool.Git.Common
 {

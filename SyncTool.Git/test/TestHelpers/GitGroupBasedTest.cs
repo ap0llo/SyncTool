@@ -3,9 +3,12 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.IO;
+using SyncTool.FileSystem;
 using SyncTool.Git.Common;
 using SyncTool.TestHelpers;
+using Directory = System.IO.Directory;
 
 namespace SyncTool.Git.TestHelpers
 {
@@ -31,7 +34,7 @@ namespace SyncTool.Git.TestHelpers
 
         protected GitBasedGroup CreateGroup()
         {
-            return new GitBasedGroup(m_PathProvider, "Irrelevant", m_RemotePath);
+            return new GitBasedGroup(EqualityComparer<IFileReference>.Default, m_PathProvider, "Irrelevant", m_RemotePath);
         }
 
     }

@@ -3,7 +3,9 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using Moq;
+using SyncTool.FileSystem;
 using SyncTool.Git.Common;
 using SyncTool.Git.FileSystem;
 using SyncTool.TestHelpers;
@@ -21,11 +23,11 @@ namespace SyncTool.Git.Common
         {
             var mock = new Mock<IRepositoryPathProvider>(MockBehavior.Strict);
 
-            Assert.Throws<ArgumentNullException>(() => new GitBasedGroup(mock.Object, null, m_TempDirectory.Location));
+            Assert.Throws<ArgumentNullException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,  mock.Object, null, m_TempDirectory.Location));
 
-            Assert.Throws<ArgumentException>(() => new GitBasedGroup(mock.Object, "", m_TempDirectory.Location));
-            Assert.Throws<ArgumentException>(() => new GitBasedGroup(mock.Object, "  ", m_TempDirectory.Location));
-            Assert.Throws<ArgumentException>(() => new GitBasedGroup(mock.Object, " \t ", m_TempDirectory.Location));
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,mock.Object, "", m_TempDirectory.Location));
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,mock.Object, "  ", m_TempDirectory.Location));
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default, mock.Object, " \t ", m_TempDirectory.Location));
         }
 
 

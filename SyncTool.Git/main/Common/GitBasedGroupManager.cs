@@ -8,6 +8,7 @@ using System.Linq;
 using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.Common.Utilities;
+using SyncTool.FileSystem;
 using SyncTool.Git.Configuration.Model;
 using SyncTool.Git.Configuration.Reader;
 using NativeDirectory = System.IO.Directory;
@@ -16,16 +17,26 @@ namespace SyncTool.Git.Common
 {
     public class GitBasedGroupManager : IGroupManager
     {
+        readonly IEqualityComparer<IFileReference> m_FileReferenceComparer; 
         readonly IDictionary<string, GroupSettings> m_GroupSettings;  
         readonly IRepositoryPathProvider m_PathProvider;
         readonly IGroupSettingsProvider m_SettingsProvider;
 
         public IEnumerable<string> Groups => m_GroupSettings.Keys;
-        
-        
-       
-        public GitBasedGroupManager(IRepositoryPathProvider pathProvider, IGroupSettingsProvider settingsProvider)
+
+        public GitBasedGroupManager(IRepositoryPathProvider pathProvider, IGroupSettingsProvider settingsProvider) 
+            : this(EqualityComparer<IFileReference>.Default, pathProvider, settingsProvider)
         {
+            
+        }
+
+
+        public GitBasedGroupManager(IEqualityComparer<IFileReference>  fileReferenceComparer, IRepositoryPathProvider pathProvider, IGroupSettingsProvider settingsProvider)
+        {
+            if (fileReferenceComparer == null)
+            {
+                throw new ArgumentNullException(nameof(fileReferenceComparer));
+            }
             if (pathProvider == null)
             {
                 throw new ArgumentNullException(nameof(pathProvider));
@@ -35,6 +46,7 @@ namespace SyncTool.Git.Common
                 throw new ArgumentNullException(nameof(settingsProvider));
             }
 
+            m_FileReferenceComparer = fileReferenceComparer;
             m_PathProvider = pathProvider;
             m_SettingsProvider = settingsProvider;
 
@@ -47,7 +59,7 @@ namespace SyncTool.Git.Common
         public IGroup GetGroup(string name)
         {
             EnsureGroupExists(name);            
-            return new GitBasedGroup(m_PathProvider, m_GroupSettings[name].Name, m_GroupSettings[name].Address);          
+            return new GitBasedGroup(m_FileReferenceComparer , m_PathProvider, m_GroupSettings[name].Name, m_GroupSettings[name].Address);          
         }
 
         public void AddGroup(string name, string address)
