@@ -24,6 +24,8 @@ namespace SyncTool.FileSystem.Versioning
         /// <returns>Returns a instance of <see cref="IFileSystemSnapshot"/> or null if there are not snapshots</returns>
         IFileSystemSnapshot LatestFileSystemSnapshot { get; } 
 
+        IFileSystemSnapshot this[string id] { get; }
+
         /// <summary>
         /// Gets all the snapshots from the filesystem history
         /// </summary>

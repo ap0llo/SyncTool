@@ -28,8 +28,27 @@ namespace SyncTool.Git.FileSystem.Versioning
         public string Name => m_BranchName.Name;
 
         public string Id => m_BranchName.ToString();
-
+        
         public IFileSystemSnapshot LatestFileSystemSnapshot => Snapshots.FirstOrDefault(snapshot => snapshot.Id == m_Repository.GetBranch(m_BranchName).Tip.Sha);
+
+        public IFileSystemSnapshot this[string id]
+        {
+            get
+            {
+                if(String.IsNullOrWhiteSpace(id))
+                    throw new ArgumentNullException(nameof(id));
+
+                if (m_Snapshots.Value.ContainsKey(id))
+                {
+                    return m_Snapshots.Value[id];
+                }
+                else
+                {
+                    throw new SnapshotNotFoundException(id);
+                }
+
+            }
+        }
 
         public IEnumerable<IFileSystemSnapshot> Snapshots => m_Snapshots.Value.Values;
 

@@ -631,7 +631,6 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         #endregion
 
-
         #region GetChangedFiles
 
         [Fact]
@@ -924,6 +923,53 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Assert.Single(changedFiles);
             Assert.True(changedFiles.Single().StartsWith("/"));
+        }
+
+        #endregion
+
+        #region Indexer
+
+        [Fact]
+        public void Indexer_throws_SnapshotNotFoundException_for_unknown_snapshot_id()
+        {
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance["SomeId"]);
+        }
+
+        [Fact]
+        public void Indexer_throws_ArgumentNullException_if_snapshot_id_is_null_or_empty()
+        {
+            Assert.Throws<ArgumentNullException>(() => m_Instance[null]);
+            Assert.Throws<ArgumentNullException>(() => m_Instance[""]);
+            Assert.Throws<ArgumentNullException>(() => m_Instance[" "]);
+            Assert.Throws<ArgumentNullException>(() => m_Instance["\t"]);
+        }
+
+
+        [Fact]
+        public void Indexer_returns_expected_snapshot()
+        {
+            var directory1 = new Directory(s_Dir1)
+            {
+                d => new EmptyFile(d, s_File1)
+            };
+
+            var directory2 = new Directory(s_Dir2)
+            {
+                d => new EmptyFile(d, s_File2)
+            };
+
+            var snapshot1 = m_Instance.CreateSnapshot(directory1);
+            var snapshot2 = m_Instance.CreateSnapshot(directory2);
+
+            Assert.Equal(snapshot1, m_Instance[snapshot1.Id]);
+            Assert.Equal(snapshot2, m_Instance[snapshot2.Id]);
+
+            // snapshot ids are case-invariant
+            Assert.Equal(snapshot1, m_Instance[snapshot1.Id.ToLower()]);
+            Assert.Equal(snapshot2, m_Instance[snapshot2.Id.ToLower()]);
+
+            Assert.Equal(snapshot1, m_Instance[snapshot1.Id.ToUpper()]);
+            Assert.Equal(snapshot2, m_Instance[snapshot2.Id.ToUpper()]);
         }
 
         #endregion
