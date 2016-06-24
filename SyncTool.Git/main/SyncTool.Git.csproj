@@ -81,6 +81,8 @@
     <Compile Include="FileSystem\Versioning\GitBasedFileSystemHistory.cs" />
     <Compile Include="FileSystem\Versioning\GitBasedFileSystemSnapshot.cs" />
     <Compile Include="FileSystem\Versioning\GitBasedHistoryService.cs" />
+    <Compile Include="FileSystem\Versioning\GitBasedMultiFileSystemSnapshot.cs" />
+    <Compile Include="FileSystem\Versioning\GitBasedMultiFileSystemHistoryService.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\DirectoryProperties.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\DirectoryPropertiesFile.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\FileProperties.cs" />

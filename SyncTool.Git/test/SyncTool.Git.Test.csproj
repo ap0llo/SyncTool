@@ -107,6 +107,8 @@
     <Compile Include="FileSystem\Versioning\GitBasedFileSystemSnapshotTest.cs" />
     <Compile Include="Common\GitBasedGroupManagerTest.cs" />
     <Compile Include="FileSystem\Versioning\GitBasedHistoryServiceTest.cs" />
+    <Compile Include="FileSystem\Versioning\GitBasedMultiFileSystemHistoryServiceTest.cs" />
+    <Compile Include="FileSystem\Versioning\GitBasedMultiFileSystemSnapshotTest.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\DirectoryPropertiesFileTest.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\DirectoryPropertiesTest.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\FilePropertiesFileTest.cs" />
