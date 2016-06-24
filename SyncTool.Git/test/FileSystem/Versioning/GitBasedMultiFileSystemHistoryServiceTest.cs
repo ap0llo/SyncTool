@@ -3,6 +3,7 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Linq;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
@@ -35,14 +36,12 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Null(m_Instance.LatestSnapshot);
         }
 
-
         [Fact]
         public void Snapshots_is_empty_for_empty_repository()
         {
             Assert.NotNull(m_Instance.Snapshots);
             Assert.Empty(m_Instance.Snapshots);
         }
-
 
         [Fact]
         public void CreateSnapshot_does_not_create_a_snapshot_if_no_histories_exist()
@@ -70,7 +69,6 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.True(m_Instance.LatestSnapshot.HistoyNames.Contains("history2"));
             Assert.True(m_Instance.LatestSnapshot.HistoyNames.Contains("history2"));
         }
-
 
         [Fact]
         public void Getting_a_filesystem_snapshot_from_a_snapshot_created_for_an_empty_history_returns_null()
@@ -105,6 +103,41 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Equal(createdSnapshot.Id, fileSystemSnapshot.Id);
             Assert.Equal(createdSnapshot.CreationTime, fileSystemSnapshot.CreationTime);
             FileSystemAssert.DirectoryEqual(createdSnapshot.RootDirectory, fileSystemSnapshot.RootDirectory);
+        }
+
+
+        [Fact]
+        public void Indexer_throws_ArgumentNullException_if_snapshot_id_is_null_or_empty()
+        {
+            Assert.Throws<ArgumentNullException>(() => m_Instance[null]);
+            Assert.Throws<ArgumentNullException>(() => m_Instance[""]);
+            Assert.Throws<ArgumentNullException>(() => m_Instance[" "]);
+            Assert.Throws<ArgumentNullException>(() => m_Instance["\t"]);
+        }
+
+        [Fact]
+        public void Indexer_throws_SnapshotNotFoundException_for_unknown_snapshot_id()
+        {
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance["SomeId"]);
+        }
+
+        [Fact]
+        public void Indexer_returns_expected_snapshots()
+        {
+            // ARRANGE
+            m_HistoryService.CreateHistory("history1");
+            m_HistoryService.CreateHistory("history2");
+
+            var expectedSnapshot = m_Instance.CreateSnapshot();
+
+            //ACT
+            var actualSnapshot = m_Instance[expectedSnapshot.Id];
+
+
+            //ASSERT
+            Assert.NotNull(actualSnapshot);
+            Assert.Equal(expectedSnapshot.Id, actualSnapshot.Id);
+            Assert.True(actualSnapshot.HistoyNames.SequenceEqual(expectedSnapshot.HistoyNames));
         }
 
         public override void Dispose()

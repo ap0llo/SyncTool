@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LibGit2Sharp;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
@@ -15,8 +16,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 {
     public class GitBasedMultiFileSystemHistoryService : GitBasedService, IMultiFileSystemHistoryService
     {
-        internal static readonly BranchName BranchName = new BranchName("MultiFileSystemSnapshots");
-        
+        internal static readonly BranchName BranchName = new BranchName("MultiFileSystemSnapshots");        
         readonly IHistoryService m_HistoryService;
 
         public GitBasedMultiFileSystemHistoryService(GitBasedGroup group, IHistoryService historyService) : base(group)
@@ -26,6 +26,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             
             m_HistoryService = historyService;
         }
+
 
         public IMultiFileSystemSnapshot LatestSnapshot
         {
@@ -37,6 +38,25 @@ namespace SyncTool.Git.FileSystem.Versioning
                 }
                 var tip = GitGroup.Repository.GetLocalBranch(BranchName).Tip;
                 return Snapshots.FirstOrDefault(snapshot => snapshot.Id == tip.Sha);
+            }
+        }
+
+        public IMultiFileSystemSnapshot this[string id]
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(id))
+                    throw new ArgumentNullException(nameof(id));
+
+                var commit = GitGroup.Repository.Lookup<Commit>(id);
+                if (commit == null || !GitBasedMultiFileSystemSnapshot.IsSnapshot(commit))
+                {
+                    throw new SnapshotNotFoundException(id);
+                }
+                else
+                {
+                    return new GitBasedMultiFileSystemSnapshot(commit, m_HistoryService);
+                }
             }
         }
 

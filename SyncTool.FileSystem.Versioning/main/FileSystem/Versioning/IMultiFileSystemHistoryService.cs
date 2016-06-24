@@ -14,6 +14,9 @@ namespace SyncTool.FileSystem.Versioning
     
         IEnumerable<IMultiFileSystemSnapshot> Snapshots { get; }
 
+        IMultiFileSystemSnapshot this[string id] { get; }
+
         IMultiFileSystemSnapshot CreateSnapshot();
+        
     }
 }
