@@ -48,15 +48,7 @@ namespace SyncTool.Git.FileSystem.Versioning
                 if (String.IsNullOrWhiteSpace(id))
                     throw new ArgumentNullException(nameof(id));
 
-                var commit = GitGroup.Repository.Lookup<Commit>(id);
-                if (commit == null || !GitBasedMultiFileSystemSnapshot.IsSnapshot(commit))
-                {
-                    throw new SnapshotNotFoundException(id);
-                }
-                else
-                {
-                    return new GitBasedMultiFileSystemSnapshot(commit, m_HistoryService);
-                }
+                return GetSnapshot(id);
             }
         }
 
@@ -85,11 +77,75 @@ namespace SyncTool.Git.FileSystem.Versioning
             return GitBasedMultiFileSystemSnapshot.Create(GitGroup.Repository, BranchName, m_HistoryService);
         }
 
-
-
-        IMultiFileSystemSnapshot LoadSnapshot(IDirectory directory)
+        public string[] GetChangedFiles(string to)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrWhiteSpace(to))
+                throw new ArgumentNullException(nameof(to));
+
+            var result = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
+            var snapshot = GetSnapshot(to);
+            foreach (var histoyName in snapshot.HistoyNames)
+            {
+                var history = m_HistoryService[histoyName];
+                var snapshotId = snapshot.GetSnapshotId(histoyName);
+                var changedFiles = history.GetChangedFiles(snapshotId);
+
+                foreach (var filePath in changedFiles)
+                {
+                    result.Add(filePath);
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        public string[] GetChangedFiles(string from, string to)
+        {
+            if (String.IsNullOrWhiteSpace(from))
+                throw new ArgumentNullException(nameof(to));
+
+            if (String.IsNullOrWhiteSpace(to))
+                throw new ArgumentNullException(nameof(to));
+
+
+
+            var result = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
+            var fromSnapshot = GetSnapshot(from);
+            var toSnapshot = GetSnapshot(to);
+
+            foreach (var histoyName in fromSnapshot.HistoyNames)
+            {
+                var history = m_HistoryService[histoyName];                
+
+                var changedFiles = history.GetChangedFiles(
+                        fromSnapshot.GetSnapshotId(histoyName), 
+                        toSnapshot.GetSnapshotId(histoyName)
+                    );
+
+                foreach (var filePath in changedFiles)
+                {
+                    result.Add(filePath);
+                }
+            }
+
+            return result.ToArray();
+        }
+
+
+        IMultiFileSystemSnapshot GetSnapshot(string id)
+        {
+            
+            var commit = GitGroup.Repository.Lookup<Commit>(id);
+            if (commit == null || !GitBasedMultiFileSystemSnapshot.IsSnapshot(commit))
+            {
+                throw new SnapshotNotFoundException(id);
+            }
+            else
+            {
+                return new GitBasedMultiFileSystemSnapshot(commit, m_HistoryService);
+            }
         }
     }
 }

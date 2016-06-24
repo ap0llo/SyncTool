@@ -17,6 +17,10 @@ namespace SyncTool.FileSystem.Versioning
         IMultiFileSystemSnapshot this[string id] { get; }
 
         IMultiFileSystemSnapshot CreateSnapshot();
-        
+
+        string[] GetChangedFiles(string to);
+
+        string[] GetChangedFiles(string from, string to);
+
     }
 }

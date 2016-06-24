@@ -29,14 +29,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         public string Id => m_Commit.Sha;
 
         public IEnumerable<string> HistoyNames => m_SnapshotIds.Value.Keys;
-
-        public IFileSystemSnapshot GetSnapshot(string historyName)
-        {
-            var snapshotId = m_SnapshotIds.Value[historyName];            
-            return snapshotId == null ? null : m_HistoryService[historyName][snapshotId];
-        }
-
-
+        
 
         public GitBasedMultiFileSystemSnapshot(Commit commit, IHistoryService historyService)
         {
@@ -52,9 +45,17 @@ namespace SyncTool.Git.FileSystem.Versioning
             m_Commit = commit;
             m_HistoryService = historyService;
             m_SnapshotIds = new Lazy<IDictionary<string, string>>(LoadSnapshotIds);
-        }        
+        }
+    
+
+        public IFileSystemSnapshot GetSnapshot(string historyName)
+        {
+            var snapshotId = m_SnapshotIds.Value[historyName];
+            return snapshotId == null ? null : m_HistoryService[historyName][snapshotId];
+        }
 
         public string GetSnapshotId(string historyName) => m_SnapshotIds.Value[historyName];
+
 
         public static bool IsSnapshot(Commit commit) => commit.Tree[s_SnapshotDirectoryName] != null;
 
@@ -106,6 +107,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             var commit = repository.Lookup<Commit>(commitId);
             return IsSnapshot(commit) ? new GitBasedMultiFileSystemSnapshot(commit, historyService) : null;
         }
+
 
         IDictionary<string, string> LoadSnapshotIds()
         {

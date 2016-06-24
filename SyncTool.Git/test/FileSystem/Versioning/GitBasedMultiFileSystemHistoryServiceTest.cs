@@ -140,6 +140,99 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.True(actualSnapshot.HistoyNames.SequenceEqual(expectedSnapshot.HistoyNames));
         }
 
+
+        [Fact]
+        public void GetChangedFiles_returns_expected_result_1()
+        {
+            // ARRANGE
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "history1");
+                historyBuilder.AddFile("file1");
+                historyBuilder.AddFile("file2");
+                historyBuilder.CreateSnapshot();
+            }
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "history2");
+                historyBuilder.AddFile("file1");                
+                historyBuilder.CreateSnapshot();
+            }
+
+            var snapshot = m_Instance.CreateSnapshot();
+
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot.Id);
+
+            //ASSERT
+            var expected = new[] {"/file1", "/file2"};
+            Assert.Empty(changedFiles.Except(expected));
+            Assert.Empty(expected.Except(changedFiles));
+        }
+
+
+        [Fact]
+        public void GetChangedFiles_returns_expected_result_2()
+        {
+            // ARRANGE
+            
+            var historyBuilder1 = new HistoryBuilder(m_Group, "history1");
+            historyBuilder1.AddFile("file1");
+            historyBuilder1.AddFile("file2");
+            historyBuilder1.CreateSnapshot();
+                        
+            var historyBuilder2 = new HistoryBuilder(m_Group, "history2");
+            historyBuilder2.AddFile("file1");
+            historyBuilder2.CreateSnapshot();
+            
+            var snapshot1 = m_Instance.CreateSnapshot();
+
+            historyBuilder1.AddFile("file3");
+            historyBuilder1.CreateSnapshot();
+
+            historyBuilder2.AddFile("file4");
+            historyBuilder2.CreateSnapshot();
+
+            var snapshot2 = m_Instance.CreateSnapshot();
+
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT
+            var expected = new[] { "/file3", "/file4" };
+            Assert.Empty(changedFiles.Except(expected));
+            Assert.Empty(expected.Except(changedFiles));
+        }
+
+
+
+        [Fact]
+        public void GetChangedFiles_returns_expected_result_4()
+        {
+            // ARRANGE
+            var historyBuilder1 = new HistoryBuilder(m_Group, "history1");
+            historyBuilder1.AddFile("file1");
+            historyBuilder1.AddFile("file2");
+            historyBuilder1.CreateSnapshot();
+
+            var historyBuilder2 = new HistoryBuilder(m_Group, "history2");
+            historyBuilder2.AddFile("file1");
+            historyBuilder2.CreateSnapshot();
+
+            var snapshot1 = m_Instance.CreateSnapshot();
+
+            historyBuilder1.AddFile("file3");
+            historyBuilder1.CreateSnapshot();
+            
+            var snapshot2 = m_Instance.CreateSnapshot();
+
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT
+            var expected = new[] { "/file3" };
+            Assert.Empty(changedFiles.Except(expected));
+            Assert.Empty(expected.Except(changedFiles));
+        }
+
         public override void Dispose()
         {
             m_Group.Dispose();
