@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------------
-//  Copyright (c) 2015, Andreas Grünwald
+//  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System;
@@ -9,14 +9,13 @@ namespace SyncTool.TestHelpers
 {
     public abstract class DirectoryBasedTest : IDisposable
     {
-
-        readonly LocalItemCreator m_DirectoryCreator = new LocalItemCreator();
+        protected readonly LocalItemCreator m_LocalItemCreator = new LocalItemCreator();
         protected readonly DisposableLocalDirectoryWrapper m_TempDirectory;
 
 
         protected DirectoryBasedTest()
         {
-            m_TempDirectory = m_DirectoryCreator.CreateTemporaryDirectory();
+            m_TempDirectory = m_LocalItemCreator.CreateTemporaryDirectory();
         }
         
         public virtual void Dispose()

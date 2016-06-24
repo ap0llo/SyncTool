@@ -53,6 +53,7 @@
     <Compile Include="FileSystem\Local\LocalItemCreatorTest.cs" />
     <Compile Include="FileSystem\Local\LocalDirectoryTest.cs" />
     <Compile Include="FileSystem\PathParserTest.cs" />
+    <Compile Include="FileSystem\TextFileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHelpers\DirectoryBasedTest.cs" />
     <Compile Include="TestHelpers\FileSystemAssert.cs" />
