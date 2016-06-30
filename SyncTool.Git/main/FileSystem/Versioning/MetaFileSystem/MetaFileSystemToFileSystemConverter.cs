@@ -69,14 +69,12 @@ namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
         IFile Convert(IDirectory newParent, DirectoryPropertiesFile file)
         {          
             // remove file from result
-            //mapping.AddMapping(file, null);
             return null;
         }
 
-        IFile Convert(IDirectory newParent, IFile file, FileSystemMapping mapping)
+        IFile Convert(IDirectory newParent, IFile file)
         {
             // ignore file instances that are not instances of FilePropertiesFile or DirectoryPropertiesFile
-            //mapping.AddMapping(file, null);
             return null;
         }
 

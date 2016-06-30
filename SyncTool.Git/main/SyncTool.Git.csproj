@@ -60,12 +60,10 @@
     <Compile Include="DI\GitModule.cs" />
     <Compile Include="FileSystem\ConflictInfoFile.cs" />
     <Compile Include="FileSystem\DirectoryHelper.cs" />
-    <Compile Include="FileSystem\FileSystemMapping.cs" />
     <Compile Include="Common\GitBasedGroup.cs" />
     <Compile Include="Common\GitBasedGroupManager.cs" />
     <Compile Include="FileSystem\GitDirectory.cs" />
     <Compile Include="FileSystem\GitFile.cs" />
-    <Compile Include="FileSystem\IFileSystemMapping.cs" />
     <Compile Include="Common\IRepositoryPathProvider.cs" />
     <Compile Include="Common\SingleDirectoryRepositoryPathProvider.cs" />
     <Compile Include="FileSystem\SyncPointStateFile.cs" />
