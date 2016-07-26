@@ -15,6 +15,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -24,7 +25,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileSystem\Versioning\IExtendedChange.cs" />
     <Compile Include="FileSystem\Versioning\Change.cs" />
     <Compile Include="FileSystem\Versioning\ChangeList.cs" />
     <Compile Include="FileSystem\Versioning\ChangeType.cs" />
@@ -37,10 +37,10 @@
     <Compile Include="FileSystem\Versioning\IFileSystemSnapshot.cs" />
     <Compile Include="FileSystem\Versioning\IHistoryService.cs" />
     <Compile Include="FileSystem\Versioning\FileSystemHistoryExtensions.cs" />
-    <Compile Include="FileSystem\Versioning\IMultiFileSystemChangeList.cs" />
     <Compile Include="FileSystem\Versioning\IMultiFileSystemDiff.cs" />
     <Compile Include="FileSystem\Versioning\IMultiFileSystemSnapshot.cs" />
     <Compile Include="FileSystem\Versioning\IMultiFileSystemHistoryService.cs" />
+    <Compile Include="FileSystem\Versioning\MultiFileSystemDiff.cs" />
     <Compile Include="FileSystem\Versioning\_Exceptions\DuplicateFileSystemHistoryException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FileSystem\Versioning\_Exceptions\SnapshotNotFoundException.cs" />

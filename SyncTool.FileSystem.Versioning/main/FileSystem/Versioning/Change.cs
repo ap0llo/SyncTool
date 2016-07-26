@@ -3,6 +3,7 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 
 namespace SyncTool.FileSystem.Versioning
 {
@@ -10,17 +11,7 @@ namespace SyncTool.FileSystem.Versioning
     /// Default, immutable implementation of <see cref="IChange"/>
     /// </summary>
     public class Change : IChange
-    {                
-        public Change(ChangeType type, IFileReference fromFile, IFileReference toFile)
-        {
-            AssertIsValidChange(type, fromFile, toFile);
-            AssertPathsAreEqual(fromFile, toFile);
-
-            Type = type;
-            FromVersion = fromFile;
-            ToVersion = toFile;            
-        }
-
+    {         
         public string Path => FromVersion?.Path ?? ToVersion.Path;
 
         public ChangeType Type { get; }
@@ -28,6 +19,43 @@ namespace SyncTool.FileSystem.Versioning
         public IFileReference FromVersion { get; }
 
         public IFileReference ToVersion { get; }
+
+
+        public Change(ChangeType type, IFileReference fromFile, IFileReference toFile)
+        {
+            AssertIsValidChange(type, fromFile, toFile);
+            AssertPathsAreEqual(fromFile, toFile);
+
+            Type = type;
+            FromVersion = fromFile;
+            ToVersion = toFile;
+        }
+
+
+        public bool Equals(IChange other)
+        {
+            if (other == null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
+            return StringComparer.InvariantCultureIgnoreCase.Equals(Path, other.Path) &&
+                   Type == other.Type &&
+                   EqualityComparer<IFileReference>.Default.Equals(FromVersion, other.FromVersion) &&
+                   EqualityComparer<IFileReference>.Default.Equals(ToVersion, other.ToVersion);
+        }
+
+        public override bool Equals(object obj) => Equals(obj as IChange);
+
+        public override int GetHashCode()
+        {
+            return StringComparer.InvariantCultureIgnoreCase.GetHashCode(Path) |
+                   Type.GetHashCode() |
+                   (FromVersion?.GetHashCode() ?? 0) |
+                   (ToVersion?.GetHashCode() ?? 0);
+        }
+
 
         void AssertIsValidChange(ChangeType type, IFileReference fromFile, IFileReference toFile)
         {
@@ -95,5 +123,7 @@ namespace SyncTool.FileSystem.Versioning
                 throw new ArgumentException($"Path differs between {nameof(fromFile)} and {nameof(toFile)}");
             }
         }
+
+        
     }
 }

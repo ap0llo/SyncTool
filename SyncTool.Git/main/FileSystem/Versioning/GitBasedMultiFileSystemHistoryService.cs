@@ -108,6 +108,8 @@ namespace SyncTool.Git.FileSystem.Versioning
             var fromSnapshot = GetSnapshot(from);
             var toSnapshot = GetSnapshot(to);
 
+            //TODO: check that fromId is an ancestor of toId
+
             var result = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
             
             foreach (var histoyName in toSnapshot.HistoyNames)
@@ -143,8 +145,21 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             if(String.IsNullOrWhiteSpace(toId))
                 throw new ArgumentNullException(nameof(toId));
-            
-            throw new NotImplementedException();
+
+            var snapshot = GetSnapshot(toId);
+
+            // get all change lists from all histories
+            var allChangeLists = snapshot.HistoyNames
+                .Select(name => m_HistoryService[name].GetChanges(snapshot.GetSnapshotId(name)))
+                .SelectMany(diff => diff.ChangeLists);
+                            
+            // group lists by path, flatten the the list and create new changelists
+            var combinedChangeLists = allChangeLists                
+                .GroupBy(changeList => changeList.Path, StringComparer.InvariantCultureIgnoreCase)                
+                .Select(group => group.SelectMany(changeList => changeList.Changes).Distinct())
+                .Select(group => new ChangeList(group));
+                          
+            return new MultiFileSystemDiff(snapshot, combinedChangeLists);
         }
 
         public IMultiFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null)
@@ -154,6 +169,11 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             if (String.IsNullOrWhiteSpace(toId))
                 throw new ArgumentNullException(nameof(toId));
+
+            //TODO: check that fromId is an ancestor of toId
+
+            var fromSnapshot = GetSnapshot(fromId);
+            var toSnapshot = GetSnapshot(toId);
 
             throw new NotImplementedException();
         }

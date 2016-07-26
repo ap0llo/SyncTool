@@ -140,6 +140,35 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.True(actualSnapshot.HistoyNames.SequenceEqual(expectedSnapshot.HistoyNames));
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("\t")]
+        public void GetChangedFiles_throws_ArgumentNullException(string invalidId)
+        {
+            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChangedFiles(invalidId));
+            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChangedFiles("Irrelevant", invalidId));
+            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChangedFiles(invalidId, "Irrelevant"));
+        }
+
+
+        [Fact]
+        public void GetChangedFiles_throws_SnapshotNotFoundException()
+        {
+            //  ARRANGE
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "history1");
+                historyBuilder.AddFile("file1");
+                historyBuilder.CreateSnapshot();
+            }
+            var snapshot = m_Instance.CreateSnapshot();
+
+            //ASSERT
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChangedFiles("UnknownId"));
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChangedFiles("UnknownId", snapshot.Id));
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChangedFiles(snapshot.Id, "UnknownId"));
+        }
 
         [Fact]
         public void GetChangedFiles_returns_expected_result_1()
@@ -262,24 +291,63 @@ namespace SyncTool.Git.FileSystem.Versioning
         [InlineData("")]
         [InlineData(" ")]
         [InlineData("\t")]
-        public void GetChangedFiles_throws_ArgumentNullException(string invalidId)
-        {
-            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChangedFiles(invalidId));
-            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChangedFiles("Irrelevant", invalidId));
-            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChangedFiles(invalidId, "Irrelevant"));            
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData("\t")]
         public void GetChanges_throws_ArgumentNullException(string invalidId)
         {
             Assert.Throws<ArgumentNullException>(() => m_Instance.GetChanges(invalidId));
             Assert.Throws<ArgumentNullException>(() => m_Instance.GetChanges("Irrelevant", invalidId));
             Assert.Throws<ArgumentNullException>(() => m_Instance.GetChanges(invalidId, "Irrelevant"));
         }
+
+        [Fact]
+        public void GetChanges_throws_SnapshotNotFoundException()
+        {
+            //  ARRANGE
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "history1");
+                historyBuilder.AddFile("file1");
+                historyBuilder.CreateSnapshot();
+            }
+            var snapshot = m_Instance.CreateSnapshot();
+
+            //ASSERT
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges("UnknownId"));
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges("UnknownId", snapshot.Id));
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges(snapshot.Id, "UnknownId"));
+        }
+
+        [Fact]
+        public void GetChanges_returns_expected_result_1()
+        {
+            // ARRANGE
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "history1");
+                historyBuilder.AddFile("file1");
+                historyBuilder.AddFile("file2");
+                historyBuilder.CreateSnapshot();
+            }
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "history2");
+                historyBuilder.AddFile("file3");
+                historyBuilder.CreateSnapshot();
+            }
+
+            var snapshot = m_Instance.CreateSnapshot();
+
+            //ACT
+            var diff = m_Instance.GetChanges(snapshot.Id);
+            
+            //ASSERT
+            Assert.Null(diff.FromSnapshot);
+            Assert.NotNull(diff.ToSnapshot);
+  
+            Assert.NotNull(diff.ChangeLists);
+            Assert.Equal(3, diff.ChangeLists.Count());
+            Assert.True(diff.ChangeLists.All(cl => cl.Changes.Count() == 1));            
+        }
+
+
+        //TODO: GetChanges_combines_identical_changes_from_different_histories
+
 
         public override void Dispose()
         {

@@ -7,7 +7,7 @@ using System;
 
 namespace SyncTool.FileSystem.Versioning
 {
-    public interface IChange
+    public interface IChange : IEquatable<IChange>
     {
         /// <summary>
         /// The path of the file that was changed
