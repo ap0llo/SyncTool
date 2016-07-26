@@ -83,7 +83,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             var result = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
             var snapshot = GetSnapshot(to);
-            foreach (var histoyName in snapshot.HistoyNames)
+            foreach (var histoyName in snapshot.HistoryNames)
             {
                 var history = m_HistoryService[histoyName];                
                 var changedFiles = history.GetChangedFiles(snapshot.GetSnapshotId(histoyName));
@@ -112,14 +112,14 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             var result = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
             
-            foreach (var histoyName in toSnapshot.HistoyNames)
+            foreach (var histoyName in toSnapshot.HistoryNames)
             {
                 var history = m_HistoryService[histoyName];
 
                 string[] changedFiles;
                 // if the history already existed at the time of fromSnapshot, 
                 // only get the changes between the snapshots                
-                if (fromSnapshot.HistoyNames.Contains(histoyName))
+                if (fromSnapshot.HistoryNames.Contains(histoyName))
                 {
                     changedFiles = history.GetChangedFiles(
                         fromSnapshot.GetSnapshotId(histoyName), 
@@ -149,7 +149,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             var snapshot = GetSnapshot(toId);
 
             // get all change lists from all histories
-            var allChangeLists = snapshot.HistoyNames
+            var allChangeLists = snapshot.HistoryNames
                 .Select(name => m_HistoryService[name].GetChanges(snapshot.GetSnapshotId(name)))
                 .SelectMany(diff => diff.ChangeLists);
                             

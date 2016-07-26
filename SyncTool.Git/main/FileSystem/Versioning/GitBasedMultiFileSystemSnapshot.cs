@@ -28,7 +28,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         public string Id => m_Commit.Sha;
 
-        public IEnumerable<string> HistoyNames => m_SnapshotIds.Value.Keys;
+        public IEnumerable<string> HistoryNames => m_SnapshotIds.Value.Keys;
         
 
         public GitBasedMultiFileSystemSnapshot(Commit commit, IHistoryService historyService)

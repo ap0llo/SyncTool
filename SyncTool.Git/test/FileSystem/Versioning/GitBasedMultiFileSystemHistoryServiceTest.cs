@@ -65,9 +65,9 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.NotNull(m_Instance.LatestSnapshot);
             Assert.Single(m_Instance.Snapshots);
 
-            Assert.Equal(2, m_Instance.LatestSnapshot.HistoyNames.Count());
-            Assert.True(m_Instance.LatestSnapshot.HistoyNames.Contains("history2"));
-            Assert.True(m_Instance.LatestSnapshot.HistoyNames.Contains("history2"));
+            Assert.Equal(2, m_Instance.LatestSnapshot.HistoryNames.Count());
+            Assert.True(m_Instance.LatestSnapshot.HistoryNames.Contains("history2"));
+            Assert.True(m_Instance.LatestSnapshot.HistoryNames.Contains("history2"));
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             //ASSERT
             Assert.NotNull(actualSnapshot);
             Assert.Equal(expectedSnapshot.Id, actualSnapshot.Id);
-            Assert.True(actualSnapshot.HistoyNames.SequenceEqual(expectedSnapshot.HistoyNames));
+            Assert.True(actualSnapshot.HistoryNames.SequenceEqual(expectedSnapshot.HistoryNames));
         }
 
         [Theory]

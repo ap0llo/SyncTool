@@ -11,7 +11,7 @@ namespace SyncTool.FileSystem.Versioning
     {
         string Id { get; }
 
-        IEnumerable<string> HistoyNames { get; }
+        IEnumerable<string> HistoryNames { get; }
 
         IFileSystemSnapshot GetSnapshot(string historyName);
 
