@@ -230,7 +230,32 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Empty(expected.Except(changedFiles));
         }
 
-        //TODO: GetChangedFiles_can_handle_histories_added_between_snapshots
+        [Fact]
+        public void GetChangedFiles_can_handle_histories_added_between_snapshots()
+        {
+            // ARRANGE
+            var historyBuilder1 = new HistoryBuilder(m_Group, "history1");
+            historyBuilder1.AddFile("file1");
+            historyBuilder1.CreateSnapshot();
+
+            var snapshot1 = m_Instance.CreateSnapshot();
+
+            var historyBuilder2 = new HistoryBuilder(m_Group, "history2");
+            historyBuilder2.AddFile("file2");
+            historyBuilder2.CreateSnapshot();
+            
+            var snapshot2 = m_Instance.CreateSnapshot();
+
+            //ACT
+            var changedFiles = m_Instance.GetChangedFiles(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT
+            var expected = new[] { "/file2" };
+            Assert.Empty(changedFiles.Except(expected));
+            Assert.Empty(expected.Except(changedFiles));
+        }
+
+        //TODO: GetChangedFiles_can_handle_histories_removed_between_snapshots
 
         [Theory]
         [InlineData(null)]

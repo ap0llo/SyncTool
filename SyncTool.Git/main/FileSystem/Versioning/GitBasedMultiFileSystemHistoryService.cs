@@ -7,10 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LibGit2Sharp;
-using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
-using SyncTool.Synchronization.SyncActions;
 
 namespace SyncTool.Git.FileSystem.Versioning
 {
@@ -87,9 +85,8 @@ namespace SyncTool.Git.FileSystem.Versioning
             var snapshot = GetSnapshot(to);
             foreach (var histoyName in snapshot.HistoyNames)
             {
-                var history = m_HistoryService[histoyName];
-                var snapshotId = snapshot.GetSnapshotId(histoyName);
-                var changedFiles = history.GetChangedFiles(snapshotId);
+                var history = m_HistoryService[histoyName];                
+                var changedFiles = history.GetChangedFiles(snapshot.GetSnapshotId(histoyName));
 
                 foreach (var filePath in changedFiles)
                 {
@@ -112,15 +109,26 @@ namespace SyncTool.Git.FileSystem.Versioning
             var toSnapshot = GetSnapshot(to);
 
             var result = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-
-            foreach (var histoyName in fromSnapshot.HistoyNames)
+            
+            foreach (var histoyName in toSnapshot.HistoyNames)
             {
-                var history = m_HistoryService[histoyName];                
+                var history = m_HistoryService[histoyName];
 
-                var changedFiles = history.GetChangedFiles(
+                string[] changedFiles;
+                // if the history already existed at the time of fromSnapshot, 
+                // only get the changes between the snapshots                
+                if (fromSnapshot.HistoyNames.Contains(histoyName))
+                {
+                    changedFiles = history.GetChangedFiles(
                         fromSnapshot.GetSnapshotId(histoyName), 
-                        toSnapshot.GetSnapshotId(histoyName)
-                    );
+                        toSnapshot.GetSnapshotId(histoyName));
+                }
+                // if the current history did not exist at the time of fromSnapshot, 
+                // get all changes for the current history
+                else
+                {
+                    changedFiles = history.GetChangedFiles(toSnapshot.GetSnapshotId(histoyName));
+                }
 
                 foreach (var filePath in changedFiles)
                 {
