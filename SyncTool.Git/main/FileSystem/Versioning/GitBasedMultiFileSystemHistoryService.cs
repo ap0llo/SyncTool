@@ -103,17 +103,15 @@ namespace SyncTool.Git.FileSystem.Versioning
         public string[] GetChangedFiles(string from, string to)
         {
             if (String.IsNullOrWhiteSpace(from))
-                throw new ArgumentNullException(nameof(to));
+                throw new ArgumentNullException(nameof(from));
 
             if (String.IsNullOrWhiteSpace(to))
                 throw new ArgumentNullException(nameof(to));
 
-
-
-            var result = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-
             var fromSnapshot = GetSnapshot(from);
             var toSnapshot = GetSnapshot(to);
+
+            var result = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
             foreach (var histoyName in fromSnapshot.HistoyNames)
             {
@@ -133,10 +131,28 @@ namespace SyncTool.Git.FileSystem.Versioning
             return result.ToArray();
         }
 
+        public IMultiFileSystemDiff GetChanges(string toId, string[] pathFilter = null)
+        {
+            if(String.IsNullOrWhiteSpace(toId))
+                throw new ArgumentNullException(nameof(toId));
+            
+            throw new NotImplementedException();
+        }
+
+        public IMultiFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null)
+        {
+            if (String.IsNullOrWhiteSpace(fromId))
+                throw new ArgumentNullException(nameof(fromId));
+
+            if (String.IsNullOrWhiteSpace(toId))
+                throw new ArgumentNullException(nameof(toId));
+
+            throw new NotImplementedException();
+        }
+
 
         IMultiFileSystemSnapshot GetSnapshot(string id)
-        {
-            
+        {            
             var commit = GitGroup.Repository.Lookup<Commit>(id);
             if (commit == null || !GitBasedMultiFileSystemSnapshot.IsSnapshot(commit))
             {

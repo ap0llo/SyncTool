@@ -168,7 +168,6 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Empty(expected.Except(changedFiles));
         }
 
-
         [Fact]
         public void GetChangedFiles_returns_expected_result_2()
         {
@@ -202,10 +201,8 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Empty(expected.Except(changedFiles));
         }
 
-
-
         [Fact]
-        public void GetChangedFiles_returns_expected_result_4()
+        public void GetChangedFiles_returns_expected_result_3()
         {
             // ARRANGE
             var historyBuilder1 = new HistoryBuilder(m_Group, "history1");
@@ -231,6 +228,32 @@ namespace SyncTool.Git.FileSystem.Versioning
             var expected = new[] { "/file3" };
             Assert.Empty(changedFiles.Except(expected));
             Assert.Empty(expected.Except(changedFiles));
+        }
+
+        //TODO: GetChangedFiles_can_handle_histories_added_between_snapshots
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("\t")]
+        public void GetChangedFiles_throws_ArgumentNullException(string invalidId)
+        {
+            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChangedFiles(invalidId));
+            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChangedFiles("Irrelevant", invalidId));
+            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChangedFiles(invalidId, "Irrelevant"));            
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("\t")]
+        public void GetChanges_throws_ArgumentNullException(string invalidId)
+        {
+            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChanges(invalidId));
+            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChanges("Irrelevant", invalidId));
+            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChanges(invalidId, "Irrelevant"));
         }
 
         public override void Dispose()

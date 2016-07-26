@@ -22,5 +22,8 @@ namespace SyncTool.FileSystem.Versioning
 
         string[] GetChangedFiles(string from, string to);
 
+        IMultiFileSystemDiff GetChanges(string toId, string[] pathFilter = null);
+
+        IMultiFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null);
     }
 }
