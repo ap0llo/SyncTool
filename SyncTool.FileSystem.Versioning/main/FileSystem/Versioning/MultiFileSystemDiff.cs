@@ -15,20 +15,27 @@ namespace SyncTool.FileSystem.Versioning
 
         public IMultiFileSystemSnapshot ToSnapshot { get; }
 
-        public IEnumerable<IChangeList> ChangeLists { get; }
+        
+        public IEnumerable<IChangeList> FileChanges { get; }
+
+        public IEnumerable<IHistoryChange> HistoryChanges { get; } 
 
 
-        public MultiFileSystemDiff(IMultiFileSystemSnapshot toSnapshot, IEnumerable<IChangeList> changeLists)
+        public MultiFileSystemDiff(IMultiFileSystemSnapshot toSnapshot, IEnumerable<IChangeList> fileChanges, IEnumerable<IHistoryChange> historyChanges )
         {
             if (toSnapshot == null)
                 throw new ArgumentNullException(nameof(toSnapshot));
 
-            if (changeLists == null)
-                throw new ArgumentNullException(nameof(changeLists));
+            if (fileChanges == null)
+                throw new ArgumentNullException(nameof(fileChanges));
+
+            if (historyChanges == null)
+                throw new ArgumentNullException(nameof(historyChanges));
 
             FromSnapshot = null;
             ToSnapshot = toSnapshot;
-            ChangeLists = changeLists.ToArray();
+            FileChanges = fileChanges.ToArray();
+            HistoryChanges = historyChanges.ToArray();
         }
 
         public MultiFileSystemDiff(IMultiFileSystemSnapshot fromSnapshot, IMultiFileSystemSnapshot toSnapshot)

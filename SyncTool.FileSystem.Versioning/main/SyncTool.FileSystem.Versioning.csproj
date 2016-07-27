@@ -30,11 +30,13 @@
     <Compile Include="FileSystem\Versioning\ChangeType.cs" />
     <Compile Include="FileSystem\Versioning\FileSystemDiff.cs" />
     <Compile Include="FileSystem\Versioning\GroupExtensions.cs" />
+    <Compile Include="FileSystem\Versioning\HistoryChange.cs" />
     <Compile Include="FileSystem\Versioning\IChange.cs" />
     <Compile Include="FileSystem\Versioning\IChangeList.cs" />
     <Compile Include="FileSystem\Versioning\IFileSystemDiff.cs" />
     <Compile Include="FileSystem\Versioning\IFileSystemHistory.cs" />
     <Compile Include="FileSystem\Versioning\IFileSystemSnapshot.cs" />
+    <Compile Include="FileSystem\Versioning\IHistoryChange.cs" />
     <Compile Include="FileSystem\Versioning\IHistoryService.cs" />
     <Compile Include="FileSystem\Versioning\FileSystemHistoryExtensions.cs" />
     <Compile Include="FileSystem\Versioning\IMultiFileSystemDiff.cs" />

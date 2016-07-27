@@ -13,9 +13,15 @@ namespace SyncTool.FileSystem.Versioning
 
         IMultiFileSystemSnapshot ToSnapshot { get; }
 
-        IEnumerable<IChangeList> ChangeLists { get; }
-        
-        //TODO: Added changes to the histories itself (added/removed/modified/unchanged)
+        /// <summary>
+        /// Gets a combined list of all file changes between the two snapshots
+        /// </summary>
+        IEnumerable<IChangeList> FileChanges { get; }
+
+        /// <summary>
+        /// Gets a list of changes of individual histories
+        /// </summary>
+        IEnumerable<IHistoryChange> HistoryChanges { get; }
 
     }
 }

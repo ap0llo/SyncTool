@@ -158,8 +158,12 @@ namespace SyncTool.Git.FileSystem.Versioning
                 .GroupBy(changeList => changeList.Path, StringComparer.InvariantCultureIgnoreCase)                
                 .Select(group => group.SelectMany(changeList => changeList.Changes).Distinct())
                 .Select(group => new ChangeList(group));
-                          
-            return new MultiFileSystemDiff(snapshot, combinedChangeLists);
+
+            // since we're getting all changes up to the specified snapshot,
+            // all histories were added (initially there were none)
+            var historyChanges = snapshot.HistoryNames.Select(name => new HistoryChange(name, ChangeType.Added));
+
+            return new MultiFileSystemDiff(snapshot, combinedChangeLists, historyChanges);
         }
 
         public IMultiFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null)

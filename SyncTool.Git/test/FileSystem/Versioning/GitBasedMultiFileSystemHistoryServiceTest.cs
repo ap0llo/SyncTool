@@ -340,9 +340,15 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Null(diff.FromSnapshot);
             Assert.NotNull(diff.ToSnapshot);
   
-            Assert.NotNull(diff.ChangeLists);
-            Assert.Equal(3, diff.ChangeLists.Count());
-            Assert.True(diff.ChangeLists.All(cl => cl.Changes.Count() == 1));            
+            Assert.NotNull(diff.FileChanges);
+            Assert.Equal(3, diff.FileChanges.Count());
+            Assert.True(diff.FileChanges.All(cl => cl.Changes.Count() == 1));     
+            
+            
+            Assert.NotNull(diff.HistoryChanges);
+            Assert.Equal(2, diff.HistoryChanges.Count());
+            Assert.Single(diff.HistoryChanges.Where(c => c.Equals(new HistoryChange("history1" , ChangeType.Added))));
+            Assert.Single(diff.HistoryChanges.Where(c => c.Equals(new HistoryChange("history2" , ChangeType.Added))));            
         }
 
 
