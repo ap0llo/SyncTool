@@ -21,7 +21,7 @@ namespace SyncTool.FileSystem.Versioning
         public IEnumerable<IHistoryChange> HistoryChanges { get; } 
 
 
-        public MultiFileSystemDiff(IMultiFileSystemSnapshot toSnapshot, IEnumerable<IChangeList> fileChanges, IEnumerable<IHistoryChange> historyChanges )
+        public MultiFileSystemDiff(IMultiFileSystemSnapshot toSnapshot, IEnumerable<IChangeList> fileChanges, IEnumerable<IHistoryChange> historyChanges)
         {
             if (toSnapshot == null)
                 throw new ArgumentNullException(nameof(toSnapshot));
@@ -38,7 +38,7 @@ namespace SyncTool.FileSystem.Versioning
             HistoryChanges = historyChanges.ToArray();
         }
 
-        public MultiFileSystemDiff(IMultiFileSystemSnapshot fromSnapshot, IMultiFileSystemSnapshot toSnapshot)
+        public MultiFileSystemDiff(IMultiFileSystemSnapshot fromSnapshot, IMultiFileSystemSnapshot toSnapshot, IEnumerable<IChangeList> fileChanges, IEnumerable<IHistoryChange> historyChanges)
         {
             if (fromSnapshot == null)
                 throw new ArgumentNullException(nameof(fromSnapshot));
@@ -46,8 +46,16 @@ namespace SyncTool.FileSystem.Versioning
             if (toSnapshot == null)
                 throw new ArgumentNullException(nameof(toSnapshot));
 
+            if (fileChanges == null)
+                throw new ArgumentNullException(nameof(fileChanges));
+
+            if (historyChanges == null)
+                throw new ArgumentNullException(nameof(historyChanges));
+
             FromSnapshot = fromSnapshot;
             ToSnapshot = toSnapshot;
+            FileChanges = fileChanges.ToArray();
+            HistoryChanges = historyChanges.ToArray();
         }
 
     }

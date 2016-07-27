@@ -151,19 +151,15 @@ namespace SyncTool.Git.FileSystem.Versioning
             // get all change lists from all histories
             var allChangeLists = snapshot.HistoryNames
                 .Select(name => m_HistoryService[name].GetChanges(snapshot.GetSnapshotId(name)))
-                .SelectMany(diff => diff.ChangeLists);
-                            
-            // group lists by path, flatten the the list and create new changelists
-            var combinedChangeLists = allChangeLists                
-                .GroupBy(changeList => changeList.Path, StringComparer.InvariantCultureIgnoreCase)                
-                .Select(group => group.SelectMany(changeList => changeList.Changes).Distinct())
-                .Select(group => new ChangeList(group));
+                .Select(diff => diff.ChangeLists);
 
+            var fileChanges = CombineChangeLists(allChangeLists);
+                          
             // since we're getting all changes up to the specified snapshot,
             // all histories were added (initially there were none)
             var historyChanges = snapshot.HistoryNames.Select(name => new HistoryChange(name, ChangeType.Added));
 
-            return new MultiFileSystemDiff(snapshot, combinedChangeLists, historyChanges);
+            return new MultiFileSystemDiff(snapshot, fileChanges, historyChanges);
         }
 
         public IMultiFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null)
@@ -179,7 +175,46 @@ namespace SyncTool.Git.FileSystem.Versioning
             var fromSnapshot = GetSnapshot(fromId);
             var toSnapshot = GetSnapshot(toId);
 
-            throw new NotImplementedException();
+            // get file changes
+
+            var diffs = new List<IFileSystemDiff>();
+            foreach (var histoyName in toSnapshot.HistoryNames)
+            {
+                var history = m_HistoryService[histoyName];
+
+                IFileSystemDiff diff;
+                // if the history already existed at the time of fromSnapshot, 
+                // only get the changes between the snapshots                
+                if (fromSnapshot.HistoryNames.Contains(histoyName))
+                {
+                    diff = history.GetChanges(
+                        fromSnapshot.GetSnapshotId(histoyName),
+                        toSnapshot.GetSnapshotId(histoyName));
+                }
+                // if the current history did not exist at the time of fromSnapshot, 
+                // get all changes for the current history
+                else
+                {
+                    diff = history.GetChanges(toSnapshot.GetSnapshotId(histoyName));
+                }
+
+                diffs.Add(diff);
+            }
+
+            var fileChanges = CombineChangeLists(diffs.Select(d => d.ChangeLists));
+
+            // get history changes
+
+            var addedHistories = toSnapshot.HistoryNames.Except(fromSnapshot.HistoryNames, StringComparer.InvariantCultureIgnoreCase);
+            var deletedHistories = fromSnapshot.HistoryNames.Except(toSnapshot.HistoryNames, StringComparer.InvariantCultureIgnoreCase);
+            var modifiedHistories = fromSnapshot.HistoryNames.Intersect(toSnapshot.HistoryNames, StringComparer.InvariantCultureIgnoreCase)
+                .Where(name => !StringComparer.InvariantCultureIgnoreCase.Equals(toSnapshot.GetSnapshotId(name), fromSnapshot.GetSnapshotId(name)));
+
+            var historyChanges = addedHistories.Select(name => new HistoryChange(name, ChangeType.Added))
+                .Union(deletedHistories.Select(name => new HistoryChange(name, ChangeType.Deleted)))
+                .Union(modifiedHistories.Select(name => new HistoryChange(name, ChangeType.Modified)));
+
+            return new MultiFileSystemDiff(fromSnapshot, toSnapshot, fileChanges, historyChanges);
         }
 
 
@@ -194,6 +229,17 @@ namespace SyncTool.Git.FileSystem.Versioning
             {
                 return new GitBasedMultiFileSystemSnapshot(commit, m_HistoryService);
             }
+        }
+
+
+        IEnumerable<IChangeList> CombineChangeLists(IEnumerable<IEnumerable<IChangeList>> changeLists)
+        {
+            // flatten list, group lists by path, flatten the the list and create new changelists
+            return changeLists
+                .SelectMany(x => x.ToArray())
+                .GroupBy(changeList => changeList.Path, StringComparer.InvariantCultureIgnoreCase)
+                .Select(group => group.SelectMany(changeList => changeList.Changes).Distinct())
+                .Select(group => new ChangeList(group));
         }
     }
 }

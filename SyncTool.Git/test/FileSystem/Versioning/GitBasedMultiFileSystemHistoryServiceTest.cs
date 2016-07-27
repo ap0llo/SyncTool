@@ -343,16 +343,148 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.NotNull(diff.FileChanges);
             Assert.Equal(3, diff.FileChanges.Count());
             Assert.True(diff.FileChanges.All(cl => cl.Changes.Count() == 1));     
-            
-            
+                        
             Assert.NotNull(diff.HistoryChanges);
             Assert.Equal(2, diff.HistoryChanges.Count());
             Assert.Single(diff.HistoryChanges.Where(c => c.Equals(new HistoryChange("history1" , ChangeType.Added))));
             Assert.Single(diff.HistoryChanges.Where(c => c.Equals(new HistoryChange("history2" , ChangeType.Added))));            
         }
 
+        [Fact]
+        public void GetChanges_returns_expected_result_2()
+        {
+            // ARRANGE
 
-        //TODO: GetChanges_combines_identical_changes_from_different_histories
+            var historyBuilder1 = new HistoryBuilder(m_Group, "history1");
+            historyBuilder1.AddFile("file1");
+            historyBuilder1.AddFile("file2");
+            historyBuilder1.CreateSnapshot();
+
+            var historyBuilder2 = new HistoryBuilder(m_Group, "history2");
+            historyBuilder2.AddFile("file1");
+            historyBuilder2.CreateSnapshot();
+
+            var snapshot1 = m_Instance.CreateSnapshot();
+
+            historyBuilder1.AddFile("file3");
+            historyBuilder1.CreateSnapshot();
+
+            historyBuilder2.AddFile("file4");
+            historyBuilder2.CreateSnapshot();
+
+            var snapshot2 = m_Instance.CreateSnapshot();
+
+            //ACT
+            var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT
+            Assert.NotNull(diff.FromSnapshot);
+            Assert.NotNull(diff.ToSnapshot);
+
+            Assert.NotNull(diff.FileChanges);
+            Assert.Equal(2, diff.FileChanges.Count());
+            Assert.True(diff.FileChanges.All(cl => cl.Changes.Count() == 1));
+
+            Assert.NotNull(diff.HistoryChanges);
+            Assert.Equal(2, diff.HistoryChanges.Count());
+            Assert.Single(diff.HistoryChanges.Where(c => c.Equals(new HistoryChange("history1", ChangeType.Modified))));
+            Assert.Single(diff.HistoryChanges.Where(c => c.Equals(new HistoryChange("history2", ChangeType.Modified))));
+
+        }
+
+        [Fact]
+        public void GetChanges_returns_expected_result_3()
+        {
+            // ARRANGE
+            var historyBuilder1 = new HistoryBuilder(m_Group, "history1");
+            historyBuilder1.AddFile("file1");
+            historyBuilder1.AddFile("file2");
+            historyBuilder1.CreateSnapshot();
+
+            var historyBuilder2 = new HistoryBuilder(m_Group, "history2");
+            historyBuilder2.AddFile("file1");
+            historyBuilder2.CreateSnapshot();
+
+            var snapshot1 = m_Instance.CreateSnapshot();
+
+            historyBuilder1.AddFile("file3");
+            historyBuilder1.CreateSnapshot();
+
+            var snapshot2 = m_Instance.CreateSnapshot();
+
+            //ACT
+            var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT
+            Assert.NotNull(diff.FromSnapshot);
+            Assert.NotNull(diff.ToSnapshot);
+
+            Assert.NotNull(diff.FileChanges);
+            Assert.Single(diff.FileChanges);
+            Assert.Single(diff.FileChanges.Single().Changes);
+            Assert.Equal("/file3", diff.FileChanges.Single().Path);
+
+            Assert.NotNull(diff.HistoryChanges);
+            Assert.Single(diff.HistoryChanges);
+            Assert.Single(diff.HistoryChanges.Where(c => c.Equals(new HistoryChange("history1", ChangeType.Modified))));            
+        }
+
+        [Fact]
+        public void GetChanges_can_handle_histories_added_between_snapshots()
+        {
+            // ARRANGE
+            var historyBuilder1 = new HistoryBuilder(m_Group, "history1");
+            historyBuilder1.AddFile("file1");
+            historyBuilder1.CreateSnapshot();
+
+            var snapshot1 = m_Instance.CreateSnapshot();
+
+            var historyBuilder2 = new HistoryBuilder(m_Group, "history2");
+            historyBuilder2.AddFile("file2");
+            historyBuilder2.CreateSnapshot();
+
+            var snapshot2 = m_Instance.CreateSnapshot();
+
+            //ACT
+            var diff = m_Instance.GetChanges(snapshot1.Id, snapshot2.Id);
+
+            //ASSERT            
+            Assert.NotNull(diff.FileChanges);
+            Assert.Single(diff.FileChanges);
+            Assert.Single(diff.FileChanges.Single().Changes);
+            Assert.Equal("/file2", diff.FileChanges.Single().Path);
+
+            Assert.NotNull(diff.HistoryChanges);
+            Assert.Single(diff.HistoryChanges);
+            Assert.Single(diff.HistoryChanges.Where(c => c.Equals(new HistoryChange("history2", ChangeType.Added))));
+        }
+        [Fact]
+        public void GetChanges_combines_identical_changes_from_different_histories()
+        {  
+            // ARRANGE
+            var lastWriteTime = DateTime.Now;
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "history1");
+                historyBuilder.AddFile("file1", lastWriteTime);                
+                historyBuilder.CreateSnapshot();
+            }
+            {
+                var historyBuilder = new HistoryBuilder(m_Group, "history2");
+                historyBuilder.AddFile("file1", lastWriteTime);
+                historyBuilder.CreateSnapshot();
+            }
+
+            var snapshot = m_Instance.CreateSnapshot();
+
+            //ACT
+            var diff = m_Instance.GetChanges(snapshot.Id);
+
+            //ASSERT
+            
+            Assert.NotNull(diff.FileChanges);
+            Assert.Single(diff.FileChanges);
+            Assert.Single(diff.FileChanges.Single().Changes);           
+        }
 
 
         public override void Dispose()
