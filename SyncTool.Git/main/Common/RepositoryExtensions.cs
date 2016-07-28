@@ -51,5 +51,15 @@ namespace SyncTool.Git.Common
 
         public static Branch GetBranch(this Repository repository, BranchName branchName) => repository.Branches.FirstOrDefault(b => BranchName.Parse(b.FriendlyName).Equals(branchName));
 
+
+        public static bool IsCommitAncestor(this Repository repository, string ancestorId, string descandantId)
+        {
+            var ancestor = repository.Lookup<Commit>(ancestorId);
+            var descandant = repository.Lookup<Commit>(descandantId);
+
+            var mergeBase = repository.ObjectDatabase.FindMergeBase(ancestor, descandant);
+
+            return mergeBase != null && mergeBase.Sha == ancestor.Sha;
+        }
     }
 }

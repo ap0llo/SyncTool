@@ -94,6 +94,7 @@
     <Compile Include="Common\BranchNameTest.cs" />
     <Compile Include="Common\CachingGitTransactionTest.cs" />
     <Compile Include="Common\GitTransactionTest.cs" />
+    <Compile Include="Common\RepositoryExtensionsTest.cs" />
     <Compile Include="Configuration\GitBasedConfigurationServiceTest.cs" />
     <Compile Include="Configuration\Reader\JsonGroupSettingsProviderTest.cs" />
     <Compile Include="Common\GitBasedGroupTest.cs" />
