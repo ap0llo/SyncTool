@@ -1,0 +1,5 @@
+version: 1.0.{build}
+build_script:
+- ps: .\Build.ps1
+test:
+  assemblies: build\Release\*.dll
