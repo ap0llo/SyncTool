@@ -284,6 +284,25 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Empty(expected.Except(changedFiles));
         }
 
+        [Fact]
+        public void GetChangedFiles_throws_InvalidRangeException()
+        {
+            // ARRANGE
+            var historyBuilder = new HistoryBuilder(m_Group, "history1");
+            historyBuilder.AddFile("file1");
+            historyBuilder.CreateSnapshot();
+
+            var snapshot1 = m_Instance.CreateSnapshot();
+
+            historyBuilder.AddFile("file2");
+            historyBuilder.CreateSnapshot();
+
+            var snapshot2 = m_Instance.CreateSnapshot();
+
+            //ACT & ASSERT
+            Assert.Throws<InvalidRangeException>(() => m_Instance.GetChangedFiles(snapshot2.Id, snapshot1.Id));
+        }
+
         //TODO: GetChangedFiles_can_handle_histories_removed_between_snapshots
 
         [Theory]
@@ -484,6 +503,26 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.NotNull(diff.FileChanges);
             Assert.Single(diff.FileChanges);
             Assert.Single(diff.FileChanges.Single().Changes);           
+        }
+
+
+        [Fact]
+        public void GetChanges_throws_InvalidRangeException()
+        {
+            // ARRANGE
+            var historyBuilder = new HistoryBuilder(m_Group, "history1");
+            historyBuilder.AddFile("file1");
+            historyBuilder.CreateSnapshot();
+
+            var snapshot1 = m_Instance.CreateSnapshot();
+
+            historyBuilder.AddFile("file2");
+            historyBuilder.CreateSnapshot();
+
+            var snapshot2 = m_Instance.CreateSnapshot();
+
+            //ACT & ASSERT
+            Assert.Throws<InvalidRangeException>(() => m_Instance.GetChanges(snapshot2.Id, snapshot1.Id));
         }
 
 

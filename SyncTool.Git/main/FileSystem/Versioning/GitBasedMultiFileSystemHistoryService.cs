@@ -75,14 +75,14 @@ namespace SyncTool.Git.FileSystem.Versioning
             return GitBasedMultiFileSystemSnapshot.Create(GitGroup.Repository, BranchName, m_HistoryService);
         }
 
-        public string[] GetChangedFiles(string to)
+        public string[] GetChangedFiles(string toId)
         {
-            if (String.IsNullOrWhiteSpace(to))
-                throw new ArgumentNullException(nameof(to));
+            if (String.IsNullOrWhiteSpace(toId))
+                throw new ArgumentNullException(nameof(toId));
 
             var result = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
-            var snapshot = GetSnapshot(to);
+            var snapshot = GetSnapshot(toId);
             foreach (var histoyName in snapshot.HistoryNames)
             {
                 var history = m_HistoryService[histoyName];                
@@ -108,7 +108,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             var fromSnapshot = GetSnapshot(from);
             var toSnapshot = GetSnapshot(to);
 
-            //TODO: check that fromId is an ancestor of toId
+            AssertIsAncestor(from, to);
 
             var result = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
             
@@ -170,10 +170,10 @@ namespace SyncTool.Git.FileSystem.Versioning
             if (String.IsNullOrWhiteSpace(toId))
                 throw new ArgumentNullException(nameof(toId));
 
-            //TODO: check that fromId is an ancestor of toId
-
             var fromSnapshot = GetSnapshot(fromId);
             var toSnapshot = GetSnapshot(toId);
+
+            AssertIsAncestor(fromId, toId);
 
             // get file changes
 
@@ -230,8 +230,7 @@ namespace SyncTool.Git.FileSystem.Versioning
                 return new GitBasedMultiFileSystemSnapshot(commit, m_HistoryService);
             }
         }
-
-
+        
         IEnumerable<IChangeList> CombineChangeLists(IEnumerable<IEnumerable<IChangeList>> changeLists)
         {
             // flatten list, group lists by path, flatten the the list and create new changelists
@@ -241,5 +240,14 @@ namespace SyncTool.Git.FileSystem.Versioning
                 .Select(group => group.SelectMany(changeList => changeList.Changes).Distinct())
                 .Select(group => new ChangeList(group));
         }
+
+        void AssertIsAncestor(string ancestorId, string descandantId)
+        {
+            if (!GitGroup.Repository.IsCommitAncestor(ancestorId, descandantId))
+            {
+                throw new InvalidRangeException($"Snapshot {descandantId} is not an descendant of {ancestorId}");
+            }
+        }
+
     }
 }

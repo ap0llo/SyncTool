@@ -614,7 +614,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
 
         [Fact]
-        public void Gethanges_ChangeList_Paths_are_rooted()
+        public void GetChanges_ChangeList_Paths_are_rooted()
         {
             var state = new Directory(s_Dir1)
             {
@@ -626,6 +626,18 @@ namespace SyncTool.Git.FileSystem.Versioning
             
             Assert.Single(m_Instance.GetChanges(snapshot.Id).ChangeLists);
             Assert.True(m_Instance.GetChanges(snapshot.Id).ChangeLists.Single().Path.StartsWith("/"));
+        }
+
+        [Fact]
+        public void GetChanges_throws_InvalidRangeException()
+        {
+            var state1 = new Directory(s_Dir1) { dir1 => new EmptyFile(dir1, "file1") };
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+
+            var state2 = new Directory(s_Dir1) { dir1 => new EmptyFile(dir1, "file2") };
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            Assert.Throws<InvalidRangeException>(() => m_Instance.GetChanges(snapshot2.Id, snapshot1.Id));
         }
 
 
@@ -923,6 +935,19 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Assert.Single(changedFiles);
             Assert.True(changedFiles.Single().StartsWith("/"));
+        }
+
+
+        [Fact]
+        public void GetChangedFiles_throws_InvalidRangeException()
+        {
+            var state1 = new Directory(s_Dir1) { dir1 => new EmptyFile(dir1, "file1") };
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+
+            var state2 = new Directory(s_Dir1) { dir1 => new EmptyFile(dir1, "file2") };
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            Assert.Throws<InvalidRangeException>(() => m_Instance.GetChangedFiles(snapshot2.Id, snapshot1.Id));
         }
 
         #endregion

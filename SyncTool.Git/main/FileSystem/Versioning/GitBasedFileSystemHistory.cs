@@ -98,11 +98,9 @@ namespace SyncTool.Git.FileSystem.Versioning
         public string[] GetChangedFiles(string toId)
         {
             if (toId == null)
-            {
                 throw new ArgumentNullException(nameof(toId));
-            }
             
-            var toSnapshot = GetSnapshot(toId);
+            AssertSnapshotExists(toId);
 
             return GetChangedPaths(m_Repository.GetInitialCommit().Sha, toId)
                 .Distinct(StringComparer.InvariantCultureIgnoreCase)
@@ -112,20 +110,15 @@ namespace SyncTool.Git.FileSystem.Versioning
         public string[] GetChangedFiles(string fromId, string toId)
         {
             if (fromId == null)
-            {
                 throw new ArgumentNullException(nameof(fromId));
-            }
 
             if (toId == null)
-            {
                 throw new ArgumentNullException(nameof(toId));
-            }
-            
-            //TODO: Ensure, fromId is an ancestor of toId
+                  
+            AssertSnapshotExists(fromId);
+            AssertSnapshotExists(toId);
+            AssertIsAncestor(fromId, toId);      
 
-            var fromSnapshot = GetSnapshot(fromId);
-            var toSnapshot = GetSnapshot(toId);
-            
             return GetChangedPaths(fromId, toId)
                 .Distinct(StringComparer.InvariantCultureIgnoreCase)
                 .ToArray() ;            
@@ -153,23 +146,18 @@ namespace SyncTool.Git.FileSystem.Versioning
         public IFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null)
         {
             if (fromId == null)
-            {
                 throw new ArgumentNullException(nameof(fromId));
-            }
 
             if (toId == null)
-            {
                 throw new ArgumentNullException(nameof(toId));
-            }
             
             AssertIsValidPathFilter(pathFilter);
-
-            
-            //TODO: Ensure, fromId is an ancestor of toId
 
             var fromSnapshot = GetSnapshot(fromId);
             var toSnapshot = GetSnapshot(toId);           
 
+            AssertIsAncestor(fromId, toId);
+            
             // build change lists
             var changeLists = GetChangeLists(fromSnapshot.Commit.Sha, toSnapshot, null);
 
@@ -187,10 +175,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         GitBasedFileSystemSnapshot GetSnapshot(string id)
         {
-            if (!SnapshotExists(id))
-            {
-                throw new SnapshotNotFoundException(id);
-            }
+            AssertSnapshotExists(id);
             return m_Snapshots.Value[id];
         }
 
@@ -230,8 +215,6 @@ namespace SyncTool.Git.FileSystem.Versioning
                 }
                 else
                 {
-                    var parentSnapshot = GetSnapshot(parentCommit.Sha);
-
                     var treeChanges = m_Repository.Diff.Compare<TreeChanges>(parentCommit.Tree, currentCommit.Tree, null, null, new CompareOptions() { IncludeUnmodified = false });
 
                     // build changes
@@ -387,6 +370,19 @@ namespace SyncTool.Git.FileSystem.Versioning
             }
 
         }
+        void AssertIsAncestor(string ancestorId, string descandantId)
+        {
+            if (!m_Repository.IsCommitAncestor(ancestorId, descandantId))
+            {
+                throw new InvalidRangeException($"Snapshot {descandantId} is not an descendant of {ancestorId}");
+            }
+        }
+
+        void AssertSnapshotExists(string id)
+        {
+            if (!SnapshotExists(id))
+                throw new SnapshotNotFoundException(id);
+        }
 
         bool IgnoreTreeChange(TreeEntryChanges treeChange)
         {
@@ -415,6 +411,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             return false;
 
         }
+
 
     }
 }

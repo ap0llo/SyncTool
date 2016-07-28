@@ -46,6 +46,10 @@ namespace SyncTool.FileSystem.Versioning
         /// <summary>
         /// Gets the paths of all changed files in the specified range
         /// </summary>
+        /// <exception cref="InvalidRangeException">
+        /// Thrown if the specified range is invalid. The snapshot referenced by <param name="fromId"/> 
+        /// must be an ancestor of the snapshot referenced by <param name="toId" />
+        /// </exception>
         string[] GetChangedFiles(string fromId, string toId);
 
         /// <summary>
@@ -54,6 +58,10 @@ namespace SyncTool.FileSystem.Versioning
         /// <param name="toId">The id of the last snapshot in the range</param>
         /// <param name="pathFilter">If specified limits the changes included in the diff to the supplied paths</param>
         /// <exception cref="SnapshotNotFoundException">Thrown if the specified snapshot could not be found</exception>
+        /// <exception cref="InvalidRangeException">
+        /// Thrown if the specified range is invalid. The snapshot referenced by <param name="fromId"/> 
+        /// must be an ancestor of the snapshot referenced by <param name="toId" />
+        /// </exception>
         IFileSystemDiff GetChanges(string toId, string[] pathFilter = null);
         
         /// <summary>

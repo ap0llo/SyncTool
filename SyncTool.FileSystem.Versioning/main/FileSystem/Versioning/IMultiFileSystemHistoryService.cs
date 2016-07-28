@@ -46,6 +46,10 @@ namespace SyncTool.FileSystem.Versioning
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown if one of the specified ids is null, empty or whitespace</exception>
         /// <exception cref="SnapshotNotFoundException">Thrown if on of the specified snapshots was not found</exception>
+        /// <exception cref="InvalidRangeException">
+        /// Thrown if the specified range is invalid. The snapshot referenced by <param name="fromId"/> 
+        /// must be an ancestor of the snapshot referenced by <param name="toId" />
+        /// </exception>
         string[] GetChangedFiles(string fromId, string toId);
 
         /// <summary>
@@ -53,6 +57,10 @@ namespace SyncTool.FileSystem.Versioning
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown if the specified id is null, empty or whitespace</exception>
         /// <exception cref="SnapshotNotFoundException">Thrown if the specified snapshot was not found</exception>
+        /// <exception cref="InvalidRangeException">
+        /// Thrown if the specified range is invalid. The snapshot referenced by <param name="fromId"/> 
+        /// must be an ancestor of the snapshot referenced by <param name="toId" />
+        /// </exception>
         IMultiFileSystemDiff GetChanges(string toId, string[] pathFilter = null);
 
         /// <summary>
