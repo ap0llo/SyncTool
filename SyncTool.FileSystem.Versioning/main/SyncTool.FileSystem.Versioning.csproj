@@ -39,9 +39,11 @@
     <Compile Include="FileSystem\Versioning\IHistoryChange.cs" />
     <Compile Include="FileSystem\Versioning\IHistoryService.cs" />
     <Compile Include="FileSystem\Versioning\FileSystemHistoryExtensions.cs" />
+    <Compile Include="FileSystem\Versioning\IMultiFileSystemChangeList.cs" />
     <Compile Include="FileSystem\Versioning\IMultiFileSystemDiff.cs" />
     <Compile Include="FileSystem\Versioning\IMultiFileSystemSnapshot.cs" />
     <Compile Include="FileSystem\Versioning\IMultiFileSystemHistoryService.cs" />
+    <Compile Include="FileSystem\Versioning\MultiFileSystemChangeList.cs" />
     <Compile Include="FileSystem\Versioning\MultiFileSystemDiff.cs" />
     <Compile Include="FileSystem\Versioning\_Exceptions\DuplicateFileSystemHistoryException.cs" />
     <Compile Include="FileSystem\Versioning\_Exceptions\InvalidRangeException.cs" />

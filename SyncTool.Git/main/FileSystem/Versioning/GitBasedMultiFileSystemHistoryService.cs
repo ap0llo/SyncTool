@@ -149,11 +149,11 @@ namespace SyncTool.Git.FileSystem.Versioning
             var snapshot = GetSnapshot(toId);
 
             // get all change lists from all histories
-            var allChangeLists = snapshot.HistoryNames
+            var diffs = snapshot.HistoryNames
                 .Select(name => m_HistoryService[name].GetChanges(snapshot.GetSnapshotId(name)))
-                .Select(diff => diff.ChangeLists);
-
-            var fileChanges = CombineChangeLists(allChangeLists);
+                .Select(diff => new Tuple<string, IFileSystemDiff>(diff.History.Name, diff));
+            
+            var fileChanges = CombineChangeLists(snapshot.HistoryNames.ToArray(), diffs);
                           
             // since we're getting all changes up to the specified snapshot,
             // all histories were added (initially there were none)
@@ -201,7 +201,10 @@ namespace SyncTool.Git.FileSystem.Versioning
                 diffs.Add(diff);
             }
 
-            var fileChanges = CombineChangeLists(diffs.Select(d => d.ChangeLists));
+            var fileChanges = CombineChangeLists(
+                toSnapshot.HistoryNames.ToArray(), 
+                diffs.Select(d => new Tuple<string, IFileSystemDiff>(d.History.Name, d))
+            );
 
             // get history changes
 
@@ -231,14 +234,29 @@ namespace SyncTool.Git.FileSystem.Versioning
             }
         }
         
-        IEnumerable<IChangeList> CombineChangeLists(IEnumerable<IEnumerable<IChangeList>> changeLists)
-        {
-            // flatten list, group lists by path, flatten the the list and create new changelists
-            return changeLists
-                .SelectMany(x => x.ToArray())
-                .GroupBy(changeList => changeList.Path, StringComparer.InvariantCultureIgnoreCase)
-                .Select(group => group.SelectMany(changeList => changeList.Changes).Distinct())
-                .Select(group => new ChangeList(group));
+        IEnumerable<IMultiFileSystemChangeList> CombineChangeLists(string[] allHistoryNames, IEnumerable<Tuple<string, IFileSystemDiff>> diffs)
+        {            
+            // changes need to be combned per path
+            var results = new Dictionary<string, MultiFileSystemChangeList>(StringComparer.InvariantCultureIgnoreCase);
+
+            // every tuple is a single history name and all the changes for all the files from that history
+            foreach (var tuple in diffs)
+            {
+                // iterate over all change lists and put it in the correct MultiFileSystemChangeList
+                foreach (var changeList in tuple.Item2.ChangeLists)
+                {
+                    // first time we encouter that file path => create new change list
+                    if (!results.ContainsKey(changeList.Path))
+                    {
+                        results.Add(changeList.Path, new MultiFileSystemChangeList(changeList.Path, allHistoryNames));
+                    }                        
+
+                    // add the changes from this history for this file to the combnedchange list
+                    results[changeList.Path].SetChanges(tuple.Item1, changeList.Changes);                    
+                }
+            }
+
+            return results.Values;            
         }
 
         void AssertIsAncestor(string ancestorId, string descandantId)

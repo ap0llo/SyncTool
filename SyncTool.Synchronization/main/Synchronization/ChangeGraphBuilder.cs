@@ -13,7 +13,6 @@ using SyncTool.Common;
 
 namespace SyncTool.Synchronization
 {
-    [Obsolete]
     class ChangeGraphBuilder
     {
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
@@ -36,6 +35,7 @@ namespace SyncTool.Synchronization
         }
 
 
+        [Obsolete]
         public IEnumerable<Graph<IFileReference>> GetChangeGraphs(IEnumerable<IFileSystemDiff> diffs)
         {
             if (diffs == null)
@@ -62,7 +62,35 @@ namespace SyncTool.Synchronization
             }
 
         }
-        
+
+        public IEnumerable<Graph<IFileReference>> GetChangeGraphs(IMultiFileSystemDiff diff)
+        {
+            foreach (var changeList in diff.FileChanges)
+            {
+                var graph = new Graph<IFileReference>(m_FileReferenceComparer);
+
+                foreach (var historyName in changeList.HistoryNames)
+                {
+                    var changes = changeList.GetChanges(historyName).ToArray();
+
+                    if (changes.Any())
+                    {
+                        graph.AddEdgeFromStartNode(changes.First().FromVersion);
+                        foreach (var change in changes)
+                        {
+                            graph.AddEdge(change.FromVersion, change.ToVersion);
+                        }
+                    }
+                    else
+                    {                        
+                        var rootDirectory = diff.ToSnapshot.GetSnapshot(historyName).RootDirectory;
+                        graph.AddEdgeFromStartNode(rootDirectory.GetFileReferenceOrDefault(changeList.Path));
+                    }
+                }
+
+                yield return graph;
+            }            
+        }
 
         Graph<IFileReference> GetChangeGraph(IDictionary<string, IFileSystemDiff> diffsByFolderName, string path, IDictionary<string, IChangeList> changeListsByFolderName)
         {            

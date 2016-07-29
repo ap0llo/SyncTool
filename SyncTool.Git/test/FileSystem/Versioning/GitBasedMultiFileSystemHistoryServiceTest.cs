@@ -361,8 +361,14 @@ namespace SyncTool.Git.FileSystem.Versioning
   
             Assert.NotNull(diff.FileChanges);
             Assert.Equal(3, diff.FileChanges.Count());
-            Assert.True(diff.FileChanges.All(cl => cl.Changes.Count() == 1));     
-                        
+            Assert.True(diff.FileChanges.All(cl => cl.AllChanges.Count() == 1));
+            Assert.Single(diff.FileChanges.Single(cl => cl.Path == "/file1").GetChanges("history1"));
+            Assert.Single(diff.FileChanges.Single(cl => cl.Path == "/file2").GetChanges("history1"));
+            Assert.Empty(diff.FileChanges.Single(cl => cl.Path == "/file3").GetChanges("history1"));
+            Assert.Empty(diff.FileChanges.Single(cl => cl.Path == "/file1").GetChanges("history2"));
+            Assert.Empty(diff.FileChanges.Single(cl => cl.Path == "/file2").GetChanges("history2"));
+            Assert.Single(diff.FileChanges.Single(cl => cl.Path == "/file3").GetChanges("history2"));
+
             Assert.NotNull(diff.HistoryChanges);
             Assert.Equal(2, diff.HistoryChanges.Count());
             Assert.Single(diff.HistoryChanges.Where(c => c.Equals(new HistoryChange("history1" , ChangeType.Added))));
@@ -402,7 +408,11 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Assert.NotNull(diff.FileChanges);
             Assert.Equal(2, diff.FileChanges.Count());
-            Assert.True(diff.FileChanges.All(cl => cl.Changes.Count() == 1));
+            Assert.True(diff.FileChanges.All(cl => cl.AllChanges.Count() == 1));
+            Assert.Single(diff.FileChanges.Single(cl => cl.Path == "/file3").GetChanges("history1"));
+            Assert.Empty(diff.FileChanges.Single(cl => cl.Path == "/file4").GetChanges("history1"));
+            Assert.Empty(diff.FileChanges.Single(cl => cl.Path == "/file3").GetChanges("history2"));
+            Assert.Single(diff.FileChanges.Single(cl => cl.Path == "/file4").GetChanges("history2"));
 
             Assert.NotNull(diff.HistoryChanges);
             Assert.Equal(2, diff.HistoryChanges.Count());
@@ -440,8 +450,10 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Assert.NotNull(diff.FileChanges);
             Assert.Single(diff.FileChanges);
-            Assert.Single(diff.FileChanges.Single().Changes);
+            Assert.Single(diff.FileChanges.Single().AllChanges);
             Assert.Equal("/file3", diff.FileChanges.Single().Path);
+            Assert.Single(diff.FileChanges.Single(cl => cl.Path == "/file3").GetChanges("history1"));
+            Assert.Empty(diff.FileChanges.Single(cl => cl.Path == "/file3").GetChanges("history2"));
 
             Assert.NotNull(diff.HistoryChanges);
             Assert.Single(diff.HistoryChanges);
@@ -470,8 +482,11 @@ namespace SyncTool.Git.FileSystem.Versioning
             //ASSERT            
             Assert.NotNull(diff.FileChanges);
             Assert.Single(diff.FileChanges);
-            Assert.Single(diff.FileChanges.Single().Changes);
+            Assert.Single(diff.FileChanges.Single().AllChanges);
             Assert.Equal("/file2", diff.FileChanges.Single().Path);
+            Assert.Empty(diff.FileChanges.Single(cl => cl.Path == "/file2").GetChanges("history1"));
+            Assert.Single(diff.FileChanges.Single(cl => cl.Path == "/file2").GetChanges("history2"));
+
 
             Assert.NotNull(diff.HistoryChanges);
             Assert.Single(diff.HistoryChanges);
@@ -502,7 +517,9 @@ namespace SyncTool.Git.FileSystem.Versioning
             
             Assert.NotNull(diff.FileChanges);
             Assert.Single(diff.FileChanges);
-            Assert.Single(diff.FileChanges.Single().Changes);           
+            Assert.Single(diff.FileChanges.Single().AllChanges);
+            Assert.Single(diff.FileChanges.Single(cl => cl.Path == "/file1").GetChanges("history1"));
+            Assert.Single(diff.FileChanges.Single(cl => cl.Path == "/file1").GetChanges("history2"));
         }
 
 
