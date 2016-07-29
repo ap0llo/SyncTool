@@ -20,7 +20,7 @@ namespace SyncTool.FileSystem
         /// </summary>
         public static IFileReference GetFileReferenceOrDefault(this IDirectory directory, string path)
         {
-            return directory.FileExists(path) ? directory.GetFile(path).ToReference() : default(IFileReference);
+            return directory.GetFileOrDefault(path)?.ToReference();
         }
 
         /// <summary>
