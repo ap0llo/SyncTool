@@ -91,9 +91,9 @@ namespace SyncTool.Git.Common
             {
                 return (T)(object)new GitSyncActionService(this);
             }
-            else if (typeof(T) == typeof(IChangeGraphService))
+            else if (typeof(T) == typeof(IMultiFileSystemHistoryService))
             {
-                return (T)(object)new ChangeGraphService(m_FileReferenceComparer, GetService<IHistoryService>());
+                return (T)(object)new GitBasedMultiFileSystemHistoryService(this, GetService<IHistoryService>());
             }
             else
             {

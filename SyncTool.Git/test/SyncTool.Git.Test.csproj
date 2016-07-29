@@ -118,7 +118,6 @@
     <Compile Include="FileSystem\Versioning\MetaFileSystem\MetaFileSystemLoaderTest.cs" />
     <Compile Include="FileSystem\Versioning\MetaFileSystem\MetaFileSystemToFileSystemConverterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Synchronization\ChangeGraph\ChangeGraphServiceTest.cs" />
     <Compile Include="Synchronization\Conflicts\GitConflictServiceTest.cs" />
     <Compile Include="Synchronization\State\GitSyncPointServiceTest.cs" />
     <Compile Include="Synchronization\SyncActions\GitSyncActionServiceTest.cs" />
@@ -142,6 +141,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Synchronization\ChangeGraph\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
