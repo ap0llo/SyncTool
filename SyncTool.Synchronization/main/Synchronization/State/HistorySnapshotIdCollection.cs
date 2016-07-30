@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SyncTool.Synchronization.State
 {
-    //TODO: There needs to be a better name for this class
+    [Obsolete]
     public sealed class HistorySnapshotIdCollection : IEnumerable<HistorySnapshotId>
     {        
         public static readonly HistorySnapshotIdCollection Empty = new HistorySnapshotIdCollection(Enumerable.Empty<HistorySnapshotId>());

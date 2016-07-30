@@ -12,6 +12,7 @@ using SyncTool.Configuration;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
+using SyncTool.Git.FileSystem.Versioning;
 using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization;
 using SyncTool.Synchronization.Conflicts;
@@ -29,12 +30,15 @@ namespace SyncTool.Git.Synchronization
     public class SynchronizerTest : GitGroupBasedTest
     {
         readonly Synchronizer m_Instance;
+        readonly IMultiFileSystemHistoryService m_MultiFileSystemHistory;
         readonly IGroup m_Group;
 
         public SynchronizerTest()
         {
             m_Instance = new Synchronizer(EqualityComparer<IFileReference>.Default, new ChangeFilterFactory());
-            m_Group = CreateGroup();
+            var gitGroup = CreateGroup();
+            m_Group = gitGroup;
+            m_MultiFileSystemHistory = new GitBasedMultiFileSystemHistoryService(gitGroup, gitGroup.GetHistoryService());
         }
 
         [Fact]
@@ -130,16 +134,13 @@ namespace SyncTool.Git.Synchronization
             historyService.CreateHistory("folder2");
             var snapshot1 = historyService["folder1"].CreateSnapshot(state1);
             var snapshot2 = historyService["folder2"].CreateSnapshot(state2);
-
+            
             // save a sync point
             var syncPoint = new MutableSyncPoint()
             {
                 Id = 1,
-                FromSnapshots = null,
-                ToSnapshots = new HistorySnapshotIdCollection(                
-                    new HistorySnapshotId("folder1", snapshot1.Id),
-                    new HistorySnapshotId("folder2", snapshot2.Id)
-                ),
+                FromSnapshot = null,
+                ToSnapshot = m_MultiFileSystemHistory.CreateSnapshot().Id,
                 FilterConfigurations = new Dictionary<string, FilterConfiguration>()
                 {
                     {"folder1", FilterConfiguration.Empty },
@@ -199,12 +200,9 @@ namespace SyncTool.Git.Synchronization
 
             var syncPoint = m_Group.GetSyncPointService().Items.Single();
             Assert.Equal(1, syncPoint.Id);
-            Assert.Null(syncPoint.FromSnapshots);
-            var expectedToSnapshots = new HistorySnapshotIdCollection(           
-                new HistorySnapshotId("left", snapshot1.Id),
-                new HistorySnapshotId("right", snapshot2.Id)
-            );
-            HistorySnapshotIdCollectionAssert.Equal(expectedToSnapshots, syncPoint.ToSnapshots);
+            Assert.Null(syncPoint.FromSnapshot);
+            var expectedToSnapshotId = m_MultiFileSystemHistory.LatestSnapshot.Id;
+            Assert.Equal(expectedToSnapshotId, syncPoint.ToSnapshot);
         }
 
         [Fact]
@@ -397,7 +395,7 @@ namespace SyncTool.Git.Synchronization
             Assert.Single(m_Group.GetSyncConflictService().Items);
             var conflict = m_Group.GetSyncConflictService().Items.Single();
             Assert.Equal("/file", conflict.FilePath);
-            Assert.Null(conflict.SnapshotIds);
+            Assert.Null(conflict.SnapshotId);
         }
 
 
@@ -458,7 +456,7 @@ namespace SyncTool.Git.Synchronization
             Assert.Single(m_Group.GetSyncConflictService().Items);
             var conflict = m_Group.GetSyncConflictService().Items.Single();
             Assert.Equal("/file", conflict.FilePath);            
-            Assert.Null(conflict.SnapshotIds);
+            Assert.Null(conflict.SnapshotId);
         }
 
 
@@ -547,16 +545,16 @@ namespace SyncTool.Git.Synchronization
             Assert.Equal(3, syncPointService.Items.Count());
 
             // first sync
-            Assert.Null(syncPointService[1].FromSnapshots);
-            Assert.NotNull(syncPointService[1].ToSnapshots);
+            Assert.Null(syncPointService[1].FromSnapshot);
+            Assert.NotNull(syncPointService[1].ToSnapshot);
 
             // reset
-            Assert.NotNull(syncPointService[2].FromSnapshots);
-            Assert.Null(syncPointService[2].ToSnapshots);
+            Assert.NotNull(syncPointService[2].FromSnapshot);
+            Assert.Null(syncPointService[2].ToSnapshot);
 
             // second sync (FromSnapshots needs to be reset to null)
-            Assert.Null(syncPointService[3].FromSnapshots);
-            Assert.NotNull(syncPointService[3].ToSnapshots);
+            Assert.Null(syncPointService[3].FromSnapshot);
+            Assert.NotNull(syncPointService[3].ToSnapshot);
 
             // all sync actions from previous syncs need to be cancelled
             var syncActions = m_Group.GetSyncActionService().AllItems.ToDictionary(a => a.Id);
@@ -649,16 +647,16 @@ namespace SyncTool.Git.Synchronization
                 Assert.Equal(3, syncPointService.Items.Count());
 
                 // first sync
-                Assert.Null(syncPointService[1].FromSnapshots);
-                Assert.NotNull(syncPointService[1].ToSnapshots);
+                Assert.Null(syncPointService[1].FromSnapshot);
+                Assert.NotNull(syncPointService[1].ToSnapshot);
 
                 // reset
-                Assert.NotNull(syncPointService[2].FromSnapshots);
-                Assert.Null(syncPointService[2].ToSnapshots);
+                Assert.NotNull(syncPointService[2].FromSnapshot);
+                Assert.Null(syncPointService[2].ToSnapshot);
 
                 // second sync (FromSnapshots needs to be reset to null)
-                Assert.Null(syncPointService[3].FromSnapshots);
-                Assert.NotNull(syncPointService[3].ToSnapshots);
+                Assert.Null(syncPointService[3].FromSnapshot);
+                Assert.NotNull(syncPointService[3].ToSnapshot);
 
 
                 // all sync actions from previous syncs need to be cancelled
@@ -698,7 +696,6 @@ namespace SyncTool.Git.Synchronization
             {
                 new HistoryBuilder(m_Group, "folder3").CreateSnapshot();
             }
-
 
             //ACT
             m_Instance.Synchronize(m_Group);
@@ -810,7 +807,7 @@ namespace SyncTool.Git.Synchronization
             Assert.Single(conflicts);
 
             // snapshot ids must be null (there were no previous sync at the time the non-applicable sync action was created)
-            Assert.Null(conflicts.Single().SnapshotIds);
+            Assert.Null(conflicts.Single().SnapshotId);
 
             Assert.Empty(m_Group.GetSyncActionService().PendingItems);
 

@@ -18,8 +18,8 @@ namespace SyncTool.TestHelpers
         public static void Equal(ISyncPoint expected, ISyncPoint actual)
         {
             Assert.Equal(expected.Id, actual.Id);
-            Assert.Empty(expected.FromSnapshots.Except(actual.FromSnapshots));
-            Assert.Empty(expected.ToSnapshots.Except(actual.ToSnapshots));
+            Assert.Equal(expected.FromSnapshot, actual.FromSnapshot);
+            Assert.Equal(expected.ToSnapshot, actual.ToSnapshot);
             DictionaryAssert.Equal(expected.FilterConfigurations, actual.FilterConfigurations);            
         }
         

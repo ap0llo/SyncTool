@@ -3,6 +3,7 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using SyncTool.Configuration.Model;
 
@@ -14,16 +15,16 @@ namespace SyncTool.Synchronization.State
         /// Gets the id of the synchronization point
         /// </summary>
         int Id { get; }
+        
+        /// <summary>
+        /// Gets the id of the oldest the multifilesystem snapshot that was included in the last sync
+        /// </summary>
+        string FromSnapshot { get; }
 
         /// <summary>
-        /// Gets the ids of the oldest snapshots that were included in the sync
+        /// Gets the id of the latest multifilesystem snapshot that was included in the last sync
         /// </summary>
-        HistorySnapshotIdCollection FromSnapshots { get; }
-
-        /// <summary>
-        /// Gets the ids for of the latest snapshots that were included in the sync
-        /// </summary>
-        HistorySnapshotIdCollection ToSnapshots { get; }
+        string ToSnapshot { get; }
 
         /// <summary>
         /// Gets the filter configurations at the time of the sync

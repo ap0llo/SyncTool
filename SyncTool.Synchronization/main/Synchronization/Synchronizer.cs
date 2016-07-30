@@ -28,13 +28,11 @@ namespace SyncTool.Synchronization
         public Synchronizer(IEqualityComparer<IFileReference> fileReferenceComparer, IChangeFilterFactory filterFactory)
         {
             if (fileReferenceComparer == null)
-            {
                 throw new ArgumentNullException(nameof(fileReferenceComparer));
-            }
+
             if (filterFactory == null)
-            {
                 throw new ArgumentNullException(nameof(filterFactory));
-            }
+
             m_FileReferenceComparer = fileReferenceComparer;
             m_FilterFactory = filterFactory;
             
@@ -52,45 +50,55 @@ namespace SyncTool.Synchronization
                 return;
             }
 
-            // for every folder, there needs to be at least one snapshot
-            var historyService = group.GetService<IHistoryService>();
-            if(!syncFolders.All(f => historyService.ItemExists(f.Name) && historyService[f.Name].Snapshots.Any()))
+            var historyService = group.GetService<IMultiFileSystemHistoryService>();
+            var multiFileSystemSnapshotId = historyService.CreateSnapshot().Id;
+
+            // we cannot sync if there isn't at least one snapshot
+            if(!historyService.Snapshots.Any())
             {
                 return;                
             }
-
-            ResetSyncStateIfNecessary(group);
+            
+            // we cannot sync if there is not at least one snapshot per history
+            if (historyService.LatestSnapshot.HistoryNames.Any(name => historyService.LatestSnapshot.GetSnapshot(name) == null))
+            {
+                return;
+            }
 
             // get required services
             var syncPointService = group.GetSyncPointService();
             var conflictService = group.GetSyncConflictService();
-            var syncActionService = group.GetSyncActionService();            
+            var syncActionService = group.GetSyncActionService();
+
+            var filter = syncFolders.ToMultiFileSystemChangeFilter(m_FilterFactory);
+
+            var latestSyncPoint = syncPointService.LatestSyncPoint;
+            var diff = GetDiff(historyService, latestSyncPoint, filter);
+
+            var wasReset = ResetSyncStateIfNecessary(group, diff);
+            if (wasReset)
+            {
+                diff = GetDiff(historyService, latestSyncPoint, filter);
+                latestSyncPoint = syncPointService.LatestSyncPoint;
+            }
             
             // for all folders, get the changes since the last sync
-            var latestSyncPoint = syncPointService.LatestSyncPoint;
-            var diffs = GetDiffs(syncFolders, historyService, latestSyncPoint?.ToSnapshots).ToList();
                 
             var newSyncPoint = new MutableSyncPoint()
             {
-                Id = GetNextSyncPointId(latestSyncPoint),
-                FromSnapshots = latestSyncPoint?.ToSnapshots,
-                ToSnapshots = new HistorySnapshotIdCollection(diffs.Select(d => new HistorySnapshotId(d.History.Name, d.ToSnapshot.Id))),
+                Id = GetNextSyncPointId(syncPointService.LatestSyncPoint),                
+                FromSnapshot = latestSyncPoint?.ToSnapshot, 
+                ToSnapshot = diff.ToSnapshot.Id,
                 FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
-            };                                                         
+            };
 
-
-            var filters = syncFolders.ToDictionary(
-                f => f.Name, 
-                f => m_FilterFactory.GetFilter(f.Filter),
-                StringComparer.InvariantCultureIgnoreCase);
+            
                                                    
-
-            // group changes by files            
             
             var syncStateUpdater = new SyncActionUpdateBuilder();
-            var changeGraphBuilder = new ChangeGraphBuilder(m_FileReferenceComparer, group);
+            var changeGraphBuilder = new ChangeGraphBuilder(m_FileReferenceComparer);
 
-            foreach (var graph in changeGraphBuilder.GetChangeGraphs(diffs))
+            foreach (var graph in changeGraphBuilder.GetChangeGraphs(diff))
             {
                 var path = graph.ValueNodes.First(node => node.Value != null).Value.Path;
 
@@ -112,7 +120,7 @@ namespace SyncTool.Synchronization
                     // add a conflict for the file (the snapshot id of the conflict can be determined from the oldest unapplicable sync action)
                     var oldestSyncPointId = unapplicaleSyncActions.Min(a => a.SyncPointId);                    
                     var syncPoint = syncPointService[oldestSyncPointId];                    
-                    syncStateUpdater.AddConflict(new ConflictInfo(unapplicaleSyncActions.First().Path, syncPoint.FromSnapshots));
+                    syncStateUpdater.AddConflict(new ConflictInfo(unapplicaleSyncActions.First().Path, syncPoint.FromSnapshot));
                                         
                     continue;
                 }
@@ -132,18 +140,21 @@ namespace SyncTool.Synchronization
                     // no conflict => generate sync actions, to replace the outdated file versions or add the file to a target
 
                     var sink = sinks.Single();
-                    
-                    foreach (var diff in diffs)
-                    {
-                        var targetSyncFolderName = diff.History.Name;                        
-                        var currentVersion = diff.ToSnapshot.RootDirectory.GetFileReferenceOrDefault(path);
 
-                        var syncAction = m_SyncActionFactory.GetSyncAction(targetSyncFolderName, newSyncPoint.Id, currentVersion, sink);
-                        if (syncAction != null && filters[targetSyncFolderName].IncludeInResult(syncAction))
+                    //TODO: Use C# 7 tuples after it was released
+                    IEnumerable<Tuple<string, IFile>> currentFiles = diff.ToSnapshot.GetFiles(path);                
+                    foreach (var historyFileTuple in currentFiles)
+                    {
+                        var targetSyncFolderName = historyFileTuple.Item1;
+                        var currentVersion = historyFileTuple.Item2;
+
+                        var syncAction = m_SyncActionFactory.GetSyncAction(targetSyncFolderName, newSyncPoint.Id, currentVersion?.ToReference(), sink);
+                        if (syncAction != null && filter.GetFilter(targetSyncFolderName).IncludeInResult(syncAction))
                         {
                             syncStateUpdater.AddSyncAction(syncAction);
                         }
                     }
+                
                 }
                 else
                 {
@@ -163,15 +174,14 @@ namespace SyncTool.Synchronization
                         var syncPointId = pendingSyncActions.Min(x => x.SyncPointId);
                        
                         // generate conflict;
-                        syncStateUpdater.AddConflict(new ConflictInfo(path, syncPointService[syncPointId].FromSnapshots));
+                        syncStateUpdater.AddConflict(new ConflictInfo(path, syncPointService[syncPointId].FromSnapshot));
                     }
                     else
                     {
                         // no pending action => the snapshot ids for the conflict are the start snapshots of the current sync
 
-                        // generate conflict
-                        var fromSnapshots = new HistorySnapshotIdCollection(diffs.Select(d => new HistorySnapshotId(d.History.Name, d.FromSnapshot?.Id)));
-                        var conflictInfo = new ConflictInfo(path, fromSnapshots);
+                        // generate conflict                        
+                        var conflictInfo = new ConflictInfo(path, diff.FromSnapshot?.Id);
                         syncStateUpdater.AddConflict(conflictInfo);
                     }
                 }
@@ -184,30 +194,21 @@ namespace SyncTool.Synchronization
         }
         
 
-        /// <summary>
-        /// Gets the diffs relevant for the next synchronization (all changes since the last sync point)
-        /// </summary>
-        IEnumerable<IFileSystemDiff> GetDiffs(IEnumerable<SyncFolder> syncFolders, IHistoryService historyService, HistorySnapshotIdCollection toSnapshots )
+        
+        IMultiFileSystemDiff GetDiff(IMultiFileSystemHistoryService historyService, ISyncPoint syncPoint, IMultiFileSystemChangeFilter filter)
         {
-            foreach (var syncFolder in syncFolders)
-            {
-                var history = historyService[syncFolder.Name];
+            var fromSnapshotId = syncPoint?.ToSnapshot;
+            var toSnapshotId = historyService.LatestSnapshot.Id;
 
-                var diff = toSnapshots == null
-                    // no saved snapshot ids from last sync => get all the changes from the initial commit
-                    ? history.GetChanges(history.LatestFileSystemSnapshot.Id)
-                    // toSnapshots != null => get all the changes since the last sync
-                    : history.GetChanges(toSnapshots.GetSnapshotId(syncFolder.Name), history.LatestFileSystemSnapshot.Id);
+            var diff = fromSnapshotId == null 
+                ? historyService.GetChanges(toSnapshotId) 
+                : historyService.GetChanges(fromSnapshotId, toSnapshotId);
+    
 
-                var filter = m_FilterFactory.GetFilter(syncFolder.Filter);
-
-                yield return new FilteredFileSystemDiff(diff, filter);
-            }                
-            
+            return new FilteredMultiFileSystemDiff(diff, filter);
         }
 
-
-        void ResetSyncStateIfNecessary(IGroup group)
+        bool ResetSyncStateIfNecessary(IGroup group, IMultiFileSystemDiff diff)
         {
             var syncPointService = group.GetSyncPointService();
             var syncActionService = group.GetSyncActionService();
@@ -217,14 +218,14 @@ namespace SyncTool.Synchronization
                 
             var latestSyncPoint = syncPointService.LatestSyncPoint;
 
-            if (ContainsNewFolders(syncFolders, latestSyncPoint) || WasFilterModified(syncFolders, latestSyncPoint))
+            if (ContainsNewFolders(diff) || WasFilterModified(syncFolders, latestSyncPoint))
             {
-                // insert "Reset" sync pint
+                // insert "Reset" sync point
                 var resetSyncPoint = new MutableSyncPoint()
                 {
                     Id = GetNextSyncPointId(latestSyncPoint),
-                    FromSnapshots = latestSyncPoint?.ToSnapshots,
-                    ToSnapshots = null,
+                    FromSnapshot = latestSyncPoint?.ToSnapshot,
+                    ToSnapshot = null,
                     FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
                 };
 
@@ -237,22 +238,19 @@ namespace SyncTool.Synchronization
                 syncActionService.UpdateItems(cancelledSyncActions);
 
                 // remove all conflicts                
-                conflictService.RemoveItems(conflictService.Items.ToArray());                
+                conflictService.RemoveItems(conflictService.Items.ToArray());
+
+
+                return true;
             }
+
+            return false;
 
         }
 
-        bool ContainsNewFolders(IEnumerable<SyncFolder> syncFolders , ISyncPoint syncPoint)
-        {
-            if (syncPoint == null)
-            {
-                return false;
-            }
-            else
-            {
-                var syncFolderNames = syncFolders.Select(f => f.Name).ToArray();
-                return syncFolderNames.Any(name => !syncPoint.ToSnapshots.ContainsHistoryName(name));
-            }
+        bool ContainsNewFolders(IMultiFileSystemDiff diff)
+        {            
+            return diff.FromSnapshot != null && diff.HistoryChanges.Any(c => c.Type == ChangeType.Added);
         }
 
         bool WasFilterModified(IEnumerable<SyncFolder> syncFolders, ISyncPoint lastSyncPoint)
@@ -282,6 +280,8 @@ namespace SyncTool.Synchronization
 
         IList<SyncAction> GetUnapplicableSyncActions(Graph<IFileReference> changeGraph, IEnumerable<SyncAction> syncActions)
         {
+            //TODO: ensure that all sources of actions still exist
+
             // try to apply pending actions to the graph
             var unapplicableSyncActions = new List<SyncAction>();
             foreach (var syncAction in syncActions)

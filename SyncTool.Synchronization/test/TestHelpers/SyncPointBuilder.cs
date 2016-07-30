@@ -28,47 +28,21 @@ namespace SyncTool.TestHelpers
 
 
 
-        public static MutableSyncPoint WithoutFromSnapshots(this MutableSyncPoint state)
+        public static MutableSyncPoint WithoutFromSnapshot(this MutableSyncPoint state)
         {
-            state.FromSnapshots = HistorySnapshotIdCollection.Empty;            
+            state.FromSnapshot = null;            
             return state;
         }
 
-        public static MutableSyncPoint WithToSnapshot(this MutableSyncPoint state, string name, string id)
-        {
-            HistorySnapshotIdCollection current;
-            try
-            {
-                current = state.ToSnapshots;
-            }
-            catch (Exception)
-            {
-                current = null;
-            }
-            current = current ?? HistorySnapshotIdCollection.Empty;
-            
-            current = new HistorySnapshotIdCollection(current.Union(new[] { new HistorySnapshotId(name, id) }));
-            state.ToSnapshots = current;
-            
+        public static MutableSyncPoint WithToSnapshot(this MutableSyncPoint state, string id)
+        {            
+            state.ToSnapshot = id;            
             return state;
         }
 
-        public static MutableSyncPoint WithFromSnapshot(this MutableSyncPoint state, string name, string id)
-        {
-            HistorySnapshotIdCollection current;
-            try
-            {
-                current = state.FromSnapshots;
-            }
-            catch (Exception)
-            {
-                current = null;
-            }
-            current = current ?? HistorySnapshotIdCollection.Empty;
-
-            current = new HistorySnapshotIdCollection(current.Union(new[] { new HistorySnapshotId(name, id) }));
-            state.FromSnapshots = current;
-
+        public static MutableSyncPoint WithFromSnapshot(this MutableSyncPoint state, string id)
+        {            
+            state.FromSnapshot = id;
             return state;
         }
 

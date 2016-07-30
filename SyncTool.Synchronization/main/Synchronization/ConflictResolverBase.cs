@@ -35,9 +35,9 @@ namespace SyncTool.Synchronization
         {
             var conflictService = group.GetSyncConflictService();
             var syncActionService = group.GetSyncActionService();
-            var historyService = group.GetHistoryService();
+            var historyService = group.GetService<IMultiFileSystemHistoryService>();
 
-            var changeGraphBuilder = new ChangeGraphBuilder(m_FileReferenceComparer, group);
+            var changeGraphBuilder = new ChangeGraphBuilder(m_FileReferenceComparer);
 
             var syncStateUpdater = new SyncActionUpdateBuilder();
 
@@ -62,31 +62,18 @@ namespace SyncTool.Synchronization
         protected abstract bool TryResolveConflict(IEnumerable<IFileReference> versions, out IFileReference resolvedVersion);
 
 
-        bool TryResolveConflict(ChangeGraphBuilder changeGraphBuilder, IHistoryService historyService, ConflictInfo conflict, out IFileReference resolved)
+        bool TryResolveConflict(ChangeGraphBuilder changeGraphBuilder, IMultiFileSystemHistoryService historyService, ConflictInfo conflict, out IFileReference resolved)
         {
-            var graph = changeGraphBuilder.GetChangeGraphs(GetDiffs(historyService, conflict)).Single();
+            var graph = changeGraphBuilder.GetChangeGraphs(GetDiff(historyService, conflict)).Single();
 
             var sinks = graph.GetSinks().ToArray();
 
             return TryResolveConflict(sinks, out resolved);
         }
         
-        IEnumerable<IFileSystemDiff> GetDiffs(IHistoryService historyService, ConflictInfo conflict)
+        IMultiFileSystemDiff GetDiff(IMultiFileSystemHistoryService historyService, ConflictInfo conflict)
         {
-            foreach (var historySnapshotId in conflict.SnapshotIds)
-            {
-                var snapshotId = historySnapshotId.SnapshotId;
-                var history = historyService[historySnapshotId.HistoryName];
-
-                if (snapshotId == null)
-                {
-                    yield return history.GetChanges(history.LatestFileSystemSnapshot.Id, new[] { conflict.FilePath });
-                }
-                else
-                {
-                    yield return history.GetChanges(snapshotId, history.LatestFileSystemSnapshot.Id, new[] { conflict.FilePath });
-                }
-            }
+            return historyService.GetChanges(conflict.SnapshotId, historyService.LatestSnapshot.Id, new[] {conflict.FilePath});         
         }
     }
 }

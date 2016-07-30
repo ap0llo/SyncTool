@@ -43,6 +43,8 @@
     <Compile Include="FileSystem\FilePropertiesComparer.cs" />
     <Compile Include="FileSystem\MutableDirectory.cs" />
     <Compile Include="FileSystem\MutableDirectoryExtensions.cs" />
+    <Compile Include="FileSystem\Versioning\FilteredMultiFileSystemChangeList.cs" />
+    <Compile Include="FileSystem\Versioning\FilteredMultiFileSystemDiff.cs" />
     <Compile Include="Synchronization\ChangeFilterFactory.cs" />
     <Compile Include="Synchronization\ChangeGraphBuilder.cs" />
     <Compile Include="Synchronization\ChangeGraph\AcyclicGraph.cs" />
@@ -52,6 +54,7 @@
     <Compile Include="Synchronization\ConflictResolverBase.cs" />
     <Compile Include="Synchronization\EmptyChangeFilter.cs" />
     <Compile Include="FileSystem\Versioning\FilteredChangeList.cs" />
+    <Compile Include="Synchronization\EnumerableExtensions.cs" />
     <Compile Include="Synchronization\IChangeFilterFactory.cs" />
     <Compile Include="Synchronization\ChangeGraph\Graph.cs" />
     <Compile Include="Synchronization\ChangeGraph\ValueNode.cs" />
@@ -64,7 +67,9 @@
     <Compile Include="Synchronization\GroupExtensions.cs" />
     <Compile Include="Synchronization\IChangeFilter.cs" />
     <Compile Include="Synchronization\IConflictResolver.cs" />
+    <Compile Include="Synchronization\IMultiFileSystemChangeFilter.cs" />
     <Compile Include="Synchronization\MicroscopeChangeFilter.cs" />
+    <Compile Include="Synchronization\MultiFileSystemChangeFilter.cs" />
     <Compile Include="Synchronization\SimpleConflictResolver.cs" />
     <Compile Include="Synchronization\State\DuplicateSyncPointException.cs" />
     <Compile Include="Synchronization\State\HistorySnapshotId.cs" />

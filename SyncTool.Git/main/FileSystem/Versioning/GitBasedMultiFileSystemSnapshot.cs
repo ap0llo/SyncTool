@@ -121,10 +121,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         IDictionary<string, string> LoadSnapshotIds()
         {
             var result = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-
-
-            var dir = new GitDirectory(null, "root", m_Commit).Directories.ToArray();
-
+            
             var files = new GitDirectory(null, "root", m_Commit)
                 .GetDirectory(s_SnapshotDirectoryName)
                 .Files

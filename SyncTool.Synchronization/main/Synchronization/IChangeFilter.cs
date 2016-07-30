@@ -14,5 +14,6 @@ namespace SyncTool.Synchronization
         bool IncludeInResult(IChangeList changeList);
 
         bool IncludeInResult(IChange change);
+
     }
 }

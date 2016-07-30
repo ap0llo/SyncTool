@@ -14,17 +14,16 @@ namespace SyncTool.Synchronization.Conflicts
     {        
         public string FilePath { get; }
         
-        public HistorySnapshotIdCollection SnapshotIds { get; }
+        public string SnapshotId { get; }
 
 
-
-        public ConflictInfo(string filePath, HistorySnapshotIdCollection snapshotIds)
+        public ConflictInfo(string filePath, string snapshotId)
         {
             PathValidator.EnsureIsValidFilePath(filePath);
-            PathValidator.EnsureIsRootedPath(filePath);
+            PathValidator.EnsureIsRootedPath(filePath);            
 
             FilePath = filePath;
-            SnapshotIds = snapshotIds;
+            SnapshotId = snapshotId;
         }
 
         

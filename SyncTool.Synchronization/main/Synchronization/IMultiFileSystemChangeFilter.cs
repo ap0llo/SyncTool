@@ -4,18 +4,13 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using SyncTool.Configuration.Model;
 
-namespace SyncTool.Synchronization.State
+namespace SyncTool.Synchronization
 {
-    public class MutableSyncPoint : ISyncPoint
+    public interface IMultiFileSystemChangeFilter 
     {
-        public int Id { get; set; }
-        
-        public string FromSnapshot { get; set; }
-        
-        public string ToSnapshot { get; set; }
+        IEnumerable<string> HistoryNames { get; }
 
-        public IReadOnlyDictionary<string, FilterConfiguration> FilterConfigurations { get; set; }
+        IChangeFilter GetFilter(string historyName);
     }
 }

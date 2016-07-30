@@ -16,51 +16,15 @@ namespace SyncTool.Synchronization
     class ChangeGraphBuilder
     {
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
-        readonly IGroup m_Group;
+        
 
-
-        public ChangeGraphBuilder(IEqualityComparer<IFileReference> fileReferenceComparer, IGroup group)
+        public ChangeGraphBuilder(IEqualityComparer<IFileReference> fileReferenceComparer)
         {
             if(fileReferenceComparer == null)
-            {
                 throw new ArgumentNullException(nameof(fileReferenceComparer));
-            }
-            if (group == null)
-            {
-                throw new ArgumentNullException(nameof(@group));
-            }
+            
 
-            m_FileReferenceComparer = fileReferenceComparer;
-            m_Group = @group;
-        }
-
-
-        [Obsolete]
-        public IEnumerable<Graph<IFileReference>> GetChangeGraphs(IEnumerable<IFileSystemDiff> diffs)
-        {
-            if (diffs == null)
-            {
-                throw new ArgumentNullException(nameof(diffs));
-            }
-
-            var diffsByFolderName = diffs.ToDictionary(d => d.History.Name, StringComparer.InvariantCultureIgnoreCase);
-
-            // group the changes by path (there will be one graph per file)
-            var changeListsByFile = diffsByFolderName.Values                
-                .SelectMany(diff => 
-                    diff.ChangeLists.Select(cl => new
-                    {
-                        HistoryName = diff.History.Name,
-                        ChangeList = cl
-                    }))
-                .GroupBy(x => x.ChangeList.Path);
-
-            foreach (var changeLists in changeListsByFile)
-            {
-                var changeListsByFolderName = changeLists.ToDictionary(cl => cl.HistoryName , cl => cl.ChangeList, StringComparer.InvariantCultureIgnoreCase);
-                yield return GetChangeGraph(diffsByFolderName, changeLists.Key, changeListsByFolderName);
-            }
-
+            m_FileReferenceComparer = fileReferenceComparer;        
         }
 
         public IEnumerable<Graph<IFileReference>> GetChangeGraphs(IMultiFileSystemDiff diff)
@@ -72,7 +36,8 @@ namespace SyncTool.Synchronization
                 foreach (var historyName in changeList.HistoryNames)
                 {
                     var changes = changeList.GetChanges(historyName).ToArray();
-
+                    
+                    // add changes for the current history to the graph
                     if (changes.Any())
                     {
                         graph.AddEdgeFromStartNode(changes.First().FromVersion);
@@ -81,6 +46,7 @@ namespace SyncTool.Synchronization
                             graph.AddEdge(change.FromVersion, change.ToVersion);
                         }
                     }
+                    // for histories without a change to the current file, add the current file version as node
                     else
                     {                        
                         var rootDirectory = diff.ToSnapshot.GetSnapshot(historyName).RootDirectory;
@@ -91,37 +57,6 @@ namespace SyncTool.Synchronization
                 yield return graph;
             }            
         }
-
-        Graph<IFileReference> GetChangeGraph(IDictionary<string, IFileSystemDiff> diffsByFolderName, string path, IDictionary<string, IChangeList> changeListsByFolderName)
-        {            
-            var graph = new Graph<IFileReference>(m_FileReferenceComparer);
-
-            foreach (var folderName in diffsByFolderName.Keys)
-            {
-                // add ToVersion and FromVersion for every change to the graph
-                if (changeListsByFolderName.ContainsKey(folderName))
-                {
-                    var changeList = changeListsByFolderName[folderName];
-
-                    graph.AddEdgeFromStartNode(changeList.Changes.First().FromVersion);
-
-                    foreach (var change in changeList.Changes)
-                    {
-                        graph.AddEdge(change.FromVersion, change.ToVersion);
-                    }
-
-                }
-                // for each diff which has no changes, add the current file as node
-                else
-                {
-                    var rootDirectory = diffsByFolderName[folderName].ToSnapshot.RootDirectory;
-                    graph.AddEdgeFromStartNode(rootDirectory.GetFileReferenceOrDefault(path));
-                }
-            }
-
-            return graph;
-        }
-        
-       
+               
     }
 }

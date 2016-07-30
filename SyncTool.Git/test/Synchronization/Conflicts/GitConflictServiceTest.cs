@@ -49,28 +49,28 @@ namespace SyncTool.Git.Synchronization.Conflicts
         [Fact]
         public void T03_Items_returns_expected_conflicts()
         {
-            var expected = new ConflictInfo("/file1", HistorySnapshotIdCollection.Empty);
+            var expected = new ConflictInfo("/file1", null);
 
             m_Service.AddItems(expected);
 
             Assert.Single(m_Service.Items);
             var actual = m_Service.Items.Single();
             Assert.Equal(expected.FilePath, actual.FilePath);
-            HistorySnapshotIdCollectionAssert.Equal(expected.SnapshotIds, actual.SnapshotIds);
+            Assert.Equal(expected.SnapshotId, actual.SnapshotId);
         }
 
 
         [Fact]
         public void T04_Items_returns_expected_conflicts()
         {
-            var expected = new ConflictInfo("/file1", new HistorySnapshotIdCollection( new HistorySnapshotId("name", "id")));
+            var expected = new ConflictInfo("/file1", "id");
 
             m_Service.AddItems(expected);
 
             Assert.Single(m_Service.Items);
             var actual = m_Service.Items.Single();
             Assert.Equal(expected.FilePath, actual.FilePath);
-            HistorySnapshotIdCollectionAssert.Equal(expected.SnapshotIds, actual.SnapshotIds);
+            Assert.Equal(expected.SnapshotId, actual.SnapshotId);
         }
 
         #endregion
@@ -109,14 +109,14 @@ namespace SyncTool.Git.Synchronization.Conflicts
         [Fact]
         public void T09_Indexer_returns_expected_result()
         {
-            var expected = new ConflictInfo("/file1", HistorySnapshotIdCollection.Empty);
+            var expected = new ConflictInfo("/file1", null);
             m_Service.AddItems(expected);
 
             var actual = m_Service[expected.FilePath];
 
             Assert.NotNull(actual);
             Assert.Equal(expected.FilePath,actual.FilePath);
-            HistorySnapshotIdCollectionAssert.Equal(expected.SnapshotIds, actual.SnapshotIds);
+            Assert.Equal(expected.SnapshotId, actual.SnapshotId);
         }
 
         #endregion
