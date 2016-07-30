@@ -86,9 +86,8 @@ namespace SyncTool.Synchronization
                 
             var newSyncPoint = new MutableSyncPoint()
             {
-                Id = GetNextSyncPointId(syncPointService.LatestSyncPoint),                
-                FromSnapshot = latestSyncPoint?.ToSnapshot, 
-                ToSnapshot = diff.ToSnapshot.Id,
+                Id = GetNextSyncPointId(syncPointService.LatestSyncPoint),                                
+                MultiFileSystemSnapshotId = diff.ToSnapshot.Id,
                 FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
             };
 
@@ -119,8 +118,10 @@ namespace SyncTool.Synchronization
                    
                     // add a conflict for the file (the snapshot id of the conflict can be determined from the oldest unapplicable sync action)
                     var oldestSyncPointId = unapplicaleSyncActions.Min(a => a.SyncPointId);                    
-                    var syncPoint = syncPointService[oldestSyncPointId];                    
-                    syncStateUpdater.AddConflict(new ConflictInfo(unapplicaleSyncActions.First().Path, syncPoint.FromSnapshot));
+                    var snapshotId = oldestSyncPointId > 1 
+                        ? syncPointService[oldestSyncPointId - 1].MultiFileSystemSnapshotId
+                        : null;                    
+                    syncStateUpdater.AddConflict(new ConflictInfo(unapplicaleSyncActions.First().Path, snapshotId));
                                         
                     continue;
                 }
@@ -172,9 +173,12 @@ namespace SyncTool.Synchronization
 
                         //determine the oldest sync action to determine the snapshot ids for the conflict
                         var syncPointId = pendingSyncActions.Min(x => x.SyncPointId);
-                       
+                        var snapshotId = syncPointId > 1
+                            ? syncPointService[syncPointId - 1].MultiFileSystemSnapshotId
+                            : null;
+
                         // generate conflict;
-                        syncStateUpdater.AddConflict(new ConflictInfo(path, syncPointService[syncPointId].FromSnapshot));
+                        syncStateUpdater.AddConflict(new ConflictInfo(path, snapshotId));
                     }
                     else
                     {
@@ -197,7 +201,7 @@ namespace SyncTool.Synchronization
         
         IMultiFileSystemDiff GetDiff(IMultiFileSystemHistoryService historyService, ISyncPoint syncPoint, IMultiFileSystemChangeFilter filter)
         {
-            var fromSnapshotId = syncPoint?.ToSnapshot;
+            var fromSnapshotId = syncPoint?.MultiFileSystemSnapshotId;
             var toSnapshotId = historyService.LatestSnapshot.Id;
 
             var diff = fromSnapshotId == null 
@@ -223,9 +227,8 @@ namespace SyncTool.Synchronization
                 // insert "Reset" sync point
                 var resetSyncPoint = new MutableSyncPoint()
                 {
-                    Id = GetNextSyncPointId(latestSyncPoint),
-                    FromSnapshot = latestSyncPoint?.ToSnapshot,
-                    ToSnapshot = null,
+                    Id = GetNextSyncPointId(latestSyncPoint),                    
+                    MultiFileSystemSnapshotId = null,
                     FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
                 };
 

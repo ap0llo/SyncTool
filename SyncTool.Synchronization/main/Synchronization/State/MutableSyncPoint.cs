@@ -12,9 +12,7 @@ namespace SyncTool.Synchronization.State
     {
         public int Id { get; set; }
         
-        public string FromSnapshot { get; set; }
-        
-        public string ToSnapshot { get; set; }
+        public string MultiFileSystemSnapshotId { get; set; }
 
         public IReadOnlyDictionary<string, FilterConfiguration> FilterConfigurations { get; set; }
     }

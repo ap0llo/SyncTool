@@ -138,9 +138,8 @@ namespace SyncTool.Git.Synchronization
             // save a sync point
             var syncPoint = new MutableSyncPoint()
             {
-                Id = 1,
-                FromSnapshot = null,
-                ToSnapshot = m_MultiFileSystemHistory.CreateSnapshot().Id,
+                Id = 1,                
+                MultiFileSystemSnapshotId = m_MultiFileSystemHistory.CreateSnapshot().Id,
                 FilterConfigurations = new Dictionary<string, FilterConfiguration>()
                 {
                     {"folder1", FilterConfiguration.Empty },
@@ -199,10 +198,9 @@ namespace SyncTool.Git.Synchronization
             Assert.Single(m_Group.GetSyncPointService().Items);
 
             var syncPoint = m_Group.GetSyncPointService().Items.Single();
-            Assert.Equal(1, syncPoint.Id);
-            Assert.Null(syncPoint.FromSnapshot);
+            Assert.Equal(1, syncPoint.Id);            
             var expectedToSnapshotId = m_MultiFileSystemHistory.LatestSnapshot.Id;
-            Assert.Equal(expectedToSnapshotId, syncPoint.ToSnapshot);
+            Assert.Equal(expectedToSnapshotId, syncPoint.MultiFileSystemSnapshotId);
         }
 
         [Fact]
@@ -545,16 +543,13 @@ namespace SyncTool.Git.Synchronization
             Assert.Equal(3, syncPointService.Items.Count());
 
             // first sync
-            Assert.Null(syncPointService[1].FromSnapshot);
-            Assert.NotNull(syncPointService[1].ToSnapshot);
+            Assert.NotNull(syncPointService[1].MultiFileSystemSnapshotId);
 
             // reset
-            Assert.NotNull(syncPointService[2].FromSnapshot);
-            Assert.Null(syncPointService[2].ToSnapshot);
+            Assert.Null(syncPointService[2].MultiFileSystemSnapshotId);
 
             // second sync (FromSnapshots needs to be reset to null)
-            Assert.Null(syncPointService[3].FromSnapshot);
-            Assert.NotNull(syncPointService[3].ToSnapshot);
+            Assert.NotNull(syncPointService[3].MultiFileSystemSnapshotId);
 
             // all sync actions from previous syncs need to be cancelled
             var syncActions = m_Group.GetSyncActionService().AllItems.ToDictionary(a => a.Id);
@@ -647,16 +642,13 @@ namespace SyncTool.Git.Synchronization
                 Assert.Equal(3, syncPointService.Items.Count());
 
                 // first sync
-                Assert.Null(syncPointService[1].FromSnapshot);
-                Assert.NotNull(syncPointService[1].ToSnapshot);
+                Assert.NotNull(syncPointService[1].MultiFileSystemSnapshotId);
 
                 // reset
-                Assert.NotNull(syncPointService[2].FromSnapshot);
-                Assert.Null(syncPointService[2].ToSnapshot);
+                Assert.Null(syncPointService[2].MultiFileSystemSnapshotId);
 
                 // second sync (FromSnapshots needs to be reset to null)
-                Assert.Null(syncPointService[3].FromSnapshot);
-                Assert.NotNull(syncPointService[3].ToSnapshot);
+                Assert.NotNull(syncPointService[3].MultiFileSystemSnapshotId);
 
 
                 // all sync actions from previous syncs need to be cancelled

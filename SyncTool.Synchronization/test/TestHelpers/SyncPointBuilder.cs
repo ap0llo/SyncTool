@@ -28,21 +28,9 @@ namespace SyncTool.TestHelpers
 
 
 
-        public static MutableSyncPoint WithoutFromSnapshot(this MutableSyncPoint state)
-        {
-            state.FromSnapshot = null;            
-            return state;
-        }
-
-        public static MutableSyncPoint WithToSnapshot(this MutableSyncPoint state, string id)
+        public static MutableSyncPoint WithMultiFileSystemSnapshotId(this MutableSyncPoint state, string id)
         {            
-            state.ToSnapshot = id;            
-            return state;
-        }
-
-        public static MutableSyncPoint WithFromSnapshot(this MutableSyncPoint state, string id)
-        {            
-            state.FromSnapshot = id;
+            state.MultiFileSystemSnapshotId = id;            
             return state;
         }
 

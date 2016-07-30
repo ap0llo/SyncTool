@@ -15,16 +15,11 @@ namespace SyncTool.Synchronization.State
         /// Gets the id of the synchronization point
         /// </summary>
         int Id { get; }
-        
-        /// <summary>
-        /// Gets the id of the oldest the multifilesystem snapshot that was included in the last sync
-        /// </summary>
-        string FromSnapshot { get; }
-
+                
         /// <summary>
         /// Gets the id of the latest multifilesystem snapshot that was included in the last sync
         /// </summary>
-        string ToSnapshot { get; }
+        string MultiFileSystemSnapshotId { get; }
 
         /// <summary>
         /// Gets the filter configurations at the time of the sync
