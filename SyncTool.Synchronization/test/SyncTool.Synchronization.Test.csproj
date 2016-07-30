@@ -101,7 +101,6 @@
     <Compile Include="Synchronization\SyncActions\SyncActionTest.cs" />
     <Compile Include="Synchronization\SyncActions\SyncActionSerializerTest.cs" />
     <Compile Include="TestHelpers\HistoryBuilder.cs" />
-    <Compile Include="TestHelpers\HistorySnapshotIdCollectionAssert.cs" />
     <Compile Include="TestHelpers\SyncAssert.cs" />
     <Compile Include="TestHelpers\SyncPointBuilder.cs" />
   </ItemGroup>

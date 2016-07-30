@@ -72,9 +72,7 @@
     <Compile Include="Synchronization\MultiFileSystemChangeFilter.cs" />
     <Compile Include="Synchronization\SimpleConflictResolver.cs" />
     <Compile Include="Synchronization\State\DuplicateSyncPointException.cs" />
-    <Compile Include="Synchronization\State\HistorySnapshotId.cs" />
     <Compile Include="Synchronization\State\MutableSyncPoint.cs" />
-    <Compile Include="Synchronization\State\HistorySnapshotIdCollection.cs" />
     <Compile Include="Synchronization\State\SyncPointNotFoundException.cs" />
     <Compile Include="Synchronization\SyncActionFactory.cs" />
     <Compile Include="Synchronization\SyncActionUpdateBuilder.cs" />
