@@ -77,11 +77,6 @@ namespace SyncTool.Git.FileSystem.Versioning
             string commitId;
             using (var workingRepository = new TemporaryWorkingDirectory(repository.Info.Path, branch.FriendlyName))
             {
-                var snapshotDirectoryPath = Path.Combine(workingRepository.Location, s_SnapshotDirectoryName);
-                if (NativeDirectory.Exists(snapshotDirectoryPath))
-                {
-                    NativeDirectory.Delete(path: snapshotDirectoryPath, recursive: true);
-                }
 
                 var snapshotDirectory = new Directory(null, s_SnapshotDirectoryName);
                 foreach (var fileSystemHistory in historyService.Items)
@@ -91,7 +86,8 @@ namespace SyncTool.Git.FileSystem.Versioning
                     snapshotDirectory.Add(d => new TextFile(d, fileName, content));
                 }
                 
-                directoryCreator.CreateDirectoryInPlace(snapshotDirectory, snapshotDirectoryPath);
+                var snapshotDirectoryPath = Path.Combine(workingRepository.Location, s_SnapshotDirectoryName);
+                directoryCreator.CreateDirectoryInPlace(snapshotDirectory, snapshotDirectoryPath, true);
 
                 if (workingRepository.HasChanges)
                 {

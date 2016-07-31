@@ -51,7 +51,7 @@ namespace SyncTool.Synchronization
             }
 
             var historyService = group.GetService<IMultiFileSystemHistoryService>();
-            var multiFileSystemSnapshotId = historyService.CreateSnapshot().Id;
+            historyService.CreateSnapshot();
 
             // we cannot sync if there isn't at least one snapshot
             if(!historyService.Snapshots.Any())

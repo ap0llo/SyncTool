@@ -3,6 +3,7 @@
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
 using System.IO;
+using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.FileSystem.Local
 {
@@ -29,11 +30,23 @@ namespace SyncTool.FileSystem.Local
         /// <summary>
         /// Creates all the children of the specified directory in the specified path 
         /// </summary>        
-        public static void CreateDirectoryInPlace(this LocalItemCreator visitor, IDirectory directory, string createIn)
+        /// <param name="visitor"></param>
+        /// <param name="directory">The directory to create</param>
+        /// <param name="createIn">The filesystem path to create the directory in</param>
+        /// <param name="deleteExisting">
+        /// If set to true, and the specified path already exists,
+        /// all files currently at that path will be deleted before the directory is created in the specified location
+        /// </param>
+        public static void CreateDirectoryInPlace(this LocalItemCreator visitor, IDirectory directory, string createIn, bool deleteExisting = false)
         {
+            if (deleteExisting && NativeDirectory.Exists(createIn))
+            {
+                NativeDirectory.Delete(createIn, true);
+            }
+
             var name = Path.GetFileName(createIn.Trim("\\//".ToCharArray()));
             createIn = Path.GetDirectoryName(createIn);
-            
+
             visitor.CreateDirectory(new Directory(name, directory.Directories, directory.Files), createIn);            
         }
     }

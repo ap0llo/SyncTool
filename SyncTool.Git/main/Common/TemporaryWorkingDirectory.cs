@@ -4,7 +4,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Linq;
 using LibGit2Sharp;
 using SyncTool.FileSystem.Local;
 
@@ -47,6 +46,7 @@ namespace SyncTool.Git.Common
         {
             m_Repository.Stage("*");
 
+            //TODO: this should probably be read from settings
             var signature = new Signature("SyncTool", "SyncTool@example.com", DateTimeOffset.Now);
 
             var commit = m_Repository.Commit(commitMessage, signature, signature);

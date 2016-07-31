@@ -2,6 +2,7 @@
 //  Copyright (c) 2015-2016, Andreas Grünwald
 //  Licensed under the MIT License. See LICENSE.txt file in the project root for full license information.  
 // -----------------------------------------------------------------------------------------------------------
+
 using System;
 using System.IO;
 using LibGit2Sharp;
@@ -51,9 +52,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             History = history;
             m_Commit = commit;
-            LoadSnapshot();
-           
-
+            LoadSnapshot();          
         }
 
 
@@ -68,14 +67,10 @@ namespace SyncTool.Git.FileSystem.Versioning
             string commitId;
             using (var workingRepository = new TemporaryWorkingDirectory(repository.Info.Path, branch.FriendlyName))
             {                 
-                var snapshotDirectoryPath = Path.Combine(workingRepository.Location, SnapshotDirectoryName);
-                if (NativeDirectory.Exists(snapshotDirectoryPath))
-                {
-                    NativeDirectory.Delete(path: snapshotDirectoryPath, recursive:true);
-                }
-
                 var metaDirectory = metaFileSystemCreator.CreateMetaDirectory(rootDirectory);
-                directoryCreator.CreateDirectoryInPlace(metaDirectory, snapshotDirectoryPath);                
+               
+                var snapshotDirectoryPath = Path.Combine(workingRepository.Location, SnapshotDirectoryName);
+                directoryCreator.CreateDirectoryInPlace(metaDirectory, snapshotDirectoryPath, true);                
 
                 if (workingRepository.HasChanges)
                 {
@@ -88,8 +83,7 @@ namespace SyncTool.Git.FileSystem.Versioning
                     {
                         // no changes after all (HasChanges does not seem to be a 100% accurate)
                         commitId = repository.GetBranch(branchName).Tip.Sha;
-                    }
-                    
+                    }                    
                 }
                 else
                 {                    
