@@ -2,7 +2,7 @@
 $nugetVersion = "v3.4.4"         # version of the nuget client to download. To use the latest version, set version to "latest"
 $nugetExeDir = "./tools"         # the (relative) path of the directory to store nuget.exe
 $msbuildVersion = "14.0"
-$solutionPath = "./SyncTool.sln"
+$solutionPath = "./src/SyncTool.sln"
 $platform = "Any CPU"
 $configuration = "Release"
 $msbuildLogPath = "./build/build.log"

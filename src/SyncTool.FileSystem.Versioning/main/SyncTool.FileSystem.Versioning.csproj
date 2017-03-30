@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)..\..\..\common\CommonProperties.properties" />
+  <PropertyGroup>
+    <ProjectGuid>{70919335-5F89-4324-BCDB-8B41C7A2CA7E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SyncTool</RootNamespace>
+    <AssemblyName>SyncTool.FileSystem.Versioning</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileSystem\Versioning\Change.cs" />
+    <Compile Include="FileSystem\Versioning\ChangeList.cs" />
+    <Compile Include="FileSystem\Versioning\ChangeType.cs" />
+    <Compile Include="FileSystem\Versioning\FileSystemDiff.cs" />
+    <Compile Include="FileSystem\Versioning\GroupExtensions.cs" />
+    <Compile Include="FileSystem\Versioning\HistoryChange.cs" />
+    <Compile Include="FileSystem\Versioning\IChange.cs" />
+    <Compile Include="FileSystem\Versioning\IChangeList.cs" />
+    <Compile Include="FileSystem\Versioning\IFileSystemDiff.cs" />
+    <Compile Include="FileSystem\Versioning\IFileSystemHistory.cs" />
+    <Compile Include="FileSystem\Versioning\IFileSystemSnapshot.cs" />
+    <Compile Include="FileSystem\Versioning\IHistoryChange.cs" />
+    <Compile Include="FileSystem\Versioning\IHistoryService.cs" />
+    <Compile Include="FileSystem\Versioning\FileSystemHistoryExtensions.cs" />
+    <Compile Include="FileSystem\Versioning\IMultiFileSystemChangeList.cs" />
+    <Compile Include="FileSystem\Versioning\IMultiFileSystemDiff.cs" />
+    <Compile Include="FileSystem\Versioning\IMultiFileSystemSnapshot.cs" />
+    <Compile Include="FileSystem\Versioning\IMultiFileSystemHistoryService.cs" />
+    <Compile Include="FileSystem\Versioning\MultiFileSystemChangeList.cs" />
+    <Compile Include="FileSystem\Versioning\MultiFileSystemDiff.cs" />
+    <Compile Include="FileSystem\Versioning\_Exceptions\DuplicateFileSystemHistoryException.cs" />
+    <Compile Include="FileSystem\Versioning\_Exceptions\InvalidRangeException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FileSystem\Versioning\_Exceptions\SnapshotNotFoundException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SyncTool.Common\main\SyncTool.Common.csproj">
+      <Project>{8495c561-6553-45f8-ba04-72486273ae47}</Project>
+      <Name>SyncTool.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
+      <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
+      <Name>SyncTool.FileSystem</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
