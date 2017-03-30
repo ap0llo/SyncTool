@@ -1,25 +1,31 @@
 <Project>
-	<PropertyGroup>
-		<TargetFramework>net461</TargetFramework>
-		<OutputPath>$(MSBuildThisFileDirectory)..\build\$(Configuration)</OutputPath>
-	</PropertyGroup>
+
+  <PropertyGroup>
+  
+    <TargetFramework>net461</TargetFramework>		
+    
+    <BaseOutputPath>$(MSBuildThisFileDirectory)..\build\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(BaseOutputPath)intermediate\$(MSBuildProjectName)\</BaseIntermediateOutputPath>		
+    <OutputPath>$(BaseOutputPath)$(Configuration)</OutputPath>
+	
+  </PropertyGroup>
 
 
   <!-- Determine if the project is a test project -->
-	<PropertyGroup>
-		<IsTestProject>False</IsTestProject>
-		<IsTestProject Condition="$(MSBuildProjectDirectory.EndsWith('test')) AND $(MSBuildProjectName.EndsWith('.Test'))">True</IsTestProject>
+  <PropertyGroup>
+    <IsTestProject>False</IsTestProject>
+    <IsTestProject Condition="$(MSBuildProjectDirectory.EndsWith('test')) AND $(MSBuildProjectName.EndsWith('.Test'))">True</IsTestProject>
     <MainProjectPath Condition="$(IsTestProject)">$(MSBuildProjectDirectory)\..\main\$(MSBuildProjectName.Replace('.Test', '')).csproj</MainProjectPath>    
-	</PropertyGroup>
+  </PropertyGroup>
 		
-	<!-- For test projects, automatically include a reference to the corresponding main project -->	
-	<ItemGroup Condition="$(IsTestProject)">
-		<ProjectReference Include="$(MainProjectPath)" Condition="Exists('$(MainProjectPath)')" />
+  <!-- For test projects, automatically include a reference to the corresponding main project -->	
+  <ItemGroup Condition="$(IsTestProject)">
+    <ProjectReference Include="$(MainProjectPath)" Condition="Exists('$(MainProjectPath)')" />
     <PackageReference Include="Moq" Version="4.2.1510.2205" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
-	</ItemGroup>
+  </ItemGroup>
 
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
