@@ -1,0 +1,36 @@
+<Project>
+	<PropertyGroup>
+		<TargetFramework>net461</TargetFramework>
+		<OutputPath>$(MSBuildThisFileDirectory)..\build\$(Configuration)</OutputPath>
+	</PropertyGroup>
+
+
+  <!-- Determine if the project is a test project -->
+	<PropertyGroup>
+		<IsTestProject>False</IsTestProject>
+		<IsTestProject Condition="$(MSBuildProjectDirectory.EndsWith('test')) AND $(MSBuildProjectName.EndsWith('.Test'))">True</IsTestProject>
+    <MainProjectPath Condition="$(IsTestProject)">$(MSBuildProjectDirectory)\..\main\$(MSBuildProjectName.Replace('.Test', '')).csproj</MainProjectPath>    
+	</PropertyGroup>
+		
+	<!-- For test projects, automatically include a reference to the corresponding main project -->	
+	<ItemGroup Condition="$(IsTestProject)">
+		<ProjectReference Include="$(MainProjectPath)" Condition="Exists('$(MainProjectPath)')" />
+    <PackageReference Include="Moq" Version="4.2.1510.2205" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+	</ItemGroup>
+
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+
+</Project>

@@ -1,94 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\LibGit2Sharp.0.21.0.176\build\net40\LibGit2Sharp.props" Condition="Exists('..\packages\LibGit2Sharp.0.21.0.176\build\net40\LibGit2Sharp.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-    <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., dir.properties))\dir.properties" 
-          Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., dir.properties))' != '' " />
-  <PropertyGroup>
-    <ProjectGuid>{7BA544F9-AE57-4D3B-8DCD-74BBFAC64AE8}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncTool</RootNamespace>
-    <AssemblyName>SyncTool</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <ItemGroup>
-    <Reference Include="CommandLine, Version=2.0.275.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\CommandLineParser.2.0.275-beta\lib\net45\CommandLine.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\..\SyncTool.Git\main\SyncTool.Git.csproj" />
   </ItemGroup>
+  
   <ItemGroup>
-    <Compile Include="Cli\Commands\AddFolderCommand.cs" />
-    <Compile Include="Cli\Commands\AddGroupCommand.cs" />
-    <Compile Include="Cli\Commands\AddSnapshotCommand.cs" />
-    <Compile Include="Cli\Commands\CommandBase.cs" />
-    <Compile Include="Cli\Commands\GetGroupCommand.cs" />
-    <Compile Include="Cli\Commands\GetSnapshotCommand.cs" />
-    <Compile Include="Cli\Commands\SyncGroupCommand.cs" />
-    <Compile Include="Cli\DI\CliModule.cs" />
-    <Compile Include="Cli\Framework\AbstractCommandLoader.cs" />
-    <Compile Include="Cli\Framework\Application.cs" />
-    <Compile Include="Cli\Framework\CommandDescription.cs" />
-    <Compile Include="Cli\Framework\CurrentAssemblyCommandLoader.cs" />
-    <Compile Include="Cli\Framework\ICommand.cs" />
-    <Compile Include="Cli\Framework\ICommandFactory.cs" />
-    <Compile Include="Cli\Framework\ICommandLoader.cs" />
-    <Compile Include="Cli\DI\NinjectCommandFactory.cs" />
-    <Compile Include="Cli\Output\ConsoleOutputWriter.cs" />
-    <Compile Include="Cli\Output\IOutputWriter.cs" />
-    <Compile Include="Cli\Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <PackageReference Include="CommandLineParser" Version="2.0.275-beta" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.Common\main\SyncTool.Common.csproj">
-      <Project>{8495c561-6553-45f8-ba04-72486273ae47}</Project>
-      <Name>SyncTool.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SyncTool.Configuration\main\SyncTool.Configuration.csproj">
-      <Project>{4c4dfbc8-1dd7-4ea3-9ef5-c06693560784}</Project>
-      <Name>SyncTool.Configuration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\main\SyncTool.FileSystem.Versioning.csproj">
-      <Project>{70919335-5f89-4324-bcdb-8b41c7a2ca7e}</Project>
-      <Name>SyncTool.FileSystem.Versioning</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj">
-      <Project>{1e3e5912-b315-43a8-8415-91217892beda}</Project>
-      <Name>SyncTool.FileSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SyncTool.Git\main\SyncTool.Git.csproj">
-      <Project>{c43ec5ad-78e9-48d1-9dc8-e916204257f2}</Project>
-      <Name>SyncTool.Git</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SyncTool.Synchronization\main\SyncTool.Synchronization.csproj">
-      <Project>{AA841AD1-C845-4C68-8AA8-B0572061868C}</Project>
-      <Name>SyncTool.Synchronization</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>
