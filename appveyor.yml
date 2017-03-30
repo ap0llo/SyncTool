@@ -3,4 +3,4 @@ build_script:
 - ps: .\Build.ps1
 test:
   assemblies: build\Release\*.dll
- image: Visual Studio 2015
+image: Visual Studio 2015
