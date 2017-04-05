@@ -1,6 +1,6 @@
 version: 1.0.{build}
 build_script:
 - cmd: .\build.bat
-test:
-  assemblies: build\Release\*\*.dll
+test_script:
+- cmd: .\test.bat
 image: Visual Studio 2017

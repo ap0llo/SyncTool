@@ -19,12 +19,17 @@
   </PropertyGroup>
 		
   <!-- For test projects, automatically include a reference to the corresponding main project -->	
+  <PropertyGroup>
+	<XunitVersion>2.2.0</XunitVersion>
+  </PropertyGroup>
+  
   <ItemGroup Condition="$(IsTestProject)">
     <ProjectReference Include="$(MainProjectPath)" Condition="Exists('$(MainProjectPath)')" />
     <PackageReference Include="Moq" Version="4.2.1510.2205" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="xunit" Version="2.2.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
+	<PackageReference Include="xunit.runner.console" Version="$(XunitVersion)" />
   </ItemGroup>
 
 

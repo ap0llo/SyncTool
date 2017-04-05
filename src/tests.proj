@@ -1,0 +1,14 @@
+<Project DefaultTargets="Test">
+	<PropertyGroup>		
+		<Configuration>Debug</Configuration>		
+	</PropertyGroup>
+
+	<ItemGroup>
+		<TestProject Include="$(MSBuildThisFileDirectory)*/test/*.csproj" />
+	</ItemGroup>
+	
+	<Target Name="Test">
+		<MSBuild Projects="@(TestProject)" Targets="Test" BuildInParallel="false" Properties="Configuration=$(Configuration)" />          
+	</Target>
+	
+</Project>

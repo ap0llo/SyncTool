@@ -1,3 +1,10 @@
 <Project>
+  
+  <Target Name="Test" Condition="$(IsTestProject)">
+  
+	<Message Text="Running Tests for $(AssemblyName)" />	
+	<Exec Command="$(NuGetPackageRoot)xunit.runner.console\$(XunitVersion)\tools\xunit.console.exe &quot;$(OutputPath)$(AssemblyName).dll&quot;"  />
 	
+  </Target>
+  
 </Project>
