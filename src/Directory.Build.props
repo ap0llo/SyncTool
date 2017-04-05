@@ -8,6 +8,10 @@
     <BaseIntermediateOutputPath>$(BaseOutputPath)intermediate\$(MSBuildProjectName)\</BaseIntermediateOutputPath>		
     <OutputPath>$(BaseOutputPath)$(Configuration)</OutputPath>
 	
+	
+	<AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+	
   </PropertyGroup>
 
 
