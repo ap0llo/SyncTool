@@ -22,20 +22,15 @@ namespace SyncTool.Synchronization
     public class Synchronizer : ISynchronizer
     {        
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
-        readonly IChangeFilterFactory m_FilterFactory;        
+               
         readonly SyncActionFactory m_SyncActionFactory;
 
-        public Synchronizer(IEqualityComparer<IFileReference> fileReferenceComparer, IChangeFilterFactory filterFactory)
+        public Synchronizer(IEqualityComparer<IFileReference> fileReferenceComparer)
         {
             if (fileReferenceComparer == null)
                 throw new ArgumentNullException(nameof(fileReferenceComparer));
-
-            if (filterFactory == null)
-                throw new ArgumentNullException(nameof(filterFactory));
-
-            m_FileReferenceComparer = fileReferenceComparer;
-            m_FilterFactory = filterFactory;
             
+            m_FileReferenceComparer = fileReferenceComparer;            
             m_SyncActionFactory = new SyncActionFactory(fileReferenceComparer);
         }
         
@@ -70,15 +65,14 @@ namespace SyncTool.Synchronization
             var conflictService = group.GetSyncConflictService();
             var syncActionService = group.GetSyncActionService();
 
-            var filter = syncFolders.ToMultiFileSystemChangeFilter(m_FilterFactory);
-
+            
             var latestSyncPoint = syncPointService.LatestSyncPoint;
-            var diff = GetDiff(historyService, latestSyncPoint, filter);
+            var diff = GetDiff(historyService, latestSyncPoint);
 
             var wasReset = ResetSyncStateIfNecessary(group, diff);
             if (wasReset)
             {
-                diff = GetDiff(historyService, latestSyncPoint, filter);
+                diff = GetDiff(historyService, latestSyncPoint);
                 latestSyncPoint = syncPointService.LatestSyncPoint;
             }
             
@@ -87,8 +81,7 @@ namespace SyncTool.Synchronization
             var newSyncPoint = new MutableSyncPoint()
             {
                 Id = GetNextSyncPointId(syncPointService.LatestSyncPoint),                                
-                MultiFileSystemSnapshotId = diff.ToSnapshot.Id,
-                FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
+                MultiFileSystemSnapshotId = diff.ToSnapshot.Id
             };
 
             
@@ -150,7 +143,7 @@ namespace SyncTool.Synchronization
                         var currentVersion = historyFileTuple.Item2;
 
                         var syncAction = m_SyncActionFactory.GetSyncAction(targetSyncFolderName, newSyncPoint.Id, currentVersion?.ToReference(), sink);
-                        if (syncAction != null && filter.GetFilter(targetSyncFolderName).IncludeInResult(syncAction))
+                        if (syncAction != null)
                         {
                             syncStateUpdater.AddSyncAction(syncAction);
                         }
@@ -199,7 +192,7 @@ namespace SyncTool.Synchronization
         
 
         
-        IMultiFileSystemDiff GetDiff(IMultiFileSystemHistoryService historyService, ISyncPoint syncPoint, IMultiFileSystemChangeFilter filter)
+        IMultiFileSystemDiff GetDiff(IMultiFileSystemHistoryService historyService, ISyncPoint syncPoint)
         {
             var fromSnapshotId = syncPoint?.MultiFileSystemSnapshotId;
             var toSnapshotId = historyService.LatestSnapshot.Id;
@@ -207,9 +200,8 @@ namespace SyncTool.Synchronization
             var diff = fromSnapshotId == null 
                 ? historyService.GetChanges(toSnapshotId) 
                 : historyService.GetChanges(fromSnapshotId, toSnapshotId);
-    
 
-            return new FilteredMultiFileSystemDiff(diff, filter);
+            return diff;
         }
 
         bool ResetSyncStateIfNecessary(IGroup group, IMultiFileSystemDiff diff)
@@ -228,8 +220,7 @@ namespace SyncTool.Synchronization
                 var resetSyncPoint = new MutableSyncPoint()
                 {
                     Id = GetNextSyncPointId(latestSyncPoint),                    
-                    MultiFileSystemSnapshotId = null,
-                    FilterConfigurations = syncFolders.ToDictionary(f => f.Name, f => f.Filter)
+                    MultiFileSystemSnapshotId = null
                 };
 
                 syncPointService.AddItem(resetSyncPoint);
@@ -258,17 +249,7 @@ namespace SyncTool.Synchronization
 
         bool WasFilterModified(IEnumerable<SyncFolder> syncFolders, ISyncPoint lastSyncPoint)
         {
-            if (lastSyncPoint == null)
-            {
-                return false;
-            }
-            else
-            {
-                var filters = lastSyncPoint.FilterConfigurations;
-                return syncFolders.Any(folder =>                
-                    !filters.ContainsKey(folder.Name) || !filters[folder.Name].Equals(folder.Filter)
-                );
-            }
+            return false;
         }
 
         /// <summary>

@@ -48,8 +48,7 @@ namespace SyncTool.Git.Synchronization.State
         {
             var state = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
-                .WithMultiFileSystemSnapshotId("value1")
-                .WithFilterConfiguration("folder1", new FilterConfiguration(FilterType.MicroscopeQuery, null));               
+                .WithMultiFileSystemSnapshotId("value1");
 
             m_Service.AddItem(state);
 
@@ -84,13 +83,11 @@ namespace SyncTool.Git.Synchronization.State
         {
             var state1 = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
-                .WithMultiFileSystemSnapshotId("id")
-                .WithFilterConfiguration("name", new FilterConfiguration(FilterType.MicroscopeQuery, "Ireelevant"));
+                .WithMultiFileSystemSnapshotId("id");
 
             var state2 = SyncPointBuilder.NewSyncPoint()
                 .WithId(2)
-                .WithMultiFileSystemSnapshotId("id")
-                .WithFilterConfiguration("name", FilterConfiguration.Empty);
+                .WithMultiFileSystemSnapshotId("id");
 
             m_Service.AddItem(state1);
             m_Service.AddItem(state2);
@@ -105,13 +102,11 @@ namespace SyncTool.Git.Synchronization.State
         {
             var state1 = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
-                .WithMultiFileSystemSnapshotId("id1")
-                .WithFilterConfiguration("name", FilterConfiguration.Empty);
+                .WithMultiFileSystemSnapshotId("id1");
 
             var state2 = SyncPointBuilder.NewSyncPoint()
                 .WithId(2)
-                .WithMultiFileSystemSnapshotId("id3")
-                .WithFilterConfiguration("name", new FilterConfiguration(FilterType.MicroscopeQuery, "Ireelevant"));
+                .WithMultiFileSystemSnapshotId("id3");
             
             m_Service.AddItem(state1);
             m_Service.AddItem(state2);
@@ -139,8 +134,7 @@ namespace SyncTool.Git.Synchronization.State
         {
             var state = SyncPointBuilder.NewSyncPoint()
                 .WithId(1)
-                .WithMultiFileSystemSnapshotId("id")
-                .WithFilterConfiguration("name", new FilterConfiguration(FilterType.MicroscopeQuery, "Ireelevant"));                
+                .WithMultiFileSystemSnapshotId("id");                
 
             m_Service.AddItem(state);
             SyncAssert.Equal(state, m_Service[1]);
@@ -152,8 +146,7 @@ namespace SyncTool.Git.Synchronization.State
             {
                 var state1 = SyncPointBuilder.NewSyncPoint()
                     .WithId(1)
-                    .WithMultiFileSystemSnapshotId("id")
-                    .WithFilterConfiguration("name", FilterConfiguration.Empty);
+                    .WithMultiFileSystemSnapshotId("id");
 
                 m_Service.AddItem(state1);
 
@@ -162,8 +155,7 @@ namespace SyncTool.Git.Synchronization.State
             {
                 var state2 = SyncPointBuilder.NewSyncPoint()
                     .WithId(2)
-                    .WithMultiFileSystemSnapshotId("id")
-                    .WithFilterConfiguration("name", new FilterConfiguration(FilterType.MicroscopeQuery, "Irrelevant"));
+                    .WithMultiFileSystemSnapshotId("id");
 
                 m_Service.AddItem(state2);
 

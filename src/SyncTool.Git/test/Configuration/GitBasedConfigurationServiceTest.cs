@@ -48,7 +48,7 @@ namespace SyncTool.Git.Configuration
                 previousCommitCount = repo.GetAllCommits().Count();
             }
             
-            var syncFolder = new SyncFolder("folder1") { Path = "foo", Filter = null };
+            var syncFolder = new SyncFolder("folder1") { Path = "foo" };
 
             
             using (var group = CreateGroup())
@@ -71,8 +71,8 @@ namespace SyncTool.Git.Configuration
         public void AddItem_throws_DuplicateSyncFolderException()
         {
             
-            var syncFolder1 = new SyncFolder("folder1") { Path = "foo", Filter = null };
-            var syncFolder2 = new SyncFolder("folder1") { Path = "bar", Filter = null };
+            var syncFolder1 = new SyncFolder("folder1") { Path = "foo" };
+            var syncFolder2 = new SyncFolder("folder1") { Path = "bar" };
 
             using (var group = CreateGroup())
             {

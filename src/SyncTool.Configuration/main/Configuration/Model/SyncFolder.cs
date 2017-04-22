@@ -13,9 +13,7 @@ namespace SyncTool.Configuration.Model
     /// Configuration object for a folder that's being synced within a group
     /// </summary>
     public class SyncFolder : IEquatable<SyncFolder>
-    {
-
-        FilterConfiguration m_Filter;
+    {        
 
         /// <summary>
         /// Gets the name of the folder
@@ -27,15 +25,7 @@ namespace SyncTool.Configuration.Model
         /// </summary>
         public string Path { get; set; }
 
-        /// <summary>
-        /// Gets or sets the filesystem filter for this folder
-        /// </summary>        
-        public FilterConfiguration Filter
-        {
-            get { return m_Filter ?? FilterConfiguration.Empty; }
-            set { m_Filter = value; }
-        }
-
+     
 
         public SyncFolder(string name)
         {
@@ -64,8 +54,7 @@ namespace SyncTool.Configuration.Model
             }
 
             return StringComparer.InvariantCultureIgnoreCase.Equals(this.Name, other.Name) &&
-                   StringComparer.InvariantCultureIgnoreCase.Equals(this.Path, other.Path) &&
-                   EqualityComparer<FilterConfiguration>.Default.Equals(Filter, other.Filter);                   
+                   StringComparer.InvariantCultureIgnoreCase.Equals(this.Path, other.Path);
         }
     }
 }

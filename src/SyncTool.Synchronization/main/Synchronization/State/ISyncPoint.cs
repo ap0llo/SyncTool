@@ -19,11 +19,6 @@ namespace SyncTool.Synchronization.State
         /// <summary>
         /// Gets the id of the latest multifilesystem snapshot that was included in the last sync
         /// </summary>
-        string MultiFileSystemSnapshotId { get; }
-
-        /// <summary>
-        /// Gets the filter configurations at the time of the sync
-        /// </summary>
-        IReadOnlyDictionary<string, FilterConfiguration> FilterConfigurations { get; set; } 
+        string MultiFileSystemSnapshotId { get; }        
     }
 }

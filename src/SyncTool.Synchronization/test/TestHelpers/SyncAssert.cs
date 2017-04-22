@@ -18,8 +18,7 @@ namespace SyncTool.TestHelpers
         public static void Equal(ISyncPoint expected, ISyncPoint actual)
         {
             Assert.Equal(expected.Id, actual.Id);            
-            Assert.Equal(expected.MultiFileSystemSnapshotId, actual.MultiFileSystemSnapshotId);
-            DictionaryAssert.Equal(expected.FilterConfigurations, actual.FilterConfigurations);            
+            Assert.Equal(expected.MultiFileSystemSnapshotId, actual.MultiFileSystemSnapshotId);            
         }
         
 

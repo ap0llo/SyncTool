@@ -27,33 +27,11 @@ namespace SyncTool.TestHelpers
         }
 
 
-
         public static MutableSyncPoint WithMultiFileSystemSnapshotId(this MutableSyncPoint state, string id)
         {            
             state.MultiFileSystemSnapshotId = id;            
             return state;
         }
-
-
-        public static MutableSyncPoint WithFilterConfiguration(this MutableSyncPoint state, string name, FilterConfiguration filterConfiguration)
-        {
-            Dictionary<string, FilterConfiguration> current;
-            try
-            {
-                current = (Dictionary<string, FilterConfiguration>)state.FilterConfigurations;
-            }
-            catch (Exception)
-            {
-                current = null;
-            }
-            current = current ?? new Dictionary<string, FilterConfiguration>();
-
-            current.Add(name, filterConfiguration);
-
-            state.FilterConfigurations = current;
-
-            return state;
-        }
-
+        
     }
 }

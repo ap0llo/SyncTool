@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using SyncTool.Common;
 using SyncTool.Configuration;
 using SyncTool.Configuration.Model;
@@ -35,7 +34,7 @@ namespace SyncTool.Git.Synchronization
 
         public SynchronizerTest()
         {
-            m_Instance = new Synchronizer(EqualityComparer<IFileReference>.Default, new ChangeFilterFactory());
+            m_Instance = new Synchronizer(EqualityComparer<IFileReference>.Default);
             var gitGroup = CreateGroup();
             m_Group = gitGroup;
             m_MultiFileSystemHistory = new GitBasedMultiFileSystemHistoryService(gitGroup, gitGroup.GetHistoryService());
@@ -139,12 +138,7 @@ namespace SyncTool.Git.Synchronization
             var syncPoint = new MutableSyncPoint()
             {
                 Id = 1,                
-                MultiFileSystemSnapshotId = m_MultiFileSystemHistory.CreateSnapshot().Id,
-                FilterConfigurations = new Dictionary<string, FilterConfiguration>()
-                {
-                    {"folder1", FilterConfiguration.Empty },
-                    {"folder2", FilterConfiguration.Empty }
-                }
+                MultiFileSystemSnapshotId = m_MultiFileSystemHistory.CreateSnapshot().Id
             };
 
             m_Group.GetSyncPointService().AddItem(syncPoint);
@@ -561,199 +555,6 @@ namespace SyncTool.Git.Synchronization
 
         
         //TODO: Reset occurs when a folder is removed
-        
-        [Fact]
-        public void Synchronize_stores_the_filter_configuration_in_the_sync_point()
-        {
-            //ARRANGE
-            var historyBuilder1 = new HistoryBuilder(m_Group, "folder1");
-            historyBuilder1.AddFile("file1");
-            historyBuilder1.CreateSnapshot();
-
-            var historyBuilder2 = new HistoryBuilder(m_Group, "folder2");
-            historyBuilder2.AddFile("file2");
-            historyBuilder2.CreateSnapshot();
-
-            var configurationService = m_Group.GetConfigurationService();
-            var folder1 = configurationService["folder1"];
-
-            //"not isEmpty()" will always be true for file paths
-            folder1.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "not isEmpty()");
-
-            configurationService.UpdateItem(folder1);
-
-            var folder2 = configurationService["folder2"];
-            folder2.Filter = FilterConfiguration.Empty;
-            configurationService.UpdateItem(folder2);
-
-            //ACT
-            m_Instance.Synchronize(m_Group);
-
-            //ASSERT
-            var syncPointService = m_Group.GetSyncPointService();
-            var syncPoint = syncPointService.Items.Single();
-            
-            var expected = new Dictionary<string, FilterConfiguration>()
-            {
-                {"folder1", folder1.Filter},
-                {"folder2", folder2.Filter}
-            };
-            DictionaryAssert.Equal(expected, syncPoint.FilterConfigurations);
-        }
-
-        [Fact]
-        public void Synchronizer_resets_the_sync_state_if_a_filter_was_modified_since_the_last_sync()
-        {
-            //ARRANGE
-            {
-                var historyBuilder = new HistoryBuilder(m_Group, "folder1");
-                historyBuilder.AddFile("file1");
-                historyBuilder.CreateSnapshot();
-            }
-            {
-                var historyBuilder = new HistoryBuilder(m_Group, "folder2");
-                historyBuilder.AddFile("file2");
-                historyBuilder.CreateSnapshot();
-            }
-
-            m_Instance.Synchronize(m_Group);
-
-            // change filter for folder2
-            {
-                var configurationService = m_Group.GetConfigurationService();
-                var folder = configurationService["folder2"];
-
-                //"not isEmpty()" will always be true for file paths
-                folder.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "not isEmpty()");
-
-                configurationService.UpdateItem(folder);
-            }
-
-            var firstSyncActions = m_Group.GetSyncActionService().AllItems.ToArray();
-
-            //ACT
-            m_Instance.Synchronize(m_Group);
-
-            //ASSERT
-            {
-                var syncPointService = m_Group.GetSyncPointService();
-
-                // there should be 3 sync points 
-                Assert.Equal(3, syncPointService.Items.Count());
-
-                // first sync
-                Assert.NotNull(syncPointService[1].MultiFileSystemSnapshotId);
-
-                // reset
-                Assert.Null(syncPointService[2].MultiFileSystemSnapshotId);
-
-                // second sync (FromSnapshots needs to be reset to null)
-                Assert.NotNull(syncPointService[3].MultiFileSystemSnapshotId);
-
-
-                // all sync actions from previous syncs need to be cancelled
-                var syncActions = m_Group.GetSyncActionService().AllItems.ToDictionary(a => a.Id);
-                Assert.True(firstSyncActions.All(a => syncActions[a.Id].State == SyncActionState.Cancelled));
-
-                // all conflicts need to be removed            
-                Assert.Empty(m_Group.GetSyncConflictService().Items);
-            }
-        }
-        
-
-        [Fact]
-        public void Synchronize_ignores_changes_from_a_folder_excluded_by_the_folders_filter()
-        {
-            //ARRANGE
-
-            var configurationService = m_Group.GetConfigurationService();
-
-            // set up folder 1
-            {
-                var historyBuilder = new HistoryBuilder(m_Group, "folder1");
-                historyBuilder.AddFile("file.excluded");
-                historyBuilder.AddFile("file.included");
-                historyBuilder.CreateSnapshot();
-
-                // set up filter
-                historyBuilder.SyncFolder.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "not endsWith('excluded')");
-                configurationService.UpdateItem(historyBuilder.SyncFolder);
-            }
-
-            // set up folder 2 
-            {
-                new HistoryBuilder(m_Group, "folder2").CreateSnapshot();
-            }
-            // set up folder 3
-            {
-                new HistoryBuilder(m_Group, "folder3").CreateSnapshot();
-            }
-
-            //ACT
-            m_Instance.Synchronize(m_Group);
-
-            //ASSERT: file.excluded is added to no folder (filtered from source, but file.included needs to be added to both folder 2 and 3)
-
-            var syncActionService = m_Group.GetSyncActionService();
-            var pendingItems = syncActionService.PendingItems.ToArray();
-            
-                    
-            Assert.Equal(2, syncActionService.PendingItems.Count());
-
-            SyncAssert.ActionsExist(syncActionService, 
-                path: "/file.included",
-                expectedState:SyncActionState.Queued,
-                expectedCount:2,
-                expectedChangeType: ChangeType.Added);
-        }
-
-        [Fact]
-        public void Synchronize_does_not_apply_changes_to_a_folder_that_are_excluded_by_its_filter()
-        {
-            // ARRANGE
-
-            var configurationService = m_Group.GetConfigurationService();
-
-            // set up folder 1
-            {
-                var historyBuilder = new HistoryBuilder(m_Group, "folder1");
-                historyBuilder.AddFile("file1");
-                historyBuilder.AddFile("file2");
-                historyBuilder.CreateSnapshot();
-                
-            }
-            // set up folder 2
-            {
-                var historyBuilder = new HistoryBuilder(m_Group, "folder2");
-                historyBuilder.CreateSnapshot();
-
-                // set up filter
-                historyBuilder.SyncFolder.Filter = new FilterConfiguration(FilterType.MicroscopeQuery, "endsWith('file1')");
-                configurationService.UpdateItem(historyBuilder.SyncFolder);
-            }
-
-            // set up folder 3
-            {
-                var historyBuilder = new HistoryBuilder(m_Group, "folder3");
-                historyBuilder.CreateSnapshot();
-            }
-
-            //ACT
-            m_Instance.Synchronize(m_Group);
-
-            //ASSERT: file1 is added to both folder2 and folder3, file2 is only added to folder3 (excluded by folder2's filter)
-            var syncActionService = m_Group.GetSyncActionService();
-
-            SyncAssert.ActionsExist(syncActionService, "/file1",
-                expectedState: SyncActionState.Queued,
-                expectedCount:2,
-                expectedChangeType: ChangeType.Added);
-
-            SyncAssert.ActionsExist(syncActionService, "/file2",
-                expectedState: SyncActionState.Queued,
-                expectedCount: 1,
-                expectedChangeType: ChangeType.Added);
-        }
         
 
         [Fact]

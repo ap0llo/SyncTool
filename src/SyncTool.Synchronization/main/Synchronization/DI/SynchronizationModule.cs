@@ -11,7 +11,6 @@ namespace SyncTool.Synchronization.DI
         public override void Load()
         {
             Bind<ISynchronizer>().To<Synchronizer>();
-            Bind<IChangeFilterFactory>().To<ChangeFilterFactory>();
         }
     }
 }
