@@ -9,5 +9,10 @@
   <ItemGroup>
     <PackageReference Include="Microscope" Version="1.2.3" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="FileSystem\Versioning\" />
+  </ItemGroup>
   
 </Project>
