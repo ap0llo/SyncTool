@@ -1,7 +1,6 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool.Common", "SyncTool.Common", "{291D93BB-2DCB-47D3-9367-0D69749D41F7}"
 EndProject
@@ -44,6 +43,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.Synchronization", "SyncTool.Synchronization\main\SyncTool.Synchronization.csproj", "{A9D47A30-087A-4F06-A0B5-622B7E77D633}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.Synchronization.Test", "SyncTool.Synchronization\test\SyncTool.Synchronization.Test.csproj", "{A13459B4-6279-46C4-B11B-4CA8774B26B5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.WebUI", "SyncTool.WebUI\main\SyncTool.WebUI.csproj", "{B70BAD41-CBED-4724-8C00-806038A50C2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.WebUI.Test", "SyncTool.WebUI\test\SyncTool.WebUI.Test.csproj", "{374276AC-618C-44DC-88FB-46BEC08BE8E0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool.WebUI", "SyncTool.WebUI", "{E3862DC8-B9B4-45F3-8BA9-176DABCB1F83}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -223,6 +228,30 @@ Global
 		{A13459B4-6279-46C4-B11B-4CA8774B26B5}.Release|x64.Build.0 = Release|Any CPU
 		{A13459B4-6279-46C4-B11B-4CA8774B26B5}.Release|x86.ActiveCfg = Release|Any CPU
 		{A13459B4-6279-46C4-B11B-4CA8774B26B5}.Release|x86.Build.0 = Release|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Debug|x64.Build.0 = Debug|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Debug|x86.Build.0 = Debug|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Release|x64.ActiveCfg = Release|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Release|x64.Build.0 = Release|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Release|x86.ActiveCfg = Release|Any CPU
+		{B70BAD41-CBED-4724-8C00-806038A50C2B}.Release|x86.Build.0 = Release|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Debug|x64.Build.0 = Debug|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Debug|x86.Build.0 = Debug|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Release|x64.ActiveCfg = Release|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Release|x64.Build.0 = Release|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Release|x86.ActiveCfg = Release|Any CPU
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -242,5 +271,7 @@ Global
 		{D6D2628C-13C0-4CA0-9578-875578C83786} = {1220A391-43DA-4E0F-A6E8-DCA94668AD28}
 		{A9D47A30-087A-4F06-A0B5-622B7E77D633} = {FE584456-BF71-404C-84E2-81A682194D64}
 		{A13459B4-6279-46C4-B11B-4CA8774B26B5} = {FE584456-BF71-404C-84E2-81A682194D64}
+		{B70BAD41-CBED-4724-8C00-806038A50C2B} = {E3862DC8-B9B4-45F3-8BA9-176DABCB1F83}
+		{374276AC-618C-44DC-88FB-46BEC08BE8E0} = {E3862DC8-B9B4-45F3-8BA9-176DABCB1F83}
 	EndGlobalSection
 EndGlobal
