@@ -11,7 +11,7 @@ using SyncTool.FileSystem.Versioning;
 namespace SyncTool.Cli.Commands
 {
     [Verb("Add-Group")]
-    public class AddGroupOptions
+    public class AddGroupOptions : OptionsBase
     {
         [Option('n', "name", Required = true)]
         public string Name { get; set; }

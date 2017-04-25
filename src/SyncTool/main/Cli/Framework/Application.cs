@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using CommandLine;
 using Ninject;
+using System.Diagnostics;
 
 namespace SyncTool.Cli.Framework
 {
@@ -42,14 +43,27 @@ namespace SyncTool.Cli.Framework
             
             // select command
             CommandDescription? selectedCommand = null;
-            object optionInstance = null;
+            OptionsBase optionInstance = null;
 
             parser.ParseArguments(args, commands.Select(c => c.OptionType).ToArray())
                 .WithParsed(obj =>
                 {
-                    optionInstance = obj;
+                    optionInstance = (OptionsBase) obj;
                     selectedCommand = commands.Single(c => c.OptionType == obj.GetType());
                 });
+
+
+            if (optionInstance.LaunchDebugger)
+            {
+                if (Debugger.IsAttached)
+                {
+                    Debugger.Break();
+                }
+                else
+                {
+                    Debugger.Launch();
+                }            
+            }
 
 
             // execute command
@@ -65,7 +79,7 @@ namespace SyncTool.Cli.Framework
         }
 
 
-        int ExecuteCommand(CommandDescription command, object optionInstance)
+        int ExecuteCommand(CommandDescription command, OptionsBase optionInstance)
         {
             // get MethodInfo for the "Run" method
             var runMethod = GetRunMethod(command);
@@ -87,7 +101,7 @@ namespace SyncTool.Cli.Framework
             
             for (int i = 0; i < interfaceMapping.InterfaceMethods.Length; i++)
             {
-                if (interfaceMapping.InterfaceMethods[i].Name == nameof(ICommand<object>.Run))
+                if (interfaceMapping.InterfaceMethods[i].Name == nameof(ICommand<OptionsBase>.Run))
                 {
                     return interfaceMapping.TargetMethods[i];                    
                 }

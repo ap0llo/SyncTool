@@ -10,7 +10,7 @@ using SyncTool.FileSystem.Versioning;
 namespace SyncTool.Cli.Commands
 {
     [Verb("Add-Folder"),]
-    public class AddFolderOptions
+    public class AddFolderOptions : OptionsBase
     {
         [Option('g', "group", Required = true)]
         public string Group { get; set; }

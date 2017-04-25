@@ -10,7 +10,7 @@ using SyncTool.FileSystem.Versioning;
 namespace SyncTool.Cli.Commands
 {
     [Verb("Add-Snapshot")]
-    public class AddSnapshotOptions
+    public class AddSnapshotOptions : OptionsBase
     {
 
         [Option('g', "group", Required = true)]

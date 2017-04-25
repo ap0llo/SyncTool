@@ -9,7 +9,7 @@ using SyncTool.Configuration.Model;
 namespace SyncTool.Cli.Commands
 {
     [Verb("Get-Group")]
-    public class GetGroupOptions
+    public class GetGroupOptions : OptionsBase
     {
         [Option('n', "name", Required = false)]
         public string Name { get; set; }
