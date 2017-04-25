@@ -52,8 +52,8 @@ namespace SyncTool.Cli.Framework
                     selectedCommand = commands.Single(c => c.OptionType == obj.GetType());
                 });
 
-
-            if (optionInstance.LaunchDebugger)
+           
+            if (optionInstance?.LaunchDebugger == true)
             {
                 if (Debugger.IsAttached)
                 {
