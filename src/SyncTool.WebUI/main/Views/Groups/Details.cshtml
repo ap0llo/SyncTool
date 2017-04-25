@@ -1,0 +1,22 @@
+﻿@using SyncTool.WebUI.Model.Groups;
+@model DetailsModel
+
+@{
+    ViewData["Title"] = $"Group '{Model.GroupName}'" ;
+}
+
+
+<div class="row">
+    <ol class="breadcrumb">
+        <li><a asp-controller="Groups" asp-action="">Groups</a></li>        
+        <li class="active">@Model.GroupName</li>
+    </ol>
+</div>
+
+<div class="row">
+    
+    <ul>
+        <li><a asp-controller="Folders" asp-action="" asp-route-groupName="@Model.GroupName">Folders</a></li>
+    </ul>
+
+</div>

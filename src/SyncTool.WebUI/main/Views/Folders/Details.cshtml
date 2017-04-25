@@ -1,0 +1,29 @@
+﻿@using SyncTool.Configuration.Model;
+@using SyncTool.WebUI.Model.Folders;
+@model DetailsModel
+
+
+@{
+    ViewData["Title"] = Model.Folder.Name;
+}
+
+<div class="row">
+    <ol class="breadcrumb">
+        <li><a asp-controller="Groups" asp-action="" >Groups</a></li>
+        <li><a asp-controller="Groups" asp-action="" asp-route-groupName="@Model.GroupName">@Model.GroupName</a></li>
+        <li><a asp-controller="Folders" asp-action="" asp-route-groupName="@Model.GroupName">Folders</a></li>
+        <li class="active">@Model.Folder.Name</li>
+    </ol>
+</div>
+
+<div class="row">
+
+    
+    <ul>
+        <li><a asp-controller="Snapshots" 
+               asp-action=""
+               asp-route-groupName="@Model.GroupName"
+               asp-route-folderName="@Model.Folder.Name">Snapshots</a></li>
+    </ul>
+
+</div>

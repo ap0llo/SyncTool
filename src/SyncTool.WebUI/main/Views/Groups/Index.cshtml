@@ -1,0 +1,31 @@
+﻿@using SyncTool.WebUI.Model.Groups
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Groups";
+}
+
+<div class="row">
+    <ol class="breadcrumb">        
+        <li class="active">Groups</li>
+    </ol>
+</div>
+
+<div class="row">
+    
+    <table class="table table-hover">
+        <tr>
+            <th>Name</th>
+        </tr>
+
+        @foreach (var groupName in Model.GroupNames)
+        {
+            <tr>
+                <td><a asp-route-groupName="@groupName">@groupName</a></td>
+            </tr>
+        }
+    </table>
+
+    
+
+</div>

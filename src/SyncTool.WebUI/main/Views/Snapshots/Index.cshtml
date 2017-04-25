@@ -1,10 +1,40 @@
-﻿@{
+﻿@using SyncTool.WebUI.Model.Snapshots
+@model IndexModel
+
+@{
     ViewData["Title"] = "Snapshots";
 }
 
+<div class="row">
+    <ol class="breadcrumb">
+        <li><a asp-controller="Groups">Groups</a></li>
+        <li><a asp-controller="Groups" asp-route-groupName="@Model.GroupName">@Model.GroupName</a></li>
+        <li><a asp-controller="Folders" asp-route-groupName="@Model.GroupName">Folders</a></li>
+        <li><a asp-controller="Folders" 
+               asp-route-groupName="@Model.GroupName" 
+               asp-route-folderName="@Model.FolderName">@Model.FolderName</a></li>
+        <li class="active">Snapshots</li>
+    </ol>
+</div>
 
 <div class="row">
     
-    <h2>Snapshots</h2>
-    <p>Snapshot list goes here</p>
+    <table class="table table-hover">
+        <tr>
+            <th>Id</th>
+            <th>CreationDate</th>
+        </tr>
+        @foreach (var snapshot in Model.Snapshots)
+        {
+            <tr>
+                <td><a asp-controller="Snapshots" 
+                       asp-action="Directory"
+                       asp-route-groupName="@Model.GroupName"
+                       asp-route-folderName="@Model.FolderName"
+                       asp-route-id="@snapshot.Id">@snapshot.Id</a></td>
+                <td>@snapshot.CreationTime</td>
+            </tr>
+        }
+    </table>
+
 </div>

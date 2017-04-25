@@ -1,0 +1,36 @@
+﻿@using SyncTool.Configuration.Model;
+@using SyncTool.WebUI.Model.Folders;
+@model IndexModel
+
+
+@{
+    ViewData["Title"] = $"{Model.GroupName} // Folders";
+}
+
+<div class="row">
+    <ol class="breadcrumb">
+        <li><a asp-controller="Groups">Groups</a></li>
+        <li><a asp-controller="Groups" asp-route-groupName="@Model.GroupName">@Model.GroupName</a></li>
+        <li class="active">Folders</li>
+    </ol>
+</div>
+
+
+<div class="row">
+
+    <table class="table table-hover">
+        <tr>
+            <th>Name</th>
+            <th>Path</th>
+        </tr>
+
+        @foreach(var syncFolder in Model.Folders)
+        {
+            <tr>
+                <td><a asp-controller="Folders" asp-route-groupName="@Model.GroupName" asp-route-folderName="@syncFolder.Name">@syncFolder.Name</a></td>
+                <td>@syncFolder.Path</td>
+            </tr>
+        }
+    </table>
+
+</div>

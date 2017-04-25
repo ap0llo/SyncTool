@@ -13,15 +13,6 @@ namespace SyncTool.WebUI.Controllers
             return View();
         }
 
-        public IActionResult About()
-        {
-            ViewData["Message"] = "SyncTool WebUI";
-
-            return View();
-        }
-
-    
-
         public IActionResult Error()
         {
             return View();

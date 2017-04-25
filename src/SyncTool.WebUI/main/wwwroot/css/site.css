@@ -35,3 +35,10 @@ textarea {
         display: none;
     }
 }
+
+
+.breadcrumb {
+     border: solid; 
+     border-width:1px;
+}
+
