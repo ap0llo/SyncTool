@@ -22,17 +22,32 @@
     <table class="table table-hover">
         <tr>
             <th>Id</th>
-            <th>CreationDate</th>
+            <th>Date created</th>
+            <th></th>
+            <th></th>
         </tr>
         @foreach (var snapshot in Model.Snapshots)
         {
             <tr>
                 <td><a asp-controller="Snapshots" 
+                       asp-action="Details"
+                       asp-route-groupName="@Model.GroupName"
+                       asp-route-folderName="@Model.FolderName"
+                       asp-route-id="@snapshot.Id">@snapshot.Id</a>
+                </td>
+                <td>@snapshot.CreationTime</td>
+                <td>
+                    <a asp-controller="Snapshots"
+                       asp-action="Changes"
+                       asp-route-groupName="@Model.GroupName"
+                       asp-route-folderName="@Model.FolderName"
+                       asp-route-id="@snapshot.Id">View Changes</a>
+                </td>
+                <td><a asp-controller="Snapshots"
                        asp-action="Directory"
                        asp-route-groupName="@Model.GroupName"
                        asp-route-folderName="@Model.FolderName"
-                       asp-route-id="@snapshot.Id">@snapshot.Id</a></td>
-                <td>@snapshot.CreationTime</td>
+                       asp-route-id="@snapshot.Id">Browse Snapshot</a></td>
             </tr>
         }
     </table>

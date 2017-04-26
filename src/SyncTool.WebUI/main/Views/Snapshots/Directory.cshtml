@@ -20,7 +20,12 @@
                asp-action="Index"
                asp-route-groupName="@Model.GroupName" 
                asp-route-folderName="@Model.FolderName">Snapshots</a></li>
-        <li class="active">@Model.SnapshotId</li>
+        <li><a asp-controller="Snapshots"
+               asp-action="Details"
+               asp-route-groupName="@Model.GroupName" 
+               asp-route-folderName="@Model.FolderName"
+               asp-route-id="@Model.SnapshotId">@Model.SnapshotId</a></li>
+        <li class="active">Browse</li>
     </ol>
 
     @if(Model.Directory.Parent != null)

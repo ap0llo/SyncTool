@@ -1,0 +1,115 @@
+﻿@using SyncTool.WebUI.Model.Snapshots
+@using SyncTool.FileSystem.Versioning
+@using ByteSizeLib;
+
+@model ChangesModel
+
+@{
+    ViewData["Title"] = "Changes";
+}
+
+<ol class="breadcrumb">
+    <li><a asp-controller="Groups" asp-action="">Groups</a></li>
+    <li><a asp-controller="Groups" asp-action="" asp-route-groupName="@Model.GroupName">@Model.GroupName</a></li>
+    <li><a asp-controller="Folders" asp-action="" asp-route-groupName="@Model.GroupName">Folders</a></li>
+    <li>
+        <a asp-controller="Folders"
+           asp-action=""
+           asp-route-groupName="@Model.GroupName"
+           asp-route-folderName="@Model.FolderName">@Model.FolderName</a>
+    </li>
+    <li>
+        <a asp-controller="Snapshots"
+           asp-action="Index"
+           asp-route-groupName="@Model.GroupName"
+           asp-route-folderName="@Model.FolderName">Snapshots</a>
+    </li>
+    <li><a asp-controller="Snapshots"
+           asp-action="Details"
+            asp-route-groupName="@Model.GroupName"
+           asp-route-folderName="@Model.FolderName"
+           asp-route-id="@Model.SnapshotId">@Model.SnapshotId</a></li>
+    <li class="active">Changes</li>
+</ol>
+
+<div class="row">
+    
+    <div class="panel-group">
+        <div class="panel panel-default">
+
+            @{
+                var counter = 1;
+            }
+
+            @foreach (var changeList in Model.ChangeLists)
+            {
+                var elementId = $"collapse{counter}";
+                counter += 1;
+
+                <div class="panel-heading">
+                    <p class="panel-title" style="font-size: 10pt ">
+                        <a data-toggle="collapse" href="#@elementId">@changeList.Path </a>
+                    </p>
+                </div>
+                <div id="@elementId" class="panel-collapse collapse">
+                    
+
+                    <div class="panel-body">
+                        @foreach (var change in changeList.Changes)
+                        {
+                            <p>Change Type: @change.Type</p>
+
+                            var showPreviousVersion = change.Type == ChangeType.Modified || change.Type == ChangeType.Deleted;
+                            var showNewVersion = change.Type == ChangeType.Modified || change.Type == ChangeType.Added;
+                            
+
+                            <table class="table table-hover">
+                                <tr>
+                                @if (showPreviousVersion && showNewVersion)
+                                {
+                                    <th></th>
+                                }       
+                                    <th>Date modified</th>
+                                    <th>Size</th>
+                                </tr>
+
+                                @if(showPreviousVersion)
+                                {
+                                    <tr>
+                                        @if(showNewVersion)
+                                        {
+                                            <td>Previous version</td>                                
+                                        }
+                                        <td>@change.FromVersion.LastWriteTime</td>
+                                        <td>@ByteSize.FromBytes(change.FromVersion.Length.Value).ToString()</td>
+                                    </tr>                                                                
+                                }
+
+                                @if (showNewVersion)
+                                {
+                                    <tr>
+                                        @if (showPreviousVersion)
+                                        {
+                                            <td>New version</td>
+                                        }
+                                        <td>@change.ToVersion.LastWriteTime</td>
+                                        <td>@ByteSize.FromBytes(change.ToVersion.Length.Value).ToString()</td>
+                                    </tr>
+                                }
+                                
+                            </table>
+                        }
+                        
+                    </div>
+
+
+
+                </div>
+            }
+        </div>
+    </div>
+
+
+
+    
+</div>

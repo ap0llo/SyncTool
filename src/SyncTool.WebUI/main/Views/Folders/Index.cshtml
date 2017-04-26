@@ -22,6 +22,7 @@
         <tr>
             <th>Name</th>
             <th>Path</th>
+            <th></th>
         </tr>
 
         @foreach(var syncFolder in Model.Folders)
@@ -29,6 +30,10 @@
             <tr>
                 <td><a asp-controller="Folders" asp-route-groupName="@Model.GroupName" asp-route-folderName="@syncFolder.Name">@syncFolder.Name</a></td>
                 <td>@syncFolder.Path</td>
+                <td><a asp-controller="Snapshots" 
+               asp-action=""
+               asp-route-groupName="@Model.GroupName"
+               asp-route-folderName="@syncFolder.Name">View Snapshots</a></td>
             </tr>
         }
     </table>

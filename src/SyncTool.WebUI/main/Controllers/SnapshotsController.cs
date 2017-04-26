@@ -32,6 +32,24 @@ namespace SyncTool.WebUI.Controllers
         }
 
 
+        public IActionResult Details(string id, [FromQuery] string groupName, [FromQuery] string folderName)
+        {
+            var group = m_GroupManager.GetGroup(groupName);
+            var historyService = group.GetHistoryService();
+            var history = historyService[folderName];
+
+            var snapshot = history[id];
+
+            var model = new DetailsModel()
+            {
+                GroupName = group.Name,
+                FolderName = history.Name,
+                Snapshot = snapshot
+            };
+
+            return View(model);
+        }
+
         public IActionResult Directory(
             string id, 
             [FromQuery] string groupName, 
@@ -56,6 +74,38 @@ namespace SyncTool.WebUI.Controllers
         }
 
 
-        
+        public IActionResult Changes(string id, [FromQuery] string groupName, [FromQuery] string folderName)
+        {
+            var group = m_GroupManager.GetGroup(groupName);
+            var historyService = group.GetHistoryService();
+            var history = historyService[folderName];
+
+            var snapshot = history[id];
+
+            var previousSnapshotId = history.GetPreviousSnapshotId(snapshot.Id);
+
+
+            IFileSystemDiff diff;
+            if (previousSnapshotId == null)
+            {
+                diff = history.GetChanges(snapshot.Id);
+            }
+            else
+            {
+                diff = history.GetChanges(previousSnapshotId, snapshot.Id);
+            }
+
+            var model = new ChangesModel()
+            {
+                GroupName = group.Name,
+                FolderName = history.Name,
+                SnapshotId = snapshot.Id,
+                ChangeLists = diff.ChangeLists
+            };
+
+            return View(model);
+        }
+
+
     }
 }

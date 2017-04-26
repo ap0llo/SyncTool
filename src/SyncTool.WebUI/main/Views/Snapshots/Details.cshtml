@@ -1,0 +1,59 @@
+﻿@using SyncTool.WebUI.Model.Snapshots
+@model DetailsModel
+
+@{
+    ViewData["Title"] = "Snapshots Details";
+}
+
+<ol class="breadcrumb">
+    <li><a asp-controller="Groups" asp-action="">Groups</a></li>
+    <li><a asp-controller="Groups" asp-action="" asp-route-groupName="@Model.GroupName">@Model.GroupName</a></li>
+    <li><a asp-controller="Folders" asp-action="" asp-route-groupName="@Model.GroupName">Folders</a></li>
+    <li>
+        <a asp-controller="Folders"
+           asp-action=""
+           asp-route-groupName="@Model.GroupName"
+           asp-route-folderName="@Model.FolderName">@Model.FolderName</a>
+    </li>
+    <li>
+        <a asp-controller="Snapshots"
+           asp-action="Index"
+           asp-route-groupName="@Model.GroupName"
+           asp-route-folderName="@Model.FolderName">Snapshots</a>
+    </li>
+    <li class="active">@Model.SnapshotId</li>    
+</ol>
+
+<div class="row" style="margin-left: 0px; margin-right: 0px;">
+
+    <h2>Snapshot Details</h2>
+    
+    <table class="table table-hover">
+        <tr>
+            <th>Id</th>
+            <td>@Model.Snapshot.Id</td>            
+        </tr>
+        <tr>
+            <th>Date created</th>
+            <td>@Model.Snapshot.CreationTime</td>
+        </tr>
+    </table>
+
+   <ul>
+       <li>
+           <a asp-controller="Snapshots" 
+              asp-action="Changes" 
+           asp-route-groupName="@Model.GroupName"
+           asp-route-folderName="@Model.FolderName"
+           asp-route-id="@Model.Snapshot.Id">View Changes</a>
+       </li>
+       <li>
+           <a asp-controller="Snapshots"
+              asp-action="Directory"
+              asp-route-groupName="@Model.GroupName"
+           asp-route-folderName="@Model.FolderName"
+           asp-route-id="@Model.Snapshot.Id">Browse Snapshot</a>
+       </li>
+   </ul>
+
+</div>
