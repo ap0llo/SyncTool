@@ -68,5 +68,8 @@ namespace SyncTool.FileSystem.Versioning
         /// <param name="pathFilter">If specified limits the changes included in the diff to the supplied paths</param>
         /// <exception cref="SnapshotNotFoundException">Thrown if either if the specified snapshots could not be found</exception>
         IFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null);
+
+
+        string GetPreviousSnapshotId(string id);
     }
 }

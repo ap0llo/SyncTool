@@ -159,6 +159,31 @@ namespace SyncTool.Git.FileSystem.Versioning
             return new FileSystemDiff(this, fromSnapshot, toSnapshot, changeLists);
         }
 
+        public string GetPreviousSnapshotId(string id)
+        {
+            AssertSnapshotExists(id);
+
+            var commit = m_Repository.Lookup<Commit>(id);
+            var parents = commit.Parents.ToArray();
+
+            if (parents.Length == 1)
+            {
+                var parent = parents[0];
+                if (GitBasedFileSystemSnapshot.IsSnapshot(parent))
+                {
+                    return parent.Sha;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                // this cannot happen (at least it shouldn't)
+                throw new InvalidOperationException("Encountered commit in filesystem history with multiple parents");
+            }
+        }
 
         IDictionary<string, GitBasedFileSystemSnapshot> LoadSnapshots()
         {
@@ -407,6 +432,6 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         }
 
-
+        
     }
 }

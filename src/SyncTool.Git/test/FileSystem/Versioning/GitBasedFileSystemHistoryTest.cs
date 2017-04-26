@@ -613,8 +613,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             var state = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1")
-                
+                dir1 => new EmptyFile(dir1, "file1")                
             };
 
             var snapshot = m_Instance.CreateSnapshot(state);
@@ -994,6 +993,50 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         #endregion
 
+        #region GetPreviousSnapshotId
+
+        [Fact]
+        public void GetPreviousSnapshotId_throws_a_SnapshotNotFoundException_is_the_Id_is_unknown()
+        {
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetPreviousSnapshotId("someId"));            
+        }
+        
+        [Fact]
+        public void GetPreviousSnapshotId_returns_null_if_a_snapshot_is_the_first_snapshot()
+        {
+            var state = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1")
+            };
+
+            var snapshot = m_Instance.CreateSnapshot(state);
+
+            Assert.Null(m_Instance.GetPreviousSnapshotId(snapshot.Id));
+        }
+
+
+        [Fact]
+        public void GetPreviousSnapshotId_returns_the_expected_value()
+        {
+            var state1 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1")
+            };
+
+            var state2 = new Directory(s_Dir1)
+            {
+                dir1 => new EmptyFile(dir1, "file1"),
+                dir1 => new EmptyFile(dir1, "file2")
+            };
+
+            var snapshot1 = m_Instance.CreateSnapshot(state1);
+            var snapshot2 = m_Instance.CreateSnapshot(state2);
+
+            Assert.NotNull(m_Instance.GetPreviousSnapshotId(snapshot2.Id));
+            Assert.Equal(snapshot1.Id, m_Instance.GetPreviousSnapshotId(snapshot2.Id));
+        }
+
+        #endregion
 
         public override void Dispose()
         {
