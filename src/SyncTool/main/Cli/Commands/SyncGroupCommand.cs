@@ -29,16 +29,8 @@ namespace SyncTool.Cli.Commands
 
         public SyncGroupCommand(IOutputWriter outputWriter, IGroupManager groupManager, ISynchronizer synchronizer) : base(outputWriter)
         {
-            if (groupManager == null)
-            {
-                throw new ArgumentNullException(nameof(groupManager));
-            }
-            if (synchronizer == null)
-            {
-                throw new ArgumentNullException(nameof(synchronizer));
-            }
-            m_GroupManager = groupManager;
-            m_Synchronizer = synchronizer;
+            m_GroupManager = groupManager ?? throw new ArgumentNullException(nameof(groupManager));
+            m_Synchronizer = synchronizer ?? throw new ArgumentNullException(nameof(synchronizer));
         }
 
 

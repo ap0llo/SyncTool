@@ -75,7 +75,6 @@ namespace SyncTool.Git.Synchronization.State
 
         public GitSyncPointService(GitBasedGroup gitGroup) : base(gitGroup)
         {
-       
 
         }
 

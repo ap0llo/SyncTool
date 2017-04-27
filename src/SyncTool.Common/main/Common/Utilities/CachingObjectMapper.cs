@@ -17,17 +17,8 @@ namespace SyncTool.Common.Utilities
 
         public CachingObjectMapper(Func<TSource, TTarget> mappingFunction, IEqualityComparer<TSource> equalityComparer )
         {
-            if (mappingFunction == null)
-            {
-                throw new ArgumentNullException(nameof(mappingFunction));
-            }
-            if (equalityComparer == null)
-            {
-                throw new ArgumentNullException(nameof(equalityComparer));
-            }
-
-            m_MappingFunction = mappingFunction;
-            m_EqualityComparer = equalityComparer;
+            m_MappingFunction = mappingFunction ?? throw new ArgumentNullException(nameof(mappingFunction));
+            m_EqualityComparer = equalityComparer ?? throw new ArgumentNullException(nameof(equalityComparer));
             m_Cache = new Dictionary<TSource, TTarget>(m_EqualityComparer);
         }
 

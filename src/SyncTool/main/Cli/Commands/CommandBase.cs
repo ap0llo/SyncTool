@@ -1,5 +1,4 @@
 ﻿using System;
-using Ninject;
 using SyncTool.Cli.Output;
 
 namespace SyncTool.Cli.Commands
@@ -11,11 +10,7 @@ namespace SyncTool.Cli.Commands
 
         protected CommandBase(IOutputWriter outputWriter)
         {
-            if (outputWriter == null)
-            {
-                throw new ArgumentNullException(nameof(outputWriter));
-            }
-            this.OutputWriter = outputWriter;
+            OutputWriter = outputWriter ?? throw new ArgumentNullException(nameof(outputWriter));
         }
 
     }

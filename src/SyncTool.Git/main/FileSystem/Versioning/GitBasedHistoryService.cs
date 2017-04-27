@@ -5,7 +5,6 @@ using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
-using NativeDirectory = System.IO.Directory;
 
 
 namespace SyncTool.Git.FileSystem.Versioning

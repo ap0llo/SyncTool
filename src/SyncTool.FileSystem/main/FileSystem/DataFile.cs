@@ -8,7 +8,7 @@ namespace SyncTool.FileSystem
     /// When OpenRead() is callled, the content will be serialized to Json and written to the stream
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class DataFile<T> : FileSystemItem, IReadableFile
+    public abstract class DataFile<T> : FileSystemItem, IReadableFile where T : class
     {
         public T Content { get; }
 
@@ -19,12 +19,8 @@ namespace SyncTool.FileSystem
 
         protected DataFile(IDirectory parent, string name, T content) : base(parent, name)
         {
-            if (content == null)
-            {
-                throw new ArgumentNullException(nameof(content));
-            }
-            this.Content = content;
-            this.LastWriteTime = DateTime.Now;
+            Content = content ?? throw new ArgumentNullException(nameof(content));
+            LastWriteTime = DateTime.Now;
         }
 
 

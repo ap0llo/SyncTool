@@ -19,51 +19,17 @@ namespace SyncTool.FileSystem.Versioning
 
         public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot toSnapshot, IEnumerable<IChangeList> changeLists )
         {
-            if (history == null)
-            {
-                throw new ArgumentNullException(nameof(history));
-            }
-            if (toSnapshot == null)
-            {
-                throw new ArgumentNullException(nameof(toSnapshot));
-            }
-            if (changeLists == null)
-            {
-                throw new ArgumentNullException(nameof(changeLists));
-            }
-
-            changeLists = changeLists.ToList();
-
-            History = history;
-            ToSnapshot = toSnapshot;
-            ChangeLists = changeLists;
+            History = history ?? throw new ArgumentNullException(nameof(history));
+            ToSnapshot = toSnapshot ?? throw new ArgumentNullException(nameof(toSnapshot));
+            ChangeLists = (changeLists ?? throw new ArgumentNullException(nameof(changeLists))).ToList();
         }
 
         public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot fromSnapshot, IFileSystemSnapshot toSnapshot, IEnumerable<IChangeList> changeLists)
         {
-            if (history == null)
-            {
-                throw new ArgumentNullException(nameof(history));
-            }
-            if (fromSnapshot == null)
-            {
-                throw new ArgumentNullException(nameof(fromSnapshot));
-            }
-            if (toSnapshot == null)
-            {
-                throw new ArgumentNullException(nameof(toSnapshot));
-            }            
-            if (changeLists == null)
-            {
-                throw new ArgumentNullException(nameof(changeLists));
-            }
-            
-            changeLists = changeLists.ToList();
-            
-            History = history;
-            FromSnapshot = fromSnapshot;
-            ToSnapshot = toSnapshot;            
-            ChangeLists = changeLists;
+            History = history ?? throw new ArgumentNullException(nameof(history));
+            FromSnapshot = fromSnapshot ?? throw new ArgumentNullException(nameof(fromSnapshot));
+            ToSnapshot = toSnapshot ?? throw new ArgumentNullException(nameof(toSnapshot));            
+            ChangeLists = (changeLists ?? throw new ArgumentNullException(nameof(changeLists))).ToList();
         }
     }
 }

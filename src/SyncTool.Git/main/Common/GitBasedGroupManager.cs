@@ -29,25 +29,11 @@ namespace SyncTool.Git.Common
 
         public GitBasedGroupManager(IEqualityComparer<IFileReference>  fileReferenceComparer, IRepositoryPathProvider pathProvider, IGroupSettingsProvider settingsProvider)
         {
-            if (fileReferenceComparer == null)
-            {
-                throw new ArgumentNullException(nameof(fileReferenceComparer));
-            }
-            if (pathProvider == null)
-            {
-                throw new ArgumentNullException(nameof(pathProvider));
-            }
-            if (settingsProvider == null)
-            {
-                throw new ArgumentNullException(nameof(settingsProvider));
-            }
-
-            m_FileReferenceComparer = fileReferenceComparer;
-            m_PathProvider = pathProvider;
-            m_SettingsProvider = settingsProvider;
+            m_FileReferenceComparer = fileReferenceComparer ?? throw new ArgumentNullException(nameof(fileReferenceComparer));
+            m_PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
+            m_SettingsProvider = settingsProvider ?? throw new ArgumentNullException(nameof(settingsProvider));
 
             m_GroupSettings = m_SettingsProvider.GetGroupSettings().ToDictionary(g => g.Name, StringComparer.InvariantCultureIgnoreCase);
-
         }
 
 

@@ -18,11 +18,7 @@ namespace SyncTool.Synchronization.ChangeGraph
 
         public Graph(IEqualityComparer<T> valueComparer)
         {
-            if (valueComparer == null)
-            {
-                throw new ArgumentNullException(nameof(valueComparer));
-            }
-            m_ValueComparer = valueComparer;
+            m_ValueComparer = valueComparer ?? throw new ArgumentNullException(nameof(valueComparer));
             m_Nodes = new NullKeyDictionary<T, ValueNode<T>>(valueComparer);   
 
             StartNode = new StartNode<T>(valueComparer, 0);         

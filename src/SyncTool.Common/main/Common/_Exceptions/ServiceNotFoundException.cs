@@ -17,12 +17,7 @@ namespace SyncTool.Common
 
         public ServiceNotFoundException(Type serviceType) : base($"An service of type '{serviceType.Name}' could not be found")
         {
-            if (serviceType == null)
-            {
-                throw new ArgumentNullException(nameof(serviceType));
-            }
-
-            this.ServiceType = serviceType;
+            ServiceType = serviceType ?? throw new ArgumentNullException(nameof(serviceType));
         }
     }
 }

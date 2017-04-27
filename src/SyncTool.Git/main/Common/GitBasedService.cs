@@ -11,11 +11,7 @@ namespace SyncTool.Git.Common
 
         public GitBasedService(GitBasedGroup group)
         {
-            if (group == null)
-            {
-                throw new ArgumentNullException(nameof(group));
-            }
-            GitGroup = group;
+            GitGroup = group ?? throw new ArgumentNullException(nameof(group));
         }
 
 

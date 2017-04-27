@@ -15,10 +15,7 @@ namespace SyncTool.FileSystem
 
         public TextFile(IDirectory parent, string name, string content) : base(parent, name)
         {
-            if (content == null)
-                throw new ArgumentNullException(nameof(content));
-
-            Content = content;
+            Content = content ?? throw new ArgumentNullException(nameof(content));
             LastWriteTime = DateTime.Now;
         }
 
@@ -41,7 +38,9 @@ namespace SyncTool.FileSystem
         public static TextFile Load(IDirectory parentDirectory, IReadableFile file)
         {
             if (file == null)
+            {
                 throw new ArgumentNullException(nameof(file));
+            }
 
             using (var reader = new StreamReader(file.OpenRead()))
             {

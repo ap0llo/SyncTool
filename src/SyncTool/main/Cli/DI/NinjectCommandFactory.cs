@@ -13,12 +13,8 @@ namespace SyncTool.Cli.DI
 
 
         public NinjectCommandFactory(IKernel kernel)
-        {
-            if (kernel == null)
-            {
-                throw new ArgumentNullException(nameof(kernel));
-            }
-            m_Kernel = kernel;
+        {            
+            m_Kernel = kernel ?? throw new ArgumentNullException(nameof(kernel));
         }
 
 

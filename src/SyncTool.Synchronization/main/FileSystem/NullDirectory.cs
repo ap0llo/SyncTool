@@ -37,16 +37,8 @@ namespace SyncTool.FileSystem
 
         public NullDirectory(string path, string name)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-            this.Path = path;
-            this.Name = name;
+            this.Path = path ?? throw new ArgumentNullException(nameof(path));
+            this.Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
 

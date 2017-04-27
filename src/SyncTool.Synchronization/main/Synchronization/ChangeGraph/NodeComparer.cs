@@ -10,11 +10,7 @@ namespace SyncTool.Synchronization.ChangeGraph
 
         public NodeComparer(IEqualityComparer<T> valueComparer)
         {
-            if (valueComparer == null)
-            {
-                throw new ArgumentNullException(nameof(valueComparer));
-            }
-            m_ValueComparer = valueComparer;
+            m_ValueComparer = valueComparer ?? throw new ArgumentNullException(nameof(valueComparer));
         }
 
 

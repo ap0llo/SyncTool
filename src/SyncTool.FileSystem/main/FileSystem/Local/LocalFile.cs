@@ -29,11 +29,7 @@ namespace SyncTool.FileSystem.Local
 
         public LocalFile(IDirectory parent, FileInfo fileInfo) : base(parent, fileInfo.Name)
         {
-            if (fileInfo == null)
-            {
-                throw new ArgumentNullException(nameof(fileInfo));
-            }
-            m_FileInfo = fileInfo;
+            m_FileInfo = fileInfo ?? throw new ArgumentNullException(nameof(fileInfo));
         }
 
 

@@ -23,12 +23,7 @@ namespace SyncTool.Cli.Commands
 
         public GetGroupCommand(IOutputWriter outputWriter, IGroupManager groupManager) : base(outputWriter)
         {
-            if (groupManager == null)
-            {
-                throw new ArgumentNullException(nameof(groupManager));
-            }
-
-            m_GroupManager = groupManager;
+            m_GroupManager = groupManager ?? throw new ArgumentNullException(nameof(groupManager));
         }
 
 

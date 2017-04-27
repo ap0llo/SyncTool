@@ -61,7 +61,7 @@ namespace SyncTool.FileSystem
             else
             {
                 return file;
-        }
+            }
         }
 
 

@@ -25,11 +25,7 @@ namespace SyncTool.FileSystem.Local
         /// <param name="directory">The local directory to wrao</param>
         public DisposableLocalDirectoryWrapper(ILocalDirectory directory)
         {
-            if (directory == null)
-            {
-                throw new ArgumentNullException(nameof(directory));
-            }
-            Directory = directory;
+            Directory = directory ?? throw new ArgumentNullException(nameof(directory));
         }
 
 

@@ -27,8 +27,7 @@ namespace SyncTool.Git.FileSystem
         {
             m_Name = name;
             m_CommitTime = commitTime;
-            m_Tree = tree;                    
-            
+            m_Tree = tree;
         }
 
 
@@ -62,9 +61,7 @@ namespace SyncTool.Git.FileSystem
                 m_Loaded = true;
 
             }
-
-
-                    
+            
         }
         
 

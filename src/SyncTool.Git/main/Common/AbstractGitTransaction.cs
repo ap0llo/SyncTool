@@ -21,17 +21,8 @@ namespace SyncTool.Git.Common
 
         protected AbstractGitTransaction(string remotePath, string localPath)
         {
-            if (remotePath == null)
-            {
-                throw new ArgumentNullException(nameof(remotePath));
-            }
-            if (localPath == null)
-            {
-                throw new ArgumentNullException(nameof(localPath));
-            }
-
-            RemotePath = remotePath;
-            LocalPath = localPath;
+            RemotePath = remotePath ?? throw new ArgumentNullException(nameof(remotePath));
+            LocalPath = localPath ?? throw new ArgumentNullException(nameof(localPath));
         }
 
         

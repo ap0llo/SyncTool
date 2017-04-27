@@ -38,7 +38,6 @@ namespace SyncTool.FileSystem
                 return true;
             }
 
-
             return StringComparer.InvariantCultureIgnoreCase.Equals(this.Path, other.Path) &&
                    LastWriteTime == other.LastWriteTime &&
                    Length == other.Length;            

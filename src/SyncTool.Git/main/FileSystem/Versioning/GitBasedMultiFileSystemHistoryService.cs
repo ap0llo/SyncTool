@@ -12,12 +12,10 @@ namespace SyncTool.Git.FileSystem.Versioning
         internal static readonly BranchName BranchName = new BranchName("MultiFileSystemSnapshots");        
         readonly IHistoryService m_HistoryService;
 
+
         public GitBasedMultiFileSystemHistoryService(GitBasedGroup group, IHistoryService historyService) : base(group)
         {
-            if (historyService == null)            
-                throw new ArgumentNullException(nameof(historyService));
-            
-            m_HistoryService = historyService;
+            m_HistoryService = historyService ?? throw new ArgumentNullException(nameof(historyService));
         }
 
 

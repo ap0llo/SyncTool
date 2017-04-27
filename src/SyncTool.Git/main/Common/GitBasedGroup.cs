@@ -30,15 +30,6 @@ namespace SyncTool.Git.Common
 
         public GitBasedGroup(IEqualityComparer<IFileReference> fileReferenceComparer, IRepositoryPathProvider pathProvider, string name, string repositoryPath)
         {
-            if (fileReferenceComparer == null)
-            {
-                throw new ArgumentNullException(nameof(fileReferenceComparer));
-            }
-            if (pathProvider == null)
-            {
-                throw new ArgumentNullException(nameof(pathProvider));
-            }
-            
             if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
@@ -53,8 +44,8 @@ namespace SyncTool.Git.Common
                 throw new ArgumentNullException(nameof(repositoryPath));
             }
 
-            m_FileReferenceComparer = fileReferenceComparer;
-            m_PathProvider = pathProvider;
+            m_FileReferenceComparer = fileReferenceComparer ?? throw new ArgumentNullException(nameof(fileReferenceComparer));
+            m_PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
             Name = name;
 
             var localRepositoryPath = m_PathProvider.GetRepositoryPath(name);

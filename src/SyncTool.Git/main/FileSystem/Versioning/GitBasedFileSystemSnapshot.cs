@@ -6,7 +6,6 @@ using SyncTool.FileSystem.Local;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
 using SyncTool.Git.FileSystem.Versioning.MetaFileSystem;
-using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Git.FileSystem.Versioning
 {
@@ -36,17 +35,8 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         public GitBasedFileSystemSnapshot(IFileSystemHistory history, Commit commit)
         {
-            if (history == null)
-            {
-                throw new ArgumentNullException(nameof(history));
-            }
-            if (commit == null)
-            {
-                throw new ArgumentNullException(nameof(commit));
-            }
-
-            History = history;
-            m_Commit = commit;
+            History = history ?? throw new ArgumentNullException(nameof(history));
+            m_Commit = commit ?? throw new ArgumentNullException(nameof(commit));
             LoadSnapshot();          
         }
 

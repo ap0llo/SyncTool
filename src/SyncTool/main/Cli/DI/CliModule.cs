@@ -15,9 +15,7 @@ namespace SyncTool.Cli.DI
             Bind<ICommandLoader>().To<CurrentAssemblyCommandLoader>();
             Bind<IOutputWriter>().To<ConsoleOutputWriter>();
 
-
             Bind<IEqualityComparer<IFile>>().To<FilePropertiesComparer>();
-
         }
     }
 }

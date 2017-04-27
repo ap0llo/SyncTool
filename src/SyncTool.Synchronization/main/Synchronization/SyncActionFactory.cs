@@ -12,11 +12,7 @@ namespace SyncTool.Synchronization
 
         public SyncActionFactory(IEqualityComparer<IFileReference> fileReferenceComparer)
         {
-            if (fileReferenceComparer == null)
-            {
-                throw new ArgumentNullException(nameof(fileReferenceComparer));
-            }
-            m_FileReferenceComparer = fileReferenceComparer;
+            m_FileReferenceComparer = fileReferenceComparer ?? throw new ArgumentNullException(nameof(fileReferenceComparer));
         }
 
         public SyncAction GetSyncAction(string targetName, int syncPointId, IFileReference currentFileVersion, IFileReference newFileVersion)

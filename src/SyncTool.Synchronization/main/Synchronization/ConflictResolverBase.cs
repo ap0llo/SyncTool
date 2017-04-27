@@ -17,12 +17,7 @@ namespace SyncTool.Synchronization
 
         public ConflictResolverBase(IEqualityComparer<IFileReference> fileReferenceComparer)
         {
-            if (fileReferenceComparer == null)
-            {
-                throw new ArgumentNullException(nameof(fileReferenceComparer));
-            }
-            m_FileReferenceComparer = fileReferenceComparer;
-            
+            m_FileReferenceComparer = fileReferenceComparer ?? throw new ArgumentNullException(nameof(fileReferenceComparer));            
         }
 
 

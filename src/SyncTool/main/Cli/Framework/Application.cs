@@ -15,16 +15,8 @@ namespace SyncTool.Cli.Framework
 
         public Application(ICommandFactory commandFactory, ICommandLoader commandLoader)
         {
-            if (commandFactory == null)
-            {
-                throw new ArgumentNullException(nameof(commandFactory));
-            }
-            if (commandLoader == null)
-            {
-                throw new ArgumentNullException(nameof(commandLoader));
-            }
-            m_CommandFactory = commandFactory;
-            m_CommandLoader = commandLoader;
+            m_CommandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
+            m_CommandLoader = commandLoader ?? throw new ArgumentNullException(nameof(commandLoader));
         }
 
 
