@@ -23,9 +23,8 @@ namespace SyncTool.Cli.DI
                 .AsSelf()
                 .As<ICommand>();
 
-
-                //TODO: Should this be in the FileSystem module?
-                builder.RegisterType<FilePropertiesComparer>().As<IEqualityComparer<IFile>>();
+            //TODO: Should this be in the FileSystem module?
+            builder.RegisterType<FilePropertiesComparer>().As<IEqualityComparer<IFile>>();
 
             base.Load(builder);
         }
