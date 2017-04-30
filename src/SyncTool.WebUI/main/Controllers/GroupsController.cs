@@ -26,14 +26,15 @@ namespace SyncTool.WebUI.Controllers
             }
             else
             {
-                var group = m_GroupManager.GetGroup(groupName);
+                using (var group = m_GroupManager.GetGroup(groupName))
+                {                    
+                    var model = new DetailsModel()
+                    {
+                        GroupName = group.Name
+                    };
 
-                var model = new DetailsModel()
-                {
-                    GroupName = group.Name
-                };
-
-                return View("Details", model);
+                    return View("Details", model);
+                }
             }
         }
 
