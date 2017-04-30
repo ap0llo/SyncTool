@@ -18,11 +18,13 @@ namespace SyncTool.Git.Synchronization.Conflicts
     {
         readonly GitBasedGroup m_Group;
         readonly GitConflictService m_Service;
+        readonly GitRepository m_Repository;
 
         public GitConflictServiceTest()
         {
             m_Group = CreateGroup();
-            m_Service = new GitConflictService(m_Group);
+            m_Service = m_Group.GetService<GitConflictService>();
+            m_Repository = m_Group.GetService<GitRepository>();
         }
 
 
@@ -37,7 +39,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
         [Fact]
         public void T02_Items_returns_empty_enumerable_if_branch_is_empty()
         {
-            m_Group.Repository.CreateBranch(GitConflictService.BranchName, m_Group.Repository.GetInitialCommit());
+            m_Repository.Value.CreateBranch(GitConflictService.BranchName, m_Repository.Value.GetInitialCommit());
             Assert.Empty(m_Service.Items);
         }
 
@@ -133,12 +135,12 @@ namespace SyncTool.Git.Synchronization.Conflicts
             var conflict1 = new ConflictInfo("/file1", null);
             var conflict2 = new ConflictInfo("/file2", null);
 
-            var commitCount = m_Group.Repository.GetAllCommits().Count();
+            var commitCount = m_Repository.Value.GetAllCommits().Count();
 
             m_Service.AddItems(conflict1, conflict2);
-            Assert.Equal(commitCount +1 , m_Group.Repository.GetAllCommits().Count());
+            Assert.Equal(commitCount +1 , m_Repository.Value.GetAllCommits().Count());
 
-            var newServiceInstance = new GitConflictService(m_Group);
+            var newServiceInstance = new GitConflictService(m_Repository);
             Assert.Equal(2, newServiceInstance.Items.Count());            
         }
 
@@ -157,7 +159,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
         [Fact]
         public void T11_RemoveItems_removes_the_specified_items()
         {
-            var commitCount = m_Group.Repository.GetAllCommits().Count();
+            var commitCount = m_Repository.Value.GetAllCommits().Count();
             var conflict1 = new ConflictInfo("/file1", null);
             var conflict2 = new ConflictInfo("/file2", null);
 
@@ -167,7 +169,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
 
             m_Service.RemoveItems(conflict1, conflict2);
             Assert.Empty(m_Service.Items);
-            Assert.Equal(commitCount + 2, m_Group.Repository.GetAllCommits().Count());
+            Assert.Equal(commitCount + 2, m_Repository.Value.GetAllCommits().Count());
         }
 
         #endregion
@@ -205,7 +207,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
         [Fact]
         public void T15_ItemExists_returns_false_if_branch_is_empty()
         {
-            m_Group.Repository.CreateBranch(GitConflictService.BranchName, m_Group.Repository.GetInitialCommit());
+            m_Repository.Value.CreateBranch(GitConflictService.BranchName, m_Repository.Value.GetInitialCommit());
 
             Assert.False(m_Service.ItemExists("/SOME/file/Path"));
             Assert.False(m_Service.ItemExists("/another/path"));

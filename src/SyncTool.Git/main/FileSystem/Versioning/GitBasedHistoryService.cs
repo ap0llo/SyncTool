@@ -26,12 +26,12 @@ namespace SyncTool.Git.FileSystem.Versioning
 
                 var branchName = new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name);
                 
-                if (!GitGroup.Repository.LocalBranchExists(branchName))
+                if (!Repository.Value.LocalBranchExists(branchName))
                 {
                     throw new ItemNotFoundException($"An item named '{name}' was not found");
                 }
 
-                return new GitBasedFileSystemHistory(GitGroup.Repository, name);
+                return new GitBasedFileSystemHistory(Repository.Value, name);
             }
         }
 
@@ -39,36 +39,36 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             get
             {
-                return GitGroup.Repository.Branches
+                return Repository.Value.Branches
                     .GetLocalBranchesByPrefix(GitBasedFileSystemHistory.BranchNamePrefix)
-                    .Select(b => new GitBasedFileSystemHistory(GitGroup.Repository, BranchName.Parse(b.FriendlyName)));
+                    .Select(b => new GitBasedFileSystemHistory(Repository.Value, BranchName.Parse(b.FriendlyName)));
             }
         }
 
 
 
-        public GitBasedHistoryService(GitBasedGroup group) : base(group)
+        public GitBasedHistoryService(GitRepository repository) : base(repository)
         {
 
         }
 
 
 
-        public bool ItemExists(string name) => GitGroup.Repository.LocalBranchExists(new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name));
+        public bool ItemExists(string name) => Repository.Value.LocalBranchExists(new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name));
 
         public void CreateHistory(string name)
         {
             var branchName = new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name);
 
-            if (GitGroup.Repository.LocalBranchExists(branchName))
+            if (Repository.Value.LocalBranchExists(branchName))
             {
                 throw new DuplicateFileSystemHistoryException(name);
             }
 
-            var parentCommitId = GitGroup.Repository.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
-            var parentCommit = GitGroup.Repository.Lookup<Commit>(parentCommitId);
+            var parentCommitId = Repository.Value.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
+            var parentCommit = Repository.Value.Lookup<Commit>(parentCommitId);
 
-            GitGroup.Repository.CreateBranch(branchName, parentCommit);
+            Repository.Value.CreateBranch(branchName, parentCommit);
         }
 
 

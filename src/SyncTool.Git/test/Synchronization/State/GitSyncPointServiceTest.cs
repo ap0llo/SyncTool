@@ -17,12 +17,12 @@ namespace SyncTool.Git.Synchronization.State
     public class GitSyncPointServiceTest : GitGroupBasedTest
     {
         readonly GitBasedGroup m_Group;
-        readonly GitSyncPointService m_Service;
+        readonly GitSyncPointService m_Service;        
 
         public GitSyncPointServiceTest()
         {
             m_Group = CreateGroup();
-            m_Service = new GitSyncPointService(m_Group);
+            m_Service = m_Group.GetService<GitSyncPointService>();
         }
 
 
@@ -108,7 +108,7 @@ namespace SyncTool.Git.Synchronization.State
 
             // create another service instance that needs to load the state from disk
 
-            var service  = new GitSyncPointService(m_Group);
+            var service  = new GitSyncPointService(m_Group.GetService<GitRepository>());
 
             Assert.Equal(2, service.Items.Count());
             Assert.True(service.ItemExists(1));

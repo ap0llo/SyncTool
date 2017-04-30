@@ -213,3 +213,4 @@ ModelManifest.xml
 *.DotSettings
 /.idea
 *.iml
+src/SyncTool.WebUI/main/SyncTool.Groups.json

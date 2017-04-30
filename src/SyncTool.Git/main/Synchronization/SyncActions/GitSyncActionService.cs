@@ -23,7 +23,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             get
             {
                 // branch does not exist => result is empty
-                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                if (!Repository.Value.LocalBranchExists(BranchName))
                 {
                     return Enumerable.Empty<SyncAction>();
                 }
@@ -39,7 +39,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             get
             {
                 // branch does not exist => result is empty
-                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                if (!Repository.Value.LocalBranchExists(BranchName))
                 {
                     return Enumerable.Empty<SyncAction>();
                 }
@@ -57,13 +57,13 @@ namespace SyncTool.Git.Synchronization.SyncActions
             get
             {
                 // branch does not exist => result is empty
-                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                if (!Repository.Value.LocalBranchExists(BranchName))
                 {
                     return Enumerable.Empty<SyncAction>();
                 }
 
                 // load the root directory of the branch
-                var gitDirectory = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+                var gitDirectory = new GitDirectory(null, "root", Repository.Value.GetLocalBranch(BranchName).Tip);
 
                 // determine if the directory for action with the specified state exists and load actions from it            
                 var directoryPath = GetRelativeSyncActionDirectoryPath(state);
@@ -85,13 +85,13 @@ namespace SyncTool.Git.Synchronization.SyncActions
                 PathValidator.EnsureIsRootedPath(filePath);
 
                 // branch does not exist => result is empty
-                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                if (!Repository.Value.LocalBranchExists(BranchName))
                 {
                     return Enumerable.Empty<SyncAction>();
                 }
 
                 // load the root directory of the branch
-                var gitDirectory = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+                var gitDirectory = new GitDirectory(null, "root", Repository.Value.GetLocalBranch(BranchName).Tip);
 
                 // determine if the directory for action with the specified state and path exists and load actions from it            
                 var directoryPath = GetRelativeSyncActionDirectoryPath(state, filePath);
@@ -115,7 +115,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
                 PathValidator.EnsureIsRootedPath(filePath);
 
                 // branch does not exist => result is empty
-                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                if (!Repository.Value.LocalBranchExists(BranchName))
                 {
                     return Enumerable.Empty<SyncAction>();
                 }
@@ -128,7 +128,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
 
 
-        public GitSyncActionService(GitBasedGroup gitGroup) : base(gitGroup)
+        public GitSyncActionService(GitRepository repository) : base(repository)
         {
         }
 
@@ -167,7 +167,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
 
             // store the actions
-            using (var workingDir = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, BranchName.ToString()))
+            using (var workingDir = new TemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
             {               
                 // create the actions on disk
                 var localItemCreator = new LocalItemCreator();
@@ -191,7 +191,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             // make sure all to be updated actions exist (no need to check the state, this property might have changed)
             AssertSyncActionsExist(syncActions, false);
             
-            using (var workingDir = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, BranchName.ToString()))
+            using (var workingDir = new TemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
             {
                 var root = new Directory(null, "root");
 
@@ -237,7 +237,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             // make sure all to be updated actions exist (otherwise we cannot remove them)
             AssertSyncActionsExist(syncActions, true);
 
-            using (var workingDir = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, BranchName.ToString()))
+            using (var workingDir = new TemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
             {
                 var localDirectory = new LocalDirectory(null, workingDir.Location);
 
@@ -262,10 +262,10 @@ namespace SyncTool.Git.Synchronization.SyncActions
         /// </summary>
         void EnsureBranchExists()
         {
-            if (!GitGroup.Repository.LocalBranchExists(BranchName))
+            if (!Repository.Value.LocalBranchExists(BranchName))
             {
-                var initalCommit = GitGroup.Repository.GetInitialCommit();
-                GitGroup.Repository.CreateBranch(BranchName, initalCommit);
+                var initalCommit = Repository.Value.GetInitialCommit();
+                Repository.Value.CreateBranch(BranchName, initalCommit);
             }
         }
 

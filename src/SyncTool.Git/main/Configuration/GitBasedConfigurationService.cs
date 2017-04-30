@@ -41,7 +41,7 @@ namespace SyncTool.Git.Configuration
         {
             get
             {
-                var directory = GitGroup.GetConfigurationRootDirectory();
+                var directory = Repository.GetConfigurationRootDirectory();
                 if (directory.DirectoryExists(s_SyncFolders))
                 {
                     var configFiles = directory.GetDirectory(s_SyncFolders).Files.Where(f => f.HasExtensions(s_Json)).Cast<IReadableFile>();
@@ -63,7 +63,7 @@ namespace SyncTool.Git.Configuration
 
 
 
-        public GitBasedConfigurationService(GitBasedGroup group) : base(group)
+        public GitBasedConfigurationService(GitRepository repository) : base(repository)
         {            
         }
 
@@ -76,7 +76,7 @@ namespace SyncTool.Git.Configuration
             }            
 
             // add config file for the sync folder to the configuration directory
-            using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
+            using (var workingDirectory = new TemporaryWorkingDirectory(Repository.Value.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
             {
                 var syncFoldersPath = Path.Combine(workingDirectory.Location, s_SyncFolders);
 
@@ -109,7 +109,7 @@ namespace SyncTool.Git.Configuration
                 throw new SyncFolderNotFoundException($"A sync folder named '{folder.Name}' could not be found");
             }
 
-            using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
+            using (var workingDirectory = new TemporaryWorkingDirectory(Repository.Value.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
             {
                 var syncFoldersPath = Path.Combine(workingDirectory.Location, s_SyncFolders);
                 

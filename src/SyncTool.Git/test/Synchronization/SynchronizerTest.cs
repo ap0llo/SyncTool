@@ -32,7 +32,7 @@ namespace SyncTool.Git.Synchronization
             m_Instance = new Synchronizer(EqualityComparer<IFileReference>.Default);
             var gitGroup = CreateGroup();
             m_Group = gitGroup;
-            m_MultiFileSystemHistory = new GitBasedMultiFileSystemHistoryService(gitGroup, gitGroup.GetHistoryService());
+            m_MultiFileSystemHistory = m_Group.GetService<GitBasedMultiFileSystemHistoryService>();
         }
 
         [Fact]

@@ -16,22 +16,20 @@ namespace SyncTool.Git.FileSystem.Versioning
     public class GitBasedHistoryServiceTest : GitGroupBasedTest
     {
       
-
-
         [Fact(DisplayName = nameof(GitBasedHistoryService) + ".CreateHistory() can create multiple histories")]
         public void CreateHistory_can_create_multiple_histories()
         {
             var historyNames = new[] { "history1", "histroy2" };
 
             using (var group = CreateGroup())
-            {               
-                var historyService = new GitBasedHistoryService(group);
+            {
+                var historyService = group.GetHistoryService();
                 foreach (var name in historyNames)
                 {
                     historyService.CreateHistory(name);
                 }
 
-            Assert.Equal(historyNames.Length, historyService.Items.Count());
+                Assert.Equal(historyNames.Length, historyService.Items.Count());
             }
 
         }
@@ -52,7 +50,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             using (var group = CreateGroup())
             {
-                var historyService = new GitBasedHistoryService(group);
+                var historyService = group.GetHistoryService();
 
                 for (var i = 0; i < numberOfHistoriesToCreate; i++)
                 {
@@ -75,7 +73,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             using(var group = CreateGroup())
             {
-                var historyService = new GitBasedHistoryService(group);
+                var historyService = group.GetHistoryService();
                 historyService.CreateHistory(historyName);
 
                 Assert.Throws<DuplicateFileSystemHistoryException>(() => historyService.CreateHistory(historyName));
@@ -88,7 +86,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             using (var group = CreateGroup())
             {
-                var service = new GitBasedHistoryService(group);
+                var service = group.GetHistoryService();
 
                 Assert.Throws<ArgumentNullException>(() => service[null]);
                 Assert.Throws<ArgumentNullException>(() => service[""]);
@@ -102,7 +100,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             using (var group = CreateGroup())
             {
-                var service = new GitBasedHistoryService(group);
+                var service = group.GetHistoryService();
 
                 Assert.Throws<ItemNotFoundException>(() => service["Irrelevant"]);
             }
@@ -113,7 +111,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             using (var group = CreateGroup())
             {
-                var service = new GitBasedHistoryService(group);
+                var service = group.GetHistoryService();
 
                 service.CreateHistory("item1");
 

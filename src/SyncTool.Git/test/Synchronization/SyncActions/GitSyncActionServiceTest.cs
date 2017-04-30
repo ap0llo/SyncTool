@@ -17,11 +17,13 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
         readonly GitBasedGroup m_Group;
         readonly GitSyncActionService m_Service;
+        readonly GitRepository m_Repository;
 
         public GitSyncActionServiceTest()
         {
             m_Group = CreateGroup();
-            m_Service = new GitSyncActionService(m_Group);
+            m_Service = m_Group.GetService<GitSyncActionService>();
+            m_Repository = m_Group.GetService<GitRepository>();
         }
 
 
@@ -37,7 +39,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact]
         public void AllItems_returns_empty_enumerable_if_branch_is_empty()
         {
-            m_Group.Repository.CreateBranch(GitSyncActionService.BranchName, m_Group.Repository.GetInitialCommit());
+            m_Repository.Value.CreateBranch(GitSyncActionService.BranchName, m_Repository.Value.GetInitialCommit());
             Assert.Empty(m_Service.AllItems);
         }
 
@@ -75,7 +77,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact]
         public void PendingItems_returns_empty_enumerable_if_branch_is_empty()
         {
-            m_Group.Repository.CreateBranch(GitSyncActionService.BranchName, m_Group.Repository.GetInitialCommit());
+            m_Repository.Value.CreateBranch(GitSyncActionService.BranchName, m_Repository.Value.GetInitialCommit());
             Assert.Empty(m_Service.PendingItems);
         }
 
@@ -138,7 +140,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
         [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer returns empty enumerable if branch is empty")]
         public void Indexer_returns_empty_enumerable_if_branch_is_empty()
         {
-            m_Group.Repository.CreateBranch(GitSyncActionService.BranchName, m_Group.Repository.GetInitialCommit());
+            m_Repository.Value.CreateBranch(GitSyncActionService.BranchName, m_Repository.Value.GetInitialCommit());
 
             Assert.Empty(m_Service[SyncActionState.Queued]);
             Assert.Empty(m_Service[SyncActionState.Active]);
@@ -237,7 +239,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
             m_Service.AddItems(action1, action2);
 
-            var newService = new GitSyncActionService(m_Group);
+            var newService = new GitSyncActionService(m_Repository);
 
             Assert.Equal(2, newService[SyncActionState.Active].Count());
             Assert.Single(newService[SyncActionState.Active, action1.Path]);

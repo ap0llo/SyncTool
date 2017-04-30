@@ -23,7 +23,7 @@ namespace SyncTool.Git.Configuration
         {                        
             using (var group = CreateGroup())
             {
-                var syncGroup = new GitBasedConfigurationService(group);
+                var syncGroup = group.GetService<GitBasedConfigurationService>();
                 Assert.Empty(syncGroup.Items);
             }            
         }
@@ -48,7 +48,7 @@ namespace SyncTool.Git.Configuration
             
             using (var group = CreateGroup())
             {
-                var service = new GitBasedConfigurationService(group);
+                var service = group.GetService<GitBasedConfigurationService>();
                 service.AddItem(syncFolder);
 
                 Assert.Single(service.Items);
@@ -71,7 +71,7 @@ namespace SyncTool.Git.Configuration
 
             using (var group = CreateGroup())
             {
-                var service = new GitBasedConfigurationService(group);
+                var service = group.GetService<GitBasedConfigurationService>();
                 service.AddItem(syncFolder1);
                 Assert.Throws<DuplicateSyncFolderException>(() => service.AddItem(syncFolder2));
             }            
@@ -89,7 +89,7 @@ namespace SyncTool.Git.Configuration
 
             using (var group = CreateGroup())
             {
-                var service = new GitBasedConfigurationService(group);                
+                var service = group.GetService<GitBasedConfigurationService>();
                 Assert.Throws<SyncFolderNotFoundException>(() => service.UpdateItem(updatedFolder));            
             }
         }
@@ -100,13 +100,14 @@ namespace SyncTool.Git.Configuration
             var folder = new SyncFolder("SyncFolder") { Path = "Path" };
             using (var group = CreateGroup())
             {
-                var service = new GitBasedConfigurationService(group);
+                var repository = group.GetService<GitRepository>();
+                var service = new GitBasedConfigurationService(repository);
                 service.AddItem(folder);
 
                 folder.Path = "UpdatedPath";
                 service.UpdateItem(folder);
 
-                var service2 = new GitBasedConfigurationService(group);
+                var service2 = new GitBasedConfigurationService(repository);
                 Assert.Equal(folder.Path, service2["SyncFolder"].Path);
             }
 
@@ -117,14 +118,15 @@ namespace SyncTool.Git.Configuration
         {
             using (var group = CreateGroup())
             {
-                var service = new GitBasedConfigurationService(group);                
+                var repository = group.GetService<GitRepository>();
+                var service = new GitBasedConfigurationService(repository);                
 
                 // ARRANGE
                 {
                     var folder = new SyncFolder("SyncFolder") { Path = "Path" };
                     service.AddItem(folder);
                 }
-                var expectedCommitCount = group.Repository.GetAllCommits().Count();
+                var expectedCommitCount = repository.Value.GetAllCommits().Count();
 
                 //ACT: Call UpdateItem() with an unchanged sync folder
                 {
@@ -134,7 +136,7 @@ namespace SyncTool.Git.Configuration
 
                 //ASSERT: no commit was created (becuase nothing changed)
                 {
-                    Assert.Equal(expectedCommitCount, group.Repository.GetAllCommits().Count());
+                    Assert.Equal(expectedCommitCount, repository.Value.GetAllCommits().Count());
                 }
             }
         }
@@ -149,7 +151,7 @@ namespace SyncTool.Git.Configuration
         {            
             using (var group = CreateGroup())
             {
-                var service = new GitBasedConfigurationService(group);
+                var service = group.GetService<GitBasedConfigurationService>();
                 Assert.Throws<ArgumentNullException>(() => service[null]);
                 Assert.Throws<ArgumentNullException>(() => service[""]);
                 Assert.Throws<ArgumentNullException>(() => service[" "]);
@@ -162,7 +164,7 @@ namespace SyncTool.Git.Configuration
             
             using (var group = CreateGroup())
             {
-                var service = new GitBasedConfigurationService(group);
+                var service = group.GetService<GitBasedConfigurationService>();
                 Assert.Throws<ItemNotFoundException>(() => service["SomeName"]);                
             }
         }
@@ -173,7 +175,7 @@ namespace SyncTool.Git.Configuration
             
             using (var group = CreateGroup())
             {
-                var service = new GitBasedConfigurationService(group);
+                var service = group.GetService<GitBasedConfigurationService>();
                 service.AddItem(new SyncFolder("folder1"));
                 Assert.NotNull(service["folder1"]);
                 // name has to be treated case-invariant

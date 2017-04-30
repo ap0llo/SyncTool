@@ -26,14 +26,15 @@ namespace SyncTool.Git.DI
 
             //TODO: ExternallyOwned() is only a workaround
             builder.RegisterType<GitBasedGroup>().AsSelf().InstancePerMatchingLifetimeScope(Scope.Group).ExternallyOwned();
+            builder.RegisterType<GitRepository>().AsSelf().InstancePerMatchingLifetimeScope(Scope.Group);
 
-            builder.RegisterType<GitBasedConfigurationService>().As<IConfigurationService>();
-            builder.RegisterType<GitBasedHistoryService>().As<IHistoryService>();
-            builder.RegisterType<GitSyncPointService>().As<ISyncPointService>();
-            builder.RegisterType<GitConflictService>().As<IConflictService>();
-            builder.RegisterType<GitSyncActionService>().As<ISyncActionService>();
-            builder.RegisterType<GitBasedMultiFileSystemHistoryService>().As<IMultiFileSystemHistoryService>();
-                       
+            builder.RegisterType<GitBasedConfigurationService>().As<IConfigurationService>().AsSelf();
+            builder.RegisterType<GitBasedHistoryService>().As<IHistoryService>().AsSelf();
+            builder.RegisterType<GitSyncPointService>().As<ISyncPointService>().AsSelf();
+            builder.RegisterType<GitConflictService>().As<IConflictService>().AsSelf();
+            builder.RegisterType<GitSyncActionService>().As<ISyncActionService>().AsSelf();
+            builder.RegisterType<GitBasedMultiFileSystemHistoryService>().As<IMultiFileSystemHistoryService>().AsSelf();
+
             base.Load(builder);
         }        
     }

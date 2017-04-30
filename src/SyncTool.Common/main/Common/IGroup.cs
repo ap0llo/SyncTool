@@ -18,7 +18,7 @@ namespace SyncTool.Common
         /// </summary>
         /// <typeparam name="T">The type of the service to retrieve</typeparam>
         /// <exception cref="ServiceNotFoundException">Thrown if a service of the specified type could not be found</exception>
-        T GetService<T>() where T : IService;
+        T GetService<T>();
     }
 
 }

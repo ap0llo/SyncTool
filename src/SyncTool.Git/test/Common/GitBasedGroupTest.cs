@@ -22,11 +22,11 @@ namespace SyncTool.Git.Common
             var pathProviderMock = new Mock<IRepositoryPathProvider>(MockBehavior.Strict);
             var scopeMock = new Mock<ILifetimeScope>(MockBehavior.Strict);
 
-            Assert.Throws<ArgumentNullException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,  pathProviderMock.Object, new GroupSettings() {Name = null, Address = m_TempDirectory.Location }, scopeMock.Object));
+            Assert.Throws<ArgumentNullException>(() => new GitBasedGroup(new GroupSettings() {Name = null, Address = m_TempDirectory.Location }, scopeMock.Object));
 
-            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,pathProviderMock.Object, new GroupSettings() { Name = "", Address = m_TempDirectory.Location }, scopeMock.Object));
-            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,pathProviderMock.Object, new GroupSettings() { Name = "  ", Address = m_TempDirectory.Location }, scopeMock.Object));
-            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default, pathProviderMock.Object, new GroupSettings() { Name = " \t ", Address = m_TempDirectory.Location }, scopeMock.Object));
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup(new GroupSettings() { Name = "", Address = m_TempDirectory.Location }, scopeMock.Object));
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup(new GroupSettings() { Name = "  ", Address = m_TempDirectory.Location }, scopeMock.Object));
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup(new GroupSettings() { Name = " \t ", Address = m_TempDirectory.Location }, scopeMock.Object));
         }
 
 

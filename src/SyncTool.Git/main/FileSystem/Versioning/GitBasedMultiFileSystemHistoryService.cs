@@ -13,7 +13,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         readonly IHistoryService m_HistoryService;
 
 
-        public GitBasedMultiFileSystemHistoryService(GitBasedGroup group, IHistoryService historyService) : base(group)
+        public GitBasedMultiFileSystemHistoryService(GitRepository repository, IHistoryService historyService) : base(repository)
         {
             m_HistoryService = historyService ?? throw new ArgumentNullException(nameof(historyService));
         }
@@ -23,11 +23,11 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             get
             {
-                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                if (!Repository.Value.LocalBranchExists(BranchName))
                 {
                     return null;
                 }
-                var tip = GitGroup.Repository.GetLocalBranch(BranchName).Tip;
+                var tip = Repository.Value.GetLocalBranch(BranchName).Tip;
                 return Snapshots.FirstOrDefault(snapshot => snapshot.Id == tip.Sha);
             }
         }
@@ -47,12 +47,12 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             get
             {                
-                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                if (!Repository.Value.LocalBranchExists(BranchName))
                 {
                     return Enumerable.Empty<IMultiFileSystemSnapshot>();
                 }
                 
-                return GitGroup.Repository.GetLocalBranch(BranchName).Commits
+                return Repository.Value.GetLocalBranch(BranchName).Commits
                                .Where(GitBasedMultiFileSystemSnapshot.IsSnapshot)
                                .Select(commit => new GitBasedMultiFileSystemSnapshot(commit, m_HistoryService));
             }
@@ -60,12 +60,12 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         public IMultiFileSystemSnapshot CreateSnapshot()
         {
-            if (!GitGroup.Repository.LocalBranchExists(BranchName))
+            if (!Repository.Value.LocalBranchExists(BranchName))
             {
-                GitGroup.Repository.CreateBranch(BranchName, GitGroup.Repository.GetInitialCommit());
+                Repository.Value.CreateBranch(BranchName, Repository.Value.GetInitialCommit());
             }
 
-            return GitBasedMultiFileSystemSnapshot.Create(GitGroup.Repository, BranchName, m_HistoryService);
+            return GitBasedMultiFileSystemSnapshot.Create(Repository.Value, BranchName, m_HistoryService);
         }
 
         public string[] GetChangedFiles(string toId)
@@ -216,7 +216,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         IMultiFileSystemSnapshot GetSnapshot(string id)
         {            
-            var commit = GitGroup.Repository.Lookup<Commit>(id);
+            var commit = Repository.Value.Lookup<Commit>(id);
             if (commit == null || !GitBasedMultiFileSystemSnapshot.IsSnapshot(commit))
             {
                 throw new SnapshotNotFoundException(id);
@@ -254,7 +254,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         void AssertIsAncestor(string ancestorId, string descandantId)
         {
-            if (!GitGroup.Repository.IsCommitAncestor(ancestorId, descandantId))
+            if (!Repository.Value.IsCommitAncestor(ancestorId, descandantId))
             {
                 throw new InvalidRangeException($"Snapshot {descandantId} is not an descendant of {ancestorId}");
             }

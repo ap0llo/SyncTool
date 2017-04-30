@@ -35,12 +35,12 @@ namespace SyncTool.Git.Synchronization.State
         {
             get
             {
-                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                if (!Repository.Value.LocalBranchExists(BranchName))
                 {
                     return Enumerable.Empty<ISyncPoint>();
                 }
 
-                var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+                var root = new GitDirectory(null, "root", Repository.Value.GetLocalBranch(BranchName).Tip);
 
                 if (!root.DirectoryExists(s_DirectoryName))
                 {
@@ -55,12 +55,12 @@ namespace SyncTool.Git.Synchronization.State
         {
             get
             {
-                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                if (!Repository.Value.LocalBranchExists(BranchName))
                 {
                     throw new SyncPointNotFoundException(id);
                 }
 
-                var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+                var root = new GitDirectory(null, "root", Repository.Value.GetLocalBranch(BranchName).Tip);
                 var relativePath = GetRelativeSynchronizationStateFilePath(id);
 
                 if (!root.FileExists(relativePath))
@@ -73,7 +73,7 @@ namespace SyncTool.Git.Synchronization.State
         }
 
 
-        public GitSyncPointService(GitBasedGroup gitGroup) : base(gitGroup)
+        public GitSyncPointService(GitRepository repository) : base(repository)
         {
 
         }
@@ -81,12 +81,12 @@ namespace SyncTool.Git.Synchronization.State
 
         public bool ItemExists(int id)
         {
-            if (!GitGroup.Repository.LocalBranchExists(BranchName))
+            if (!Repository.Value.LocalBranchExists(BranchName))
             {
                 return false;
             }
 
-            var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+            var root = new GitDirectory(null, "root", Repository.Value.GetLocalBranch(BranchName).Tip);
             var relativePath = GetRelativeSynchronizationStateFilePath(id);
 
             return root.FileExists(relativePath);
@@ -113,7 +113,7 @@ namespace SyncTool.Git.Synchronization.State
                 d => new SyncPointStateFile(d, state)
             };
 
-            using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, BranchName.ToString()))
+            using (var workingDirectory = new TemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
             {
                 var localItemCreator = new LocalItemCreator();
                 localItemCreator.CreateDirectory(directory, workingDirectory.Location);
@@ -135,9 +135,9 @@ namespace SyncTool.Git.Synchronization.State
 
         void EnsureBranchExists()
         {
-            if (!GitGroup.Repository.LocalBranchExists(BranchName))
+            if (!Repository.Value.LocalBranchExists(BranchName))
             {
-                GitGroup.Repository.CreateBranch(BranchName, GitGroup.Repository.GetInitialCommit());
+                Repository.Value.CreateBranch(BranchName, Repository.Value.GetInitialCommit());
             }
         }
 

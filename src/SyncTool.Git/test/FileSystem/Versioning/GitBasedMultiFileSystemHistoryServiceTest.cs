@@ -19,8 +19,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             m_Group = CreateGroup();
             m_HistoryService = m_Group.GetHistoryService();
-
-            m_Instance = new GitBasedMultiFileSystemHistoryService(m_Group, m_HistoryService);
+            m_Instance = m_Group.GetService<GitBasedMultiFileSystemHistoryService>();
         }
 
 

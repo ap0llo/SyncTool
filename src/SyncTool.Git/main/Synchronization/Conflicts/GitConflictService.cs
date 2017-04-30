@@ -20,12 +20,12 @@ namespace SyncTool.Git.Synchronization.Conflicts
         {
             get
             {
-                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                if (!Repository.Value.LocalBranchExists(BranchName))
                 {
                     return Enumerable.Empty<ConflictInfo>();
                 }
 
-                var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+                var root = new GitDirectory(null, "root", Repository.Value.GetLocalBranch(BranchName).Tip);
 
                 if (!root.DirectoryExists(s_ConflictsDirectoryName))
                 {
@@ -43,12 +43,12 @@ namespace SyncTool.Git.Synchronization.Conflicts
                 PathValidator.EnsureIsValidFilePath(filePath);
                 PathValidator.EnsureIsRootedPath(filePath);
 
-                if (!GitGroup.Repository.LocalBranchExists(BranchName))
+                if (!Repository.Value.LocalBranchExists(BranchName))
                 {
                     throw new ItemNotFoundException($"There is no ConflictInfo for file '{filePath}'");
                 }
 
-                var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+                var root = new GitDirectory(null, "root", Repository.Value.GetLocalBranch(BranchName).Tip);
 
                 var relativePath = GetRelativeConflictInfoFilePath(filePath);
                 if (!root.FileExists(relativePath))
@@ -62,7 +62,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
         }
 
 
-        public GitConflictService(GitBasedGroup gitGroup) : base(gitGroup)
+        public GitConflictService(GitRepository repository) : base(repository)
         {
         }
 
@@ -82,7 +82,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
 
             EnsureBranchExists();
 
-            var exisitngRoot = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+            var exisitngRoot = new GitDirectory(null, "root", Repository.Value.GetLocalBranch(BranchName).Tip);
             var createdRoot = new Directory(null, "root");
 
             // verify conflicts
@@ -99,7 +99,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
             }
 
 
-            using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, BranchName.ToString()))
+            using (var workingDirectory = new TemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
             {                
                 var localItemCreator = new LocalItemCreator();
                 localItemCreator.CreateDirectoryInPlace(createdRoot, workingDirectory.Location);
@@ -124,13 +124,13 @@ namespace SyncTool.Git.Synchronization.Conflicts
                 return;
             }
 
-            if (!GitGroup.Repository.LocalBranchExists(BranchName))
+            if (!Repository.Value.LocalBranchExists(BranchName))
             {
                 throw new ItemNotFoundException($"There is no ConflictInfo for file '{conflicts.First().FilePath}'");
             }
 
 
-            var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+            var root = new GitDirectory(null, "root", Repository.Value.GetLocalBranch(BranchName).Tip);
 
             // verify conflicts
             foreach (var conflict in conflicts)
@@ -144,7 +144,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
 
 
             // delete conflict info files
-            using (var workingDirectory = new TemporaryWorkingDirectory(GitGroup.Repository.Info.Path, BranchName.ToString()))
+            using (var workingDirectory = new TemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
             {
                 var localDirectory= new LocalDirectory(null, workingDirectory.Location);
 
@@ -164,12 +164,12 @@ namespace SyncTool.Git.Synchronization.Conflicts
             PathValidator.EnsureIsValidFilePath(filePath);
             PathValidator.EnsureIsRootedPath(filePath);
             
-            if (!GitGroup.Repository.LocalBranchExists(BranchName))
+            if (!Repository.Value.LocalBranchExists(BranchName))
             {
                 return false;
             }
 
-            var root = new GitDirectory(null, "root", GitGroup.Repository.GetLocalBranch(BranchName).Tip);
+            var root = new GitDirectory(null, "root", Repository.Value.GetLocalBranch(BranchName).Tip);
             return root.FileExists(GetRelativeConflictInfoFilePath(filePath));
         }
 
@@ -194,10 +194,10 @@ namespace SyncTool.Git.Synchronization.Conflicts
         /// </summary>
         void EnsureBranchExists()
         {
-            if (!GitGroup.Repository.LocalBranchExists(BranchName))
+            if (!Repository.Value.LocalBranchExists(BranchName))
             {
-                var initalCommit = GitGroup.Repository.GetInitialCommit();
-                GitGroup.Repository.CreateBranch(BranchName, initalCommit);
+                var initalCommit = Repository.Value.GetInitialCommit();
+                Repository.Value.CreateBranch(BranchName, initalCommit);
             }
         }
     }

@@ -6,16 +6,13 @@ namespace SyncTool.Git.Common
     public class GitBasedService : IService
     {
                 
-        protected GitBasedGroup GitGroup { get; }
+        protected GitRepository Repository { get; }
 
 
-        public GitBasedService(GitBasedGroup group)
+        public GitBasedService(GitRepository group)
         {
-            GitGroup = group ?? throw new ArgumentNullException(nameof(group));
-        }
-
-
-
+            Repository = group ?? throw new ArgumentNullException(nameof(group));
+        }        
 
     }
 }
