@@ -1,12 +1,12 @@
 ﻿using System;
 using SyncTool.FileSystem;
 
-namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
+namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {
     /// <summary>
     /// Represents a file containing a serialized <see cref="FileProperties"/> instance
     /// </summary>
-    class FilePropertiesFile : DataFile<FileProperties>
+    public class FilePropertiesFile : DataFile<FileProperties>
     {
         /// <summary>
         /// The suffix used to identify file properties files 

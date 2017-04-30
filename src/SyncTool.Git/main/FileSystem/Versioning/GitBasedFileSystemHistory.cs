@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Functional.Option;
 using LibGit2Sharp;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
+using SyncTool.FileSystem.Versioning.MetaFileSystem;
 using SyncTool.Git.Common;
-using SyncTool.Git.FileSystem.Versioning.MetaFileSystem;
 
 namespace SyncTool.Git.FileSystem.Versioning
 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using SyncTool.FileSystem;
-using SyncTool.Git.FileSystem.Versioning.MetaFileSystem;
 using SyncTool.Synchronization.State;
 
 namespace SyncTool.Git.FileSystem

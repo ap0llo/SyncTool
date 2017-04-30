@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using SyncTool.FileSystem;
 using Xunit;
 
-namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
+namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {
     /// <summary>
     /// Tests for <see cref="FilePropertiesFile"/>

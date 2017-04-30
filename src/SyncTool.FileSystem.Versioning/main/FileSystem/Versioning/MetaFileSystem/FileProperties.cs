@@ -1,7 +1,7 @@
 ﻿using System;
 using SyncTool.FileSystem;
 
-namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
+namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {
     /// <summary>
     /// Class that provides a simple way to store properties of a <see cref="IFile"/>.    

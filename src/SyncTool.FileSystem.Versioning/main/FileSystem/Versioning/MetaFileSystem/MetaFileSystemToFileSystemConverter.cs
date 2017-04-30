@@ -1,11 +1,9 @@
-﻿using SyncTool.FileSystem;
-
-namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
+﻿namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {
     /// <summary>    
     /// Converter that takes a "meta file system" and retrieves the original file system stored in there 
     /// </summary>
-    internal class MetaFileSystemToFileSystemConverter
+    public class MetaFileSystemToFileSystemConverter
     {
         public IDirectory Convert(IDirectory directory)
         {

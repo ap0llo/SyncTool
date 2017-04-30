@@ -1,6 +1,6 @@
 ﻿using SyncTool.FileSystem;
 
-namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
+namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {
     public class FileSystemToMetaFileSystemConverter
     {

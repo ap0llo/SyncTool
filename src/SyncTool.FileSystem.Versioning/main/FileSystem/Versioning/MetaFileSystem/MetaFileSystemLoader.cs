@@ -1,17 +1,27 @@
 ﻿using System;
 using SyncTool.FileSystem;
-using SyncTool.Git.FileSystem.Utilities;
+using System.Collections.Generic;
 
-namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
+namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {
     /// <summary>
     ///  Converter that replaces all file instances in a directory with instances of <see cref="FilePropertiesFile"/> when appropriate
     /// </summary>
-    public class MetaFileSystemLoader : FileSystemConverter
+    public class MetaFileSystemLoader : BaseVisitor<Tuple<Stack<IDirectory>, Stack<IFile>>>
     {
 
+        public IDirectory Convert(IDirectory directory)
+        {
+            return (IDirectory)ConvertDynamic(null, directory);
+        }
 
-        public override IDirectory Convert(IDirectory newParent, IDirectory toConvert)
+
+        protected dynamic ConvertDynamic(IDirectory newParent, dynamic toConvert)
+        {
+            return ((dynamic)this).Convert(newParent, toConvert);
+        }
+       
+        public IDirectory Convert(IDirectory newParent, IDirectory toConvert)
         {
             var newDirectory = new Directory(newParent, toConvert.Name);
 
@@ -36,7 +46,7 @@ namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
             return newDirectory;
         }
 
-        public override IFile Convert(IDirectory newParent, IFile toConvert)
+        public IFile Convert(IDirectory newParent, IFile toConvert)
         {
             return toConvert.WithParent(newParent);
         }

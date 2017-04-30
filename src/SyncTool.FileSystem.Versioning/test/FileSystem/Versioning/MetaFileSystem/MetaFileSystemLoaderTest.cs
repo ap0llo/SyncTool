@@ -5,7 +5,7 @@ using SyncTool.FileSystem.Local;
 using Xunit;
 using Directory = SyncTool.FileSystem.Directory;
 
-namespace SyncTool.Git.FileSystem.Versioning.MetaFileSystem
+namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {
     /// <summary>
     /// Tests for <see cref="MetaFileSystemLoader"/>
