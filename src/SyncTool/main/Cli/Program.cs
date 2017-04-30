@@ -1,4 +1,4 @@
-﻿using Ninject;
+﻿using Autofac;
 using SyncTool.Cli.DI;
 using SyncTool.Cli.Framework;
 using SyncTool.Git.DI;
@@ -10,8 +10,18 @@ namespace SyncTool.Cli
     {
         static int Main(string[] args)
         {
-            var kernel = new StandardKernel(new CliModule(), new GitModule(), new SynchronizationModule());
-            return kernel.Get<Application>().Run(args);
+            var containerBuilder = new ContainerBuilder();
+
+            containerBuilder.RegisterModule<CliModule>();
+            containerBuilder.RegisterModule<GitModule>();
+            containerBuilder.RegisterModule<SynchronizationModule>();
+
+            var container = containerBuilder.Build();
+
+            using (var applicationScope = container.BeginLifetimeScope())
+            {
+                return container.Resolve<Application>().Run(args);
+            }            
         }
     }
 }

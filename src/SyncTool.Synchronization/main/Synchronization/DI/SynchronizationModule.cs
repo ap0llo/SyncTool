@@ -1,12 +1,14 @@
-﻿using Ninject.Modules;
+﻿using Autofac;
 
 namespace SyncTool.Synchronization.DI
 {
-    public class SynchronizationModule : NinjectModule
+    public class SynchronizationModule : Module
     {
-        public override void Load()
+        protected override void Load(ContainerBuilder builder)
         {
-            Bind<ISynchronizer>().To<Synchronizer>();
-        }
+            builder.RegisterType<Synchronizer>().As<ISynchronizer>();
+
+            base.Load(builder);
+        }        
     }
 }

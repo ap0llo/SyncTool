@@ -1,17 +1,19 @@
-﻿using Ninject.Modules;
+﻿using Autofac;
 using SyncTool.Common;
 using SyncTool.Git.Common;
 using SyncTool.Git.Configuration.Reader;
 
 namespace SyncTool.Git.DI
 {
-    public class GitModule : NinjectModule
+    public class GitModule : Module
     {
-        public override void Load()
+        protected override void Load(ContainerBuilder builder)
         {
-            this.Bind<IGroupSettingsProvider>().To<JsonGroupSettingsProvider>();
-            this.Bind<IRepositoryPathProvider>().To<CurrentDirectoryRepositoryPathProvider>();
-            this.Bind<IGroupManager>().To<GitBasedGroupManager>();
-        }
+            builder.RegisterType<JsonGroupSettingsProvider>().As<IGroupSettingsProvider>();
+            builder.RegisterType<CurrentDirectoryRepositoryPathProvider>().As<IRepositoryPathProvider>();
+            builder.RegisterType<GitBasedGroupManager>().As<IGroupManager>();
+
+            base.Load(builder);
+        }        
     }
 }

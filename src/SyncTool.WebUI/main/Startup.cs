@@ -7,15 +7,20 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Ninject;
 using SyncTool.Git.DI;
 using SyncTool.Synchronization.DI;
 using SyncTool.Common;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 
 namespace SyncTool.WebUI
 {
     public class Startup
     {
+
+        public IContainer ApplicationContainer { get; private set; }
+
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -29,19 +34,24 @@ namespace SyncTool.WebUI
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            var kernel = new StandardKernel(new GitModule(), new SynchronizationModule());
-
-            services.AddSingleton<IKernel>(kernel);
-            services.AddTransient<IGroupManager>(p => p.GetService<IKernel>().Get<IGroupManager>());
-
             // Add framework services.
             services.AddMvc();
+            
+            // Create the container builder.
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<GitModule>();
+            builder.Populate(services);
+
+            ApplicationContainer = builder.Build();
+
+            // Create the IServiceProvider based on the container.
+            return new AutofacServiceProvider(ApplicationContainer);            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -64,6 +74,8 @@ namespace SyncTool.WebUI
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            
+            appLifetime.ApplicationStopped.Register(() => ApplicationContainer.Dispose());
         }
     }
 }

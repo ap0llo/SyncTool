@@ -1,5 +1,5 @@
 ﻿using System;
-using Ninject;
+using Autofac;
 using SyncTool.Cli.Framework;
 
 namespace SyncTool.Cli.DI
@@ -7,16 +7,14 @@ namespace SyncTool.Cli.DI
     /// <summary>
     /// Implementation of <see cref="ICommandFactory"/> that uses Ninject to create command instances
     /// </summary>
-    public class NinjectCommandFactory : ICommandFactory
+    public class AutoFacCommandFactory : ICommandFactory
     {
-        readonly IKernel m_Kernel;
+        readonly IComponentContext m_Container;
 
-
-        public NinjectCommandFactory(IKernel kernel)
-        {            
-            m_Kernel = kernel ?? throw new ArgumentNullException(nameof(kernel));
+        public AutoFacCommandFactory(IComponentContext container)
+        {
+            m_Container = container ?? throw new ArgumentNullException(nameof(container));
         }
-
 
         public object CreateCommandInstance(Type commandType)
         {
@@ -25,7 +23,7 @@ namespace SyncTool.Cli.DI
                 throw new ArgumentNullException(nameof(commandType));
             }
 
-            return m_Kernel.Get(commandType);
+            return m_Container.Resolve(commandType);
         }
     }
 }

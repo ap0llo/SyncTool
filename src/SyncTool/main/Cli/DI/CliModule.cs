@@ -1,21 +1,34 @@
 ﻿using System.Collections.Generic;
-using Ninject;
-using Ninject.Modules;
+using Autofac;
 using SyncTool.Cli.Framework;
 using SyncTool.Cli.Output;
 using SyncTool.FileSystem;
+using Assembly = System.Reflection.Assembly;
 
 namespace SyncTool.Cli.DI
 {
-    public class CliModule : NinjectModule
+    public class CliModule : Module
     {
-        public override void Load()
-        {
-            Bind<ICommandFactory>().To<NinjectCommandFactory>().WithConstructorArgument(typeof(IKernel), this.Kernel);
-            Bind<ICommandLoader>().To<CurrentAssemblyCommandLoader>();
-            Bind<IOutputWriter>().To<ConsoleOutputWriter>();
 
-            Bind<IEqualityComparer<IFile>>().To<FilePropertiesComparer>();
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder.RegisterType<AutoFacCommandFactory>().As<ICommandFactory>();
+            builder.RegisterType<AutofacCommandLoader>().As<ICommandLoader>();
+            builder.RegisterType<ConsoleOutputWriter>().As<IOutputWriter>();
+            builder.RegisterType<Application>().AsSelf();
+
+            builder
+                .RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                .AssignableTo<ICommand>()
+                .AsSelf()
+                .As<ICommand>();
+
+
+                //TODO: Should this be in the FileSystem module?
+                builder.RegisterType<FilePropertiesComparer>().As<IEqualityComparer<IFile>>();
+
+            base.Load(builder);
         }
+        
     }
 }

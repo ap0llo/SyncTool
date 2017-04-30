@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using CommandLine;
-using Ninject;
 using System.Diagnostics;
 
 namespace SyncTool.Cli.Framework
