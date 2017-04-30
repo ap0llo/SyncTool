@@ -8,6 +8,7 @@ using SyncTool.FileSystem;
 using SyncTool.Git.Configuration.Model;
 using SyncTool.Git.Configuration.Reader;
 using NativeDirectory = System.IO.Directory;
+using Autofac;
 
 namespace SyncTool.Git.Common
 {
@@ -17,18 +18,18 @@ namespace SyncTool.Git.Common
         readonly IDictionary<string, GroupSettings> m_GroupSettings;  
         readonly IRepositoryPathProvider m_PathProvider;
         readonly IGroupSettingsProvider m_SettingsProvider;
+        readonly ILifetimeScope m_ApplicationScope;
 
         public IEnumerable<string> Groups => m_GroupSettings.Keys;
 
-        public GitBasedGroupManager(IRepositoryPathProvider pathProvider, IGroupSettingsProvider settingsProvider) 
-            : this(EqualityComparer<IFileReference>.Default, pathProvider, settingsProvider)
-        {
-            
-        }
 
-
-        public GitBasedGroupManager(IEqualityComparer<IFileReference>  fileReferenceComparer, IRepositoryPathProvider pathProvider, IGroupSettingsProvider settingsProvider)
+        public GitBasedGroupManager(
+            IEqualityComparer<IFileReference>  fileReferenceComparer, 
+            IRepositoryPathProvider pathProvider, 
+            IGroupSettingsProvider settingsProvider,
+            ILifetimeScope applicationScope)
         {
+            m_ApplicationScope = applicationScope ?? throw new ArgumentNullException(nameof(applicationScope));
             m_FileReferenceComparer = fileReferenceComparer ?? throw new ArgumentNullException(nameof(fileReferenceComparer));
             m_PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
             m_SettingsProvider = settingsProvider ?? throw new ArgumentNullException(nameof(settingsProvider));
@@ -40,8 +41,18 @@ namespace SyncTool.Git.Common
 
         public IGroup GetGroup(string name)
         {
-            EnsureGroupExists(name);            
-            return new GitBasedGroup(m_FileReferenceComparer , m_PathProvider, m_GroupSettings[name].Name, m_GroupSettings[name].Address);          
+            EnsureGroupExists(name);
+
+            var groupSettings = m_GroupSettings[name];
+
+            var groupScope = m_ApplicationScope.BeginLifetimeScope(Scope.Group, builder =>
+            {
+                builder.RegisterInstance(groupSettings).AsSelf().ExternallyOwned();
+            });
+
+            var group = groupScope.Resolve<GitBasedGroup>();
+            group.Disposed += (s, e) => groupScope.Dispose();
+            return group;            
         }
 
         public void AddGroup(string name, string address)

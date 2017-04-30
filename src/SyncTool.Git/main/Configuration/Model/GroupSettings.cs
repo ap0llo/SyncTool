@@ -2,6 +2,7 @@
 {
     public class GroupSettings
     {
+        //TODO: Verify values
 
         public string Name { get; set; }
         

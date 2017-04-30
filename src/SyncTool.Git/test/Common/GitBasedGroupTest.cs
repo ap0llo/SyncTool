@@ -6,6 +6,8 @@ using SyncTool.Git.Common;
 using SyncTool.Git.FileSystem;
 using SyncTool.TestHelpers;
 using Xunit;
+using Autofac;
+using SyncTool.Git.Configuration.Model;
 
 namespace SyncTool.Git.Common
 {
@@ -17,13 +19,14 @@ namespace SyncTool.Git.Common
         [Fact(DisplayName = nameof(GitBasedGroup) + ".Name must not be null or empty")]
         public void Name_must_not_be_null_or_empty()
         {
-            var mock = new Mock<IRepositoryPathProvider>(MockBehavior.Strict);
+            var pathProviderMock = new Mock<IRepositoryPathProvider>(MockBehavior.Strict);
+            var scopeMock = new Mock<ILifetimeScope>(MockBehavior.Strict);
 
-            Assert.Throws<ArgumentNullException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,  mock.Object, null, m_TempDirectory.Location));
+            Assert.Throws<ArgumentNullException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,  pathProviderMock.Object, new GroupSettings() {Name = null, Address = m_TempDirectory.Location }, scopeMock.Object));
 
-            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,mock.Object, "", m_TempDirectory.Location));
-            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,mock.Object, "  ", m_TempDirectory.Location));
-            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default, mock.Object, " \t ", m_TempDirectory.Location));
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,pathProviderMock.Object, new GroupSettings() { Name = "", Address = m_TempDirectory.Location }, scopeMock.Object));
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default,pathProviderMock.Object, new GroupSettings() { Name = "  ", Address = m_TempDirectory.Location }, scopeMock.Object));
+            Assert.Throws<ArgumentException>(() => new GitBasedGroup(EqualityComparer<IFileReference>.Default, pathProviderMock.Object, new GroupSettings() { Name = " \t ", Address = m_TempDirectory.Location }, scopeMock.Object));
         }
 
 

@@ -4,13 +4,14 @@ using System.Linq;
 using LibGit2Sharp;
 using Moq;
 using SyncTool.Common;
-using SyncTool.FileSystem;
 using SyncTool.Git.Configuration.Model;
 using SyncTool.Git.Configuration.Reader;
 using SyncTool.TestHelpers;
 using Xunit;
 using static SyncTool.Git.TestHelpers.GroupSettingsProviderMockingHelper;
 using Directory = System.IO.Directory;
+using Autofac;
+using SyncTool.FileSystem;
 
 namespace SyncTool.Git.Common
 {
@@ -19,6 +20,13 @@ namespace SyncTool.Git.Common
     /// </summary>
     public class GitBasedGroupManagerTest : DirectoryBasedTest
     {
+        ILifetimeScope m_TestLifeTime;
+
+        public GitBasedGroupManagerTest()
+        {
+            var lifetimeMock = new Mock<ILifetimeScope>(MockBehavior.Strict);
+            m_TestLifeTime = lifetimeMock.Object;
+        }
 
 
         [Fact(DisplayName = nameof(GitBasedGroupManager) + ".GetGroup() throws " + nameof(GroupNotFoundException))]
@@ -27,7 +35,8 @@ namespace SyncTool.Git.Common
             Mock<IGroupSettingsProvider> settingsProvider = new Mock<IGroupSettingsProvider>(MockBehavior.Strict);
             settingsProvider.Setup(m => m.GetGroupSettings()).Returns(Enumerable.Empty<GroupSettings>());
 
-            var groupManager = new GitBasedGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location), settingsProvider.Object);
+            
+            var groupManager = new GitBasedGroupManager(EqualityComparer<IFileReference>.Default, new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location), settingsProvider.Object, m_TestLifeTime);
             Assert.Throws<GroupNotFoundException>(() => groupManager.GetGroup("someName"));
         }
 
@@ -42,7 +51,7 @@ namespace SyncTool.Git.Common
         {
             var settingsProvider = GetGroupSettingsProviderMock().WithGroup("group1", "Irrelevant");
                       
-            var groupManager = new GitBasedGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location), settingsProvider.Object);
+            var groupManager = new GitBasedGroupManager(EqualityComparer<IFileReference>.Default, new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location), settingsProvider.Object, m_TestLifeTime);
             
             Assert.Throws<DuplicateGroupException>(() => groupManager.AddGroup("Group1", "Irrelevant"));
         }
@@ -52,7 +61,7 @@ namespace SyncTool.Git.Common
         {
             var settingsProvider = GetGroupSettingsProviderMock().WithGroup("group1", "Address1");
 
-            var groupManager = new GitBasedGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location), settingsProvider.Object);
+            var groupManager = new GitBasedGroupManager(EqualityComparer<IFileReference>.Default, new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location), settingsProvider.Object, m_TestLifeTime);
 
             Assert.Throws<DuplicateGroupException>(() => groupManager.AddGroup("Group2", "Address1"));
         }
@@ -63,7 +72,7 @@ namespace SyncTool.Git.Common
         {
             var settingsProvider = GetGroupSettingsProviderMock().WithEmptyGroupSettings();
 
-            var groupManager = new GitBasedGroupManager(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location), settingsProvider.Object);
+            var groupManager = new GitBasedGroupManager(EqualityComparer<IFileReference>.Default, new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location), settingsProvider.Object, m_TestLifeTime);
 
             Assert.Throws<InvalidGroupAddressException>(() => groupManager.AddGroup("Group1", "Address1"));
         }
@@ -80,7 +89,7 @@ namespace SyncTool.Git.Common
 
             var settingsProvider = GetGroupSettingsProviderMock().WithEmptyGroupSettings();
 
-            var groupManager = new GitBasedGroupManager(new SingleDirectoryRepositoryPathProvider(Path.Combine(localPath)), settingsProvider.Object);
+            var groupManager = new GitBasedGroupManager(EqualityComparer<IFileReference>.Default, new SingleDirectoryRepositoryPathProvider(Path.Combine(localPath)), settingsProvider.Object, m_TestLifeTime);
             
             
             Repository.Init(remotePath, true);
@@ -98,7 +107,7 @@ namespace SyncTool.Git.Common
 
             var settingsProvider = GetGroupSettingsProviderMock().WithEmptyGroupSettings();
 
-            var groupManager = new GitBasedGroupManager(new SingleDirectoryRepositoryPathProvider(localPath), settingsProvider.Object);
+            var groupManager = new GitBasedGroupManager(EqualityComparer<IFileReference>.Default, new SingleDirectoryRepositoryPathProvider(localPath), settingsProvider.Object, m_TestLifeTime);
 
             RepositoryInitHelper.InitializeRepository(remotePath);
 
@@ -129,7 +138,7 @@ namespace SyncTool.Git.Common
             Repository.Init(remoteDir, true);
 
             
-            var groupManager = new GitBasedGroupManager(new SingleDirectoryRepositoryPathProvider(localDir), settingsProvider.Object);
+            var groupManager = new GitBasedGroupManager(EqualityComparer<IFileReference>.Default, new SingleDirectoryRepositoryPathProvider(localDir), settingsProvider.Object, m_TestLifeTime);
 
             // create a new group
             groupManager.CreateGroup("Group1", remoteDir);
@@ -164,7 +173,7 @@ namespace SyncTool.Git.Common
             Repository.Init(remoteDir, true);
 
 
-            var groupManager = new GitBasedGroupManager(new SingleDirectoryRepositoryPathProvider(localDir), settingsProvider.Object);
+            var groupManager = new GitBasedGroupManager(EqualityComparer<IFileReference>.Default, new SingleDirectoryRepositoryPathProvider(localDir), settingsProvider.Object, m_TestLifeTime);
 
             // create a new group
             groupManager.CreateGroup("Group1", remoteDir);
@@ -188,7 +197,7 @@ namespace SyncTool.Git.Common
             Repository.Init(remoteDir, true);
 
 
-            var groupManager = new GitBasedGroupManager(new SingleDirectoryRepositoryPathProvider(localDir), settingsProvider.Object);
+            var groupManager = new GitBasedGroupManager(EqualityComparer<IFileReference>.Default, new SingleDirectoryRepositoryPathProvider(localDir), settingsProvider.Object, m_TestLifeTime);
 
             // create a new group
             groupManager.CreateGroup("Group1", remoteDir);

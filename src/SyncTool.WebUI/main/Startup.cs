@@ -12,6 +12,7 @@ using SyncTool.Synchronization.DI;
 using SyncTool.Common;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using SyncTool.FileSystem.FileSystem.DI;
 
 namespace SyncTool.WebUI
 {
@@ -19,6 +20,8 @@ namespace SyncTool.WebUI
     {
 
         public IContainer ApplicationContainer { get; private set; }
+
+        public ILifetimeScope ApplicationLifetimeScope { get; private set; }
 
 
         public Startup(IHostingEnvironment env)
@@ -28,6 +31,7 @@ namespace SyncTool.WebUI
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
             Configuration = builder.Build();
         }
 
@@ -41,13 +45,15 @@ namespace SyncTool.WebUI
             
             // Create the container builder.
             var builder = new ContainerBuilder();
+            builder.RegisterModule<FileSystemModule>();
             builder.RegisterModule<GitModule>();
             builder.Populate(services);
 
             ApplicationContainer = builder.Build();
+            ApplicationLifetimeScope = ApplicationContainer.BeginLifetimeScope(Scope.Application);
 
             // Create the IServiceProvider based on the container.
-            return new AutofacServiceProvider(ApplicationContainer);            
+            return new AutofacServiceProvider(ApplicationLifetimeScope);            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,7 +81,11 @@ namespace SyncTool.WebUI
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
             
-            appLifetime.ApplicationStopped.Register(() => ApplicationContainer.Dispose());
+            appLifetime.ApplicationStopped.Register(() =>
+            {
+                ApplicationLifetimeScope.Dispose();
+                ApplicationContainer.Dispose();
+            });
         }
     }
 }

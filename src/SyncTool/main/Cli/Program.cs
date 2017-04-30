@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using SyncTool.Cli.DI;
 using SyncTool.Cli.Framework;
+using SyncTool.Common;
+using SyncTool.FileSystem.FileSystem.DI;
 using SyncTool.Git.DI;
 using SyncTool.Synchronization.DI;
 
@@ -12,15 +14,16 @@ namespace SyncTool.Cli
         {
             var containerBuilder = new ContainerBuilder();
 
-            containerBuilder.RegisterModule<CliModule>();
+            containerBuilder.RegisterModule<FileSystemModule>();
             containerBuilder.RegisterModule<GitModule>();
+            containerBuilder.RegisterModule<CliModule>();
             containerBuilder.RegisterModule<SynchronizationModule>();
 
             var container = containerBuilder.Build();
 
-            using (var applicationScope = container.BeginLifetimeScope())
+            using (var applicationScope = container.BeginLifetimeScope(Scope.Application))
             {
-                return container.Resolve<Application>().Run(args);
+                return applicationScope.Resolve<Application>().Run(args);
             }            
         }
     }

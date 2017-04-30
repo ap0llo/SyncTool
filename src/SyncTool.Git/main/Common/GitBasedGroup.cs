@@ -2,19 +2,10 @@
 using System.Collections.Generic;
 using LibGit2Sharp;
 using SyncTool.Common;
-using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
-using SyncTool.FileSystem.Versioning;
-using SyncTool.Git.Configuration;
 using SyncTool.Git.FileSystem;
-using SyncTool.Git.FileSystem.Versioning;
-using SyncTool.Git.Synchronization.Conflicts;
-using SyncTool.Git.Synchronization.State;
-using SyncTool.Git.Synchronization.SyncActions;
-using SyncTool.Synchronization.ChangeGraph;
-using SyncTool.Synchronization.Conflicts;
-using SyncTool.Synchronization.State;
-using SyncTool.Synchronization.SyncActions;
+using SyncTool.Git.Configuration.Model;
+using Autofac;
 
 namespace SyncTool.Git.Common
 {
@@ -23,13 +14,30 @@ namespace SyncTool.Git.Common
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
         readonly IRepositoryPathProvider m_PathProvider;
         readonly IGitTransaction m_Transaction;
+        readonly ILifetimeScope m_GroupScope;
+
+        public event EventHandler Disposed;
+
 
         public string Name { get; }        
 
         public Repository Repository { get; }
 
-        public GitBasedGroup(IEqualityComparer<IFileReference> fileReferenceComparer, IRepositoryPathProvider pathProvider, string name, string repositoryPath)
+
+
+        public GitBasedGroup(IEqualityComparer<IFileReference> fileReferenceComparer, IRepositoryPathProvider pathProvider, GroupSettings groupSettings, ILifetimeScope groupScope)
         {
+            m_GroupScope = groupScope ?? throw new ArgumentNullException(nameof(groupScope));
+
+            if (groupSettings == null)
+            {
+                throw new ArgumentNullException(nameof(groupSettings));
+            }
+
+            //TODO: Remove checks once they have been implemented in GroupSettings
+            var name = groupSettings.Name;
+            var repositoryPath = groupSettings.Address;
+
             if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
@@ -58,40 +66,17 @@ namespace SyncTool.Git.Common
 
         public T GetService<T>() where T : IService
         {
-            if (typeof (T) == typeof (IConfigurationService))
-            {
-                return (T) (object) new GitBasedConfigurationService(this);
-            }
-            else if (typeof (T) == typeof (IHistoryService))
-            {
-                return (T) (object) new GitBasedHistoryService(this);
-            }
-            else if (typeof (T) == typeof (ISyncPointService))
-            {
-                return (T)(object)new GitSyncPointService(this);
-            }
-            else if (typeof(T) == typeof(IConflictService))
-            {
-                return (T) (object) new GitConflictService(this);
-            }
-            else if (typeof(T) == typeof(ISyncActionService))
-            {
-                return (T)(object)new GitSyncActionService(this);
-            }
-            else if (typeof(T) == typeof(IMultiFileSystemHistoryService))
-            {
-                return (T)(object)new GitBasedMultiFileSystemHistoryService(this, GetService<IHistoryService>());
-            }
-            else
-            {
-                throw new ServiceNotFoundException(typeof(T));
-            }            
+            return m_GroupScope.Resolve<T>();
+
+            
+            
         }
 
         public void Dispose()
         {
             Repository.Dispose();
             m_Transaction.Commit();
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
 

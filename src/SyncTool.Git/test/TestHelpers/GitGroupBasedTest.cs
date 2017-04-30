@@ -4,6 +4,11 @@ using SyncTool.FileSystem;
 using SyncTool.Git.Common;
 using SyncTool.TestHelpers;
 using Directory = System.IO.Directory;
+using SyncTool.Git.Configuration.Model;
+using Moq;
+using Autofac;
+using SyncTool.Common;
+using SyncTool.Git.DI;
 
 namespace SyncTool.Git.TestHelpers
 {
@@ -14,6 +19,9 @@ namespace SyncTool.Git.TestHelpers
     {
         protected readonly string m_RemotePath;
         readonly IRepositoryPathProvider m_PathProvider;
+        readonly IContainer m_Container;
+        readonly ILifetimeScope m_ApplicationScope;
+        
 
         protected GitGroupBasedTest()
         {
@@ -24,12 +32,38 @@ namespace SyncTool.Git.TestHelpers
             var localPath = Path.Combine(m_TempDirectory.Location, "Local");
             Directory.CreateDirectory(localPath);
             m_PathProvider = new SingleDirectoryRepositoryPathProvider(localPath);
+
+
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterModule<GitModule>();
+            containerBuilder.RegisterInstance(EqualityComparer<IFileReference>.Default).As<IEqualityComparer<IFileReference>>();
+            containerBuilder.RegisterInstance(m_PathProvider).As<IRepositoryPathProvider>();            
+
+            m_Container = containerBuilder.Build();
+            m_ApplicationScope = m_Container.BeginLifetimeScope(Scope.Application);
         }
 
 
         protected GitBasedGroup CreateGroup()
         {
-            return new GitBasedGroup(EqualityComparer<IFileReference>.Default, m_PathProvider, "Irrelevant", m_RemotePath);
+            var groupScope = m_ApplicationScope.BeginLifetimeScope(Scope.Group, builder =>
+            {
+                builder.RegisterInstance(new GroupSettings() { Name = "Irrelevant", Address = m_RemotePath }).AsSelf();
+            });
+
+            var instance = groupScope.Resolve<GitBasedGroup>();
+            instance.Disposed += (s, e) => groupScope.Dispose();
+
+            return instance;
+        }
+
+
+        public override void Dispose()
+        {
+            m_ApplicationScope.Dispose();
+            m_Container.Dispose();
+
+            base.Dispose();
         }
 
     }
