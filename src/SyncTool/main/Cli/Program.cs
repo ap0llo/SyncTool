@@ -2,6 +2,7 @@
 using SyncTool.Cli.DI;
 using SyncTool.Cli.Framework;
 using SyncTool.Common;
+using SyncTool.Common.Common.DI;
 using SyncTool.FileSystem.FileSystem.DI;
 using SyncTool.Git.DI;
 using SyncTool.Synchronization.DI;
@@ -14,6 +15,7 @@ namespace SyncTool.Cli
         {
             var containerBuilder = new ContainerBuilder();
 
+            containerBuilder.RegisterModule<CommonModule>();
             containerBuilder.RegisterModule<FileSystemModule>();
             containerBuilder.RegisterModule<GitModule>();
             containerBuilder.RegisterModule<CliModule>();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SyncTool.Configuration.Model;
 using SyncTool.Git.Common;
-using SyncTool.Git.FileSystem;
+using SyncTool.Common;
 using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization.State;
 using SyncTool.TestHelpers;
@@ -16,7 +16,7 @@ namespace SyncTool.Git.Synchronization.State
     /// </summary>
     public class GitSyncPointServiceTest : GitGroupBasedTest
     {
-        readonly GitBasedGroup m_Group;
+        readonly Group m_Group;
         readonly GitSyncPointService m_Service;        
 
         public GitSyncPointServiceTest()

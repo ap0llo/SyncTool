@@ -1,4 +1,4 @@
-﻿namespace SyncTool.Git.Configuration.Model
+﻿namespace SyncTool.Common
 {
     public class GroupSettings
     {

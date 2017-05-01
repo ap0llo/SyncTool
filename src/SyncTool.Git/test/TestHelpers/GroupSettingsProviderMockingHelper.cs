@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Moq;
-using SyncTool.Git.Configuration.Model;
+using SyncTool.Common;
 using SyncTool.Git.Configuration.Reader;
 
 namespace SyncTool.Git.TestHelpers

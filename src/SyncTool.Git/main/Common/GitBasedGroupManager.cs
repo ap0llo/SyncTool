@@ -5,7 +5,6 @@ using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.Common.Utilities;
 using SyncTool.FileSystem;
-using SyncTool.Git.Configuration.Model;
 using SyncTool.Git.Configuration.Reader;
 using NativeDirectory = System.IO.Directory;
 using Autofac;
@@ -50,7 +49,7 @@ namespace SyncTool.Git.Common
                 builder.RegisterInstance(groupSettings).AsSelf().ExternallyOwned();
             });
 
-            var group = groupScope.Resolve<GitBasedGroup>();
+            var group = groupScope.Resolve<Group>();
             group.Disposed += (s, e) => groupScope.Dispose();
             return group;            
         }

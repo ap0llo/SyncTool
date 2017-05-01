@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using SyncTool.Common;
 using SyncTool.FileSystem;
 using SyncTool.Git.Common;
 using SyncTool.Git.TestHelpers;
@@ -15,7 +16,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
     public class GitSyncActionServiceTest : GitGroupBasedTest
     {
 
-        readonly GitBasedGroup m_Group;
+        readonly Group m_Group;
         readonly GitSyncActionService m_Service;
         readonly GitRepository m_Repository;
 

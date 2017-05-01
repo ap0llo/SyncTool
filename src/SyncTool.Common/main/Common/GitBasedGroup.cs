@@ -1,14 +1,11 @@
 ﻿using System;
-using LibGit2Sharp;
 using SyncTool.Common;
-using SyncTool.Git.FileSystem;
-using SyncTool.Git.Configuration.Model;
 using Autofac;
 using Autofac.Core.Registration;
 
-namespace SyncTool.Git.Common
+namespace SyncTool.Common
 {
-    public class GitBasedGroup : IGroup
+    public class Group : IGroup
     {                
         readonly ILifetimeScope m_GroupScope;
 
@@ -19,7 +16,7 @@ namespace SyncTool.Git.Common
         public string Name { get; }        
 
 
-        public GitBasedGroup(GroupSettings groupSettings, ILifetimeScope groupScope)
+        public Group(GroupSettings groupSettings, ILifetimeScope groupScope)
         {
             m_GroupScope = groupScope ?? throw new ArgumentNullException(nameof(groupScope));
             

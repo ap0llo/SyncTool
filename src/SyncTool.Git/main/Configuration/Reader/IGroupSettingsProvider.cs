@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SyncTool.Git.Configuration.Model;
+using SyncTool.Common;
 
 namespace SyncTool.Git.Configuration.Reader
 {

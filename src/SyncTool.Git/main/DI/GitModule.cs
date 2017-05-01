@@ -23,9 +23,8 @@ namespace SyncTool.Git.DI
 
             builder.RegisterType<CurrentDirectoryRepositoryPathProvider>().As<IRepositoryPathProvider>();
             builder.RegisterType<GitBasedGroupManager>().As<IGroupManager>().InstancePerMatchingLifetimeScope(Scope.Application);
+                       
 
-            //TODO: ExternallyOwned() is only a workaround
-            builder.RegisterType<GitBasedGroup>().AsSelf().InstancePerMatchingLifetimeScope(Scope.Group).ExternallyOwned();
             builder.RegisterType<GitRepository>().AsSelf().InstancePerMatchingLifetimeScope(Scope.Group);
 
             builder.RegisterType<GitBasedConfigurationService>().As<IConfigurationService>().AsSelf();

@@ -16,7 +16,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
     /// </summary>
     public class GitConflictServiceTest : GitGroupBasedTest
     {
-        readonly GitBasedGroup m_Group;
+        readonly Group m_Group;
         readonly GitConflictService m_Service;
         readonly GitRepository m_Repository;
 
