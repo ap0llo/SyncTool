@@ -40,7 +40,7 @@ namespace SyncTool.Git.Common
                 {
                     var signature = SignatureHelper.NewSignature();
 
-                    clonedRepo.Stage(repositoryInfoFile.Name);
+                    Commands.Stage(clonedRepo, repositoryInfoFile.Name);                    
                     clonedRepo.Commit("Initial Commit", signature, signature, new CommitOptions());                    
 
                     clonedRepo.Network.Push(clonedRepo.Network.Remotes["origin"], @"refs/heads/master");                    

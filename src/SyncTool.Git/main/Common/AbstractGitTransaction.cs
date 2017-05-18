@@ -132,7 +132,8 @@ namespace SyncTool.Git.Common
             using (var localRepository = new Repository(LocalPath))
             {
                 // fetch changes from the remote repository (someone might have pushed there since we cloned the repository)
-                localRepository.Network.Fetch(localRepository.Network.Remotes[s_Origin]);
+
+                localRepository.FetchOrigin();
 
                 var localBranches = localRepository.Branches.GetLocalBranches().ToList();
 

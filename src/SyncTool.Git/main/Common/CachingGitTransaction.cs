@@ -28,7 +28,7 @@ namespace SyncTool.Git.Common
             using (var repository = new Repository(LocalPath))
             {
                 // TODO: Use FetchOptions.Prune once a libgit2sharp version with support for it was released 
-                repository.Network.Fetch(repository.Network.Remotes[s_Origin]);
+                repository.FetchOrigin();
             }
 
             CreateLocalBranches();
@@ -98,7 +98,7 @@ namespace SyncTool.Git.Common
                 }
 
                 //fetch all branches
-                repository.Network.Fetch(repository.Network.Remotes[s_Origin]);
+                repository.FetchOrigin();
 
                 // make sure there are no unpushed changes  
                 if (localBranches.Any(b => b.TrackingDetails.AheadBy > 0))

@@ -56,5 +56,18 @@ namespace SyncTool.Git.Common
 
             return mergeBase != null && mergeBase.Sha == ancestor.Sha;
         }
+
+        public static void FetchOrigin(this Repository repository)
+        {
+            var remote = repository.Network.Remotes["origin"];
+            Commands.Fetch(
+                repository,
+                "origin",
+                remote.FetchRefSpecs.Select(x => x.Specification),
+                null, //new FetchOptions() { Prune = true },
+                "");
+
+        }
+
     }
 }

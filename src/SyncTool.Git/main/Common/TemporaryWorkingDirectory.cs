@@ -39,7 +39,7 @@ namespace SyncTool.Git.Common
         /// </summary>
         public string Commit(string commitMessage = "SyncTool Commit")
         {
-            m_Repository.Stage("*");
+            Commands.Stage(m_Repository, "*");
 
             //TODO: this should probably be read from settings
             var signature = new Signature("SyncTool", "SyncTool@example.com", DateTimeOffset.Now);
