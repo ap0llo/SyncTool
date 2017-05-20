@@ -9,6 +9,7 @@ using Xunit;
 using IOFile = System.IO.File;
 using IODirectory = System.IO.Directory;
 using System.Text;
+using Xunit.Abstractions;
 
 // ReSharper disable PossibleNullReferenceException
 
@@ -30,7 +31,7 @@ namespace SyncTool.Git.Common
         readonly DisposableLocalDirectoryWrapper m_BareMasterRepository;
         
 
-        public TemporaryWorkingDirectoryTest()
+        public TemporaryWorkingDirectoryTest(ITestOutputHelper outputHelper)
         {
             m_MasterRepository = m_LocalItemCreator.CreateTemporaryDirectory();
             m_BareMasterRepository = m_LocalItemCreator.CreateTemporaryDirectory();
@@ -57,9 +58,9 @@ namespace SyncTool.Git.Common
 
                 void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
                 {
-                    if(e != null)
+                    if(e.Data != null)
                     {
-                        Console.WriteLine(e.Data);
+                        outputHelper.WriteLine(e.Data);
                         output.AppendLine(e.Data);
                     }
                 }
