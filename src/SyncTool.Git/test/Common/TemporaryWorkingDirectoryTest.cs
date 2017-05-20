@@ -8,6 +8,7 @@ using Xunit;
 
 using IOFile = System.IO.File;
 using IODirectory = System.IO.Directory;
+using System.Text;
 
 // ReSharper disable PossibleNullReferenceException
 
@@ -41,7 +42,10 @@ namespace SyncTool.Git.Common
                 {
                     Arguments = command,
                     WorkingDirectory = m_MasterRepository.Directory.Location,
-                    WindowStyle = ProcessWindowStyle.Hidden
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
                 };
                 var process = Process.Start(startInfo);
                 if (process == null)
@@ -49,11 +53,28 @@ namespace SyncTool.Git.Common
                     throw new ProcessExecutionException($"Failed to start 'git {command}'");
                 }
 
+                var output = new StringBuilder();
+
+                void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+                {
+                    output.AppendLine(e.Data);
+                }
+
+                process.OutputDataReceived += Process_OutputDataReceived;
+
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
                 process.WaitForExit();
+
+                process.CancelOutputRead();
+                process.CancelErrorRead();
+
+                process.OutputDataReceived -= Process_OutputDataReceived;
 
                 if (process.ExitCode != 0)
                 {
-                    throw new ProcessExecutionException($"'git {command}' exited with exit code {process.ExitCode}");
+                    throw new ProcessExecutionException($"'git {command}' exited with exit code {process.ExitCode}.\nCaptured output:\n {output}");
                 }
             }
 
@@ -67,6 +88,7 @@ namespace SyncTool.Git.Common
             RunGit($"clone \"{m_MasterRepository.Directory.Location}\" \"{m_BareMasterRepository.Directory.Location}\" --bare");
         }
 
+        
 
         [Fact]
         public void Constructor_clones_the_repository_and_checks_out_a_working_copy()
