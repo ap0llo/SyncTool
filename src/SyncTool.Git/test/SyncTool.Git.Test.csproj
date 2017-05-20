@@ -9,6 +9,15 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
+  
+  <!--
+	Some tests create git commits by starting a git process.
+	git commit failes if user name and email are not set, which is the case when running on Appveyor CI.
+	In order to execute the tests, the required git settings are set with placeholder values,
+	when the tests are run on AppVeyor.
+	
+	TODO: It would probably be cleaner to pass the values in the git commit call to avoid this.
+  -->
   <Target Name="RunGitConfig" BeforeTargets="Test" Condition="'$(APPVEYOR)' == 'True'">
 	<Message Text="Configuring git user name and email before tests" />
 	<Exec Command="git config --global user.name SyncTool_Appveyor" />
