@@ -8,6 +8,7 @@ using SyncTool.FileSystem;
 using SyncTool.Git.Configuration.Reader;
 using NativeDirectory = System.IO.Directory;
 using Autofac;
+using SyncTool.Common.Common;
 
 namespace SyncTool.Git.Common
 {
@@ -59,31 +60,19 @@ namespace SyncTool.Git.Common
             EnsureGroupDoesNotExist(name);
             EnsureAddressDoesNotExist(address);
 
-            var localPath = m_PathProvider.GetRepositoryPath(name);
-
-            // create a transaction for the repository (this will clone the repository)
-            var transaction = new GitTransaction(address, localPath);
-            try
+            using (var groupScope = m_ApplicationScope.BeginLifetimeScope(Scope.Group))
             {
-                transaction.Begin();
+                var validator = groupScope.Resolve<IGroupValidator>();
+                try
+                {
+                    validator.EnsureGroupIsValid(name, address);
+                }
+                catch (ValidationException ex)
+                {
+                    throw new GroupManagerException($"Cannot add group '{name}'", ex);
+                }
             }
-            catch (TransactionCloneException ex)
-            {
-                throw InvalidGroupAddressException.FromAdress(address, ex);
-            }
-            catch (GitTransactionException ex)
-            {
-                throw new GroupManagerException("Error adding group", ex);                
-            }
-
-            // cloning succeeded, now verify that the local directory is actually a repository for a group           
-            if (!RepositoryVerifier.IsValid(transaction.LocalPath))
-            {
-                throw InvalidGroupAddressException.FromAdress(address);
-            }
-                       
-            transaction.Commit();            
-
+            
             DoAddGroup(name, address);
         }
 

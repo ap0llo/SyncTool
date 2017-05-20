@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace SyncTool.Common
-{
+{    
     public class InvalidGroupAddressException : GroupManagerException
     {
         public InvalidGroupAddressException(string message) : base(message)

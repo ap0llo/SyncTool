@@ -11,12 +11,16 @@ namespace SyncTool.TestHelpers
 
         protected DirectoryBasedTest()
         {
-            m_TempDirectory = m_LocalItemCreator.CreateTemporaryDirectory();
+            m_TempDirectory = CreateTemporaryDirectory();
         }
         
         public virtual void Dispose()
         {
             m_TempDirectory.Dispose();
         }
+
+
+        protected DisposableLocalDirectoryWrapper CreateTemporaryDirectory() 
+            => m_LocalItemCreator.CreateTemporaryDirectory();
     }
 }
