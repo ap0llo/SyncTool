@@ -7,7 +7,7 @@ namespace SyncTool.FileSystem
     /// </summary>
     public class PathParserTest
     {
-        [Fact(DisplayName = nameof(PathParser) + ".GetFileName() returns expected result")]
+        [Fact]
         public void GetFileName_returns_expected_result()
         {
             Assert.Equal("file", PathParser.GetFileName("file"));
@@ -16,7 +16,7 @@ namespace SyncTool.FileSystem
             Assert.Equal("file", PathParser.GetFileName("dir/file"));
         }
 
-        [Fact(DisplayName = nameof(PathParser) + ".GetDirectoryName() returns expected result")]
+        [Fact]
         public void GetDirectoryName_returns_expected_result()
         {
             Assert.Equal("", PathParser.GetDirectoryName("file"));

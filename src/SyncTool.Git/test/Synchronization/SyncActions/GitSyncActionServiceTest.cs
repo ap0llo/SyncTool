@@ -105,7 +105,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
         #region Indexer
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer validates the file path")]
+        [Fact]
         public void Indexer_validates_the_file_path()
         {
             Assert.Throws<ArgumentNullException>(() => m_Service[SyncActionState.Active, null]);
@@ -123,8 +123,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
             Assert.Throws<FormatException>(() => m_Service["fileName"]);
             Assert.Throws<FormatException>(() => m_Service["relative/path/to/file"]);
         }
-        
-        [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer returns empty enumerable if branch does not exist")]
+
+        [Fact]
         public void Indexer_returns_empty_enumerable_if_branch_does_not_exits()
         {            
             Assert.Empty(m_Service[SyncActionState.Queued]);
@@ -137,8 +137,8 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
             Assert.Empty(m_Service["/somePath"]);            
         }
-        
-        [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer returns empty enumerable if branch is empty")]
+
+        [Fact]
         public void Indexer_returns_empty_enumerable_if_branch_is_empty()
         {
             m_Repository.Value.CreateBranch(GitSyncActionService.BranchName, m_Repository.Value.GetInitialCommit());
@@ -155,7 +155,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
         }
 
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer returns empty enumerable if no actions in the specified state exist")]
+        [Fact]
         public void Indexer_returns_empty_enumerable_if_no_actions_in_the_specified_state_exist()
         {
             var action = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Queued, 23, new FileReference("/path/to/file"));
@@ -167,7 +167,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             Assert.Empty(m_Service[SyncActionState.Completed]);
         }
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer returns empty enumerable if no actions for the specified path exist")]
+        [Fact]
         public void Indexer_returns_empty_enumerable_if_no_actions_for_the_specified_path_exist()
         {
             var action = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Queued, 23, new FileReference("/path/to/file"));
@@ -178,7 +178,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             Assert.Empty(m_Service["/some/path"]);            
         }
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer returns empty enumerable if no actions for the specified state and path exist")]
+        [Fact]
         public void Indexer_returns_empty_enumerable_if_no_actions_for_the_specified_state_and_path_exist()
         {
             var action = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Queued, 42, new FileReference("/path/to/file"));
@@ -192,7 +192,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             Assert.Empty(m_Service[SyncActionState.Completed, "/some/path"]);            
         }
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + " Indexer returns all actions for the specified state")]
+        [Fact]
         public void Indexer_returns_all_actions_for_the_specified_state()
         {
             var action1 = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Queued, 42, new FileReference("/path/to/file"));
@@ -203,7 +203,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             Assert.Equal(2, m_Service[SyncActionState.Queued].Count());            
         }
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + "Indexer returns all actions for the specified path")]
+        [Fact]
         public void Indexer_returns_all_actions_for_the_specified_path()
         {
             var action1 = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Queued,42,  new FileReference("/path/to/file"));
@@ -215,7 +215,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             Assert.Single(m_Service[action2.Path]);
         }
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + "Indexer returns all actions for the specified state and path")]
+        [Fact]
         public void Indexer_returns_all_actions_for_the_specified_state_and_path()
         {
             var action1 = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Queued,23, new FileReference("/path/to/file"));
@@ -232,7 +232,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
         #region AddItems
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + ".AddItems() stores new actions")]
+        [Fact]
         public void AddItems_stores_new_actions()
         {
             var action1 = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Active, 23,new FileReference("/path/to/file"));
@@ -247,7 +247,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             Assert.Single(newService[SyncActionState.Active, action2.Path]);
         }
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + ".AddItems() throws " + nameof(DuplicateSyncActionException) + " if action already exists")]
+        [Fact]
         public void AddItems_throws_DuplicateSyncActionException_if_action_already_exists()
         {
             var action1 = SyncAction.CreateAddFileSyncAction("target", SyncActionState.Active, 23, new FileReference("/path/to/file"));
@@ -262,7 +262,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
         #region UpdateItems
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + ".UpdateItems() updates actions")]
+        [Fact]
         public void UpdateItems_updates_actions()
         {
             var action = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Queued,42, new FileReference("/path/to/file"));
@@ -277,7 +277,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             Assert.Single(m_Service[SyncActionState.Active]);
         }
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + ".UpdateItems() throws " + nameof(SyncActionNotFoundException) + " if action does not exist")]
+        [Fact]
         public void UpdateItems_throws_SyncActionNotFoundException_if_action_does_not_exist()
         {
             var updatedAction = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Active,42, new FileReference("/path/to/file"));
@@ -289,14 +289,14 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
         #region RemoveItems
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + ".RemoveItems() throws " + nameof(SyncActionNotFoundException) + " if action does not exist")]
+        [Fact]
         public void RemoveItems_throws_SyncActionNotFoundException_if_action_does_not_exist()
         {
             var removedAction = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Active,42, new FileReference("/path/to/file"));
             Assert.Throws<SyncActionNotFoundException>(() => m_Service.RemoveItems(removedAction));
         }
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + ".RemoveItems() throws " + nameof(SyncActionNotFoundException) + " if action with the same state does not exist")]
+        [Fact]
         public void RemoveItems_throws_SyncActionNotFoundException_if_action_with_the_same_state_does_not_exist()
         {
             var action = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Active,42, new FileReference("/path/to/file"));
@@ -305,7 +305,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             Assert.Throws<SyncActionNotFoundException>(() => m_Service.RemoveItems(removedAction));
         }
 
-        [Fact(DisplayName = nameof(GitSyncActionService) + ".RemoveItems() removes an action")]
+        [Fact]
         public void RemoveItems_removes_an_action()
         {
             var action = SyncAction.CreateAddFileSyncAction("target1", SyncActionState.Active, 42, new FileReference("/path/to/file"));

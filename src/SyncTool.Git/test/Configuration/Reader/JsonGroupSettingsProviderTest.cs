@@ -15,7 +15,7 @@ namespace SyncTool.Git.Configuration.Reader
 
 
 
-        [Fact(DisplayName = nameof(JsonGroupSettingsProvider) + ".GetGroupSettings() successfully reads valid json file")]
+        [Fact]
         public void GetGroupSettings_successfully_reads_valid_json_file()
         {
             

@@ -18,7 +18,7 @@ namespace SyncTool.Git.Configuration
 
         #region Items
 
-        [Fact(DisplayName = nameof(GitBasedConfigurationService) + ".Items is empty for new directory")]
+        [Fact]
         public void Items_is_empty_for_new_directory()
         {                        
             using (var group = CreateGroup())
@@ -146,7 +146,7 @@ namespace SyncTool.Git.Configuration
 
         #region Indexer
 
-        [Fact(DisplayName = nameof(GitBasedConfigurationService) + ": Indexer.Get throws ArgumentNullException if name is null or whitespace")]
+        [Fact]
         public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
         {            
             using (var group = CreateGroup())
@@ -158,7 +158,7 @@ namespace SyncTool.Git.Configuration
             }
         }
 
-        [Fact(DisplayName = nameof(GitBasedConfigurationService) + ": Indexer.Get throws ItemNotFoundException if the requested item was not found")]
+        [Fact]
         public void Indexer_Get_throws_ItemNotFoundException_if_the_requested_item_was_not_found()
         {
             
@@ -169,7 +169,7 @@ namespace SyncTool.Git.Configuration
             }
         }
 
-        [Fact(DisplayName = nameof(GitBasedConfigurationService) + ": Indexer.Get returns the expected Item")]
+        [Fact]
         public void Indexer_Get_returns_the_expected_Item()
         {
             

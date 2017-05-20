@@ -11,19 +11,19 @@ namespace SyncTool.FileSystem.Versioning
     /// </summary>
     public class ChangeListTest
     {
-        [Fact(DisplayName = nameof(ChangeList) + " Constructor throws " + nameof(ArgumentNullException)  + " if changes is null")]
+        [Fact]
         public void Construtor_throws_ArgumentNullException_if_changes_is_null()
         {
             Assert.Throws<ArgumentNullException>(() => new ChangeList(null));
         }
 
-        [Fact(DisplayName = nameof(ChangeList) + " Constructor throws " + nameof(ArgumentException) + " if changes is empty")]
+        [Fact]
         public void Construtor_throws_ArgumentNullException_if_changes_is_empty()
         {
             Assert.Throws<ArgumentException>(() => new ChangeList(Enumerable.Empty<IChange>()));
         }
 
-        [Fact(DisplayName = nameof(ChangeList) + " Constructor throws " + nameof(ArgumentException) + " if changes have different paths")]
+        [Fact]
         public void Construtor_throws_ArgumentNullException_if_changes_have_different_paths()
         {
             var file1 = new FileReference("/path1", DateTime.MinValue, 23);

@@ -43,7 +43,7 @@ namespace SyncTool.Git.Common
         }
 
 
-        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ": Constructor clones the repository and checks out a working copy")]
+        [Fact]
         public void Constructor_clones_the_repository_and_checks_out_a_working_copy()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
@@ -55,7 +55,7 @@ namespace SyncTool.Git.Common
 
         }
 
-        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".Dispose() deletes the working directory")]
+        [Fact]
         public void Dispose_deletes_the_working_directory()
         {
             var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master");
@@ -64,7 +64,7 @@ namespace SyncTool.Git.Common
             Assert.False(IODirectory.Exists(instance.Location));
         }
 
-        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns False if no changes were made")]
+        [Fact]
         public void HasChanges_Returns_False_if_no_changes_were_made()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
@@ -73,7 +73,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns True if a file was modified")]
+        [Fact]
         public void HasChanges_Returns_True_if_a_file_was_modified()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
@@ -92,7 +92,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns True if a file was deleted")]
+        [Fact]
         public void HasChanges_Returns_True_if_a_file_was_deleted()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
@@ -104,7 +104,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns True if a file was added")]
+        [Fact]
         public void HasChanges_Returns_True_if_a_file_was_added()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
@@ -116,7 +116,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".HasChanges returns False after Commit")]
+        [Fact]
         public void HasChanges_Returns_False_after_Commit()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
@@ -129,7 +129,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".Commit() creates a new commit")]
+        [Fact]
         public void Commit_creates_a_new_commit()
         {
             using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
@@ -147,7 +147,7 @@ namespace SyncTool.Git.Common
 
         }
 
-        [Fact(DisplayName = nameof(TemporaryWorkingDirectory) + ".Push() transfers changes to master directory")]
+        [Fact]
         public void Push_transfers_changes_to_master_directory()
         {
             var fileName = Path.GetRandomFileName();

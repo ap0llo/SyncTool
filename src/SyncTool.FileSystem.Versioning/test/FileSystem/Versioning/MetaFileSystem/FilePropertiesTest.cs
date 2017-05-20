@@ -27,19 +27,19 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
         }
 
 
-        [Fact(DisplayName = "FileProperties.Equals() Returns true if all properties are equal")]
+        [Fact]
         public void Equals_Returns_true_if_all_properties_are_equal()
         {            
             Assert.Equal(m_Instance1, m_Instance2);
         }
 
-        [Fact(DisplayName = "FileProperties.Equals() treats the name case invariant")]
+        [Fact]
         public void Equals_treats_the_name_case_invariant()
         {
             Assert.Equal(m_Instance2, m_Instance3);
         }
 
-        [Fact(DisplayName = "FileProperties.GetHashCode() returns the same value is name is equal")]
+        [Fact]
         public void GetHashCode_returns_the_same_value_is_name_is_equal()
         {
             var file1 = new FileProperties() {Name = "file", LastWriteTime = DateTime.Now, Length = 1234};

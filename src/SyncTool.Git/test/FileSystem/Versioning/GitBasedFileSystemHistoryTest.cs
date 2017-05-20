@@ -43,7 +43,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         #region Snapshots
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".Snapshots is empty for empty repository")]
+        [Fact]
         public void Snapshots_is_empty_for_empty_repository()
         {
             Assert.Empty(m_Instance.Snapshots);
@@ -53,7 +53,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         #region LatestFileSystemSnapshot
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".LatestFileSystemSnapshot is null for empty repository")]
+        [Fact]
         public void LatestFileSystemSnapshot_is_null_for_empty_repository()
         {
             Assert.Null(m_Instance.LatestFileSystemSnapshot);
@@ -63,7 +63,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         #region CreateSnapshot
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".CreateSnapshot() can be executed multiple times")]
+        [Fact]
         public void CreateSnapshot_can_be_executed_multiple_times()
         {            
             var directory1 = new Directory(s_Dir1)
@@ -83,7 +83,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Equal(snapshot2, m_Instance.LatestFileSystemSnapshot);
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".CreateSnapshot() creates a valid snapshot")]
+        [Fact]
         public void CreateSnapshot_creates_a_valid_snapshot()
         {
             var directory = new Directory(s_Dir1)
@@ -96,7 +96,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             FileSystemAssert.DirectoryEqual(directory, snapshot.RootDirectory);
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".CreateSnapshot() creates a new snapshot if state was modified")]        
+        [Fact]
         public void CreateSnapshot_creates_a_new_snapshot_if_state_was_modified()
         {
             var dateTime1 = DateTime.Now;
@@ -123,7 +123,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.NotEqual(snapshot1.Id, snapshot2.Id);
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".CreateSnapshot() returns previous snapshot if state is unchanged")]
+        [Fact]
         public void CreateSnapshot_returns_previous_snapshot_if_state_is_unchanged()
         {            
             var state = new Directory(s_Dir1)
@@ -142,7 +142,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         #region GetChanges
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() throws a SnapshotNotFoundException is the Id is unknown")]
+        [Fact]
         public void GetChanges_throws_a_SnapshotNotFoundException_is_the_Id_is_unknown()
         {
             Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges("someId", "someOtherId"));
@@ -171,7 +171,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() detects modification of files")]
+        [Fact]
         public void GetChanges_detects_modification_of_files()
         {
 
@@ -210,7 +210,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             FileSystemAssert.FileReferenceMatches(state2.GetFile(s_File1), diff.ChangeLists.Single().Changes.Single().ToVersion);
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() detects additions of files")]
+        [Fact]
         public void GetChanges_detects_additions_of_files()
         {
             //ARRANGE
@@ -250,7 +250,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             FileSystemAssert.FileReferenceMatches(state2.GetFile(s_File2), changes.Single().ToVersion);
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() detects deletions of files")]
+        [Fact]
         public void GetChanges_detects_deletions_of_files()
         {
             //ARRANGE
@@ -284,7 +284,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             FileSystemAssert.FileReferenceMatches(state1.GetFile(s_File1), changes.Single().FromVersion);
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() ignores Additions of empty directories")]
+        [Fact]
         public void GetChanges_ignores_Additions_of_empty_directories()
         {
             //ARRANGE
@@ -307,7 +307,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Empty(diff.ChangeLists);       
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() ignores Deletions of empty directories")]
+        [Fact]
         public void GetChanges_ignores_Deletions_of_empty_directories()
         {            
             //ARRANGE
@@ -331,7 +331,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Empty(diff.ChangeLists);
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() ignores changes outside of the Snapshot directory")]
+        [Fact]
         public void GetChanges_ignores_Changes_outside_of_the_Snapshot_directory()
         {
             //ARRANGE
@@ -364,7 +364,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Single(diff.ChangeLists);
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges() with single id gets all changes since the initial commit")]
+        [Fact]
         public void GetChanges_with_single_id_gets_all_changes_since_the_initial_commit()
         {
             //ARRANGE
@@ -392,7 +392,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             Assert.Equal(ChangeType.Added, changes.Single().Type);           
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): Multiple changes to the same file")]
+        [Fact]
         public void GetChanges_Multiple_changes_to_the_same_file()
         {
             //ARRANGE
@@ -436,7 +436,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             FileSystemAssert.FileReferenceMatches(state2.GetFile("file1"), changes[1].ToVersion);
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): A file gets added, modified and deleted ")]
+        [Fact]
         public void GetChanges_A_file_gets_added_modified_and_deleted()
         {
             //ARRANGE
@@ -491,7 +491,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         }
 
-        [Fact(DisplayName = nameof(GitBasedFileSystemHistory) + ".GetChanges(): A file gets added, modified and deleted between snapshots")]
+        [Fact]
         public void GetChanges_A_file_gets_added_modified_and_deleted_between_snapshots()
         {
             //ARRANGE

@@ -132,7 +132,7 @@ namespace SyncTool.Git.Common
 
         #region CreateGroup
 
-        [Fact(DisplayName = nameof(GitBasedGroupManager) + ".CreateGroup() creates a reporisoty and pushes it to the remote repository")]
+        [Fact]
         public void CreateGroup_Creates_a_repository_and_pushes_it_to_the_remote_repository()
         {
             // create a mock for the settings provider
@@ -165,7 +165,7 @@ namespace SyncTool.Git.Common
 
         }
 
-        [Fact(DisplayName = nameof(GitBasedGroupManager) + "CreateGroup() throws"+ nameof(DuplicateGroupException) + " if a group with the specified name already exists")]
+        [Fact]
         public void CreateGroup_throws_DuplicateGroupException_if_a_group_with_the_specified_name_already_exists()
         {
             // create a mock for the settings provider
@@ -186,7 +186,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        [Fact(DisplayName = nameof(GitBasedGroupManager) + "CreateGroup() throws" + nameof(DuplicateGroupException) + " if a group with the specified address already exists")]
+        [Fact]
         public void CreateGroup_throws_DuplicateGroupException_if_a_group_with_the_specified_address_already_exists()
         {
             // create a mock for the settings provider

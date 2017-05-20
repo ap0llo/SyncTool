@@ -37,7 +37,7 @@ namespace SyncTool.Synchronization.SyncActions
 
 
 
-        [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Missing id causes SerializationException")]
+        [Fact]
         public void Deserialize_missing_id_causes_SerializationException()
         {
             var value = (JObject) s_ValidJson.DeepClone();
@@ -52,7 +52,7 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
         }
 
-        [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Missing state causes SerializationException")]
+        [Fact]
         public void Deserialize_missing_state_causes_SerializationException()
         {
             var value = (JObject)s_ValidJson.DeepClone();
@@ -67,7 +67,7 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
         }
 
-        [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Missing SyncPointId causes SerializationException")]
+        [Fact]
         public void Deserialize_missing_SyncPointId_causes_SerializationException()
         {
             var value = (JObject)s_ValidJson.DeepClone();
@@ -82,7 +82,7 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
         }
 
-        [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Invalid id causes SerializationException")]
+        [Fact]
         public void Deserialize_invalid_id_causes_SerializationException()
         {
             var value = (JObject)s_ValidJson.DeepClone();
@@ -95,9 +95,9 @@ namespace SyncTool.Synchronization.SyncActions
                 new JProperty("name", s_ValidJson["name"]));
 
             Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
-        }        
+        }
 
-        [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Invalid state causes SerializationException")]
+        [Fact]
         public void Deserialize_invalid_state_causes_SerializationException()
         {
             var value = (JObject)s_ValidJson.DeepClone();
@@ -112,7 +112,7 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Throws<SerializationException>(() => m_Instance.Deserialize(jObject.ToString()));
         }
 
-        [Fact(DisplayName = nameof(SyncActionSerializer) + ".Deserialize(): Invalid SyncPointId causes SerializationException")]
+        [Fact]
         public void Deserialize_invalid_SyncPointId_causes_SerializationException()
         {
             var value = (JObject)s_ValidJson.DeepClone();
@@ -128,7 +128,7 @@ namespace SyncTool.Synchronization.SyncActions
         }
 
 
-        [Fact(DisplayName = nameof(SyncActionSerializer) + "AddFileSyncAction: Roundtrip")]
+        [Fact]
         public void SyncAction_Roundtrip_Added()
         {
             var fileReference = new FileReference("/file1", DateTime.Now, 23);
@@ -145,7 +145,7 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Equal(expected.SyncPointId, actual.SyncPointId);
         }
 
-        [Fact(DisplayName = nameof(SyncActionSerializer) + "RemoveFileSyncAction: Roundtrip")]
+        [Fact]
         public void SyncAction_Roundtrip_Deleted()
         {
             var fileReference = new FileReference("/file1", DateTime.Now, 23);
@@ -162,7 +162,7 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Equal(expected.SyncPointId, actual.SyncPointId);
         }
 
-        [Fact(DisplayName = nameof(SyncActionSerializer) + "ReplaceFileSyncAction: Roundtrip")]
+        [Fact]
         public void SyncAction_Roundtrip_Modified()
         {
             var lastWriteTime = DateTime.Now;
@@ -182,7 +182,7 @@ namespace SyncTool.Synchronization.SyncActions
             Assert.Equal(expected.SyncPointId, actual.SyncPointId);
         }
 
-        [Fact(DisplayName = nameof(SyncActionSerializer) + ": State property is serialized as string")]
+        [Fact]
         public void State_property_is_serialized_as_string()
         {
             var lastWriteTime = DateTime.Now;
@@ -197,7 +197,7 @@ namespace SyncTool.Synchronization.SyncActions
         }
 
 
-        [Fact(DisplayName = nameof(SyncActionSerializer) + ": Type property is serialized as string")]
+        [Fact]
         public void Type_property_is_serialized_as_string()
         {
             var lastWriteTime = DateTime.Now;

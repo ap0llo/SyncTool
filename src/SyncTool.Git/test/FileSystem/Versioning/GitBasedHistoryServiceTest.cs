@@ -15,8 +15,8 @@ namespace SyncTool.Git.FileSystem.Versioning
     /// </summary>
     public class GitBasedHistoryServiceTest : GitGroupBasedTest
     {
-      
-        [Fact(DisplayName = nameof(GitBasedHistoryService) + ".CreateHistory() can create multiple histories")]
+
+        [Fact]
         public void CreateHistory_can_create_multiple_histories()
         {
             var historyNames = new[] { "history1", "histroy2" };
@@ -34,7 +34,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         }
 
-        [Theory(DisplayName = nameof(GitBasedHistoryService) + ".CreateHistory() creates a new branch in the underlying git repository")]
+        [Theory]
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
@@ -66,7 +66,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         }
 
-        [Fact(DisplayName = nameof(GitBasedHistoryService) + ".CreateHistory() throws " + nameof(DuplicateFileSystemHistoryException) + "if a history with the same name already exists")]
+        [Fact]
         public void CreateHistory_throws_DuplicateFileSystemHistoryException_if_a_history_with_the_same_name_already_exists()
         {
             const string historyName = "history1";
@@ -81,7 +81,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         }
 
 
-        [Fact(DisplayName = nameof(GitBasedHistoryService) + ": Indexer.Get throws ArgumentNullException if name is null or whitespace")]
+        [Fact]
         public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
         {
             using (var group = CreateGroup())
@@ -95,7 +95,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         }
 
-        [Fact(DisplayName = nameof(GitBasedHistoryService) + ": Indexer.Get throws ItemNotFoundException if requested item could not be found")]
+        [Fact]
         public void Indexer_Get_throws_ItemNotFoundException_if_requested_item_could_not_be_found()
         {
             using (var group = CreateGroup())
@@ -106,7 +106,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             }
         }
 
-        [Fact(DisplayName = nameof(GitBasedHistoryService) + ": Indexer.Get returns expected item")]
+        [Fact]
         public void Indexer_Get_returns_expected_item()
         {
             using (var group = CreateGroup())

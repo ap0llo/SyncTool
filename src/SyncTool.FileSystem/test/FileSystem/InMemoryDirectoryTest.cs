@@ -38,32 +38,32 @@ namespace SyncTool.FileSystem
 
         #region GetFile()
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() throws ArgumentNullException if path is null")]
+        [Fact]
         public void GetFile_throws_ArgumentNullException_if_path_is_null()
         {
             Assert.Throws<ArgumentNullException>(() => m_Root.GetFile((string) null));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() throws ArgumentNullException if reference is null")]
+        [Fact]
         public void GetFile_throws_ArgumentNullException_if_reference_is_null()
         {
             Assert.Throws<ArgumentNullException>(() => m_Root.GetFile((IFileReference) null));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() throws FormatException if path is empty or whitespace")]
+        [Fact]
         public void GetFile_throws_FormatException_if_path_is_empty_or_whitespace()
         {
             Assert.Throws<FormatException>(() => m_Root.GetFile(""));
             Assert.Throws<FormatException>(() => m_Root.GetFile("  "));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() throws FormatException if path contains a backslash")]
+        [Fact]
         public void GetFile_throws_FormatException_if_path_contains_a_backslash()
         {
             Assert.Throws<FormatException>(() => m_Root.GetFile("name\\name"));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() throws FormatException if path ends with directory separator char")]
+        [Fact]
         public void GetFile_throws_FormatException_if_path_ends_with_directory_separator_char()
         {
             Assert.Throws<FormatException>(() => m_Root.GetFile("/"));
@@ -71,7 +71,7 @@ namespace SyncTool.FileSystem
             Assert.Throws<FormatException>(() => m_Root.GetFile("name/someOtherName/"));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() throws FormatException if path consists only of slashes")]
+        [Fact]
         public void GetFile_throws_FormatException_if_path_consists_only_of_slashes()
         {
             Assert.Throws<FormatException>(() => m_Root.GetFile("/"));
@@ -80,7 +80,7 @@ namespace SyncTool.FileSystem
 
 
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() returns direct child")]
+        [Fact]
         public void GetFile_returns_direct_child()
         {
             var expected = m_File1;
@@ -89,7 +89,7 @@ namespace SyncTool.FileSystem
             Assert.Equal(expected, actual);
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() returns the expected value for a rooted path")]
+        [Fact]
         public void GeFile_returns_the_expected_value_for_a_rooted_path()
         {
             var path = "/dir1/file1";
@@ -100,7 +100,7 @@ namespace SyncTool.FileSystem
             Assert.Equal(expected, m_Dir11.GetFile(path));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() returns children down in the hierarchy")]
+        [Fact]
         public void GetFile_returns_children_down_in_the_hierarchy()
         {
             var expected = m_File1;
@@ -109,7 +109,7 @@ namespace SyncTool.FileSystem
             Assert.Equal(expected, actual);
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() using reference returns children down in the hierarchy")]
+        [Fact]
         public void GetFile_using_reference_returns_children_down_in_the_hierarchy()
         {
             var expected = m_File1;
@@ -118,14 +118,14 @@ namespace SyncTool.FileSystem
             Assert.Equal(expected, actual);
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() using reference throws " + nameof(FileNotFoundException) + " if the LastWriteTime from the reference does not match")]
+        [Fact]
         public void GetFile_using_reference_throws_FileNotFoundException_if_the_LastWriteTime_from_the_reference_does_not_match()
         {
             var reference = new FileReference(m_File1.Path, m_File1.LastWriteTime.AddMinutes(1), m_File1.Length);
             Assert.Throws<FileNotFoundException>(() => m_Root.GetFile(reference));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetFile() using reference throws " + nameof(FileNotFoundException) + " if the Length from the reference does not match")]
+        [Fact]
         public void GetFile_using_reference_throws_FileNotFoundException_if_the_Length_from_the_reference_does_not_match()
         {
             var reference = new FileReference(m_File1.Path, m_File1.LastWriteTime, m_File1.Length + 2);
@@ -136,26 +136,26 @@ namespace SyncTool.FileSystem
 
         #region FileExists
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".FileExists() throws ArgumentNullException if path is null")]
+        [Fact]
         public void FileExists_throws_ArgumentNullException_if_path_is_null()
         {
             Assert.Throws<ArgumentNullException>(() => m_Root.FileExists((string) null));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".FileExists() throws FormatException if path is empty or whitespace")]
+        [Fact]
         public void FileExists_throws_FormatException_if_path_is_empty_or_whitespace()
         {
             Assert.Throws<FormatException>(() => m_Root.FileExists(""));
             Assert.Throws<FormatException>(() => m_Root.FileExists("  "));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".FileExists() throws FormatException if path contains a backslash")]
+        [Fact]
         public void FileExists_throws_FormatException_if_path_contains_a_backslash()
         {
             Assert.Throws<FormatException>(() => m_Root.FileExists("name\\name"));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".FileExists() throws FormatException if path ends with directory separator char")]
+        [Fact]
         public void FileExists_throws_FormatException_if_path_ends_with_directory_separator_char()
         {
             Assert.Throws<FormatException>(() => m_Root.FileExists("/"));
@@ -163,7 +163,7 @@ namespace SyncTool.FileSystem
             Assert.Throws<FormatException>(() => m_Root.FileExists("name/someOtherName/"));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".FileExists() throws FormatException if path consists only of slashes")]
+        [Fact]
         public void FileExists_throws_FormatException_if_path_consists_only_of_slashes()
         {
             Assert.Throws<FormatException>(() => m_Root.FileExists("/"));
@@ -171,7 +171,7 @@ namespace SyncTool.FileSystem
         }
 
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".FileExists() returns expected result")]
+        [Fact]
         public void FileExists_returns_expected_result()
         {
             Assert.False(m_Root.FileExists("someFileName"));
@@ -187,7 +187,7 @@ namespace SyncTool.FileSystem
             Assert.True(m_Dir11.FileExists("/dir1/file1"));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".FileExists() using reference returns expected result")]
+        [Fact]
         public void FileExists_using_reference_returns_expected_result()
         {
             Assert.False(m_Root.FileExists(new FileReference("/someFileName")));
@@ -220,33 +220,33 @@ namespace SyncTool.FileSystem
 
         #region GetDirectory()
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetDirectory() throws ArgumentNullException if path is null")]
+        [Fact]
         public void GetDirectory_throws_ArgumentNullException_if_path_is_null()
         {
             Assert.Throws<ArgumentNullException>(() => m_Root.GetDirectory(null));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetDirectory() throws FormatException if path is empty or whitespace")]
+        [Fact]
         public void GetDirectory_throws_FormatException_if_path_is_empty_or_whitespace()
         {
             Assert.Throws<FormatException>(() => m_Root.GetDirectory(""));
             Assert.Throws<FormatException>(() => m_Root.GetDirectory("  "));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetDirectory() throws FormatException if path contains a backslash")]
+        [Fact]
         public void GetDirectory_throws_FormatException_if_path_contains_a_backslash()
         {
             Assert.Throws<FormatException>(() => m_Root.GetDirectory("dir\\dir1"));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetDirectory() throws FormatException if path ends with directory separator char")]
+        [Fact]
         public void GetDirectory_throws_FormatException_if_path_ends_with_directory_separator_char()
         {
             Assert.Throws<FormatException>(() => m_Root.GetDirectory("name/"));
             Assert.Throws<FormatException>(() => m_Root.GetDirectory("name/someOtherName/"));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetDirectory() returns direct child")]
+        [Fact]
         public void GetDirectory_returns_direct_child()
         {
             var expected = m_Dir1;
@@ -255,7 +255,7 @@ namespace SyncTool.FileSystem
             Assert.Equal(expected, actual);
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetDirectory() returns children down in the hierarchy")]
+        [Fact]
         public void GetDirectory_returns_children_down_in_the_hierarchy()
         {
             var expected = m_Dir11;
@@ -264,7 +264,7 @@ namespace SyncTool.FileSystem
             Assert.Equal(expected, actual);
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".GetDirectory() returns expected result for rooted path")]
+        [Fact]
         public void GetDirectory_returns_expected_result_for_rooted_path()
         {
             Assert.Equal(m_Root, m_Root.GetDirectory("/"));
@@ -284,26 +284,26 @@ namespace SyncTool.FileSystem
 
         #region DirectoryExists
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".DirectoryExists() throws ArgumentNullException if path is null")]
+        [Fact]
         public void DirectoryExists_throws_ArgumentNullException_if_path_is_null()
         {
             Assert.Throws<ArgumentNullException>(() => m_Root.DirectoryExists(null));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".DirectoryExists() throws FormatException if path is empty or whitespace")]
+        [Fact]
         public void DirectoryExists_throws_FormatException_if_path_is_empty_or_whitespace()
         {
             Assert.Throws<FormatException>(() => m_Root.DirectoryExists(""));
             Assert.Throws<FormatException>(() => m_Root.DirectoryExists("  "));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".DirectoryExists() throws FormatException if path contains a backslash")]
+        [Fact]
         public void DirectoryExists_throws_FormatException_if_path_contains_a_backslash()
         {
             Assert.Throws<FormatException>(() => m_Root.DirectoryExists("dir\\dir1"));
         }
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".DirectoryExists() throws FormatException if path ends with directory separator char")]
+        [Fact]
         public void DirectoryExists_throws_FormatException_if_path_ends_with_directory_separator_char()
         {
             Assert.Throws<FormatException>(() => m_Root.DirectoryExists("name/"));
@@ -312,7 +312,7 @@ namespace SyncTool.FileSystem
 
 
 
-        [Fact(DisplayName = nameof(InMemoryDirectory) + ".DirectoryExists() returns the expected result")]
+        [Fact]
         public void DirectoryExists_returns_the_expected_result()
         {
             Assert.True(m_Root.DirectoryExists("dir1"));

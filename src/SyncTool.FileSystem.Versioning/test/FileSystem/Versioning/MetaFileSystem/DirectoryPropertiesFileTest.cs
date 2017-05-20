@@ -15,7 +15,7 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 
 
 
-        [Fact(DisplayName = "DirectoryPropertiesFile.Open() returns json readable stream")]
+        [Fact]
         public void Open_returns_json_readable_stream()
         {
             var directory = new Directory(s_Dir1);

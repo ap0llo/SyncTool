@@ -13,7 +13,7 @@ namespace SyncTool.Git.Common
 
         #region Commit
 
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".Commit() does not delete the local directory if the transaction was successful")]
+        [Fact]
         public void Commit_does_not_delete_the_local_directory_if_the_transaction_was_successful()
         {
             var transaction = CreateTransaction();
@@ -30,14 +30,14 @@ namespace SyncTool.Git.Common
 
         #region CanReuseLocalRepository
 
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".CanReuseLocalRepository() return false if the directory does not exist")]
+        [Fact]
         public void CanReuseLocalRepository_returns_false_if_the_directory_does_not_exist()
         {
             var transaction = CreateCachingTransaction();            
             Assert.False(transaction.CanReuseLocalRepository());
         }
 
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".CanReuseLocalRepository() return false if the directory is empty")]
+        [Fact]
         public void CanReuseLocalRepository_returns_false_if_the_directory_is_empty()
         {
             var transaction = CreateCachingTransaction();
@@ -45,7 +45,7 @@ namespace SyncTool.Git.Common
             Assert.False(transaction.CanReuseLocalRepository());
         }
 
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".CanReuseLocalRepository() return false if the directory is not a git repository")]
+        [Fact]
         public void CanReuseLocalRepository_returns_false_if_the_directory_is_not_a_git_repository()
         {
             var transaction = CreateCachingTransaction();
@@ -54,7 +54,7 @@ namespace SyncTool.Git.Common
             Assert.False(transaction.CanReuseLocalRepository());
         }
 
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".CanReuseLocalRepository() return false if the directory is not a bare repository")]
+        [Fact]
         public void CanReuseLocalRepository_returns_false_if_the_directory_is_not_a_bare_repository()
         {
             var transaction = CreateCachingTransaction();
@@ -63,7 +63,7 @@ namespace SyncTool.Git.Common
             Assert.False(transaction.CanReuseLocalRepository());
         }
 
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".CanReuseLocalRepository() return false if the repository has no origin")]
+        [Fact]
         public void CanReuseLocalRepository_returns_false_if_the_repository_has_no_origin()
         {
             var transaction = CreateCachingTransaction();
@@ -72,7 +72,7 @@ namespace SyncTool.Git.Common
             Assert.False(transaction.CanReuseLocalRepository());
         }
 
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".CanReuseLocalRepository() return false if the repository has a different origin")]
+        [Fact]
         public void CanReuseLocalRepository_returns_false_if_the_repository_has_a_different_origin()
         {
             var transaction = CreateCachingTransaction();
@@ -85,7 +85,7 @@ namespace SyncTool.Git.Common
             Assert.False(transaction.CanReuseLocalRepository());
         }
 
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".CanReuseLocalRepository() return false if the repository contains unpublished branches")]
+        [Fact]
         public void CanReuseLocalRepository_returns_false_if_the_repository_contains_unpublished_branches()
         {
             var transaction1 = CreateTransaction();
@@ -101,7 +101,7 @@ namespace SyncTool.Git.Common
             Assert.False(cachingTransaction.CanReuseLocalRepository());
         }
 
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".CanReuseLocalRepository() return false if the repository is ahead of origin")]
+        [Fact]
         public void CanReuseLocalRepository_returns_false_if_the_repository_is_ahead_of_origin()
         {
             var transaction1 = CreateTransaction();
@@ -115,7 +115,7 @@ namespace SyncTool.Git.Common
             Assert.False(cachingTransaction.CanReuseLocalRepository());
         }
 
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".CanReuseLocalRepository() returns true for a repository left over from a successful transaction")]
+        [Fact]
         public void CanReuseLocalRepository_returns_true_for_a_repository_left_over_from_a_successful_transaction()
         {
             var transaction1 = CreateTransaction();
@@ -133,7 +133,7 @@ namespace SyncTool.Git.Common
 
         #region Begin
 
-        [Fact(DisplayName= nameof(CachingGitTransaction) + ".Begin() gets all changes from the remote repository")]
+        [Fact]
         public void Begin_gets_all_changes_from_the_remote_repository()
         {            
             var transaction1 = CreateTransaction();
@@ -164,7 +164,7 @@ namespace SyncTool.Git.Common
         }
 
         
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".Begin() creates new local branches for branches created in the remote repository")]
+        [Fact]
         public void Begin_creates_new_local_branches_for_branches_created_in_the_remote_repository()
         {
             const string branchName = "newTestBranch";
@@ -193,8 +193,7 @@ namespace SyncTool.Git.Common
         }
 
         
-        [Fact(DisplayName = nameof(CachingGitTransaction) + ".Begin() deletes local branches if the tracked branch was deleted in the remote repository",
-              Skip = "Requires unreleased features in libgit2sharp")]
+        [Fact(Skip = "Requires unreleased features in libgit2sharp")]
         public void Begin_deletes_local_branches_if_the_tracked_brach_was_deleted_in_the_remote_repository()
         {
 

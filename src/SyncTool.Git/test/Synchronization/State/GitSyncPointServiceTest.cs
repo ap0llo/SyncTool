@@ -26,7 +26,7 @@ namespace SyncTool.Git.Synchronization.State
         }
 
 
-        [Fact(DisplayName = nameof(GitSyncPointService) + ".Items is empty for empty repository")]
+        [Fact]
         public void Items_is_empty_for_empty_repository()
         {
             Assert.Empty(m_Service.Items);
@@ -38,7 +38,7 @@ namespace SyncTool.Git.Synchronization.State
             Assert.Null(m_Service.LatestSyncPoint);
         }
 
-        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() stores the state")]
+        [Fact]
         public void AddItem_stores_the_state()
         {
             var state = SyncPointBuilder.NewSyncPoint()
@@ -52,13 +52,13 @@ namespace SyncTool.Git.Synchronization.State
             SyncAssert.Equal(state, m_Service[1]);
         }
 
-        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() throws " + nameof(ArgumentNullException) + " if state is null")]
+        [Fact]
         public void AddItem_throws_ArgumentNullException_if_state_is_null()
         {
             Assert.Throws<ArgumentNullException>(() => m_Service.AddItem(null));
         }
 
-        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() throws " + nameof(DuplicateSyncPointException) + " if state id already exists")]
+        [Fact]
         public void AddItem_throws_DuplicateSynchronizationStateException_if_state_id_already_exists()
         {
             var state1 = SyncPointBuilder.NewSyncPoint()
@@ -72,8 +72,8 @@ namespace SyncTool.Git.Synchronization.State
             m_Service.AddItem(state1);
             Assert.Throws<DuplicateSyncPointException>(() => m_Service.AddItem(state2));
         }
-        
-        [Fact(DisplayName = nameof(GitSyncPointService) + ".AddItem() correctly stores multiple states")]
+
+        [Fact]
         public void AddItem_correctly_stores_multiple_states()
         {
             var state1 = SyncPointBuilder.NewSyncPoint()
@@ -92,7 +92,7 @@ namespace SyncTool.Git.Synchronization.State
             Assert.True(m_Service.ItemExists(2));
         }
 
-        [Fact(DisplayName = nameof(GitSyncPointService) + ": States from the repository are loaded correctly")]
+        [Fact]
         public void Values_from_disk_are_loaded_correctly()
         {
             var state1 = SyncPointBuilder.NewSyncPoint()
@@ -118,13 +118,13 @@ namespace SyncTool.Git.Synchronization.State
             SyncAssert.Equal(state2, service[2]);            
         }       
 
-        [Fact(DisplayName = nameof(GitSyncPointService) + ": Indexer throws " + nameof(SyncPointNotFoundException) + " for unknown state")]
+        [Fact]
         public void Indexer_throws_SynchronizationStateNotFoundException_for_unknown_state()
         {
             Assert.Throws<SyncPointNotFoundException>(() => m_Service[12]);
         }
 
-        [Fact(DisplayName = nameof(GitSyncPointService) + ": Indexer returns expected state")]
+        [Fact]
         public void Indexer_returns_expected_state()
         {
             var state = SyncPointBuilder.NewSyncPoint()

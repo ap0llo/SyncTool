@@ -9,7 +9,7 @@ namespace SyncTool.FileSystem.Versioning
     /// </summary>
     public class ChangeTest
     {
-        [Fact(DisplayName = nameof(Change) + ": Constructor checks validity of file parameters for change type")]
+        [Fact]
         public void Constructor_checks_validity_of_file_parameters_for_change_type()
         {
             Assert.ThrowsAny<ArgumentException>(() => new Change(ChangeType.Added, null, null));   
@@ -29,7 +29,7 @@ namespace SyncTool.FileSystem.Versioning
 
         }
 
-        [Fact(DisplayName = nameof(Change) + ": Constructor checks that paths of file parameters match")]
+        [Fact]
         public void Constructor_checks_that_paths_of_file_parameters_match()
         {
             Assert.Throws<ArgumentException>(() => new Change(ChangeType.Modified, new FileReference("/path1", DateTime.Now, 42), new FileReference("/path2", DateTime.Now, 42)));

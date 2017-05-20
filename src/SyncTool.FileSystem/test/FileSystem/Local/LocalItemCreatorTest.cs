@@ -24,7 +24,7 @@ namespace SyncTool.FileSystem.Local
         }
 
 
-        [Fact(DisplayName = nameof(LocalItemCreator) + ".CreateDirectory()")]
+        [Fact]
         public void CreateDirectory()
         {
             var rootName = Path.GetRandomFileName();
@@ -47,7 +47,7 @@ namespace SyncTool.FileSystem.Local
             Assert.True(NativeDirectory.Exists(Path.Combine(Path.GetTempPath(), rootName, s_Dir2)));
         }
 
-        [Fact(DisplayName = nameof(LocalItemCreator) + ".CreateDirectory(): Content from Readable files gets written to disk")]
+        [Fact]
         public void CreateDirectory_Content_from_Readable_files_gets_written_to_disk()
         {
             var rootName = Path.GetRandomFileName();
@@ -66,7 +66,7 @@ namespace SyncTool.FileSystem.Local
             Assert.Equal(fileContent, NativeFile.ReadAllText(expectedFilePath));
         }
 
-        [Fact(DisplayName = nameof(LocalItemCreator) + ".CreateTemporaryDirectory(): Created directory gets deleted on dispose")]
+        [Fact]
         public void CreateTemporaryDirectory_created_directory_gets_deleted_on_dispose()
         {
             // create temporary directory
@@ -85,7 +85,7 @@ namespace SyncTool.FileSystem.Local
             Assert.False(NativeDirectory.Exists(Path.Combine(Path.GetTempPath(), dirName)));
         }
 
-        [Fact(DisplayName = nameof(LocalItemCreator) + ".CreateDirectoryInPlace()")]
+        [Fact]
         public void CreateDirectoryInPlace()
         {
             var directory = new Directory(Path.GetRandomFileName())

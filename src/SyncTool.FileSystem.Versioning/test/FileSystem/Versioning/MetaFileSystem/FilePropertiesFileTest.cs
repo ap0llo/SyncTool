@@ -13,7 +13,7 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
     {
         readonly JsonSerializer m_Serializer = new JsonSerializer();
 
-        [Fact(DisplayName = "FilePropertiesFile.Open() returns json readable stream")]
+        [Fact]
         public void Open_returns_json_readable_stream()
         {
             var file = new EmptyFile("file1") { LastWriteTime = DateTime.Now, Length = 42};

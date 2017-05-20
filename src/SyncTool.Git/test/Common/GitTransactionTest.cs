@@ -9,7 +9,7 @@ namespace SyncTool.Git.Common
     public class GitTransactionTest : AbstractGitTransactionTest
     {
 
-        [Fact(DisplayName = nameof(AbstractGitTransaction) + ".Begin() throws " + nameof(GitTransactionException) + " if the local directory exists and is not empty")]
+        [Fact]
         public void Begin_throws_GitTransactionException_if_local_directory_exists_and_is_not_empty()
         {
             var transaction = CreateTransaction();
@@ -20,7 +20,7 @@ namespace SyncTool.Git.Common
             Assert.Throws<GitTransactionException>(() => transaction.Begin());
         }
 
-        [Fact(DisplayName = nameof(GitTransaction) + ".Commit() deletes the local directory after pushing the changes")]
+        [Fact]
         public void Commit_deletes_the_local_directory_after_pushing_the_changes()
         {
             var transaction = CreateTransaction();

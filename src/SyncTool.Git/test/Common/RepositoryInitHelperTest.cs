@@ -20,7 +20,7 @@ namespace SyncTool.Git.Common
         }
 
 
-        [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() creates a bare repository")]
+        [Fact]
         public void InitializeRepository_Creates_a_bare_repository()
         {
             RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Directory.Location);
@@ -32,7 +32,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() creates an initial commit")]
+        [Fact]
         public void InitializeRepository_Creates_an_initial_commit()
         {
             RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Directory.Location);
@@ -44,7 +44,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() adds a tag for the initial commit")]
+        [Fact]
         public void InitializeRepository_Adds_a_tag_for_the_initial_commit()
         {
             RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Location);
@@ -63,7 +63,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() adds a repository info file to the repository")]
+        [Fact]
         public void InitializeRepository_Adds_a_repository_info_file_to_the_repository()
         {
             RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Location);
@@ -80,8 +80,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-
-        [Fact(DisplayName = nameof(RepositoryInitHelper) + ".InitializeRepository() creates a configuration branch from the initial commit")]
+        [Fact]
         public void InitializeRepository_Creates_a_configuration_branch()
         {
             RepositoryInitHelper.InitializeRepository(m_TemporaryDirectory.Location);
@@ -98,6 +97,7 @@ namespace SyncTool.Git.Common
             }
 
         }
+
 
         public void Dispose()
         {

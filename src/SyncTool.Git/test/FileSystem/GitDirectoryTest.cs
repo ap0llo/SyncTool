@@ -33,8 +33,8 @@ namespace SyncTool.Git.FileSystem
             RepositoryInitHelper.InitializeRepository(m_Repository.Directory.Location);            
         }
 
-        
-        [Fact(DisplayName = "GitDirectory: Repository with single commit and single file")]
+
+        [Fact]
         public void Repository_with_single_commit_and_single_file()
         {
             using (var repo = new Repository(m_Repository.Directory.Location))
@@ -50,7 +50,7 @@ namespace SyncTool.Git.FileSystem
             }
         }
 
-        [Fact(DisplayName = "GitDirectory: Repository with subdirectories")]
+        [Fact]
         public void Repository_with_subdirectories()
         {
             // arrange

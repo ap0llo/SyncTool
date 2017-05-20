@@ -17,7 +17,7 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
         readonly FileSystemToMetaFileSystemConverter m_Instance = new FileSystemToMetaFileSystemConverter();
 
 
-        [Fact(DisplayName = "FileSystemToMetaFileSystemConverter.CreateMetaDirectory() with a single file")]
+        [Fact]
         public void CreateMetaDirectory_with_a_single_file()
         {
             var fileMock = CreateFileMock(s_File1, DateTime.Now, 1234);            
@@ -34,7 +34,7 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
             Assert.True(metaFileSystem.FileExists(DirectoryPropertiesFile.FileName));
         }
 
-        [Fact(DisplayName = "FileSystemToMetaFileSystemConverter.CreateMetaDirectory() with directories and files")]
+        [Fact]
         public void CreateMetaDirectory_with_directories_and_files()
         {
             var fileMock1 = CreateFileMock(s_File1, DateTime.Now, 1234);

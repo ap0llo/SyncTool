@@ -16,7 +16,7 @@ namespace SyncTool.Git.Common
     /// </summary>
     public class GitBasedGroupTest : DirectoryBasedTest
     {
-        [Fact(DisplayName = nameof(Group) + ".Name must not be null or empty")]
+        [Fact]
         public void Name_must_not_be_null_or_empty()
         {
             var pathProviderMock = new Mock<IRepositoryPathProvider>(MockBehavior.Strict);

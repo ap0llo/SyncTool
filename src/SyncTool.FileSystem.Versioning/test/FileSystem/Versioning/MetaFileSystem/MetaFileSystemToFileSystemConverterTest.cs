@@ -18,7 +18,7 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
         readonly MetaFileSystemToFileSystemConverter m_Instance = new MetaFileSystemToFileSystemConverter();
 
 
-        [Fact(DisplayName = nameof(MetaFileSystemToFileSystemConverter) + ".Convert()")]
+        [Fact]
         public void Convert()
         {
             IFile file1 = null;
@@ -76,7 +76,7 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
         }
 
 
-        [Fact(DisplayName = nameof(MetaFileSystemToFileSystemConverter) + "Convert(): Name in directory properties file overrides directory name")]
+        [Fact]
         public void Convert_name_in_directory_properties_file_overrides_directory_name()
         {            
             var metaFileSystem = new Directory("root")

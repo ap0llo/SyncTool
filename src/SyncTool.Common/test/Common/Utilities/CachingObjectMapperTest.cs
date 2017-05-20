@@ -8,15 +8,15 @@ namespace SyncTool.Common.Utilities
     /// </summary>
     public class CachingObjectMapperTest
     {
-         
-        [Fact(DisplayName = "CachingObjectMapper: Constructor: Mapping function must not be null")]
+
+        [Fact]
         public void Constructor_MappingFunction_must_not_be_null()
         {
             Assert.Throws<ArgumentNullException>(() => new CachingObjectMapper<object, object>(null));
         }
 
 
-        [Fact(DisplayName = "CachingObjectMapper.MapObject() invokes the mapping function")]
+        [Fact]
         public void MapObject_Invokes_the_mapping_function()
         {
             var instance = new CachingObjectMapper<string, string>(str => str.ToUpper());
@@ -27,7 +27,7 @@ namespace SyncTool.Common.Utilities
             Assert.Equal(value.ToUpper(), actual);
         }
 
-        [Fact(DisplayName = "CachingObjectMapper.MapObject() reuses cached instances")]
+        [Fact]
         public void MapObject_reuses_cached_instances()
         {
             var value = new object();
@@ -40,7 +40,7 @@ namespace SyncTool.Common.Utilities
             Assert.Same(mappedValue1, mappedValue2);
         }
 
-        [Fact(DisplayName = "CachingObjectMapper.MapObject() uses the specified equality comparer")]
+        [Fact]
         public void MapObject_uses_the_specified_equality_comparer()
         {
             var value = "foo";
@@ -55,7 +55,7 @@ namespace SyncTool.Common.Utilities
         }
 
 
-        [Fact(DisplayName = "CachingObjectMapper.CleanCache() removes specified items from cache")]
+        [Fact]
         public void CleanCache_removes_specified_items_from_cache()
         {            
             var value1 = new object();
@@ -77,7 +77,7 @@ namespace SyncTool.Common.Utilities
 
         }
 
-        [Fact(DisplayName = "CachingObjectMapper.CleanCache() uses the specified equality comparer")]
+        [Fact]
         public void CleanCache_uses_the_specified_equality_comparer()
         {
             var value1 = "foo";
