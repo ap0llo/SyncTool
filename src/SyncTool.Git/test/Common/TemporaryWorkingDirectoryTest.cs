@@ -57,7 +57,11 @@ namespace SyncTool.Git.Common
 
                 void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
                 {
-                    output.AppendLine(e.Data);
+                    if(e != null)
+                    {
+                        Console.WriteLine(e.Data);
+                        output.AppendLine(e.Data);
+                    }
                 }
 
                 process.OutputDataReceived += Process_OutputDataReceived;
