@@ -13,6 +13,7 @@ using IODirectory = System.IO.Directory;
 
 namespace SyncTool.Git.Common
 {
+
     /// <summary>
     /// Test for <see cref="TemporaryWorkingDirectory"/>. 
     /// </summary>
@@ -33,13 +34,37 @@ namespace SyncTool.Git.Common
             m_MasterRepository = m_LocalItemCreator.CreateTemporaryDirectory();
             m_BareMasterRepository = m_LocalItemCreator.CreateTemporaryDirectory();
 
-            Process.Start(new ProcessStartInfo("git", "init") {WorkingDirectory = m_MasterRepository.Directory.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
+            
+            void RunGit(string command)
+            {
+                var startInfo = new ProcessStartInfo("git")
+                {
+                    Arguments = command,
+                    WorkingDirectory = m_MasterRepository.Directory.Location,
+                    WindowStyle = ProcessWindowStyle.Hidden
+                };
+                var process = Process.Start(startInfo);
+                if (process == null)
+                {
+                    throw new ProcessExecutionException($"Failed to start 'git {command}'");
+                }
+
+                process.WaitForExit();
+
+                if (process.ExitCode != 0)
+                {
+                    throw new ProcessExecutionException($"'git {command}' exited with exit code {process.ExitCode}");
+                }
+            }
+
+
+            RunGit("init");            
             IOFile.WriteAllText(Path.Combine(m_MasterRepository.Directory.Location, "dummy.txt"), "hello World!");
 
-            Process.Start(new ProcessStartInfo("git", $"add {s_DummyFileName}") {WorkingDirectory = m_MasterRepository.Directory.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
-            Process.Start(new ProcessStartInfo("git", "commit -m Commit") {WorkingDirectory = m_MasterRepository.Directory.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
+            RunGit($"add { s_DummyFileName}");            
+            RunGit("commit -m Commit");
 
-            Process.Start(new ProcessStartInfo("git", $"clone \"{m_MasterRepository.Directory.Location}\" \"{m_BareMasterRepository.Directory.Location}\" --bare") {WorkingDirectory = m_MasterRepository.Location, WindowStyle = ProcessWindowStyle.Hidden}).WaitForExit();
+            RunGit($"clone \"{m_MasterRepository.Directory.Location}\" \"{m_BareMasterRepository.Directory.Location}\" --bare");
         }
 
 
@@ -192,7 +217,6 @@ namespace SyncTool.Git.Common
             }
         }
 
-
-
+       
     }
 }
