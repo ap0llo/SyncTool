@@ -8,5 +8,11 @@
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
+
+  <Target Name="RunGitConfig" BeforeTargets="Test" Condition="'$(APPVEYOR)' == 'True'">
+	<Message Text="Configuring git user name and email before tests" />
+	<Exec Command="git config --global user.name SyncTool_Appveyor" />
+	<Exec Command="git config --global user.email you@example.com" />
+  </Target>
   
 </Project>
