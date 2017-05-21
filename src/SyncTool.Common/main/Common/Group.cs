@@ -48,9 +48,7 @@ namespace SyncTool.Common
             }
         }
 
-        public void Dispose()
-        {         
-            Disposed?.Invoke(this, EventArgs.Empty);
-        }        
+        public void Dispose() => Disposed?.Invoke(this, EventArgs.Empty);
+
     }
 }
