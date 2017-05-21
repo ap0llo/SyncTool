@@ -83,8 +83,12 @@ namespace SyncTool.Git.Common
                 }
             }
 
+            RunGit("init");
 
-            RunGit("init");            
+            // configure username and email (otherwise git commit will not work)
+            RunGit("config user.name SyncTool");
+            RunGit("config user.email synctool@example.com");
+
             IOFile.WriteAllText(Path.Combine(m_MasterRepository.Directory.Location, "dummy.txt"), "hello World!");
 
             RunGit($"add { s_DummyFileName}");            
