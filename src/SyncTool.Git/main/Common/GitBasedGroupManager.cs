@@ -44,10 +44,7 @@ namespace SyncTool.Git.Common
 
             var groupSettings = m_GroupSettings[name];
 
-            var groupScope = m_ApplicationScope.BeginLifetimeScope(Scope.Group, builder =>
-            {
-                builder.RegisterInstance(groupSettings).AsSelf().ExternallyOwned();
-            });
+            var groupScope = GetGroupScope(groupSettings);
 
             var group = groupScope.Resolve<Group>();
             group.Disposed += (s, e) => groupScope.Dispose();
@@ -59,7 +56,7 @@ namespace SyncTool.Git.Common
             EnsureGroupDoesNotExist(name);
             EnsureAddressDoesNotExist(address);
 
-            using (var groupScope = m_ApplicationScope.BeginLifetimeScope(Scope.Group))
+            using (var groupScope = GetGroupScope())
             {
                 var validator = groupScope.Resolve<IGroupValidator>();
                 try
@@ -80,31 +77,19 @@ namespace SyncTool.Git.Common
             EnsureGroupDoesNotExist(name);
             EnsureAddressDoesNotExist(address);
 
-            var directoryPath = m_PathProvider.GetRepositoryPath(name);
-
-            if (NativeDirectory.Exists(directoryPath))
+            using (var scope = GetGroupScope())
             {
-                throw new GroupManagerException($"Cannot create repository for SyncGroup '{name}'. Directory already exists");
-            }
+                var initializer = scope.Resolve<IGroupInitializer>();
 
-            NativeDirectory.CreateDirectory(directoryPath);
-            RepositoryInitHelper.InitializeRepository(directoryPath);
-
-            using (var repository = new Repository(directoryPath))
-            {
-                var origin = repository.Network.Remotes.Add("origin", address);
-
-                foreach (var localBranch in repository.GetLocalBranches())
+                try
                 {
-                    repository.Branches.Update(localBranch,
-                            b => b.Remote = origin.Name,
-                            b => b.UpstreamBranch = localBranch.CanonicalName);
-
+                    initializer.Initialize(name, address);
                 }
-                repository.Network.Push(origin, repository.Branches.GetLocalBranches().ToRefSpecs().Union(repository.Tags.ToRefSpecs()));
+                catch (InitializationException ex)
+                {
+                    throw new GroupManagerException("Error during group initilaization", ex);
+                }
             }
-
-            DirectoryHelper.DeleteRecursively(directoryPath);
 
             DoAddGroup(name, address);
         }
@@ -151,6 +136,17 @@ namespace SyncTool.Git.Common
             {
                 throw DuplicateGroupException.FromAddress(address);
             }
+        }
+
+        ILifetimeScope GetGroupScope(GroupSettings groupSettings = null)
+        {
+            return m_ApplicationScope.BeginLifetimeScope(Scope.Group, builder =>
+            {
+                if (groupSettings != null)
+                {
+                    builder.RegisterInstance(groupSettings).AsSelf().ExternallyOwned();
+                }
+            });
         }
     }
 }

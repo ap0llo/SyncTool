@@ -22,24 +22,24 @@ namespace SyncTool.Git.Common
     
         ILifetimeScope GetContainer(
             IGroupSettingsProvider settingsProvider = null,
-            IGroupValidator groupValidator = null)
+            IGroupValidator groupValidator = null,
+            IGroupInitializer groupInitializer = null)
         {            
             var builder = new ContainerBuilder();
 
 
-            if(groupValidator == null)
-            {
-                builder
-                    .RegisterType<GitGroupValidator>()
-                    .As<IGroupValidator>();
-            }
+            if(groupValidator != null)
+                builder.RegisterInstance(groupValidator).As<IGroupValidator>();
             else
-            {
-                builder
-                    .RegisterInstance(groupValidator)
-                    .As<IGroupValidator>();
-            }
+                builder.RegisterType<GitGroupValidator>().As<IGroupValidator>();
                 
+
+            if(groupInitializer != null)
+                builder.RegisterInstance(groupInitializer).As<IGroupInitializer>();
+            else
+                builder.RegisterType<GitGroupInitializer>().As<IGroupInitializer>();
+
+
             builder
                 .RegisterInstance(EqualityComparer<IFileReference>.Default)
                 .As<IEqualityComparer<IFileReference>>();

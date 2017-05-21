@@ -34,7 +34,7 @@ namespace SyncTool.Git.DI
             builder.RegisterType<GitSyncActionService>().As<ISyncActionService>().AsSelf();
             builder.RegisterType<GitBasedMultiFileSystemHistoryService>().As<IMultiFileSystemHistoryService>().AsSelf();
             builder.RegisterType<GitGroupValidator>().As<IGroupValidator>();
-
+            builder.RegisterType<GitGroupInitializer>().As<IGroupInitializer>();
 
             base.Load(builder);
         }        
