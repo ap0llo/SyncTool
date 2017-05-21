@@ -20,13 +20,25 @@ namespace SyncTool.Git.Common
     public class GitBasedGroupManagerTest : DirectoryBasedTest
     {
     
-        ILifetimeScope GetContainer(IGroupSettingsProvider groupSettingsProvider = null)
+        ILifetimeScope GetContainer(
+            IGroupSettingsProvider settingsProvider = null,
+            IGroupValidator groupValidator = null)
         {            
             var builder = new ContainerBuilder();
 
-            builder
-                .RegisterType<GitGroupValidator>()
-                .As<IGroupValidator>();
+
+            if(groupValidator == null)
+            {
+                builder
+                    .RegisterType<GitGroupValidator>()
+                    .As<IGroupValidator>();
+            }
+            else
+            {
+                builder
+                    .RegisterInstance(groupValidator)
+                    .As<IGroupValidator>();
+            }
                 
             builder
                 .RegisterInstance(EqualityComparer<IFileReference>.Default)
@@ -38,8 +50,8 @@ namespace SyncTool.Git.Common
 
             builder.RegisterType<GitBasedGroupManager>().AsSelf();
 
-            if (groupSettingsProvider != null)
-                builder.RegisterInstance(groupSettingsProvider).As<IGroupSettingsProvider>();
+            if (settingsProvider != null)
+                builder.RegisterInstance(settingsProvider).As<IGroupSettingsProvider>();
             
             return builder.Build();
         }
@@ -84,30 +96,21 @@ namespace SyncTool.Git.Common
         }
     
         [Fact]        
-        public void AddGroup_throws_GroupManagerException_if_the_address_does_not_point_to_a_git_repository()
+        public void AddGroup_throws_GroupManagerException_if_validation_fails()
         {
             var settingsProviderMock = GetGroupSettingsProviderMock().WithEmptyGroupSettings();
-            using (var container = GetContainer(settingsProviderMock.Object))
+            var validatorMock = new Mock<IGroupValidator>(MockBehavior.Strict);
+            validatorMock
+                .Setup(m => m.EnsureGroupIsValid(It.IsAny<string>(), It.IsAny<string>()))
+                .Throws<ValidationException>();
+
+            using (var container = GetContainer(settingsProvider: settingsProviderMock.Object, groupValidator: validatorMock.Object))
             {
                 var instance = container.Resolve<GitBasedGroupManager>();
                 Assert.Throws<GroupManagerException>(() => instance.AddGroup("Group1", "Address1"));
             }            
         }
-
-        [Fact]
-        public void AddGroup_throws_GroupManagerException_if_the_address_does_not_point_to_a_group_git_repository()
-        {
-            var settingsProvider = GetGroupSettingsProviderMock().WithEmptyGroupSettings();
-         
-            using (var container = GetContainer(settingsProvider.Object))
-            using (var remote = CreateTemporaryDirectory())
-            {
-                var groupManager = container.Resolve<GitBasedGroupManager>();
-                Repository.Init(remote.Location, true);
-                Assert.Throws<GroupManagerException>(() => groupManager.AddGroup("Group1", remote.Location));
-            }
-        }
-
+        
         [Fact]
         public void AddGroup_succeeds_for_a_repository_created_by_RepositoryInitHelper()
         {            
