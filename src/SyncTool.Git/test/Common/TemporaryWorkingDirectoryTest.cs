@@ -37,11 +37,12 @@ namespace SyncTool.Git.Common
             m_BareMasterRepository = m_LocalItemCreator.CreateTemporaryDirectory();
 
             
-            void RunGit(string command)
+            void Git(params string[] arguments)
             {
+                var _arguments = arguments.Select(x => $"\"{x}\"").Aggregate((a, b) => $"{a} {b}");
                 var startInfo = new ProcessStartInfo("git")
                 {
-                    Arguments = command,
+                    Arguments = _arguments,
                     WorkingDirectory = m_MasterRepository.Directory.Location,
                     WindowStyle = ProcessWindowStyle.Hidden,
                     UseShellExecute = false,
@@ -51,7 +52,7 @@ namespace SyncTool.Git.Common
                 var process = Process.Start(startInfo);
                 if (process == null)
                 {
-                    throw new ProcessExecutionException($"Failed to start 'git {command}'");
+                    throw new ProcessExecutionException($"Failed to start 'git {_arguments}'");
                 }
 
                 var output = new StringBuilder();
@@ -79,22 +80,21 @@ namespace SyncTool.Git.Common
 
                 if (process.ExitCode != 0)
                 {
-                    throw new ProcessExecutionException($"'git {command}' exited with exit code {process.ExitCode}.\nCaptured output:\n {output}");
+                    throw new ProcessExecutionException($"'git {_arguments}' exited with exit code {process.ExitCode}.\nCaptured output:\n {output}");
                 }
             }
 
-            RunGit("init");
+            Git("init");
 
             // configure username and email (otherwise git commit will not work)
-            RunGit("config user.name SyncTool");
-            RunGit("config user.email synctool@example.com");
+            Git("config","user.name", "SyncTool");
+            Git("config", "user.email", "synctool@example.com");
 
             IOFile.WriteAllText(Path.Combine(m_MasterRepository.Directory.Location, "dummy.txt"), "hello World!");
 
-            RunGit($"add { s_DummyFileName}");            
-            RunGit("commit -m Commit");
-
-            RunGit($"clone \"{m_MasterRepository.Directory.Location}\" \"{m_BareMasterRepository.Directory.Location}\" --bare");
+            Git($"add", s_DummyFileName);
+            Git("commit", "-m", "Commit");
+            Git($"clone", "--bare", m_MasterRepository.Directory.Location, m_BareMasterRepository.Directory.Location);
         }
 
         
