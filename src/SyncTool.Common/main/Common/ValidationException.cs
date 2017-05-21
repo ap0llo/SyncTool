@@ -5,10 +5,14 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SyncTool.Common.Common
+namespace SyncTool.Common
 {
     public class ValidationException : Exception
     {
+        public ValidationException()
+        {
+        }
+
         public ValidationException(string message) : base(message)
         {
         }

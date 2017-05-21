@@ -8,7 +8,6 @@ using SyncTool.FileSystem;
 using SyncTool.Git.Configuration.Reader;
 using NativeDirectory = System.IO.Directory;
 using Autofac;
-using SyncTool.Common.Common;
 
 namespace SyncTool.Git.Common
 {

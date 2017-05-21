@@ -13,7 +13,7 @@ using SyncTool.Common;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using SyncTool.FileSystem.FileSystem.DI;
-using SyncTool.Common.Common.DI;
+using SyncTool.Common.DI;
 
 namespace SyncTool.WebUI
 {

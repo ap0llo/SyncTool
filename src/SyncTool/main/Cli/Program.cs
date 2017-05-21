@@ -2,7 +2,7 @@
 using SyncTool.Cli.DI;
 using SyncTool.Cli.Framework;
 using SyncTool.Common;
-using SyncTool.Common.Common.DI;
+using SyncTool.Common.DI;
 using SyncTool.FileSystem.FileSystem.DI;
 using SyncTool.Git.DI;
 using SyncTool.Synchronization.DI;

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using LibGit2Sharp;
 using Moq;
@@ -7,11 +6,11 @@ using SyncTool.Common;
 using SyncTool.Git.Configuration.Reader;
 using SyncTool.TestHelpers;
 using Xunit;
-using static SyncTool.Git.TestHelpers.GroupSettingsProviderMockingHelper;
-using Directory = System.IO.Directory;
 using Autofac;
 using SyncTool.FileSystem;
-using SyncTool.Common.Common;
+
+using static SyncTool.Git.TestHelpers.GroupSettingsProviderMockingHelper;
+using Directory = System.IO.Directory;
 
 namespace SyncTool.Git.Common
 {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SyncTool.Common.Common.DI
+namespace SyncTool.Common.DI
 {
     public class CommonModule : Module
     {
