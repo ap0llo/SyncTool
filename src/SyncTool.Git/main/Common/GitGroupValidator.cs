@@ -9,19 +9,17 @@ namespace SyncTool.Git.Common
 {
     class GitGroupValidator : IGroupValidator
     {
-        readonly IGroupDirectoryPathProvider m_PathProvider;
+        readonly GroupStorage m_GroupStorage;
 
-        public GitGroupValidator(IGroupDirectoryPathProvider pathProvider)
+        public GitGroupValidator(GroupStorage groupStorage)
         {
-            this.m_PathProvider = pathProvider;
+            this.m_GroupStorage = groupStorage;
         }
 
         public void EnsureGroupIsValid(string groupName, string address)
-        {
-            var localPath = m_PathProvider.GetGroupDirectoryPath(groupName);
-
+        {            
             // create a transaction for the repository (this will clone the repository)
-            var transaction = new GitTransaction(address, localPath);
+            var transaction = new GitTransaction(address, m_GroupStorage.Path);
             try
             {
                 transaction.Begin();

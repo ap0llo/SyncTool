@@ -11,14 +11,14 @@ namespace SyncTool.Git.Common
 {
     public class GitRepository : IDisposable
     {
-        readonly IGroupDirectoryPathProvider m_PathProvider;
+        readonly GroupStorage m_GroupStorage;
         readonly IGitTransaction m_Transaction;
 
 
         public Repository Value { get; }
 
 
-        public GitRepository(IGroupDirectoryPathProvider pathProvider, GroupSettings groupSettings)
+        public GitRepository(GroupStorage groupStorage, GroupSettings groupSettings)
         {
             if (groupSettings == null)
             {
@@ -43,12 +43,11 @@ namespace SyncTool.Git.Common
                 throw new ArgumentNullException(nameof(repositoryPath));
             }
 
-            m_PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
-            var localRepositoryPath = m_PathProvider.GetGroupDirectoryPath(name);
-            m_Transaction = new CachingGitTransaction(repositoryPath, localRepositoryPath);
+            m_GroupStorage = groupStorage ?? throw new ArgumentNullException(nameof(groupStorage));            
+            m_Transaction = new CachingGitTransaction(repositoryPath, groupStorage.Path);
             m_Transaction.Begin();
 
-            Value = new Repository(localRepositoryPath);
+            Value = new Repository(groupStorage.Path);
         }
 
         public void Dispose()

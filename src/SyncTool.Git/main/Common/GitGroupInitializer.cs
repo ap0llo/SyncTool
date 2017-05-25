@@ -12,16 +12,16 @@ namespace SyncTool.Git.Common
 {
     public class GitGroupInitializer : IGroupInitializer
     {
-        readonly IGroupDirectoryPathProvider m_PathProvider;
+        readonly GroupStorage m_GroupStorage;
 
-        public GitGroupInitializer(IGroupDirectoryPathProvider pathProvider)
+        public GitGroupInitializer(GroupStorage groupStorage)
         {
-            m_PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
+            m_GroupStorage = groupStorage ?? throw new ArgumentNullException(nameof(groupStorage));
         }
 
         public void Initialize(string groupName, string address)
         {
-            var localPath = m_PathProvider.GetGroupDirectoryPath(groupName);
+            var localPath = m_GroupStorage.Path;
 
             if (Directory.Exists(localPath) && Directory.EnumerateFileSystemEntries(localPath).Any())
             {

@@ -6,8 +6,8 @@ using SyncTool.Common;
 using SyncTool.Common.Utilities;
 using SyncTool.FileSystem;
 using SyncTool.Git.Configuration.Reader;
-using NativeDirectory = System.IO.Directory;
 using Autofac;
+using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Git.Common
 {
@@ -18,6 +18,7 @@ namespace SyncTool.Git.Common
         readonly IGroupDirectoryPathProvider m_PathProvider;
         readonly IGroupSettingsProvider m_SettingsProvider;
         readonly ILifetimeScope m_ApplicationScope;
+
 
         public IEnumerable<string> Groups => m_GroupSettings.Keys;
 
@@ -44,7 +45,7 @@ namespace SyncTool.Git.Common
 
             var groupSettings = m_GroupSettings[name];
 
-            var groupScope = GetGroupScope(groupSettings);
+            var groupScope = GetGroupScope(GetGroupStorage(name), groupSettings);
 
             var group = groupScope.Resolve<Group>();
             group.Disposed += (s, e) => groupScope.Dispose();
@@ -56,7 +57,7 @@ namespace SyncTool.Git.Common
             EnsureGroupDoesNotExist(name);
             EnsureAddressDoesNotExist(address);
 
-            using (var groupScope = GetGroupScope())
+            using (var groupScope = GetGroupScope(GetGroupStorage(name)))
             {
                 var validator = groupScope.Resolve<IGroupValidator>();
                 try
@@ -77,7 +78,7 @@ namespace SyncTool.Git.Common
             EnsureGroupDoesNotExist(name);
             EnsureAddressDoesNotExist(address);
 
-            using (var scope = GetGroupScope())
+            using (var scope = GetGroupScope(GetGroupStorage(name)))
             {
                 var initializer = scope.Resolve<IGroupInitializer>();
 
@@ -138,7 +139,7 @@ namespace SyncTool.Git.Common
             }
         }
 
-        ILifetimeScope GetGroupScope(GroupSettings groupSettings = null)
+        ILifetimeScope GetGroupScope(GroupStorage groupStorage, GroupSettings groupSettings = null)
         {
             return m_ApplicationScope.BeginLifetimeScope(Scope.Group, builder =>
             {
@@ -146,7 +147,19 @@ namespace SyncTool.Git.Common
                 {
                     builder.RegisterInstance(groupSettings).AsSelf().ExternallyOwned();
                 }
+
+                builder.RegisterInstance(groupStorage).AsSelf();
+                
             });
         }
+
+
+        GroupStorage GetGroupStorage(string groupName)
+        {
+            var path = m_PathProvider.GetGroupDirectoryPath(groupName);
+            NativeDirectory.CreateDirectory(path);
+            return new GroupStorage(path);
+        }
+
     }
 }
