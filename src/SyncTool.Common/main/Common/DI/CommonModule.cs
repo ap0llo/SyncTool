@@ -19,6 +19,7 @@ namespace SyncTool.Common.DI
                 .ExternallyOwned();
 
             builder.RegisterType<CurrentDirectoryGroupDirectoryPathProvider>().As<IGroupDirectoryPathProvider>();
+            builder.RegisterType<JsonGroupSettingsProvider>().As<IGroupSettingsProvider>();
 
             base.Load(builder);
         }

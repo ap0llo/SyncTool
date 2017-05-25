@@ -3,7 +3,6 @@ using System.Linq;
 using LibGit2Sharp;
 using Moq;
 using SyncTool.Common;
-using SyncTool.Git.Configuration.Reader;
 using SyncTool.TestHelpers;
 using Xunit;
 using Autofac;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SyncTool.Common;
 
-namespace SyncTool.Git.Configuration.Reader
+namespace SyncTool.Common
 {
     public interface IGroupSettingsProvider
     {

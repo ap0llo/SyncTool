@@ -5,7 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using SyncTool.Common;
 
-namespace SyncTool.Git.Configuration.Reader
+namespace SyncTool.Common
 {
     public class JsonGroupSettingsProvider : IGroupSettingsProvider
     {

@@ -5,7 +5,6 @@ using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.Common.Utilities;
 using SyncTool.FileSystem;
-using SyncTool.Git.Configuration.Reader;
 using Autofac;
 using NativeDirectory = System.IO.Directory;
 

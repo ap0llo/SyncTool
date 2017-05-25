@@ -2,8 +2,9 @@
 using System.IO;
 using System.Linq;
 using Xunit;
+using SyncTool.Common;
 
-namespace SyncTool.Git.Configuration.Reader
+namespace SyncTool.Common.Test
 {
     /// <summary>
     /// Tests for <see cref="JsonGroupSettingsProvider"/>

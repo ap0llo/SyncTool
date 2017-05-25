@@ -4,7 +4,6 @@ using SyncTool.Configuration.Model;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
 using SyncTool.Git.Configuration;
-using SyncTool.Git.Configuration.Reader;
 using SyncTool.Git.FileSystem.Versioning;
 using SyncTool.Git.Synchronization.Conflicts;
 using SyncTool.Git.Synchronization.State;
@@ -19,7 +18,7 @@ namespace SyncTool.Git.DI
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<JsonGroupSettingsProvider>().As<IGroupSettingsProvider>();
+            
             
             builder.RegisterType<GitBasedGroupManager>().As<IGroupManager>().InstancePerMatchingLifetimeScope(Scope.Application);
                        
