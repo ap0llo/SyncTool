@@ -5,6 +5,7 @@ using SyncTool.Git.Common;
 using SyncTool.TestHelpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,7 +61,10 @@ namespace SyncTool.Git.Test.Common
 
                 RepositoryInitHelper.InitializeRepository(remote.Location);
 
-                instance.EnsureGroupIsValid("Group1", remote.Location);                
+                instance.EnsureGroupIsValid("Group1", remote.Location);
+
+                // validation should not leave behind any data in the local directory
+                Assert.Empty(Directory.EnumerateFileSystemEntries(m_TempDirectory.Location));
             }
         }
 

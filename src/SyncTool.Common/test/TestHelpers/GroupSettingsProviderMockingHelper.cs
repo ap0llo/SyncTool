@@ -4,7 +4,7 @@ using System.Linq;
 using Moq;
 using SyncTool.Common;
 
-namespace SyncTool.Git.TestHelpers
+namespace SyncTool.Common.TestHelpers
 {
     public static class GroupSettingsProviderMockingHelper
     {

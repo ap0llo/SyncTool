@@ -15,18 +15,12 @@ namespace SyncTool.Git.Common
     public class GitTransaction : AbstractGitTransaction
     {
         
-
-
-
-
-
-
         public GitTransaction(string remotePath, string localPath) : base(remotePath, localPath)
         {
         
         }
 
-        protected override void OnTransactionCompleted() => DirectoryHelper.DeleteRecursively(LocalPath);
+        protected override void OnTransactionCompleted() => DirectoryHelper.ClearRecursively(LocalPath);
 
 
     }

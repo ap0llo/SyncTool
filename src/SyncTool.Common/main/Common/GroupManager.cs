@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.Common.Utilities;
-using SyncTool.FileSystem;
 using Autofac;
 using NativeDirectory = System.IO.Directory;
 
-namespace SyncTool.Git.Common
+namespace SyncTool.Common
 {
-    public class GitBasedGroupManager : IGroupManager
-    {
-        readonly IEqualityComparer<IFileReference> m_FileReferenceComparer; 
+    public class GroupManager : IGroupManager
+    {        
         readonly IDictionary<string, GroupSettings> m_GroupSettings;  
         readonly IGroupDirectoryPathProvider m_PathProvider;
         readonly IGroupSettingsProvider m_SettingsProvider;
@@ -22,14 +19,12 @@ namespace SyncTool.Git.Common
         public IEnumerable<string> Groups => m_GroupSettings.Keys;
 
 
-        public GitBasedGroupManager(
-            IEqualityComparer<IFileReference>  fileReferenceComparer, 
+        public GroupManager(
             IGroupDirectoryPathProvider pathProvider, 
             IGroupSettingsProvider settingsProvider,
             ILifetimeScope applicationScope)
         {
             m_ApplicationScope = applicationScope ?? throw new ArgumentNullException(nameof(applicationScope));
-            m_FileReferenceComparer = fileReferenceComparer ?? throw new ArgumentNullException(nameof(fileReferenceComparer));
             m_PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
             m_SettingsProvider = settingsProvider ?? throw new ArgumentNullException(nameof(settingsProvider));
 

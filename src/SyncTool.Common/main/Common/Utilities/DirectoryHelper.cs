@@ -31,5 +31,32 @@ namespace SyncTool.Common.Utilities
 
             directoryInfo.Delete(true);
         }
+
+
+        /// <summary>
+        /// Removes all items from the specified directory recursively if it exists. If files within the directory are write-protected
+        /// the protection will be removed and the will will be deleted anyways
+        /// </summary>
+        public static void ClearRecursively(string directoryPath)
+        {
+            // if the directory dows not exist, we can return right away
+            if (!Directory.Exists(directoryPath))
+            {
+                return;
+            }
+
+            var directoryInfo = new DirectoryInfo(directoryPath);                   
+            foreach (var dir in directoryInfo.GetDirectories())
+            {
+                DeleteRecursively(dir.FullName);
+            }
+
+            foreach (var info in directoryInfo.GetFiles())
+            {
+                info.Attributes = FileAttributes.Normal;
+                info.Delete();
+            }
+
+        }
     }
 }

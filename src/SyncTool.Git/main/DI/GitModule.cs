@@ -17,12 +17,7 @@ namespace SyncTool.Git.DI
     public class GitModule : Module
     {
         protected override void Load(ContainerBuilder builder)
-        {
-            
-            
-            builder.RegisterType<GitBasedGroupManager>().As<IGroupManager>().InstancePerMatchingLifetimeScope(Scope.Application);
-                       
-
+        {                                              
             builder.RegisterType<GitRepository>().AsSelf().InstancePerMatchingLifetimeScope(Scope.Group);
 
             builder.RegisterType<GitBasedConfigurationService>().As<IConfigurationService>().AsSelf();
