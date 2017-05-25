@@ -132,40 +132,7 @@ namespace SyncTool.Git.Common
         #endregion
 
 
-        #region CreateGroup
-
-        [Fact]
-        public void CreateGroup_Creates_a_repository_and_pushes_it_to_the_remote_repository()
-        {
-            // create a mock for the settings provider
-            var settingsProviderMock = GetGroupSettingsProviderMock().WithEmptyGroupSettings();
-                                    
-            using (var lifeTime = GetContainer(settingsProviderMock.Object))
-            using (var container = CreateTemporaryDirectory())
-            {
-                // set up the "remote" repository
-                Repository.Init(container.Location, true);
-
-                var groupManager = lifeTime.Resolve<GitBasedGroupManager>();
-
-                // create a new group
-                groupManager.CreateGroup("Group1", container.Location);
-
-                // creation of groups should not leave behind anything
-                Assert.Empty(Directory.GetFileSystemEntries(m_TempDirectory.Location));
-
-                // assert that the group was actually created in the remote repository
-                using (var repository = new Repository(container.Location))
-                {
-                    Assert.Equal(2, repository.Branches.Count());
-                    Assert.True(repository.LocalBranchExists(RepositoryInitHelper.ConfigurationBranchName));
-                    Assert.NotNull(repository.Tags[RepositoryInitHelper.InitialCommitTagName]);
-                }
-
-                settingsProviderMock.Verify(m => m.SaveGroupSettings(It.IsAny<IEnumerable<GroupSettings>>()), Times.AtLeastOnce);
-            }
-
-        }
+        #region CreateGroup       
 
         [Fact]
         public void CreateGroup_throws_DuplicateGroupException_if_a_group_with_the_specified_name_already_exists()
