@@ -21,7 +21,7 @@ namespace SyncTool.Git.Common
         }
 
         [Fact]
-        public void Commit_deletes_the_local_directory_after_pushing_the_changes()
+        public void Commit_clears_the_local_directory_after_pushing_the_changes()
         {
             var transaction = CreateTransaction();
 
@@ -29,7 +29,7 @@ namespace SyncTool.Git.Common
             AddFile(transaction, "master", "file1");
             transaction.Commit();
 
-            Assert.False(Directory.Exists(transaction.LocalPath));
+            Assert.Empty(Directory.EnumerateFileSystemEntries(transaction.LocalPath));
         }
 
         protected override IGitTransaction CreateTransaction()
