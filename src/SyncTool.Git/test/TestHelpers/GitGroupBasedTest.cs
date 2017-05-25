@@ -18,7 +18,7 @@ namespace SyncTool.Git.TestHelpers
     public abstract class GitGroupBasedTest : DirectoryBasedTest
     {
         protected readonly string m_RemotePath;
-        readonly IRepositoryPathProvider m_PathProvider;
+        readonly IGroupDirectoryPathProvider m_PathProvider;
         readonly IContainer m_Container;
         readonly ILifetimeScope m_ApplicationScope;
         
@@ -31,14 +31,14 @@ namespace SyncTool.Git.TestHelpers
 
             var localPath = Path.Combine(m_TempDirectory.Location, "Local");
             Directory.CreateDirectory(localPath);
-            m_PathProvider = new SingleDirectoryRepositoryPathProvider(localPath);
+            m_PathProvider = new SingleDirectoryGroupDirectoryPathProvider(localPath);
 
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule<CommonModule>();
             containerBuilder.RegisterModule<GitModule>();
             containerBuilder.RegisterInstance(EqualityComparer<IFileReference>.Default).As<IEqualityComparer<IFileReference>>();
-            containerBuilder.RegisterInstance(m_PathProvider).As<IRepositoryPathProvider>();            
+            containerBuilder.RegisterInstance(m_PathProvider).As<IGroupDirectoryPathProvider>();            
 
             m_Container = containerBuilder.Build();
             m_ApplicationScope = m_Container.BeginLifetimeScope(Scope.Application);

@@ -20,8 +20,8 @@ namespace SyncTool.Git.Test.Common
             var builder = new ContainerBuilder();
 
             builder
-                .RegisterInstance(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location))
-                .As<IRepositoryPathProvider>();
+                .RegisterInstance(new SingleDirectoryGroupDirectoryPathProvider(m_TempDirectory.Location))
+                .As<IGroupDirectoryPathProvider>();
 
             builder.RegisterType<GitGroupValidator>().AsSelf();
 

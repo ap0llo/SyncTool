@@ -11,14 +11,14 @@ namespace SyncTool.Git.Common
 {
     public class GitRepository : IDisposable
     {
-        readonly IRepositoryPathProvider m_PathProvider;
+        readonly IGroupDirectoryPathProvider m_PathProvider;
         readonly IGitTransaction m_Transaction;
 
 
         public Repository Value { get; }
 
 
-        public GitRepository(IRepositoryPathProvider pathProvider, GroupSettings groupSettings)
+        public GitRepository(IGroupDirectoryPathProvider pathProvider, GroupSettings groupSettings)
         {
             if (groupSettings == null)
             {
@@ -44,7 +44,7 @@ namespace SyncTool.Git.Common
             }
 
             m_PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
-            var localRepositoryPath = m_PathProvider.GetRepositoryPath(name);
+            var localRepositoryPath = m_PathProvider.GetGroupDirectoryPath(name);
             m_Transaction = new CachingGitTransaction(repositoryPath, localRepositoryPath);
             m_Transaction.Begin();
 

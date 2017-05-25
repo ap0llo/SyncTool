@@ -45,8 +45,8 @@ namespace SyncTool.Git.Common
                 .As<IEqualityComparer<IFileReference>>();
 
             builder
-                .RegisterInstance(new SingleDirectoryRepositoryPathProvider(m_TempDirectory.Location))
-                .As<IRepositoryPathProvider>();
+                .RegisterInstance(new SingleDirectoryGroupDirectoryPathProvider(m_TempDirectory.Location))
+                .As<IGroupDirectoryPathProvider>();
 
             builder.RegisterType<GitBasedGroupManager>().AsSelf();
 

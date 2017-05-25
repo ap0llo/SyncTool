@@ -15,7 +15,7 @@ namespace SyncTool.Git.Common
     {
         readonly IEqualityComparer<IFileReference> m_FileReferenceComparer; 
         readonly IDictionary<string, GroupSettings> m_GroupSettings;  
-        readonly IRepositoryPathProvider m_PathProvider;
+        readonly IGroupDirectoryPathProvider m_PathProvider;
         readonly IGroupSettingsProvider m_SettingsProvider;
         readonly ILifetimeScope m_ApplicationScope;
 
@@ -24,7 +24,7 @@ namespace SyncTool.Git.Common
 
         public GitBasedGroupManager(
             IEqualityComparer<IFileReference>  fileReferenceComparer, 
-            IRepositoryPathProvider pathProvider, 
+            IGroupDirectoryPathProvider pathProvider, 
             IGroupSettingsProvider settingsProvider,
             ILifetimeScope applicationScope)
         {
@@ -102,7 +102,7 @@ namespace SyncTool.Git.Common
             m_SettingsProvider.SaveGroupSettings(m_GroupSettings.Values);
 
             // remove the local directory for the group if it exists
-            var directoryPath = m_PathProvider.GetRepositoryPath(name);            
+            var directoryPath = m_PathProvider.GetGroupDirectoryPath(name);            
             DirectoryHelper.DeleteRecursively(directoryPath);
         }
 

@@ -20,8 +20,7 @@ namespace SyncTool.Git.DI
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<JsonGroupSettingsProvider>().As<IGroupSettingsProvider>();
-
-            builder.RegisterType<CurrentDirectoryRepositoryPathProvider>().As<IRepositoryPathProvider>();
+            
             builder.RegisterType<GitBasedGroupManager>().As<IGroupManager>().InstancePerMatchingLifetimeScope(Scope.Application);
                        
 
