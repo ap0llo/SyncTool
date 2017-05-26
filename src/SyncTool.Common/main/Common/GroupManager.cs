@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Autofac;
+using SyncTool.Common.DI;
+using SyncTool.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using SyncTool.Common;
-using SyncTool.Utilities;
-using Autofac;
-using NativeDirectory = System.IO.Directory;
+using System.IO;
 
 namespace SyncTool.Common
 {
@@ -137,26 +137,18 @@ namespace SyncTool.Common
         }
 
         ILifetimeScope GetGroupScope(GroupStorage groupStorage, GroupSettings groupSettings = null)
-        {
-            var groupModule = m_ModuleFactory.CreateModule();
-
+        {            
             return m_ApplicationScope.BeginLifetimeScope(Scope.Group, builder =>
             {
-                builder.RegisterModule(groupModule);
-
-                if (groupSettings != null)
-                {
-                    builder.RegisterInstance(groupSettings).AsSelf().ExternallyOwned();
-                }
-
-                builder.RegisterInstance(groupStorage).AsSelf();                
+                builder.RegisterModule(new CommonGroupModule(groupStorage, groupSettings));
+                builder.RegisterModule(m_ModuleFactory.CreateModule());
             });
         }
         
         GroupStorage GetGroupStorage(string groupName)
         {
             var path = m_PathProvider.GetGroupDirectoryPath(groupName);
-            NativeDirectory.CreateDirectory(path);
+            Directory.CreateDirectory(path);
             return new GroupStorage(path);
         }
 
