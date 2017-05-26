@@ -11,9 +11,28 @@ namespace SyncTool.Common
     {
         const string s_SettingsFileName = "SyncTool.Groups.json";
 
+        readonly string m_Directory;
 
-        static string SettingsPath => Path.Combine(Environment.CurrentDirectory, s_SettingsFileName);
 
+        string SettingsPath => Path.Combine(m_Directory, s_SettingsFileName);
+
+        public JsonGroupSettingsProvider() : this(Environment.CurrentDirectory)
+        {
+
+        }
+
+        public JsonGroupSettingsProvider(string directory)
+        {
+            if (directory == null)
+                throw new ArgumentNullException(nameof(directory));
+
+            if (!Directory.Exists(directory))
+                throw new DirectoryNotFoundException($"Directory '{directory}' does not exist");
+
+            m_Directory = directory;
+        }
+
+        
 
         public IEnumerable<GroupSettings> GetGroupSettings()
         {            

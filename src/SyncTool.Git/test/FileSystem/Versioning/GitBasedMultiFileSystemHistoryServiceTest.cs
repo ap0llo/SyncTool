@@ -3,7 +3,6 @@ using System.Linq;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Common;
-using SyncTool.Git.TestHelpers;
 using SyncTool.TestHelpers;
 using Xunit;
 
@@ -11,7 +10,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 {
     public class GitBasedMultiFileSystemHistoryServiceTest : GitGroupBasedTest
     {
-        readonly Group m_Group;
+        readonly IGroup m_Group;
         readonly IHistoryService m_HistoryService;
         readonly GitBasedMultiFileSystemHistoryService m_Instance;
 

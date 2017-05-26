@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SyncTool.Common;
 using SyncTool.Git.Common;
-using SyncTool.Git.TestHelpers;
-using SyncTool.Synchronization.Conflicts;
 using SyncTool.TestHelpers;
+using SyncTool.Synchronization.Conflicts;
 using Xunit;
 using SyncTool.Synchronization.State;
 
@@ -16,7 +15,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
     /// </summary>
     public class GitConflictServiceTest : GitGroupBasedTest
     {
-        readonly Group m_Group;
+        readonly IGroup m_Group;
         readonly GitConflictService m_Service;
         readonly GitRepository m_Repository;
 

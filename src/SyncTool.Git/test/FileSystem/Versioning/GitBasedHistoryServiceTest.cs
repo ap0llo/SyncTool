@@ -4,7 +4,7 @@ using LibGit2Sharp;
 using SyncTool.Common;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
-using SyncTool.Git.TestHelpers;
+using SyncTool.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Git.FileSystem.Versioning

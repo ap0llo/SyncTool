@@ -5,7 +5,7 @@ using SyncTool.Common;
 using SyncTool.Configuration;
 using SyncTool.Configuration.Model;
 using SyncTool.Git.Common;
-using SyncTool.Git.TestHelpers;
+using SyncTool.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Git.Configuration

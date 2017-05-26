@@ -18,6 +18,26 @@ namespace SyncTool.Common.Test
     /// </summary>
     public class GroupManagerTest : IDisposable
     {
+        class TestGroupModule : Module
+        {
+            readonly IGroupInitializer m_GroupInitializer;
+            readonly IGroupValidator m_GroupValidator;
+
+            public TestGroupModule(IGroupValidator groupValidator, IGroupInitializer groupInitializer)
+            {
+                m_GroupValidator = groupValidator;
+                m_GroupInitializer = groupInitializer;
+            }
+
+            protected override void Load(ContainerBuilder builder)
+            {
+                base.Load(builder);
+
+                builder.RegisterInstance(m_GroupValidator ?? Mock.Of<IGroupValidator>()).As<IGroupValidator>();
+                builder.RegisterInstance(m_GroupInitializer ?? Mock.Of<IGroupInitializer>()).As<IGroupInitializer>();
+            }
+        }
+
         readonly string m_TempDirectory;
 
 
@@ -38,9 +58,10 @@ namespace SyncTool.Common.Test
             IGroupInitializer groupInitializer = null)
         {            
             var builder = new ContainerBuilder();
-            
-            builder.RegisterInstance(groupValidator ?? Mock.Of<IGroupValidator>()).As<IGroupValidator>();        
-            builder.RegisterInstance(groupInitializer ?? Mock.Of<IGroupInitializer>()).As<IGroupInitializer>();         
+
+            var groupModule = new TestGroupModule(groupValidator, groupInitializer);
+            var moduleFactoryMock = new Mock<IGroupModuleFactory>();
+            moduleFactoryMock.Setup(m => m.CreateModule()).Returns(groupModule);
 
             builder
                 .RegisterInstance(new SingleDirectoryGroupDirectoryPathProvider(m_TempDirectory))
@@ -50,7 +71,9 @@ namespace SyncTool.Common.Test
 
             if (settingsProvider != null)
                 builder.RegisterInstance(settingsProvider).As<IGroupSettingsProvider>();
-            
+
+            builder.RegisterInstance(moduleFactoryMock.Object).As<IGroupModuleFactory>();
+
             return builder.Build();
         }
 

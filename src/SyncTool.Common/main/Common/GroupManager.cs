@@ -8,12 +8,13 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Common
 {
-    internal class GroupManager : IGroupManager
+    class GroupManager : IGroupManager
     {        
         readonly IDictionary<string, GroupSettings> m_GroupSettings;  
         readonly IGroupDirectoryPathProvider m_PathProvider;
         readonly IGroupSettingsProvider m_SettingsProvider;
         readonly ILifetimeScope m_ApplicationScope;
+        readonly IGroupModuleFactory m_ModuleFactory;
 
 
         public IEnumerable<string> Groups => m_GroupSettings.Keys;
@@ -22,11 +23,13 @@ namespace SyncTool.Common
         public GroupManager(
             IGroupDirectoryPathProvider pathProvider, 
             IGroupSettingsProvider settingsProvider,
-            ILifetimeScope applicationScope)
+            ILifetimeScope applicationScope,
+            IGroupModuleFactory moduleFactory)
         {
             m_ApplicationScope = applicationScope ?? throw new ArgumentNullException(nameof(applicationScope));
             m_PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
             m_SettingsProvider = settingsProvider ?? throw new ArgumentNullException(nameof(settingsProvider));
+            m_ModuleFactory = moduleFactory ?? throw new ArgumentNullException(nameof(moduleFactory));
 
             m_GroupSettings = m_SettingsProvider.GetGroupSettings().ToDictionary(g => g.Name, StringComparer.InvariantCultureIgnoreCase);
         }
@@ -135,19 +138,21 @@ namespace SyncTool.Common
 
         ILifetimeScope GetGroupScope(GroupStorage groupStorage, GroupSettings groupSettings = null)
         {
+            var groupModule = m_ModuleFactory.CreateModule();
+
             return m_ApplicationScope.BeginLifetimeScope(Scope.Group, builder =>
             {
+                builder.RegisterModule(groupModule);
+
                 if (groupSettings != null)
                 {
                     builder.RegisterInstance(groupSettings).AsSelf().ExternallyOwned();
                 }
 
-                builder.RegisterInstance(groupStorage).AsSelf();
-                
+                builder.RegisterInstance(groupStorage).AsSelf();                
             });
         }
-
-
+        
         GroupStorage GetGroupStorage(string groupName)
         {
             var path = m_PathProvider.GetGroupDirectoryPath(groupName);

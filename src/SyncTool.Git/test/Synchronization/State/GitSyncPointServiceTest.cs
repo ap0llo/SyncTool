@@ -4,7 +4,6 @@ using System.Linq;
 using SyncTool.Configuration.Model;
 using SyncTool.Git.Common;
 using SyncTool.Common;
-using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization.State;
 using SyncTool.TestHelpers;
 using Xunit;
@@ -16,7 +15,7 @@ namespace SyncTool.Git.Synchronization.State
     /// </summary>
     public class GitSyncPointServiceTest : GitGroupBasedTest
     {
-        readonly Group m_Group;
+        readonly IGroup m_Group;
         readonly GitSyncPointService m_Service;        
 
         public GitSyncPointServiceTest()

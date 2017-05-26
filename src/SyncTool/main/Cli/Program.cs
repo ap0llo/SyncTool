@@ -17,7 +17,7 @@ namespace SyncTool.Cli
 
             containerBuilder.RegisterModule<CommonModule>();
             containerBuilder.RegisterModule<FileSystemModule>();
-            containerBuilder.RegisterModule<GitModule>();
+            containerBuilder.RegisterModule<GitModuleFactoryModule>();
             containerBuilder.RegisterModule<CliModule>();
             containerBuilder.RegisterModule<SynchronizationModule>();
 

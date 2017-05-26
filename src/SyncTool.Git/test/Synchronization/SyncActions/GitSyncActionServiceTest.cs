@@ -3,7 +3,7 @@ using System.Linq;
 using SyncTool.Common;
 using SyncTool.FileSystem;
 using SyncTool.Git.Common;
-using SyncTool.Git.TestHelpers;
+using SyncTool.TestHelpers;
 using SyncTool.Synchronization;
 using SyncTool.Synchronization.SyncActions;
 using Xunit;
@@ -16,7 +16,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
     public class GitSyncActionServiceTest : GitGroupBasedTest
     {
 
-        readonly Group m_Group;
+        readonly IGroup m_Group;
         readonly GitSyncActionService m_Service;
         readonly GitRepository m_Repository;
 

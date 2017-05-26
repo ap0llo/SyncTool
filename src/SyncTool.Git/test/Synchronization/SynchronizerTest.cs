@@ -7,7 +7,6 @@ using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.FileSystem.Versioning;
-using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization;
 using SyncTool.Synchronization.Conflicts;
 using SyncTool.Synchronization.State;
