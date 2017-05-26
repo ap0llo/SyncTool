@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SyncTool.Common.Utilities
+namespace SyncTool.Utilities
 {
     public sealed class CachingObjectMapper<TSource, TTarget> : IObjectMapper<TSource, TTarget>, IDisposable
     {
@@ -50,9 +50,9 @@ namespace SyncTool.Common.Utilities
             foreach (var key in keysToRemove)
             {
                 var value = m_Cache[key];
-                if (disposeMappedObjects && value is IDisposable)
+                if (disposeMappedObjects && value is IDisposable disposable)
                 {
-                    (value as IDisposable).Dispose();
+                    disposable.Dispose();
                 }
                 m_Cache.Remove(key);
             }            

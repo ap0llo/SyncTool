@@ -1,11 +1,11 @@
 ﻿using System.IO;
 
-namespace SyncTool.Common.Utilities
+namespace SyncTool.Utilities
 {
     /// <summary>
     /// Utility class for features missing from <see cref="System.IO.Directory"/>
     /// </summary>
-    public class DirectoryHelper
+    public static class DirectoryHelper
     {
         /// <summary>
         /// Deletes the specified directory recursively if it exists. If files within the directory are write-protected

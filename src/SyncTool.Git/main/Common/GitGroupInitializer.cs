@@ -1,12 +1,9 @@
 ﻿using LibGit2Sharp;
 using SyncTool.Common;
+using SyncTool.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using SyncTool.Common.Utilities;
+using System.Linq;
 
 namespace SyncTool.Git.Common
 {

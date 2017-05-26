@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace SyncTool.Common.Utilities
+namespace SyncTool.Utilities
 {
 
 	public class ReversibleDictionary<TKey, TValue> : IReversibleDictionary<TKey, TValue>

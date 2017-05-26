@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SyncTool.Common\main\SyncTool.Common.csproj" />
     <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj" />
   </ItemGroup>    
   

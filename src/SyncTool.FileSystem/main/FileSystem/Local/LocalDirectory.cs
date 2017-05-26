@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SyncTool.Common.Utilities;
+using SyncTool.Utilities;
 
 namespace SyncTool.FileSystem.Local
 {

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using LibGit2Sharp;
-using SyncTool.Common.Utilities;
+using SyncTool.Utilities;
 
 namespace SyncTool.Git.Common
 {

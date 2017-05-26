@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace SyncTool.Common.Utilities
+namespace SyncTool.Utilities.Test
 {
     /// <summary>
     /// Tests for <see cref="CachingObjectMapper{T,T}"/>

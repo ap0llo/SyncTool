@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using LibGit2Sharp;
-using SyncTool.Common.Utilities;
-using NativeDirectory = System.IO.Directory;
+﻿using SyncTool.Utilities;
 
 namespace SyncTool.Git.Common
 {

@@ -14,7 +14,11 @@
 	
   </PropertyGroup>
 
-
+  <!-- SyncTool.Utilities can be used by all projects (but prevent self-reference) -->
+  <ItemGroup Condition=" '$(MSBuildProjectName)' != 'SyncTool.Utilities'">
+	<ProjectReference Include="$(MSBuildThisFileDirectory)\SyncTool.Utilities\main\SyncTool.Utilities.csproj" />
+  </ItemGroup>
+  
   <!-- Determine if the project is a test project -->
   <PropertyGroup>
     <IsTestProject>False</IsTestProject>

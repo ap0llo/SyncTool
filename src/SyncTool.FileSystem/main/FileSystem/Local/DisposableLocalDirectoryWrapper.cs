@@ -1,5 +1,5 @@
 ﻿using System;
-using SyncTool.Common.Utilities;
+using SyncTool.Utilities;
 
 namespace SyncTool.FileSystem.Local
 {

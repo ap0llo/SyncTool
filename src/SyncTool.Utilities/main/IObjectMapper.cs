@@ -1,4 +1,4 @@
-﻿namespace SyncTool.Common.Utilities
+﻿namespace SyncTool.Utilities
 {
     public interface IObjectMapper<TSource, TTarget>
     {

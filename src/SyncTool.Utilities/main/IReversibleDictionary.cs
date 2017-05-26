@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SyncTool.Common.Utilities
+namespace SyncTool.Utilities
 {
     public interface IReversibleDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {

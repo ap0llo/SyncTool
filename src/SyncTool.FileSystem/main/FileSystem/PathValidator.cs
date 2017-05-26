@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
-using SyncTool.FileSystem;
-using SyncTool.Common;
+using SyncTool.Utilities;
 
 namespace SyncTool.FileSystem
 {

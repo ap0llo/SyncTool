@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SyncTool.Common
+namespace SyncTool.Utilities
 {
     public static class StringExtensions
     {        

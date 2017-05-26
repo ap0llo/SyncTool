@@ -7,14 +7,14 @@ using SyncTool.TestHelpers;
 using Xunit;
 using Autofac;
 using System.IO;
+using SyncTool.Utilities;
 
 using static SyncTool.Common.TestHelpers.GroupSettingsProviderMockingHelper;
-using SyncTool.Common.Utilities;
 
 namespace SyncTool.Common.Test
 {
     /// <summary>
-    /// Tests for <see cref="GitBasedGroupManager"/>
+    /// Tests for <see cref="GroupManager"/>
     /// </summary>
     public class GroupManagerTest : IDisposable
     {
