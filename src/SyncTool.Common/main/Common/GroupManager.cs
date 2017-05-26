@@ -8,7 +8,7 @@ using NativeDirectory = System.IO.Directory;
 
 namespace SyncTool.Common
 {
-    public class GroupManager : IGroupManager
+    internal class GroupManager : IGroupManager
     {        
         readonly IDictionary<string, GroupSettings> m_GroupSettings;  
         readonly IGroupDirectoryPathProvider m_PathProvider;

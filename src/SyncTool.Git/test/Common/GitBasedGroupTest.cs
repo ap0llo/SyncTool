@@ -19,7 +19,6 @@ namespace SyncTool.Git.Common
         [Fact]
         public void Name_must_not_be_null_or_empty()
         {
-            var pathProviderMock = new Mock<IGroupDirectoryPathProvider>(MockBehavior.Strict);
             var scopeMock = new Mock<ILifetimeScope>(MockBehavior.Strict);
 
             Assert.Throws<ArgumentNullException>(() => new Group(new GroupSettings() {Name = null, Address = m_TempDirectory.Location }, scopeMock.Object));

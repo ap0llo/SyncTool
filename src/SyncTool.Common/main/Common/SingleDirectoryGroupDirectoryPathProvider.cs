@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 
 namespace SyncTool.Common
 {
-    public class SingleDirectoryGroupDirectoryPathProvider : IGroupDirectoryPathProvider
+    internal class SingleDirectoryGroupDirectoryPathProvider : IGroupDirectoryPathProvider
     {
         readonly string m_Directory;
        
@@ -19,7 +17,7 @@ namespace SyncTool.Common
                 throw new ArgumentNullException(nameof(directory));
             }
 
-            if (!System.IO.Directory.Exists(directory))
+            if (!Directory.Exists(directory))
             {
                 throw new DirectoryNotFoundException($"The directory '{directory}' does not exist");
             }
