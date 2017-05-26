@@ -49,7 +49,7 @@ namespace SyncTool.Git.TestHelpers
         {
             var groupScope = m_ApplicationScope.BeginLifetimeScope(Scope.Group, builder =>
             {
-                builder.RegisterInstance(new GroupSettings() { Name = "Irrelevant", Address = m_RemotePath }).AsSelf();
+                builder.RegisterInstance(new GroupSettings("Irrelevant",m_RemotePath)).AsSelf();
             });
 
             var instance = groupScope.Resolve<Group>();

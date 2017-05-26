@@ -104,7 +104,7 @@ namespace SyncTool.Common
 
         void DoAddGroup(string name, string address)
         {
-            m_GroupSettings.Add(name, new GroupSettings { Name = name, Address = address });
+            m_GroupSettings.Add(name, new GroupSettings(name, address));
             m_SettingsProvider.SaveGroupSettings(m_GroupSettings.Values);
         }
 

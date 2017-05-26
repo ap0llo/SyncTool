@@ -6,33 +6,21 @@ using Autofac.Core.Registration;
 namespace SyncTool.Common
 {
     public class Group : IGroup
-    {                
+    {
+        readonly GroupSettings m_Settings;
         readonly ILifetimeScope m_GroupScope;
 
 
         public event EventHandler Disposed;
 
 
-        public string Name { get; }        
+        public string Name => m_Settings.Name;
 
 
         public Group(GroupSettings groupSettings, ILifetimeScope groupScope)
         {
+            m_Settings = groupSettings ?? throw new ArgumentNullException(nameof(groupSettings));
             m_GroupScope = groupScope ?? throw new ArgumentNullException(nameof(groupScope));
-            
-            //TODO: Remove checks once they have been implemented in GroupSettings
-            var name = groupSettings.Name;
-            
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException("Name must not be empty", nameof(name));
-            }
-            
-            Name = name;            
         }
 
 

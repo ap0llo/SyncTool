@@ -34,11 +34,8 @@ namespace SyncTool.Common.TestHelpers
                 current = Enumerable.Empty<GroupSettings>();
             }
 
-            var group = new GroupSettings()
-            {
-                Name = name,
-                Address = address
-            };
+            var group = new GroupSettings(name, address);
+            
 
             mock.Setup(m => m.GetGroupSettings()).Returns(current.Union(new[] { group }).ToList());
 
