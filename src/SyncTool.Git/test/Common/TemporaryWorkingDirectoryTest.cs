@@ -45,6 +45,7 @@ namespace SyncTool.Git.Common
                     Arguments = _arguments,
                     WorkingDirectory = m_MasterRepository.Directory.Location,
                     WindowStyle = ProcessWindowStyle.Hidden,
+                    CreateNoWindow= true,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true
