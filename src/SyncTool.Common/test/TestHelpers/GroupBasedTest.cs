@@ -54,7 +54,7 @@ namespace SyncTool.TestHelpers
 
             groupManager.AddGroup("Group1", m_RemotePath);
                         
-            return groupManager.GetGroup("Group1");
+            return groupManager.OpenExclusively("Group1");
         }
 
 

@@ -6,15 +6,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
+
 namespace SyncTool.Common
 {
+    //TODO: Reuse instances/lifetimes in OpenRead()
     class GroupManager : IGroupManager
-    {        
+    {
         readonly IDictionary<string, GroupSettings> m_GroupSettings;  
         readonly IGroupDirectoryPathProvider m_PathProvider;
         readonly IGroupSettingsProvider m_SettingsProvider;
         readonly ILifetimeScope m_ApplicationScope;
         readonly IGroupModuleFactory m_ModuleFactory;
+
+        readonly IDictionary<string, OpenedState> m_OpenedStates = new Dictionary<string, OpenedState>(StringComparer.InvariantCultureIgnoreCase);
 
 
         public IEnumerable<string> Groups => m_GroupSettings.Keys;
@@ -35,18 +39,46 @@ namespace SyncTool.Common
         }
 
 
-
-        public IGroup GetGroup(string name)
+        public IGroup OpenShared(string name)
         {
             EnsureGroupExists(name);
 
-            var groupSettings = m_GroupSettings[name];
+            // update state
+            var currentState = m_OpenedStates.GetOrAdd(name, () => new OpenedState());
+            if (!currentState.CanOpenShared)
+            {
+                throw new GroupOpenedException("Group is already opened and cannot be opened for reading");
+            }        
+            currentState.NotifyOpenedShared();
 
+
+            var groupSettings = m_GroupSettings[name];
             var groupScope = GetGroupScope(GetGroupStorage(name), groupSettings);
 
-            var group = groupScope.Resolve<Group>();
-            group.Disposed += (s, e) => groupScope.Dispose();
-            return group;            
+            var group = new Group(groupSettings, groupScope);
+            group.Disposed += HandleReadOnlyGroupDisposed;
+         
+            return group;
+        }
+        
+        public IGroup OpenExclusively(string name)
+        {
+            EnsureGroupExists(name);
+
+            // update state
+            var currentState = m_OpenedStates.GetOrAdd(name, () => new OpenedState());
+            if (!currentState.CanOpenExclusively)
+            {
+                throw new GroupOpenedException("Group is already opened and cannot be opened for writing");
+            }
+            currentState.NotifyOpenedExclusively();
+
+            var groupSettings = m_GroupSettings[name];
+            var groupScope = GetGroupScope(GetGroupStorage(name), groupSettings);
+
+            var group = new Group(groupSettings, groupScope);
+            group.Disposed += HandleWritableGroupDisposed;            
+            return group;
         }
 
         public void AddGroup(string name, string address)
@@ -135,7 +167,7 @@ namespace SyncTool.Common
                 throw DuplicateGroupException.FromAddress(address);
             }
         }
-
+       
         ILifetimeScope GetGroupScope(GroupStorage groupStorage, GroupSettings groupSettings = null)
         {            
             return m_ApplicationScope.BeginLifetimeScope(Scope.Group, builder =>
@@ -152,5 +184,30 @@ namespace SyncTool.Common
             return new GroupStorage(path);
         }
 
+        void HandleWritableGroupDisposed(object sender, EventArgs e)
+        {
+            var group = (Group) sender;
+            
+            // update state
+            m_OpenedStates
+                .GetOrAdd(group.Name, () => new OpenedState())
+                .NotifyClosedExclusively();
+            
+            group.LifetimeScope.Dispose();
+            group.Disposed -= HandleWritableGroupDisposed;
+        }
+
+        void HandleReadOnlyGroupDisposed(object sender, EventArgs e)
+        {
+            var group = (Group) sender;
+
+            // update state
+            m_OpenedStates
+                .GetOrAdd(group.Name, () => new OpenedState())
+                .NotifyClosedShared();
+            
+            group.LifetimeScope.Dispose();
+            group.Disposed -= HandleReadOnlyGroupDisposed;
+        }
     }
 }

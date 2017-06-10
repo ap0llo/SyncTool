@@ -17,7 +17,7 @@ namespace SyncTool.WebUI.Controllers
 
         public IActionResult Index([FromQuery] string groupName, [FromQuery] string folderName)
         {
-            using(var group = m_GroupManager.GetGroup(groupName))
+            using(var group = m_GroupManager.OpenExclusively(groupName))
             {
                 var historyService = group.GetHistoryService();
                 var history = historyService[folderName];
@@ -36,7 +36,7 @@ namespace SyncTool.WebUI.Controllers
 
         public IActionResult Details(string id, [FromQuery] string groupName, [FromQuery] string folderName)
         {
-            using(var group = m_GroupManager.GetGroup(groupName))
+            using(var group = m_GroupManager.OpenExclusively(groupName))
             {
                 var historyService = group.GetHistoryService();
                 var history = historyService[folderName];
@@ -60,7 +60,7 @@ namespace SyncTool.WebUI.Controllers
             [FromQuery] string folderName,
             [FromQuery] string path)
         {
-            using(var group = m_GroupManager.GetGroup(groupName))
+            using(var group = m_GroupManager.OpenExclusively(groupName))
             {
                 var historyService = group.GetHistoryService();
                 var history = historyService[folderName];
@@ -82,7 +82,7 @@ namespace SyncTool.WebUI.Controllers
 
         public IActionResult Changes(string id, [FromQuery] string groupName, [FromQuery] string folderName)
         {
-            using (var group = m_GroupManager.GetGroup(groupName))
+            using (var group = m_GroupManager.OpenExclusively(groupName))
             {
                 var historyService = group.GetHistoryService();
                 var history = historyService[folderName];

@@ -33,7 +33,7 @@ namespace SyncTool.Cli.Commands
                     ? m_GroupManager.Groups
                     : m_GroupManager.Groups.Where(g => g.Equals(opts.Name, StringComparison.InvariantCultureIgnoreCase));
 
-            foreach (var group in groupNames.Select(m_GroupManager.GetGroup))
+            foreach (var group in groupNames.Select(m_GroupManager.OpenExclusively))
             {
                 using (group)
                 {

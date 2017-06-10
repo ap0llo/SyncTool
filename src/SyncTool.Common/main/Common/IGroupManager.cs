@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SyncTool.Common
 {
@@ -9,13 +10,9 @@ namespace SyncTool.Common
         /// </summary>
         IEnumerable<string> Groups { get; }
 
-        /// <summary>
-        /// Gets the specified group
-        /// </summary>
-        /// <param name="name">The name of the group</param>
-        /// <remarks>Group names are case-invariant</remarks>
-        /// <exception cref="GroupNotFoundException">The specified group could not be found</exception>
-        IGroup GetGroup(string name);
+        IGroup OpenShared(string name);
+
+        IGroup OpenExclusively(string name);
 
         /// <summary>
         /// Adds an existing group

@@ -36,7 +36,7 @@ namespace SyncTool.Cli.Commands
 
         public int Run(SyncGroupOptions opts)
         {
-            using (var group = m_GroupManager.GetGroup(opts.Group))
+            using (var group = m_GroupManager.OpenExclusively(opts.Group))
             {            
                 m_Synchronizer.Synchronize(group);
             }

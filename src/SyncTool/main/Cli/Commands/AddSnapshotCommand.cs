@@ -35,7 +35,7 @@ namespace SyncTool.Cli.Commands
 
         public int Run(AddSnapshotOptions opts)
         {
-            using (var group = m_GroupManager.GetGroup(opts.Group))
+            using (var group = m_GroupManager.OpenExclusively(opts.Group))
             {
                 var configurationService = group.GetService<IConfigurationService>();
                 var historyService = group.GetService<IHistoryService>();

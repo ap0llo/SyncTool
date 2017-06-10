@@ -18,6 +18,9 @@ namespace SyncTool.Common.Test
     /// </summary>
     public class GroupManagerTest : IDisposable
     {
+
+        #region Setup
+
         class TestGroupModule : Module
         {
             readonly IGroupInitializer m_GroupInitializer;
@@ -35,6 +38,22 @@ namespace SyncTool.Common.Test
 
                 builder.RegisterInstance(m_GroupValidator ?? Mock.Of<IGroupValidator>()).As<IGroupValidator>();
                 builder.RegisterInstance(m_GroupInitializer ?? Mock.Of<IGroupInitializer>()).As<IGroupInitializer>();
+            }
+        }
+
+        class DummyGroupValidator : IGroupValidator
+        {
+            public void EnsureGroupIsValid(string groupName, string address)
+            { 
+                // nop                
+            }
+        }
+
+        class DummyGroupInitializer : IGroupInitializer
+        {
+            public void Initialize(string groupName, string address)
+            {
+                // nop
             }
         }
 
@@ -68,6 +87,8 @@ namespace SyncTool.Common.Test
                 .As<IGroupDirectoryPathProvider>();
 
             builder.RegisterType<GroupManager>().AsSelf();
+            builder.RegisterType<Group>().As<IGroup>().AsSelf();
+
 
             if (settingsProvider != null)
                 builder.RegisterInstance(settingsProvider).As<IGroupSettingsProvider>();
@@ -78,19 +99,180 @@ namespace SyncTool.Common.Test
         }
 
 
-        [Fact]
-        public void GetGroup_throws_GroupNotFoundException()
+        ILifetimeScope GetContainerWithDummyDependencies()
         {
-            var settingsProviderMock = GetGroupSettingsProviderMock().WithEmptyGroupSettings();
-            using (var container = GetContainer(settingsProviderMock.Object))
+            return GetContainer(
+                settingsProvider: GetGroupSettingsProviderMock().WithEmptyGroupSettings().Object,
+                groupValidator: new DummyGroupValidator(),
+                groupInitializer: new DummyGroupInitializer()
+                );
+        }
+
+        #endregion
+
+
+       
+
+        
+        #region OpenRead
+
+        [Fact]
+        public void OpenShared_throws_GroupNotFoundExceptin_if_Group_does_not_exist()
+        {
+            using (var container = GetContainerWithDummyDependencies())
             {
                 var instance = container.Resolve<GroupManager>();
-                Assert.Throws<GroupNotFoundException>(() => instance.GetGroup("someName"));
+                Assert.Throws<GroupNotFoundException>(() => instance.OpenShared("Group"));
             }
         }
 
+        [Fact]
+        public void OpenShared_can_be_used_by_multiple_clients_simultaneously()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
 
-        //TODO: AddGroup
+                instance.AddGroup("Group1", "SomeAddress");
+
+                using (var opened1 = instance.OpenShared("Group1"))
+                using (var opened2 = instance.OpenShared("Group1"))
+                {                    
+                }
+            }
+        }
+
+        [Fact]
+        public void OpenShared_throws_GroupOpenedException_if_group_is_opened_in_write_mode()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
+
+                instance.AddGroup("Group1", "SomeAddress");
+
+                using (var group = instance.OpenExclusively("Group1"))
+                {
+                    Assert.Throws<GroupOpenedException>(() => instance.OpenShared("Group1"));
+                }
+            }
+        }
+
+        [Fact]
+        public void OpenShared_ignores_case_in_group_names()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
+                instance.AddGroup("Group1", "Irrelevant");
+
+                using (var group = instance.OpenShared("grOUp1"))
+                {
+                    
+                }
+            }
+        }
+
+        #endregion
+
+        #region OpenExclusively
+
+        [Fact]
+        public void OpenExclusively_throws_GroupNotFoundExceptin_if_Group_does_not_exist()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
+                Assert.Throws<GroupNotFoundException>(() => instance.OpenExclusively("Group"));
+            }
+        }
+
+        [Fact]
+        public void OpenExclusively_can_be_used_again_after_group_was_disposed_01()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
+
+                instance.AddGroup("Group1", "SomeAddress");
+
+                using(var group = instance.OpenExclusively("Group1"))
+                {
+                }
+
+                using (var group = instance.OpenExclusively("Group1"))
+                {
+                }
+            }
+        }
+
+        [Fact]
+        public void OpenExclusively_can_be_used_again_after_group_was_disposed_02()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
+
+                instance.AddGroup("Group1", "SomeAddress");
+
+                using (var group = instance.OpenShared("Group1"))
+                {
+                }
+
+                using (var group = instance.OpenExclusively("Group1"))
+                {
+                }
+            }
+        }
+
+        [Fact]
+        public void OpenExclusively_throws_GroupOpenedException_if_group_if_already_opened_for_writing()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
+
+                instance.AddGroup("Group1", "SomeAddress");
+
+                using (var group = instance.OpenExclusively("Group1"))
+                {
+                    Assert.Throws<GroupOpenedException>(() => instance.OpenExclusively("Group1"));
+                }
+            }
+        }
+
+        [Fact]
+        public void OpenExclusively_throws_GroupOpenedException_if_group_is_opened_for_reading()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
+
+                instance.AddGroup("Group1", "SomeAddress");
+
+                using (var group = instance.OpenShared("Group1"))
+                {
+                    Assert.Throws<GroupOpenedException>(() => instance.OpenExclusively("Group1"));
+                }
+            }
+        }
+
+        [Fact]
+        public void OpenExclusively_ignores_case_in_group_names()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
+                instance.AddGroup("Group1", "Irrelevant");
+
+                using (instance.OpenExclusively("grOUp1"))
+                {
+                    Assert.Throws<GroupOpenedException>(() => instance.OpenExclusively("Group1"));
+                }
+            }
+        }
+
+        #endregion
 
         #region AddGroup
 

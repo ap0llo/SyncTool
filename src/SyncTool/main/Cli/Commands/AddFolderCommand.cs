@@ -37,7 +37,7 @@ namespace SyncTool.Cli.Commands
 
         public int Run(AddFolderOptions opts)
         {            
-            using (var group = m_GroupManager.GetGroup(opts.Group))            
+            using (var group = m_GroupManager.OpenExclusively(opts.Group))            
             {                
                 var configService = group.GetService<IConfigurationService>();
                 configService.AddItem(new SyncFolder(opts.Name) { Path = opts.Path });

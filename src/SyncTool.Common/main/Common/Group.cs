@@ -9,12 +9,16 @@ namespace SyncTool.Common
     {
         readonly GroupSettings m_Settings;
         readonly ILifetimeScope m_GroupScope;
+        bool m_Disposed = false;
 
 
-        public event EventHandler Disposed;
-
+        internal event EventHandler Disposed;
+        
 
         public string Name => m_Settings.Name;
+
+
+        internal ILifetimeScope LifetimeScope => m_GroupScope;
 
 
         public Group(GroupSettings groupSettings, ILifetimeScope groupScope)
@@ -36,7 +40,15 @@ namespace SyncTool.Common
             }
         }
 
-        public void Dispose() => Disposed?.Invoke(this, EventArgs.Empty);
+        public void Dispose()
+        {
+            if(m_Disposed)
+            {
+                throw new InvalidOperationException($"Group {Name} was already disposed");
+            }
 
+            m_Disposed = true;            
+            Disposed?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

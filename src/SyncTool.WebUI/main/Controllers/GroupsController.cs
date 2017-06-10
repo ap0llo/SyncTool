@@ -26,7 +26,7 @@ namespace SyncTool.WebUI.Controllers
             }
             else
             {
-                using (var group = m_GroupManager.GetGroup(groupName))
+                using (var group = m_GroupManager.OpenExclusively(groupName))
                 {                    
                     var model = new DetailsModel()
                     {

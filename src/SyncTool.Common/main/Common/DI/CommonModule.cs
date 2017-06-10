@@ -14,8 +14,7 @@ namespace SyncTool.Common.DI
         {
             builder.RegisterType<Group>()
                 .AsSelf()
-                .As<IGroup>()
-                .InstancePerMatchingLifetimeScope(Scope.Group)
+                .As<IGroup>()                
                 .ExternallyOwned();
 
             builder.RegisterType<CurrentDirectoryGroupDirectoryPathProvider>().As<IGroupDirectoryPathProvider>();
