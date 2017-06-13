@@ -1,46 +1,57 @@
 <Project>
 
+  <!-- Determine if the proecjt is a test project -->
+  <PropertyGroup>
+    <IsTestProject>False</IsTestProject>
+    <IsTestProject Condition="$(MSBuildProjectDirectory.EndsWith('test')) AND $(MSBuildProjectName.EndsWith('.Test'))">True</IsTestProject>
+    <MainProjectPath Condition="$(IsTestProject)">$(MSBuildProjectDirectory)\..\main\$(MSBuildProjectName.Replace('.Test', '')).csproj</MainProjectPath>    
+  </PropertyGroup>
+
+  <!-- Output settings -->
   <PropertyGroup>
   
     <TargetFramework>net461</TargetFramework>		
     
     <BaseOutputPath>$(MSBuildThisFileDirectory)..\build\</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(BaseOutputPath)intermediate\$(MSBuildProjectName)\</BaseIntermediateOutputPath>		
-    <OutputPath>$(BaseOutputPath)$(Configuration)</OutputPath>
+    <BaseIntermediateOutputPath>$(BaseOutputPath)intermediate\$(MSBuildProjectName)\</BaseIntermediateOutputPath>	
+
+    <!-- Set output path. Put project output into 'main', test project outputs into 'test'-->	
+    <OutputPath>$(BaseOutputPath)$(Configuration)\main\</OutputPath>	
+    <OutputPath Condition="$(IsTestProject)">$(BaseOutputPath)$(Configuration)\test\</OutputPath>	
 	
-	
-	<AssemblyVersion>1.0.0.0</AssemblyVersion>
+	  <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
 	
   </PropertyGroup>
 
   <!-- SyncTool.Utilities can be used by all projects (but prevent self-reference) -->
   <ItemGroup Condition=" '$(MSBuildProjectName)' != 'SyncTool.Utilities'">
-	<ProjectReference Include="$(MSBuildThisFileDirectory)\SyncTool.Utilities\main\SyncTool.Utilities.csproj" />
+	  <ProjectReference Include="$(MSBuildThisFileDirectory)\SyncTool.Utilities\main\SyncTool.Utilities.csproj" />
   </ItemGroup>
   
-  <!-- Determine if the project is a test project -->
+  <!-- if project is a test project, determine the path of the associated "main" project -->
   <PropertyGroup>
-    <IsTestProject>False</IsTestProject>
-    <IsTestProject Condition="$(MSBuildProjectDirectory.EndsWith('test')) AND $(MSBuildProjectName.EndsWith('.Test'))">True</IsTestProject>
     <MainProjectPath Condition="$(IsTestProject)">$(MSBuildProjectDirectory)\..\main\$(MSBuildProjectName.Replace('.Test', '')).csproj</MainProjectPath>    
   </PropertyGroup>
 		
   <!-- For test projects, automatically include a reference to the corresponding main project -->	
-  <PropertyGroup>
-	<XunitVersion>2.2.0</XunitVersion>
-  </PropertyGroup>
-  
   <ItemGroup Condition="$(IsTestProject)">
     <ProjectReference Include="$(MainProjectPath)" Condition="Exists('$(MainProjectPath)')" />
+  </ItemGroup>
+
+  <!-- For test projects, autmatically include test dependencies (xunit and moq) -->
+  <PropertyGroup>
+	  <XunitVersion>2.2.0</XunitVersion>
+  </PropertyGroup>  
+  <ItemGroup Condition="$(IsTestProject)">    
     <PackageReference Include="Moq" Version="4.7.8" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
-	<PackageReference Include="xunit.runner.console" Version="$(XunitVersion)" />
+	  <PackageReference Include="xunit.runner.console" Version="$(XunitVersion)" />
   </ItemGroup>
 
-
+  <!--Common dependencies  -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -51,10 +62,10 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-
   
+  <!-- Always include JetBrains Annotations package for Resharper -->
   <ItemGroup>
-	<PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
+	  <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
   </ItemGroup>
   
 </Project>
