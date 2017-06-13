@@ -4,3 +4,15 @@ build_script:
 test_script:
 - cmd: .\test.bat
 image: Visual Studio 2017
+
+
+deploy:
+  release: v$(appveyor_build_version)
+  description: 'Automatic Release by AppVeyor'
+  provider: GitHub
+  auth_token:
+    secure: p5yjD57JexMBB77GIR7la8lUcDIpTHh9q2/ivGENkeTrjSnzIWlvmg1kL2F/tjBH
+  artifact: .\build\Release\main\net461\**
+  prerelease: true
+  on:
+    branch: master                     
