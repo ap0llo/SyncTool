@@ -8,6 +8,7 @@ skip_tags: true
 
 artifacts:
   - path: .\build\Release\main\net461
+    name: synctool-full
 
 
 deploy:
@@ -16,7 +17,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: p5yjD57JexMBB77GIR7la8lUcDIpTHh9q2/ivGENkeTrjSnzIWlvmg1kL2F/tjBH
-  artifact: .\build\Release\main\net461
+  artifact: synctool-full
   prerelease: true
   on:
     branch: master
