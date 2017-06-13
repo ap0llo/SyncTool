@@ -4,6 +4,7 @@ build_script:
 test_script:
 - cmd: .\test.bat
 image: Visual Studio 2017
+skip_tags: true
 
 
 deploy:
@@ -15,4 +16,6 @@ deploy:
   artifact: .\build\Release\main\net461\**
   prerelease: true
   on:
-    branch: master                     
+    branch: master
+
+
