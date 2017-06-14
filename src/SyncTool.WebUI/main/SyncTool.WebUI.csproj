@@ -29,9 +29,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\"/>
-    <Content Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />    
-    <Content Update="wwwroot\**" CopyToOutputDirectory="PreserveNewest" />    
-    <Content Update="Views\**" CopyToOutputDirectory="PreserveNewest" />    
   </ItemGroup>
 
 
