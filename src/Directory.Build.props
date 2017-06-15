@@ -43,7 +43,7 @@
 	  <XunitVersion>2.2.0</XunitVersion>
   </PropertyGroup>  
   <ItemGroup Condition="$(IsTestProject)">    
-    <PackageReference Include="Moq" Version="4.7.8" />
+    <PackageReference Include="Moq" Version="4.7.25" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
@@ -62,9 +62,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   
-  <!-- Always include JetBrains Annotations package for Resharper -->
+  <!-- Always include JetBrains Annotations package for Resharper and System.ValueTuple-->
   <ItemGroup>
 	  <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.1" />
   </ItemGroup>
   
 </Project>
