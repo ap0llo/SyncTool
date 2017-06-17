@@ -1,7 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<OutputType>Exe</OutputType>
+	  <OutputType>Exe</OutputType>
+    <SquirrelVersion>1.7.5</SquirrelVersion>
+    
+  </PropertyGroup>
+
+  <!-- Nuget package properties -->
+  <PropertyGroup>
+    <PackageId>$(MsBuildProjectName)</PackageId>
+    <Authors>Andreas Gruenwald</Authors>
+    <Description>SyncTool Command Line</Description>    
+    <PackageVersion>1.0.0-dev$(BuildNumber)</PackageVersion>    
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +20,19 @@
   
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.0.275-beta" />
+    <PackageReference Include="Squirrel.Windows" Version="$(SquirrelVersion)"/> 
   </ItemGroup>
+  
+  <Import Project="Setup.targets" />
+
+  <Target Name="DetermineSetupInputFiles">
+    <ItemGroup>
+      <SetupInputFiles Include="$(OutDir)**\*.dll" />
+      <SetupInputFiles Remove="$(OutDir)git2-*.dll" />
+      <SetupInputFiles Remove="$(OutDir)JetBrains.Annotations.dll" />                
+      <SetupInputFiles Include="$(OutDir)$(AssemblyName).exe" />
+      <SetupInputFiles Include="$(OutDir)$(AssemblyName).exe.config" />   
+    </ItemGroup>
+  </Target>
 
 </Project>

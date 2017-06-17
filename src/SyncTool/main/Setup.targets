@@ -1,0 +1,88 @@
+<!-- Defines the CreateSetup target -->
+<Project>
+
+    <!-- Import required tasks -->
+    <Import Project="$(MSBuildThisFileDirectory)Setup.tasks" />
+
+    <!-- Determine default values for paths that might have been set in project file -->    
+    <PropertyGroup>
+        <RunCreateSetup Condition="'$(RunCreateSetup)' == ''">false</RunCreateSetup>
+        <SetupTmpPath Condition="'$(SetupTmpPath)' == ''">$(BaseIntermediateOutputPath)$(Configuration)\$(TargetFramework)\Setup\</SetupTmpPath>
+        <SetupOutputPath Condition="'$(SetupOutputPath)' == ''">$(OutputPath)$(TargetFramework)\Setup</SetupOutputPath>
+        <!-- The version of the nuget client to use for packaging -->
+        <SetupNugetVersion Condition="'$(SetupNugetVersion)' == ''">4.1.0</SetupNugetVersion>    
+    </PropertyGroup>
+
+    <!-- Set "internal" properties for setup targets -->
+    <PropertyGroup>
+        <_SetupNugetPath>$(SetupTmpPath).nuget\$(SetupNugetVersion)\nuget.exe</_SetupNugetPath>
+        <_SetupInputFilesPath>$(SetupTmpPath)Files\</_SetupInputFilesPath>        
+        <_SetupPackageIdAndVersion>$(PackageId).$(PackageVersion)</_SetupPackageIdAndVersion> 
+    </PropertyGroup>
+
+    <!-- Target to create a Squirrel setup package -->
+    <Target Name="CreateSetup" AfterTargets="CopyFilesToOutputDirectory" Condition="$(RunCreateSetup)">
+        <!-- Copy file to tmp directory -->
+        <CallTarget Targets="_CopySetupInputFiles"/>
+        <!-- Create nuget package -->
+        <CallTarget Targets="_RunNuget" />
+        <!-- Build Squirrel installer from nuget package-->
+        <CallTarget Targets="_RunSquirrel" />
+    </Target>
+
+    <!-- Copy all files to be included in the setup to a (temporary) directory -->
+    <Target Name="_CopySetupInputFiles" DependsOnTargets="DetermineSetupInputFiles">           
+        <RemoveDir Directories="$(_SetupInputFilesPath)" />   
+        <MakeDir Directories="$(_SetupInputFilesPath)" />               
+        <Copy SourceFiles="@(SetupInputFiles)"  DestinationFolder="$(_SetupInputFilesPath)%(RecursiveDir)" />         
+    </Target>
+
+    <!-- Create a .nuspec file for the setup package-->
+     <Target Name="_CreateNuspec">
+        <MakeDir Directories="$(SetupTmpPath)" />
+        <CreateSetupNuspec OutputPath="$(SetupTmpPath)$(_SetupPackageIdAndVersion).nuspec" 
+                           InputDirectory="$(_SetupInputFilesPath)"
+                           Target="lib\$(TargetFramework)"
+                           PackageId="$(PackageId)"
+                           PackageVersion="$(PackageVersion)"
+                           Authors="$(Authors)"
+                           Description="$(Description)" />
+    </Target>
+
+    <!-- Download nuget.exe which we need to package the files -->
+    <Target Name="_DownloadNuget" 
+            Condition="!Exists('$(_SetupNugetPath)')">
+        <PropertyGroup>
+            <_NugetUrl>https://dist.nuget.org/win-x86-commandline/v$(SetupNugetVersion)/NuGet.exe</_NugetUrl>
+        </PropertyGroup>
+
+		<Message Text="Downloading NuGet.exe to $(_SetupNugetPath)" />
+		<DownloadFile Url="$(_NugetUrl)" OutputPath="$(_SetupNugetPath)"  />
+	</Target>
+
+    <!-- Run nuget pack -->
+    <Target Name="_RunNuget" 
+            DependsOnTargets="_DownloadNuget;_CreateNuspec">
+        <Exec Command="&quot;$(_SetupNugetPath)&quot; pack $(SetupTmpPath)$(_SetupPackageIdAndVersion).nuspec"
+              WorkingDirectory="$(SetupTmpPath)" />
+    </Target>
+
+
+    <!-- Build a squirrel setup package from the nuget package we created -->
+    <Target Name="_RunSquirrel">
+
+        <PropertyGroup>
+            <_SquirrelPath>$(NuGetPackageRoot)Squirrel.Windows\$(SquirrelVersion)\tools\Squirrel.exe</_SquirrelPath>
+        </PropertyGroup>
+
+        <Error Text="Squirrel version could not be determined. Make sure Squirrel.Windows is installed and teh SquirrelVersion variable ist set"
+               Condition=" '$(SquirrelVersion)' == ''"/>        
+        <Error Text="Squirrel.exe could not be found. Make sure Squirrel.Windows is installed. Path: '$(_SquirrelPath)'"
+               Condition="!Exists('$(_SquirrelPath)')" />        
+
+        <MakeDir Directories="$(SetupOutputPath)" />
+        <Exec Command="$(_SquirrelPath) --releasify $(SetupTmpPath)$(_SetupPackageIdAndVersion).nupkg --no-msi --no-delta --releaseDir=$(SetupOutputPath)" 
+              WorkingDirectory="$(SetupTmpPath)" />
+    </Target>
+   
+</Project>

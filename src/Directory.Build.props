@@ -16,6 +16,7 @@
     <BaseIntermediateOutputPath>$(BaseOutputPath)intermediate\$(MSBuildProjectName)\</BaseIntermediateOutputPath>	
 
     <OutputPath>$(BaseOutputPath)$(Configuration)\$(MSBuildProjectName)\</OutputPath>      
+    <SetupOutputPath>$(BaseOutputPath)$(Configuration)\Setup\</SetupOutputPath>
 
     <AppVeyor Condition="'$(AppVeyor)' == ''">false</AppVeyor>
     <BuildNumber>0</BuildNumber>
