@@ -4,12 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using Squirrel;
+using SyncTool.Cli.Configuration;
 
 namespace SyncTool.Cli.Installation
 {
     static class Installer
     {
+        const string s_DefaultConfigResourceName = "SyncTool.config.json";
+
+        public static bool IsInstalled => File.Exists(InstallationFlagFilePath);
+
+        static string InstallationFlagFilePath => Path.Combine(InstallationDirectory, "IsInstalled");
 
         static string InstallationRoot => Path.GetFullPath(Path.Combine(InstallationDirectory, "..")).TrimEnd(Path.DirectorySeparatorChar);
 
@@ -19,6 +26,7 @@ namespace SyncTool.Cli.Installation
 
         static string ApplicationName => Assembly.GetExecutingAssembly().GetName().Name;
 
+        static string ConfigFilePath => Path.Combine(InstallationRoot, ContainerBuilderExtensions.ConfigFileName);
 
         public static void HandleInstallationEvents()
         {
@@ -27,15 +35,20 @@ namespace SyncTool.Cli.Installation
             SquirrelAwareApp.HandleEvents(
                 onInitialInstall: v =>
                 {
+                    CreateDefaultConfigFile();
+                    CreateInstallationFlagFile();
                     CreateLauncherFile();
                     AddToPath();
                 },
                 onAppUpdate: v =>
                 {
+                    CreateInstallationFlagFile();
                     CreateLauncherFile();
                 },
                 onAppUninstall: v =>
                 {
+                    RemoveDefaultConfigFile();
+                    RemoveInstallationFlagFile();
                     RemoveLauncherFile();
                     RemoveFromPath();
                 },
@@ -97,6 +110,31 @@ namespace SyncTool.Cli.Installation
 
             Environment.SetEnvironmentVariable("PATH", value + ";" + InstallationRoot, EnvironmentVariableTarget.User);
         }
-        
+
+        static void CreateInstallationFlagFile()
+        {
+            File.WriteAllText(InstallationFlagFilePath, "");
+        }
+
+        static void RemoveInstallationFlagFile()
+        {
+            File.Delete(InstallationFlagFilePath);
+        }
+
+        static void CreateDefaultConfigFile()
+        {
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(s_DefaultConfigResourceName))
+            using (var reader = new StreamReader(stream))
+            {
+                var content = reader.ReadToEnd();
+                File.WriteAllText(ConfigFilePath, content);
+            }
+            
+        }
+
+        static void RemoveDefaultConfigFile()
+        {
+            File.Delete(ConfigFilePath);
+        }
     }
 }

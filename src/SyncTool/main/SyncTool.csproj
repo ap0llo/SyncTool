@@ -26,7 +26,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Update="config.json" CopyToOutputDirectory="PreserveNewest" />
+    <EmbeddedResource Update="config.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="config.Debug.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   
@@ -38,8 +38,7 @@
       <SetupInputFiles Remove="$(OutDir)git2-*.dll" />
       <SetupInputFiles Remove="$(OutDir)JetBrains.Annotations.dll" />                
       <SetupInputFiles Include="$(OutDir)$(AssemblyName).exe" />
-      <SetupInputFiles Include="$(OutDir)$(AssemblyName).exe.config" />   
-      <SetupInputFiles Include="$(OutDir)config.json" />
+      <SetupInputFiles Include="$(OutDir)$(AssemblyName).exe.config" />         
     </ItemGroup>
   </Target>
 
