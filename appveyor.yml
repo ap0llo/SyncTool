@@ -1,4 +1,4 @@
-version: 1.0.0.{build}
+version: 1.0.0-dev{build}
 build_script:
 - cmd: .\build.bat
 test_script:
@@ -12,7 +12,7 @@ artifacts:
 
 #skip_tags: true
 #deploy:
-#  release: autorelease-v$(appveyor_build_version)
+#  release: v$(appveyor_build_version)
 #  description: 'Automatic Release by AppVeyor'
 #  provider: GitHub
 #  auth_token:

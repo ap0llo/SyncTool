@@ -10,8 +10,7 @@
   <PropertyGroup>
     <PackageId>$(MsBuildProjectName)</PackageId>
     <Authors>Andreas Gruenwald</Authors>
-    <Description>SyncTool Command Line</Description>    
-    <PackageVersion>1.0.0-dev$(BuildNumber)</PackageVersion>    
+    <Description>SyncTool Command Line</Description>        
   </PropertyGroup>
 
   <ItemGroup>

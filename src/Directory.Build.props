@@ -17,14 +17,17 @@
 
     <OutputPath>$(BaseOutputPath)$(Configuration)\$(MSBuildProjectName)\</OutputPath>      
     <SetupOutputPath>$(BaseOutputPath)$(Configuration)\Setup\</SetupOutputPath>
-
     <AppVeyor Condition="'$(AppVeyor)' == ''">false</AppVeyor>
-    <BuildNumber>0</BuildNumber>
-    <BuildNumber Condition="$(AppVeyor)">$(APPVEYOR_BUILD_NUMBER)</BuildNumber>
 
-	  <AssemblyVersion>1.0.0.$(BuildNumber)</AssemblyVersion>
+    <BaseVersion Condition=" '$(BaseVersion)' == ''">1.0.0</BaseVersion>
+    <BuildNumber Condition="$(AppVeyor) AND '$(BuildNumber)' == ''">$(APPVEYOR_BUILD_NUMBER)</BuildNumber>
+    <BuildNumber Condition=" '$(BuildNumber)' == ''">0</BuildNumber>
+
+	  <AssemblyVersion>$(BaseVersion).$(BuildNumber)</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
-	
+    <PackageVersion>$(BaseVersion)-dev$(BuildNumber)</PackageVersion>   
+    <InformationalVersion>$(PackageVersion)</InformationalVersion> 	
+
   </PropertyGroup>
 
   <!-- SyncTool.Utilities can be used by all projects (but prevent self-reference) -->
