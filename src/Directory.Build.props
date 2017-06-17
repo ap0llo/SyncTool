@@ -15,10 +15,13 @@
     <BaseOutputPath>$(MSBuildThisFileDirectory)..\build\</BaseOutputPath>
     <BaseIntermediateOutputPath>$(BaseOutputPath)intermediate\$(MSBuildProjectName)\</BaseIntermediateOutputPath>	
 
-    <!-- Set output path. Put project output into 'main', test project outputs into 'test'-->	
-    <OutputPath>$(BaseOutputPath)$(Configuration)\$(MSBuildProjectName)\</OutputPath>	
-    
-	  <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\$(MSBuildProjectName)\</OutputPath>      
+
+    <AppVeyor Condition="'$(AppVeyor)' == ''">false</AppVeyor>
+    <BuildNumber>0</BuildNumber>
+    <BuildNumber Condition="$(AppVeyor)">$(APPVEYOR_BUILD_NUMBER)</BuildNumber>
+
+	  <AssemblyVersion>1.0.0.$(BuildNumber)</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
 	
   </PropertyGroup>
@@ -40,14 +43,14 @@
 
   <!-- For test projects, autmatically include test dependencies (xunit and moq) -->
   <PropertyGroup>
-	  <XunitVersion>2.2.0</XunitVersion>
+    <XunitVersion>2.2.0</XunitVersion>
   </PropertyGroup>  
   <ItemGroup Condition="$(IsTestProject)">    
     <PackageReference Include="Moq" Version="4.7.25" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
-	  <PackageReference Include="xunit.runner.console" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.console" Version="$(XunitVersion)" />
   </ItemGroup>
 
   <!--Common dependencies  -->
