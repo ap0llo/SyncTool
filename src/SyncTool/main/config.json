@@ -1,0 +1,7 @@
+﻿{  
+  "Update": {
+    "EnableAutoUpdate": false,
+    "UpdateSource": "GitHub",
+    "UpdatePath": "https://www.github.com/ap0llo/synctool"
+  }
+}

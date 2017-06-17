@@ -1,6 +1,13 @@
-﻿using Autofac;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using Autofac;
+using Microsoft.Extensions.Configuration;
+using Squirrel;
+using SyncTool.Cli.Configuration;
 using SyncTool.Cli.DI;
 using SyncTool.Cli.Framework;
+using SyncTool.Cli.Update;
 using SyncTool.Common;
 using SyncTool.Common.DI;
 using SyncTool.FileSystem.FileSystem.DI;
@@ -9,11 +16,13 @@ using SyncTool.Synchronization.DI;
 
 namespace SyncTool.Cli
 {
-    class Program
+    partial class Program
     {
         static int Main(string[] args)
-        {
+        {                        
             var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterConfiguration();
+            containerBuilder.RegisterType<Updater>().AsSelf().SingleInstance();
 
             containerBuilder.RegisterModule<CommonModule>();
             containerBuilder.RegisterModule<FileSystemModule>();
@@ -23,10 +32,25 @@ namespace SyncTool.Cli
 
             var container = containerBuilder.Build();
 
+            var updater = container.Resolve<Updater>();
+
+            int exitCode;
             using (var applicationScope = container.BeginLifetimeScope(Scope.Application))
             {
-                return applicationScope.Resolve<Application>().Run(args);
-            }            
+                exitCode = applicationScope.Resolve<Application>().Run(args);
+            }
+
+            if (updater.IsRunning)
+            {
+                Console.WriteLine("Application update is in progress, awaiting completion");
+                updater.AwaitCompletion();                
+            }
+
+            return exitCode;
         }
+
+
+
+
     }
 }
