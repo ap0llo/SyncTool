@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 using Squirrel;
 using SyncTool.Cli.Configuration;
 
-namespace SyncTool.Cli.Update
+namespace SyncTool.Cli.Installation
 {
     class Updater
     {

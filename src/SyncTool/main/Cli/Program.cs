@@ -1,13 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
 using Autofac;
-using Microsoft.Extensions.Configuration;
-using Squirrel;
+using JetBrains.Annotations;
 using SyncTool.Cli.Configuration;
 using SyncTool.Cli.DI;
 using SyncTool.Cli.Framework;
-using SyncTool.Cli.Update;
+using SyncTool.Cli.Installation;
 using SyncTool.Common;
 using SyncTool.Common.DI;
 using SyncTool.FileSystem.FileSystem.DI;
@@ -16,10 +13,15 @@ using SyncTool.Synchronization.DI;
 
 namespace SyncTool.Cli
 {
-    partial class Program
+    public class Program
     {
+        [UsedImplicitly]
         static int Main(string[] args)
-        {                        
+        {           
+            // handle installation events in case the application was installed or updated
+            Installer.HandleInstallationEvents();
+
+            // load container
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterConfiguration();
             containerBuilder.RegisterType<Updater>().AsSelf().SingleInstance();
@@ -32,14 +34,17 @@ namespace SyncTool.Cli
 
             var container = containerBuilder.Build();
 
+            // initialize updater
             var updater = container.Resolve<Updater>();
 
+            // run application
             int exitCode;
             using (var applicationScope = container.BeginLifetimeScope(Scope.Application))
             {
                 exitCode = applicationScope.Resolve<Application>().Run(args);
             }
 
+            // wait for completion of updater
             if (updater.IsRunning)
             {
                 Console.WriteLine("Application update is in progress, awaiting completion");
@@ -47,10 +52,6 @@ namespace SyncTool.Cli
             }
 
             return exitCode;
-        }
-
-
-
-
+        }        
     }
 }
