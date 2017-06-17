@@ -5,12 +5,12 @@ test_script:
 - cmd: .\test.bat
 image: Visual Studio 2017
 
+artifacts:
+  - path: .\build\Release\Setup\RELEASES    
+  - path: .\build\Release\Setup\Setup.exe
+  - path: .\build\Release\Setup\*.nupkg
+
 #skip_tags: true
-
-#artifacts:
-#  - path: .\build\Release\main\net461
-#    name: synctool-full
-
 #deploy:
 #  release: autorelease-v$(appveyor_build_version)
 #  description: 'Automatic Release by AppVeyor'
