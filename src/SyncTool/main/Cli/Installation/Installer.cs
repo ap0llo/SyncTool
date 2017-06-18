@@ -14,8 +14,8 @@ namespace SyncTool.Cli.Installation
         {
             var steps = new ExceptionLoggingInstallerStep(
                 new CompositeInstallerStep(            
+                    new InstallationFlagFileInstallerStep(), // this has to be the first step
                     new ConfigFileInstallerStep(),
-                    new InstallationFlagFileInstallerStep(),
                     new LauncherFileInstallerStep(),
                     new PathVariableInstallerStep()));
 
