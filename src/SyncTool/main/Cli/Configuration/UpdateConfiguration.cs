@@ -7,6 +7,8 @@
         public UpdateSource UpdateSource { get; set; } = UpdateSource.NotConfigured;
 
         public string UpdatePath { get; set; } = "";
+
+        public bool InstallPreReleaseVersions { get; set; } = false;
     }
     
 }

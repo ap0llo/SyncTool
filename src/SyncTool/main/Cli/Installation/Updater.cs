@@ -64,7 +64,9 @@ namespace SyncTool.Cli.Installation
         
         async Task StartGitHubUpdateTask()
         {
-            using (var updateManager = await UpdateManager.GitHubUpdateManager(m_Configuration.UpdatePath))
+            using (var updateManager = await UpdateManager.GitHubUpdateManager(
+                repoUrl: m_Configuration.UpdatePath, 
+                prerelease:m_Configuration.InstallPreReleaseVersions))
             {
                 await updateManager.UpdateApp();
             }
