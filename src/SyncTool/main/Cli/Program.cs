@@ -18,7 +18,7 @@ namespace SyncTool.Cli
         [UsedImplicitly]
         static int Main(string[] args)
         {           
-            // handle installation events in case the application was installed or updated
+            // handle installation events in case the application was launched by squirrel after installation
             Installer.HandleInstallationEvents();
 
             // load container

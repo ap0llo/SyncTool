@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using Microsoft.Extensions.Configuration;
 using Squirrel;
 using SyncTool.Cli.Configuration;
 
@@ -29,36 +27,34 @@ namespace SyncTool.Cli.Installation
         static string ConfigFilePath => Path.Combine(InstallationRoot, ContainerBuilderExtensions.ConfigFileName);
 
         public static void HandleInstallationEvents()
-        {
-            // Note, in most of these scenarios, the app exits after this method
-            // completes!
+        {            
             SquirrelAwareApp.HandleEvents(
-                onInitialInstall: v =>
+                onInitialInstall: WithExceptionLogging<Version>(v =>
                 {
                     CreateDefaultConfigFile();
                     CreateInstallationFlagFile();
                     CreateLauncherFile();
                     AddToPath();
-                },
-                onAppUpdate: v =>
+                }),
+                onAppUpdate: WithExceptionLogging<Version>(v =>
                 {
                     CreateInstallationFlagFile();
                     CreateLauncherFile();
-                },
-                onAppUninstall: v =>
+                }),
+                onAppUninstall: WithExceptionLogging<Version>(v =>
                 {
                     RemoveDefaultConfigFile();
                     RemoveInstallationFlagFile();
                     RemoveLauncherFile();
                     RemoveFromPath();
-                },
-                onFirstRun: () =>
+                }),
+                onFirstRun: WithExceptionLogging(() =>
                 {
                     Console.WriteLine($"{ApplicationName} was installed and added to PATH.");
                     Console.WriteLine("Press any key to continue...");
                     Console.ReadKey();
                     Environment.Exit(0);
-                });
+                }));
 
         }
 
@@ -128,13 +124,62 @@ namespace SyncTool.Cli.Installation
             {
                 var content = reader.ReadToEnd();
                 File.WriteAllText(ConfigFilePath, content);
-            }
-            
+            }           
         }
 
         static void RemoveDefaultConfigFile()
         {
             File.Delete(ConfigFilePath);
+        }
+
+        static Action<T> WithExceptionLogging<T>(Action<T> action)
+        {
+            return arg =>
+            {
+                try
+                {
+                    action(arg);
+                }
+                catch (Exception e)
+                {
+                    LogException(e);
+                    throw;
+                }
+            };
+        }
+        
+        static Action WithExceptionLogging(Action action)
+        {
+            return () =>
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception e)
+                {
+
+                    LogException(e);
+                    throw;
+                }
+            };
+        }
+
+        static void LogException(Exception e)
+        {
+            try
+            {
+                using (var stream = File.OpenWrite(Path.Combine(InstallationDirectory, $"Exception_{Guid.NewGuid()}.txt")))
+                using (var writer = new StreamWriter(stream))
+                {
+                    writer.WriteLine(DateTime.Now);
+                    writer.Write(e);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
         }
     }
 }
