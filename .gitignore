@@ -214,3 +214,4 @@ ModelManifest.xml
 /.idea
 *.iml
 src/SyncTool.WebUI/main/SyncTool.Groups.json
+/src/SyncTool/main/Properties/launchSettings.json

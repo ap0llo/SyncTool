@@ -13,18 +13,6 @@ namespace SyncTool.Cli.Configuration
         const string s_UpdateSectionName = "Update";
 
 
-        static string ConfigurationDirectory
-        {
-            get
-            {
-                var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                if (Installer.IsInstalled)
-                {
-                    dir = Path.Combine(dir, "..");
-                }
-                return Path.GetFullPath(dir);
-            }
-        }
 
         public static void RegisterConfiguration(this ContainerBuilder containerBuilder)
         {
@@ -39,8 +27,8 @@ namespace SyncTool.Cli.Configuration
         static IConfigurationRoot GetConfigurationRoot()
         {
             var configuration = new ConfigurationBuilder()
-                .AddJsonFile(Path.Combine(ConfigurationDirectory, ConfigFileName), optional: true)
-                .AddJsonFile(Path.Combine(ConfigurationDirectory, DebugConfigFileName), optional: true)
+                .AddJsonFile(Path.Combine(ApplicationInfo.RootDirectory, ConfigFileName), optional: true)
+                .AddJsonFile(Path.Combine(ApplicationInfo.RootDirectory, DebugConfigFileName), optional: true)
                 .Build();
 
             return configuration;
