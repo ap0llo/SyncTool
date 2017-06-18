@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Squirrel;
@@ -8,6 +9,8 @@ namespace SyncTool.Cli.Installation
 {
     class Updater
     {
+        const string s_LastUpdateTimeStampFileName = "lastUpdate.timestamp";
+
         readonly UpdateConfiguration m_Configuration;
         readonly Task m_UpdateTask;
 
@@ -31,32 +34,44 @@ namespace SyncTool.Cli.Installation
         bool CanUpdate()
         {
             return ApplicationInfo.IsInstalled &&
-                   m_Configuration.EnableAutoUpdate &&
-                   m_Configuration.UpdateSource != UpdateSource.NotConfigured &&
-                   !String.IsNullOrEmpty(m_Configuration.UpdatePath);
+                   m_Configuration.Enable &&
+                   m_Configuration.Source != UpdateSource.NotConfigured &&
+                   !String.IsNullOrEmpty(m_Configuration.Path);
         }
         
-        Task StartUpdateTask()
+        async Task StartUpdateTask()
         {
-            switch (m_Configuration.UpdateSource)
+            var lastUpdateTime = GetLastUpdateTime();
+            if (lastUpdateTime.HasValue && (DateTime.UtcNow - lastUpdateTime.Value) < m_Configuration.Interval)
+            {
+                return;
+            }
+
+            switch (m_Configuration.Source)
             {
                 case UpdateSource.NotConfigured:
                     throw new InvalidOperationException();
 
                 case UpdateSource.GitHub:
-                    return StartGitHubUpdateTask();                    
+                    await StartGitHubUpdateTask();
+                    break;
+
 
                 case UpdateSource.FileSystem:
-                    return StartFileSystemUpdateTask();                    
+                    await StartFileSystemUpdateTask();
+                    break;
 
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+
+            SetLastUpdateTime();
         }
 
         async Task StartFileSystemUpdateTask()
         {        
-            using (var updateManager = new UpdateManager(m_Configuration.UpdatePath))
+            using (var updateManager = new UpdateManager(m_Configuration.Path))
             {                
                 await updateManager.UpdateApp();                
             }
@@ -65,11 +80,45 @@ namespace SyncTool.Cli.Installation
         async Task StartGitHubUpdateTask()
         {
             using (var updateManager = await UpdateManager.GitHubUpdateManager(
-                repoUrl: m_Configuration.UpdatePath, 
+                repoUrl: m_Configuration.Path, 
                 prerelease:m_Configuration.InstallPreReleaseVersions))
             {
                 await updateManager.UpdateApp();
             }
+        }
+
+        DateTime? GetLastUpdateTime()
+        {
+            var file = GetLastUpdateTimeStampFile();
+
+            if (file.Exists)
+            {
+                return file.LastWriteTimeUtc;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        void SetLastUpdateTime()
+        {
+            var file = GetLastUpdateTimeStampFile();
+
+            if (!file.Exists)
+            {
+                using (file.Create()) { }
+            }
+
+            file.LastWriteTimeUtc = DateTime.UtcNow;
+            file.Refresh();
+        }
+
+        FileInfo GetLastUpdateTimeStampFile()
+        {
+            var path = Path.Combine(ApplicationInfo.RootDirectory, s_LastUpdateTimeStampFileName);
+            var fileInfo = new FileInfo(path);
+            return fileInfo;
         }
     }
 

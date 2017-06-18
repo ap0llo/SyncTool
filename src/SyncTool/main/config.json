@@ -1,8 +1,13 @@
 ﻿{
   "Update": {
-    "EnableAutoUpdate": false,
-    "UpdateSource": "GitHub",
-    "UpdatePath": "https://www.github.com/ap0llo/synctool",
-    "InstallPreReleaseVersions" :  true 
+    "Enable": false,
+    "Source": "GitHub",
+    "Path": "https://www.github.com/ap0llo/synctool",
+    "InstallPreReleaseVersions": true,
+
+    // The interval between update checks
+    // Format: (D).hh:mm:ss
+    // defaut: 1 hour
+    "Interval": "01:00:00"
   }
 }

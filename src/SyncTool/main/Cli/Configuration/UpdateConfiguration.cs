@@ -1,14 +1,18 @@
-﻿namespace SyncTool.Cli.Configuration
+﻿using System;
+
+namespace SyncTool.Cli.Configuration
 {
     class UpdateConfiguration
     {
-        public bool EnableAutoUpdate { get; set; } = false;
+        public bool Enable { get; set; } = false;
 
-        public UpdateSource UpdateSource { get; set; } = UpdateSource.NotConfigured;
+        public UpdateSource Source { get; set; } = UpdateSource.NotConfigured;
 
-        public string UpdatePath { get; set; } = "";
+        public string Path { get; set; } = "";
 
         public bool InstallPreReleaseVersions { get; set; } = false;
+
+        public TimeSpan Interval { get; set; } = TimeSpan.FromHours(1);
     }
     
 }
