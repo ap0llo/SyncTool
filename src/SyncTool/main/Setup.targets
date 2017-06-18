@@ -8,14 +8,11 @@
     <PropertyGroup>
         <RunCreateSetup Condition="'$(RunCreateSetup)' == ''">false</RunCreateSetup>
         <SetupTmpPath Condition="'$(SetupTmpPath)' == ''">$(BaseIntermediateOutputPath)$(Configuration)\$(TargetFramework)\Setup\</SetupTmpPath>
-        <SetupOutputPath Condition="'$(SetupOutputPath)' == ''">$(OutputPath)$(TargetFramework)\Setup</SetupOutputPath>
-        <!-- The version of the nuget client to use for packaging -->
-        <SetupNugetVersion Condition="'$(SetupNugetVersion)' == ''">4.1.0</SetupNugetVersion>    
+        <SetupOutputPath Condition="'$(SetupOutputPath)' == ''">$(OutputPath)$(TargetFramework)\Setup</SetupOutputPath>        
     </PropertyGroup>
 
     <!-- Set "internal" properties for setup targets -->
-    <PropertyGroup>
-        <_SetupNugetPath>$(SetupTmpPath).nuget\$(SetupNugetVersion)\nuget.exe</_SetupNugetPath>
+    <PropertyGroup>        
         <_SetupInputFilesPath>$(SetupTmpPath)Files\</_SetupInputFilesPath>        
         <_SetupPackageIdAndVersion>$(PackageId).$(PackageVersion)</_SetupPackageIdAndVersion> 
     </PropertyGroup>
@@ -48,22 +45,22 @@
                            Authors="$(Authors)"
                            Description="$(Description)" />
     </Target>
-
-    <!-- Download nuget.exe which we need to package the files -->
-    <Target Name="_DownloadNuget" 
-            Condition="!Exists('$(_SetupNugetPath)')">
-        <PropertyGroup>
-            <_NugetUrl>https://dist.nuget.org/win-x86-commandline/v$(SetupNugetVersion)/NuGet.exe</_NugetUrl>
-        </PropertyGroup>
-
-		<Message Text="Downloading NuGet.exe to $(_SetupNugetPath)" />
-		<DownloadFile Url="$(_NugetUrl)" OutputPath="$(_SetupNugetPath)"  />
-	</Target>
+    
 
     <!-- Run nuget pack -->
     <Target Name="_RunNuget" 
-            DependsOnTargets="_DownloadNuget;_CreateNuspec">
-        <Exec Command="&quot;$(_SetupNugetPath)&quot; pack $(SetupTmpPath)$(_SetupPackageIdAndVersion).nuspec"
+            DependsOnTargets="_CreateNuspec">
+
+        <PropertyGroup>
+            <_NugetPath>$(NuGetPackageRoot)Nuget.CommandLine\$(NugetVersion)\tools\nuget.exe</_NugetPath>
+        </PropertyGroup>
+
+        <Error Text="Nuget version could not be determined. Make sure Nuget.Commandline package is installed and the 'NugetVersion' variable ist set"
+               Condition=" '$(NugetVersion)' == ''"/>        
+        <Error Text="nuget.exe could not be found. Make sure the 'Nuget.Commandline' package is installed. Path: '$(_NugetPath)'"
+               Condition="!Exists('$(_NugetPath)')" />        
+
+        <Exec Command="&quot;$(_NugetPath)&quot; pack $(SetupTmpPath)$(_SetupPackageIdAndVersion).nuspec"
               WorkingDirectory="$(SetupTmpPath)" />
     </Target>
 

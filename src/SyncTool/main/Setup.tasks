@@ -1,32 +1,6 @@
 <!-- Defines tasks used by Setup targets -->
 <Project>
 
-
-	<!-- DownloadFile task -->		
-	<UsingTask TaskName="DownloadFile" 
-               TaskFactory="CodeTaskFactory" 
-               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >  
-		<ParameterGroup>
-			<Url ParameterType="System.String" Required="true" />
-			<OutputPath ParameterType="System.String" Required="true" />
-		</ParameterGroup>
-		<Task>
-			<Using Namespace="System.Web" />
-			<Using Namespace="System.IO" />
-			<Code Type="Fragment" Language="cs">
-			<![CDATA[
-                var outDir = Path.GetDirectoryName(OutputPath);
-                Directory.CreateDirectory(outDir);
-
-				using (var client = new System.Net.WebClient())
-				{ 
-					client.DownloadFile(Url, OutputPath); 
-				}
-			]]>
-			</Code>
-		</Task>
-	</UsingTask> 
-
     <!-- CreateSetupNuspec task -->		
 	<UsingTask TaskName="CreateSetupNuspec" 
                TaskFactory="CodeTaskFactory" 
