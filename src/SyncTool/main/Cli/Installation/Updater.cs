@@ -14,6 +14,7 @@ namespace SyncTool.Cli.Installation
 
         public bool IsRunning => !m_UpdateTask.IsCompleted;
         
+
         public Updater([NotNull] UpdateConfiguration configuration)
         {
             m_Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -29,12 +30,12 @@ namespace SyncTool.Cli.Installation
         
         bool CanUpdate()
         {
-            return m_Configuration.EnableAutoUpdate &&
+            return ApplicationInfo.IsInstalled &&
+                   m_Configuration.EnableAutoUpdate &&
                    m_Configuration.UpdateSource != UpdateSource.NotConfigured &&
                    !String.IsNullOrEmpty(m_Configuration.UpdatePath);
         }
-
-
+        
         Task StartUpdateTask()
         {
             switch (m_Configuration.UpdateSource)
