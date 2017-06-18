@@ -12,6 +12,11 @@
     <Authors>Andreas Gruenwald</Authors>
     <Description>SyncTool Command Line</Description>        
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="config.json" />
+    <EmbeddedResource Include="config.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.Git\main\SyncTool.Git.csproj" />
@@ -37,7 +42,7 @@
       <SetupInputFiles Include="$(OutDir)**\*.dll" />
       <SetupInputFiles Remove="$(OutDir)git2-*.dll" />
       <SetupInputFiles Remove="$(OutDir)JetBrains.Annotations.dll" />                
-      <SetupInputFiles Include="$(OutDir)$(AssemblyName).exe" />
+      <SetupInputFiles Include="$(OutDir)$(AssemblyName).exe" />          
       <SetupInputFiles Include="$(OutDir)$(AssemblyName).exe.config" />         
     </ItemGroup>
   </Target>
