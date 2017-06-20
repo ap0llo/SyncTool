@@ -1,11 +1,17 @@
 <Project>
 
+  <PropertyGroup>
+    <BuildToolDirectory>$(MSBuildThisFileDirectory)build\</BuildToolDirectory>
+  </PropertyGroup>
+
   <!-- Determine if the proecjt is a test project -->
   <PropertyGroup>
     <IsTestProject>False</IsTestProject>
     <IsTestProject Condition="$(MSBuildProjectDirectory.EndsWith('test')) AND $(MSBuildProjectName.EndsWith('.Test'))">True</IsTestProject>
     <MainProjectPath Condition="$(IsTestProject)">$(MSBuildProjectDirectory)\..\main\$(MSBuildProjectName.Replace('.Test', '')).csproj</MainProjectPath>    
   </PropertyGroup>
+
+  
 
   <!-- Output settings -->
   <PropertyGroup>
