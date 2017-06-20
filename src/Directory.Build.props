@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <BuildToolDirectory>$(MSBuildThisFileDirectory)build\</BuildToolDirectory>
+    <BuildToolsDirectory>$(MSBuildThisFileDirectory)buildtools\</BuildToolsDirectory>
   </PropertyGroup>
 
   <!-- Determine if the proecjt is a test project -->

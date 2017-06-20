@@ -37,7 +37,7 @@
     <None Update="config.Debug.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   
-  <Import Project="$(BuildToolDirectory)Setup.targets" />
+  <Import Project="$(BuildToolsDirectory)Setup.targets" />
 
   <Target Name="DetermineSetupInputFiles">
     <ItemGroup>
