@@ -1,0 +1,26 @@
+<Project>
+
+  <!-- For test projects, automatically include test dependencies (xunit and moq) -->
+  <PropertyGroup>
+    <XunitVersion>2.2.0</XunitVersion>
+  </PropertyGroup>  
+  
+  <ItemGroup Condition="$(IsTestProject)">    
+    <PackageReference Include="Moq" Version="4.7.25" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.console" Version="$(XunitVersion)" />
+  </ItemGroup>
+
+  <!-- if project is a test project, determine the path of the associated "main" project -->
+  <PropertyGroup>
+    <MainProjectPath>$(MSBuildProjectDirectory)\..\main\$(MSBuildProjectName.Replace('.Test', '')).csproj</MainProjectPath>    
+  </PropertyGroup>
+		
+  <!-- Automatically include a reference to the corresponding main project -->	
+  <ItemGroup>
+    <ProjectReference Include="$(MainProjectPath)" Condition="Exists('$(MainProjectPath)')" />
+  </ItemGroup>
+
+</Project>

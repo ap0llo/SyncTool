@@ -1,84 +1,13 @@
 <Project>
 
   <PropertyGroup>
-    <BuildToolsDirectory>$(MSBuildThisFileDirectory)buildtools\</BuildToolsDirectory>
+    <SrcRootDirectory>$(MSBuildThisFileDirectory)</SrcRootDirectory>
+    <BuildToolsDirectory>$(SrcRootDirectory)buildtools\</BuildToolsDirectory>
   </PropertyGroup>
 
-  <!-- Determine if the proecjt is a test project -->
-  <PropertyGroup>
-    <IsTestProject>False</IsTestProject>
-    <IsTestProject Condition="$(MSBuildProjectDirectory.EndsWith('test')) AND $(MSBuildProjectName.EndsWith('.Test'))">True</IsTestProject>
-    <MainProjectPath Condition="$(IsTestProject)">$(MSBuildProjectDirectory)\..\main\$(MSBuildProjectName.Replace('.Test', '')).csproj</MainProjectPath>    
-  </PropertyGroup>
-
-  
-
-  <!-- Output settings -->
-  <PropertyGroup>
-  
-    <TargetFramework>net461</TargetFramework>		
-    
-    <BaseOutputPath>$(MSBuildThisFileDirectory)..\build\</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(BaseOutputPath)intermediate\$(MSBuildProjectName)\</BaseIntermediateOutputPath>	
-
-    <OutputPath>$(BaseOutputPath)$(Configuration)\$(MSBuildProjectName)\</OutputPath>      
-    <SetupOutputPath>$(BaseOutputPath)$(Configuration)\Setup\</SetupOutputPath>
-    <AppVeyor Condition="'$(AppVeyor)' == ''">false</AppVeyor>
-
-    <BaseVersion Condition=" '$(BaseVersion)' == ''">1.0.0</BaseVersion>
-    <BuildNumber Condition="$(AppVeyor) AND '$(BuildNumber)' == ''">$(APPVEYOR_BUILD_NUMBER)</BuildNumber>
-    <BuildNumber Condition=" '$(BuildNumber)' == ''">0</BuildNumber>
-
-	  <AssemblyVersion>$(BaseVersion).$(BuildNumber)</AssemblyVersion>
-    <FileVersion>$(AssemblyVersion)</FileVersion>
-    <PackageVersion>$(BaseVersion)-dev$(BuildNumber)</PackageVersion>   
-    <InformationalVersion>$(PackageVersion)</InformationalVersion> 	
-
-  </PropertyGroup>
-
-  <!-- SyncTool.Utilities can be used by all projects (but prevent self-reference) -->
-  <ItemGroup Condition=" '$(MSBuildProjectName)' != 'SyncTool.Utilities'">
-	  <ProjectReference Include="$(MSBuildThisFileDirectory)\SyncTool.Utilities\main\SyncTool.Utilities.csproj" />
-  </ItemGroup>
-  
-  <!-- if project is a test project, determine the path of the associated "main" project -->
-  <PropertyGroup>
-    <MainProjectPath Condition="$(IsTestProject)">$(MSBuildProjectDirectory)\..\main\$(MSBuildProjectName.Replace('.Test', '')).csproj</MainProjectPath>    
-  </PropertyGroup>
-		
-  <!-- For test projects, automatically include a reference to the corresponding main project -->	
-  <ItemGroup Condition="$(IsTestProject)">
-    <ProjectReference Include="$(MainProjectPath)" Condition="Exists('$(MainProjectPath)')" />
-  </ItemGroup>
-
-  <!-- For test projects, autmatically include test dependencies (xunit and moq) -->
-  <PropertyGroup>
-    <XunitVersion>2.2.0</XunitVersion>
-  </PropertyGroup>  
-  <ItemGroup Condition="$(IsTestProject)">    
-    <PackageReference Include="Moq" Version="4.7.25" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="xunit" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.runner.console" Version="$(XunitVersion)" />
-  </ItemGroup>
-
-  <!--Common dependencies  -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  
-  <!-- Always include JetBrains Annotations package for Resharper and System.ValueTuple-->
-  <ItemGroup>
-	  <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.3.1" />
-  </ItemGroup>
+  <Import Project="$(BuildToolsDirectory)ProjectTypeInference.props" />
+  <Import Project="$(BuildToolsDirectory)OutputSettings.props" />
+  <Import Project="$(BuildToolsDirectory)Dependencies.props" />
+  <Import Project="$(BuildToolsDirectory)Dependencies.Test.props" Condition="$(IsTestProject)" />
   
 </Project>

@@ -1,0 +1,13 @@
+<!-- 
+  Defines the 'Test' target that executes all test in a project 
+-->
+<Project>
+
+  <Target Name="Test" Condition="$(IsTestProject)">  
+    <Message Text="Running Tests for $(AssemblyName)" />	      
+    <Error Text="Cannot run tests, XunitVersion is not set"
+            Condition="'$(XunitVersion)' == ''" />              
+    <Exec Command="$(NuGetPackageRoot)xunit.runner.console\$(XunitVersion)\tools\xunit.console.exe &quot;$(OutputPath)$(AssemblyName).dll&quot;"  />	
+  </Target>
+
+</Project>

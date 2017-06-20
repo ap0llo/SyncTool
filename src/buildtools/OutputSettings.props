@@ -1,0 +1,32 @@
+<!-- Defines output paths and version information -->
+<Project>
+  <PropertyGroup>
+  
+    <!-- Target Framework(s)-->
+    <TargetFramework>net461</TargetFramework>		
+    
+    <!-- Output paths -->
+    <BaseOutputPath>$(MSBuildThisFileDirectory)..\build\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(BaseOutputPath)intermediate\$(MSBuildProjectName)\</BaseIntermediateOutputPath>	
+    <OutputPath>$(BaseOutputPath)$(Configuration)\$(MSBuildProjectName)\</OutputPath>      
+    <SetupOutputPath>$(BaseOutputPath)$(Configuration)\Setup\</SetupOutputPath>
+
+    <!-- 
+      Determine version and buildnumber 
+      When building on AppVeyor, use the AppVeyor build number, otherwise default to 0,
+      if the build number has not yet been set
+    -->
+    <AppVeyor Condition="'$(AppVeyor)' == ''">false</AppVeyor>
+    <BaseVersion Condition=" '$(BaseVersion)' == ''">1.0.0</BaseVersion>
+    <BuildNumber Condition="$(AppVeyor) AND '$(BuildNumber)' == ''">$(APPVEYOR_BUILD_NUMBER)</BuildNumber>
+    <BuildNumber Condition=" '$(BuildNumber)' == ''">0</BuildNumber>
+
+    <!-- Build version info -->    
+	  <AssemblyVersion>$(BaseVersion).$(BuildNumber)</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+      <!--for nuget package version, semantic versioning can be used -->
+    <PackageVersion>$(BaseVersion)-dev$(BuildNumber)</PackageVersion>   
+    <InformationalVersion>$(PackageVersion)</InformationalVersion> 	
+
+  </PropertyGroup>
+</Project>

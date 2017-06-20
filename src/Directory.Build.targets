@@ -1,30 +1,6 @@
 <Project>
   
-  <Target Name="Test" Condition="$(IsTestProject)">  
-		<Message Text="Running Tests for $(AssemblyName)" />	
-		<Exec Command="$(NuGetPackageRoot)xunit.runner.console\$(XunitVersion)\tools\xunit.console.exe &quot;$(OutputPath)$(AssemblyName).dll&quot;"  />	
-  </Target>
-  
-  
-    <!-- For non-test projects, automatically generate a assembly info file that makes the internal members visible to the corresponding test project -->
-  <Target Name="CreateAssemblyInfo" Condition="!$(IsTestProject)" AfterTargets="PrepareForBuild">	
-		
-	<PropertyGroup>
-		<GeneratedFilePath>$(BaseIntermediateOutputPath)$(Configuration)/$(TargetFramework)/$(AssemblyName).InternalsVisibleTo.g.cs</GeneratedFilePath>
-	</PropertyGroup>
-		
-		
-	 <WriteLinesToFile File="$(GeneratedFilePath)"  
-					   Lines="[assembly:System.Runtime.CompilerServices.InternalsVisibleTo(&quot;$(AssemblyName).Test&quot;)]" 
-					   Overwrite="true"  
-					   Encoding="Unicode" 
-					   Condition="!Exists('$(GeneratedFilePath)')"/>  
-			
-	<CreateItem Include="$(GeneratedFilePath)">
-        <Output TaskParameter="Include" ItemName="Compile" /> 
-    </CreateItem>
-		
-  </Target>
-  
-  
+	<Import Project="$(BuildToolsDirectory)Test.targets" Condition="$(IsTestProject)" />
+  <Import Project="$(BuildToolsDirectory)InternalsVisibileTo.targets" Condition="!$(IsTestProject)" />
+      
 </Project>

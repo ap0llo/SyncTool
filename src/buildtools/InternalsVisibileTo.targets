@@ -1,0 +1,20 @@
+<Project>
+	
+	<!-- For non-test projects, automatically generate a assembly info file that makes the internal members visible to the corresponding test project -->
+  <Target Name="CreateInternalsVisibleToAssemblyInfo" AfterTargets="PrepareForBuild">			
+		<PropertyGroup>
+			<GeneratedFilePath>$(BaseIntermediateOutputPath)$(Configuration)/$(TargetFramework)/$(AssemblyName).InternalsVisibleTo.g.cs</GeneratedFilePath>
+		</PropertyGroup>
+		
+		<WriteLinesToFile File="$(GeneratedFilePath)"  
+											Lines="[assembly:System.Runtime.CompilerServices.InternalsVisibleTo(&quot;$(AssemblyName).Test&quot;)]" 
+											Overwrite="true"  
+											Encoding="Unicode" 
+											Condition="!Exists('$(GeneratedFilePath)')"/>  
+			
+		<CreateItem Include="$(GeneratedFilePath)">
+					<Output TaskParameter="Include" ItemName="Compile" /> 
+		</CreateItem>		
+  </Target>
+  
+</Project>
