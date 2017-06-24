@@ -38,10 +38,7 @@ namespace SyncTool.Cli.Installation
                 value = value.Replace(";;", ";");
             }
 
-            Environment.SetEnvironmentVariable("PATH", value + ";" + ApplicationInfo.RootDirectory, EnvironmentVariableTarget.User);
-        }
-
-
-
+            Environment.SetEnvironmentVariable("PATH", value, EnvironmentVariableTarget.User);
+        }        
     }
 }
