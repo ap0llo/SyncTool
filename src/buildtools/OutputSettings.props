@@ -3,10 +3,10 @@
   <PropertyGroup>
   
     <!-- Target Framework(s)-->
-    <TargetFramework>net461</TargetFramework>		
+    <TargetFramework>net461</TargetFramework>
     
     <!-- Output paths -->
-    <BaseOutputPath>$(MSBuildThisFileDirectory)..\build\</BaseOutputPath>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)..\..\build\</BaseOutputPath>
     <BaseIntermediateOutputPath>$(BaseOutputPath)intermediate\$(MSBuildProjectName)\</BaseIntermediateOutputPath>	
     <OutputPath>$(BaseOutputPath)$(Configuration)\$(MSBuildProjectName)\</OutputPath>      
     <SetupOutputPath>$(BaseOutputPath)$(Configuration)\Setup\</SetupOutputPath>
