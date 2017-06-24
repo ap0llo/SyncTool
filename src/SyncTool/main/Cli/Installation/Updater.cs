@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Squirrel;
@@ -12,22 +13,56 @@ namespace SyncTool.Cli.Installation
         const string s_LastUpdateTimeStampFileName = "lastUpdate.timestamp";
 
         readonly UpdateConfiguration m_Configuration;
-        readonly Task m_UpdateTask;
+        Task m_UpdateTask;
 
 
-        public bool IsRunning => !m_UpdateTask.IsCompleted;
+        public UpdaterStatus Status { get; private set; } = UpdaterStatus.Initialized;
         
+        public string Error { get; private set; }
+
 
         public Updater([NotNull] UpdateConfiguration configuration)
         {
-            m_Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            m_UpdateTask = CanUpdate() ? StartUpdateTask() : Task.CompletedTask;
+            m_Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));            
+        }
+
+        public void Start()
+        {
+            Status = UpdaterStatus.Running;
+
+            if (CanUpdate())
+            {
+                m_UpdateTask = StartUpdateTask();
+            }
+            else
+            {
+                m_UpdateTask = Task.CompletedTask;
+            }
+
+            m_UpdateTask.ContinueWith(t =>
+            {
+                if (!t.IsFaulted)
+                    Status = UpdaterStatus.Completed;
+            });
         }
         
-
-        public void AwaitCompletion()
+        public void Stop()
         {
-            m_UpdateTask.Wait();
+            try
+            {
+                m_UpdateTask.Wait();
+                Status = UpdaterStatus.Completed;
+            }
+            catch (AggregateException aggregateException)
+            {
+                Error = aggregateException
+                    .Flatten()
+                    .InnerExceptions
+                    .Select(e => e.Message)
+                    .Aggregate((a, b) => a + "\n" + b);
+
+                Status = UpdaterStatus.Failed;
+            }
         }
 
         
@@ -46,7 +81,7 @@ namespace SyncTool.Cli.Installation
             {
                 return;
             }
-
+            
             switch (m_Configuration.Source)
             {
                 case UpdateSource.NotConfigured:

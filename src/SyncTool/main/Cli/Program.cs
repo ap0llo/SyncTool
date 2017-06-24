@@ -36,6 +36,7 @@ namespace SyncTool.Cli
 
             // initialize updater
             var updater = container.Resolve<Updater>();
+            updater.Start();
 
             // run application
             int exitCode;
@@ -45,10 +46,17 @@ namespace SyncTool.Cli
             }
 
             // wait for completion of updater
-            if (updater.IsRunning)
+            if (updater.Status == UpdaterStatus.Running)
             {
                 Console.WriteLine("Application update is in progress, awaiting completion");
-                updater.AwaitCompletion();                
+            }      
+            
+            updater.Stop();
+
+            if (updater.Status == UpdaterStatus.Failed)
+            {
+                Console.WriteLine("Update failed: ");
+                Console.WriteLine("\t" + updater.Error.Replace("\n", "\n\t"));
             }
 
             return exitCode;
