@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace SyncTool.Cli.Installation
@@ -32,7 +33,7 @@ namespace SyncTool.Cli.Installation
 
         public void OnAppUninstall(Version version)
         {
-            foreach (var step in m_Steps)
+            foreach (var step in m_Steps.Reverse())
             {
                 step.OnAppUninstall(version);
             }
