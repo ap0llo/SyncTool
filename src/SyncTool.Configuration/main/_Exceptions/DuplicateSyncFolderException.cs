@@ -1,5 +1,4 @@
 ﻿using System;
-using SyncTool.Common;
 using SyncTool.Common.Services;
 
 namespace SyncTool.Configuration
@@ -7,12 +6,9 @@ namespace SyncTool.Configuration
     [Serializable]
     public class DuplicateSyncFolderException : DuplicateItemException
     {
-
-
         public DuplicateSyncFolderException(string name) : base($"A SyncFolder named '{name}' already exists")
         {
             
-        }
-
+        }        
     }
 }

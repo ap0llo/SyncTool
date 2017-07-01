@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SyncTool.Common.Groups;
 using SyncTool.Configuration;
-using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Synchronization.ChangeGraph;

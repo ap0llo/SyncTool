@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SyncTool.Configuration.Model;
 
 namespace SyncTool.Synchronization.State
 {

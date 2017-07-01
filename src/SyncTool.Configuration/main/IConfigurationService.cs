@@ -1,6 +1,6 @@
 ﻿using SyncTool.Common.Services;
 
-namespace SyncTool.Configuration.Model
+namespace SyncTool.Configuration
 {
     /// <summary>
     /// Interface for the configuration service

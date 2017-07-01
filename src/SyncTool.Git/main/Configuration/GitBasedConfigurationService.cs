@@ -5,7 +5,6 @@ using System.Linq;
 using LibGit2Sharp;
 using SyncTool.Common.Services;
 using SyncTool.Configuration;
-using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
 using SyncTool.Git.Common;
 

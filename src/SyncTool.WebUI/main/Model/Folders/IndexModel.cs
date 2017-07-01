@@ -1,8 +1,8 @@
-﻿using SyncTool.Configuration.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SyncTool.Configuration;
 
 namespace SyncTool.WebUI.Model.Folders
 {

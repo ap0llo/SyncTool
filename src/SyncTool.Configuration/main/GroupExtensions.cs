@@ -1,5 +1,4 @@
 ﻿using SyncTool.Common.Groups;
-using SyncTool.Configuration.Model;
 
 namespace SyncTool.Configuration
 {

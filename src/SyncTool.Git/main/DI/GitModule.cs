@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using SyncTool.Common;
 using SyncTool.Common.Groups;
-using SyncTool.Configuration.Model;
+using SyncTool.Configuration;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
 using SyncTool.Git.Configuration;

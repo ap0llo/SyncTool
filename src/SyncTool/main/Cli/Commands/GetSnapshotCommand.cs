@@ -4,7 +4,7 @@ using CommandLine;
 using SyncTool.Cli.Framework;
 using SyncTool.Cli.Output;
 using SyncTool.Common.Groups;
-using SyncTool.Configuration.Model;
+using SyncTool.Configuration;
 using SyncTool.FileSystem.Versioning;
 
 namespace SyncTool.Cli.Commands

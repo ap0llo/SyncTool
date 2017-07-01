@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SyncTool.Configuration.Model;
 using SyncTool.Git.Common;
 using SyncTool.Common.Groups;
 using SyncTool.Git.TestHelpers;

@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace SyncTool.Configuration.Model
+namespace SyncTool.Configuration
 {
     //TODO: make class immutable
     /// <summary>
     /// Configuration object for a folder that's being synced within a group
     /// </summary>
-    public class SyncFolder : IEquatable<SyncFolder>
+    public sealed class SyncFolder : IEquatable<SyncFolder>
     {        
-
         /// <summary>
         /// Gets the name of the folder
         /// </summary>
@@ -20,7 +18,6 @@ namespace SyncTool.Configuration.Model
         /// </summary>
         public string Path { get; set; }
 
-     
 
         public SyncFolder(string name)
         {
@@ -37,19 +34,14 @@ namespace SyncTool.Configuration.Model
             Name = name;
         }
 
-        public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(this.Name);
+
+        public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(Name);
 
         public override bool Equals(object obj) => Equals(obj as SyncFolder);
 
         public bool Equals(SyncFolder other)
-        {
-            if (other == null)
-            {
-                return false;                
-            }
-
-            return StringComparer.InvariantCultureIgnoreCase.Equals(this.Name, other.Name) &&
-                   StringComparer.InvariantCultureIgnoreCase.Equals(this.Path, other.Path);
-        }
+            => other != null &&
+               StringComparer.InvariantCultureIgnoreCase.Equals(Name, other.Name) &&
+               StringComparer.InvariantCultureIgnoreCase.Equals(Path, other.Path);
     }
 }

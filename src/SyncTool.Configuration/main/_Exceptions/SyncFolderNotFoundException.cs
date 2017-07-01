@@ -4,6 +4,7 @@ using SyncTool.Common.Services;
 
 namespace SyncTool.Configuration
 {
+    [Serializable]
     public class SyncFolderNotFoundException : ItemNotFoundException
     {
         public SyncFolderNotFoundException(string message) : base(message)

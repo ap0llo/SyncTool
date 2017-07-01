@@ -3,7 +3,6 @@ using System.Linq;
 using LibGit2Sharp;
 using SyncTool.Common.Services;
 using SyncTool.Configuration;
-using SyncTool.Configuration.Model;
 using SyncTool.Git.Common;
 using SyncTool.Git.TestHelpers;
 using Xunit;
