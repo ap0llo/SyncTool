@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SyncTool.Common;
 
 namespace SyncTool.Common.Groups
 {

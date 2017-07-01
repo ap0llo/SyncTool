@@ -2,7 +2,7 @@
 
 namespace SyncTool.Common.Groups
 {
-    internal class CurrentDirectoryGroupDirectoryPathProvider : SingleDirectoryGroupDirectoryPathProvider
+    sealed class CurrentDirectoryGroupDirectoryPathProvider : SingleDirectoryGroupDirectoryPathProvider
     {
         public CurrentDirectoryGroupDirectoryPathProvider() : base(Environment.CurrentDirectory)
         {

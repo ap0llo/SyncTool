@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using SyncTool.Common;
 
 namespace SyncTool.Common.Groups
 {
-    public class JsonGroupSettingsProvider : IGroupSettingsProvider
+    sealed class JsonGroupSettingsProvider : IGroupSettingsProvider
     {
         const string s_SettingsFileName = "SyncTool.Groups.json";
 
@@ -44,14 +43,11 @@ namespace SyncTool.Common.Groups
             return JsonConvert.DeserializeObject<GroupSettings[]>(File.ReadAllText(SettingsPath));
         }
         
-
         public void SaveGroupSettings(IEnumerable<GroupSettings> settings)
         {
             var json = JsonConvert.SerializeObject(settings.ToArray(), Formatting.Indented);
             File.WriteAllText(SettingsPath, json);
         }
-
-
         
     }
 }

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SyncTool.Common.Groups
 {
-    internal class SingleDirectoryGroupDirectoryPathProvider : IGroupDirectoryPathProvider
+    class SingleDirectoryGroupDirectoryPathProvider : IGroupDirectoryPathProvider
     {
         readonly string m_Directory;
 

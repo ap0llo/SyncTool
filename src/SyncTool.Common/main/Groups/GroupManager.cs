@@ -10,7 +10,7 @@ using System.IO;
 namespace SyncTool.Common.Groups
 {
     //TODO: Reuse instances/lifetimes in OpenRead()
-    class GroupManager : IGroupManager
+    sealed class GroupManager : IGroupManager
     {
         readonly IDictionary<string, GroupSettings> m_GroupSettings;  
         readonly IGroupDirectoryPathProvider m_PathProvider;

@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
-using SyncTool.Common;
+﻿using System.IO;
 using Autofac;
 using SyncTool.Common.DI;
 using SyncTool.Common.Groups;
 using SyncTool.Utilities;
+
 using Directory = System.IO.Directory;
 
 
@@ -17,13 +15,11 @@ namespace SyncTool.Common.TestHelpers
     public abstract class GroupBasedTest<TModuleFactoryModule> where TModuleFactoryModule : Module, new()
     {
         protected readonly string m_RemotePath;
-        readonly TemporaryDirectory m_TempDirectory;
-        readonly GroupStorage m_GroupStorage;
+        readonly TemporaryDirectory m_TempDirectory;        
         readonly IContainer m_Container;
         readonly ILifetimeScope m_ApplicationScope;
         
 
-        
         protected GroupBasedTest()
         {
             m_TempDirectory = new TemporaryDirectory();
@@ -48,8 +44,6 @@ namespace SyncTool.Common.TestHelpers
         }
 
         
-
-
         protected IGroup CreateGroup()
         {
             var groupManager = m_ApplicationScope.Resolve<IGroupManager>();
@@ -58,8 +52,7 @@ namespace SyncTool.Common.TestHelpers
                         
             return groupManager.OpenExclusively("Group1");
         }
-
-
+        
         public virtual void Dispose()
         {
             m_ApplicationScope.Dispose();
@@ -67,6 +60,5 @@ namespace SyncTool.Common.TestHelpers
 
             m_TempDirectory.Dispose();      
         }
-
     }
 }

@@ -5,7 +5,7 @@ namespace SyncTool.Common.Groups
     /// <summary>
     /// Encapsulates the state of a group (opened exclusively or shared)
     /// </summary>
-    class OpenedState
+    sealed class OpenedState
     {
         //The state is encoded as integer
         // 0 => not opened

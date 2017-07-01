@@ -1,24 +1,22 @@
 ﻿using System;
 using Autofac;
 using Autofac.Core.Registration;
-using SyncTool.Common.Services;
 
 namespace SyncTool.Common.Groups
 {
-    public class Group : IGroup
+    sealed class Group : IGroup
     {
         readonly GroupSettings m_Settings;
         readonly ILifetimeScope m_GroupScope;
         bool m_Disposed = false;
 
 
-        internal event EventHandler Disposed;
+        public event EventHandler Disposed;
         
 
         public string Name => m_Settings.Name;
-
-
-        internal ILifetimeScope LifetimeScope => m_GroupScope;
+        
+        public ILifetimeScope LifetimeScope => m_GroupScope;
 
 
         public Group(GroupSettings groupSettings, ILifetimeScope groupScope)

@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SyncTool.Common.Groups
 {
     public sealed class GroupStorage
     {
-
         public string Path { get; }
 
 

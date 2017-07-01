@@ -2,7 +2,7 @@
 
 namespace SyncTool.Common.Groups
 {
-    public class GroupSettings
+    public sealed class GroupSettings
     {
         public string Name { get; }
         
@@ -26,6 +26,5 @@ namespace SyncTool.Common.Groups
             Name = name;
             Address = address;
         }
-
     }
 }

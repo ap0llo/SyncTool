@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace SyncTool.Common.Groups
 {
+    [Serializable]
     public class GroupOpenedException : Exception
     {
         public GroupOpenedException()

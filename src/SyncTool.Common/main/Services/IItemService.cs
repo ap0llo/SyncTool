@@ -6,7 +6,7 @@ namespace SyncTool.Common.Services
     /// <summary>
     /// Interface for a service managing items of type <typeparam name="TValue" /> identified by keys of type <typeparam name="TKey"/>
     /// </summary>
-    public interface IItemService<TKey, TValue> : IService
+    public interface IItemService<in TKey, out TValue> : IService
     {
         /// <summary>
         /// Gets all the items managed by the service

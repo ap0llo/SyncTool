@@ -6,7 +6,6 @@ namespace SyncTool.Common.Services
     [Serializable]
     public class ItemNotFoundException : Exception
     {
-        
         public ItemNotFoundException(string message) : base(message)
         {
         }

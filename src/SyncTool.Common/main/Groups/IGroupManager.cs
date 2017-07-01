@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SyncTool.Common.Groups
 {
@@ -31,7 +30,6 @@ namespace SyncTool.Common.Groups
         /// <remarks>Group names are case-invariant</remarks>
         /// <exception cref="DuplicateGroupException">Thrown if a group with the specified name already exists</exception>
         void CreateGroup(string name, string address);
-                
 
         /// <summary>
         /// Removes the specified group
