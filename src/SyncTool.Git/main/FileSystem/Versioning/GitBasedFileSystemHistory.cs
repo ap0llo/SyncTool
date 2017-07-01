@@ -49,27 +49,14 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         public GitBasedFileSystemHistory(Repository repository, BranchName branchName)
         {
-            if (branchName == null)
-            {
-                throw new ArgumentNullException(nameof(branchName));
-            }
-            if (repository == null)
-            {
-                throw new ArgumentNullException(nameof(repository));
-            }
-
-            m_Repository = repository;
-            var branch = repository.GetBranch(branchName);
+            m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            var branch = repository.GetBranch(branchName ?? throw new ArgumentNullException(nameof(branchName)));
             m_BranchName = BranchName.Parse(branch.FriendlyName);
 
             m_Snapshots = new Lazy<IDictionary<string, GitBasedFileSystemSnapshot>>(LoadSnapshots);
         }
 
-        public GitBasedFileSystemHistory(Repository repository, string historyName) : this(repository, new BranchName(BranchNamePrefix, historyName))
-        {
-                 
-        }
-
+        
 
         public IFileSystemSnapshot CreateSnapshot(IDirectory fileSystemState)
         {

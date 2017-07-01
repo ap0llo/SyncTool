@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using LibGit2Sharp;
 using SyncTool.Common.Services;
 using SyncTool.FileSystem.Versioning;
@@ -13,6 +14,8 @@ namespace SyncTool.Git.FileSystem.Versioning
 {
     public sealed class GitBasedHistoryService : GitBasedService, IHistoryService
     {
+        readonly GitBasedFileSystemHistoryFactory m_HistoryFactory;
+
         public IFileSystemHistory this[string name]
         {
             get
@@ -29,7 +32,7 @@ namespace SyncTool.Git.FileSystem.Versioning
                     throw new ItemNotFoundException($"An item named '{name}' was not found");
                 }
 
-                return new GitBasedFileSystemHistory(Repository.Value, name);
+                return m_HistoryFactory.CreateGitBasedFileSystemHistory(Repository.Value, name);
             }
         }
 
@@ -39,14 +42,14 @@ namespace SyncTool.Git.FileSystem.Versioning
             {
                 return Repository.Value.Branches
                     .GetLocalBranchesByPrefix(GitBasedFileSystemHistory.BranchNamePrefix)
-                    .Select(b => new GitBasedFileSystemHistory(Repository.Value, BranchName.Parse(b.FriendlyName)));
+                    .Select(b => m_HistoryFactory.CreateGitBasedFileSystemHistory(Repository.Value, BranchName.Parse(b.FriendlyName)));
             }
         }
 
 
-        public GitBasedHistoryService(GitRepository repository) : base(repository)
+        public GitBasedHistoryService(GitRepository repository, [NotNull] GitBasedFileSystemHistoryFactory historyFactory) : base(repository)
         {
-
+            m_HistoryFactory = historyFactory ?? throw new ArgumentNullException(nameof(historyFactory));
         }
 
 

@@ -16,9 +16,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         readonly MetaFileSystemLoader m_MetaFileSystemLoader = new MetaFileSystemLoader();
         readonly MetaFileSystemToFileSystemConverter m_MetaFileSystemConverter = new MetaFileSystemToFileSystemConverter();        
         readonly Commit m_Commit;
-                
-        IDirectory m_GitDirectory;
-        IDirectory m_MetaFileSystem;
+        readonly Lazy<IDirectory> m_RootDirectory;
 
 
         public IFileSystemHistory History { get; }
@@ -27,19 +25,17 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         public DateTime CreationTime => m_Commit.Author.When.DateTime;
 
-        public IDirectory RootDirectory { get; private set; }
+        public IDirectory RootDirectory => m_RootDirectory.Value;
 
         internal Commit Commit => m_Commit;
 
-
-
+        
         public GitBasedFileSystemSnapshot(IFileSystemHistory history, Commit commit)
         {
             History = history ?? throw new ArgumentNullException(nameof(history));
             m_Commit = commit ?? throw new ArgumentNullException(nameof(commit));
-            LoadSnapshot();          
+            m_RootDirectory = new Lazy<IDirectory>(LoadRootDirectory);
         }
-
 
         
         public static GitBasedFileSystemSnapshot Create(Repository repository, BranchName branchName, IFileSystemHistory history, IDirectory rootDirectory)
@@ -104,21 +100,17 @@ namespace SyncTool.Git.FileSystem.Versioning
                 .Remove(0, SnapshotDirectoryName.Length);
         }
 
-
-        void LoadSnapshot()
+        IDirectory LoadRootDirectory()
         {
             // load "raw" directory
             // name of root directory is irrelevant, will be overridden by directory properties file
-            m_GitDirectory = new GitDirectory(null, "root", m_Commit);            
+            var gitDirectory = new GitDirectory(null, "root", m_Commit);            
                         
             // convert to "meta" file system (replaces IFile instances in the tree with more specific implementation)
-            m_MetaFileSystem = m_MetaFileSystemLoader.Convert(m_GitDirectory);
+            var metaFileSystem = m_MetaFileSystemLoader.Convert(gitDirectory);
 
             // convert to the originally stored file system (load file and directory properties files in the meta file system)
-            RootDirectory= m_MetaFileSystemConverter.Convert(m_MetaFileSystem.GetDirectory(SnapshotDirectoryName));
-
-            
+            return m_MetaFileSystemConverter.Convert(metaFileSystem.GetDirectory(SnapshotDirectoryName));            
         }
-
     }
 }
