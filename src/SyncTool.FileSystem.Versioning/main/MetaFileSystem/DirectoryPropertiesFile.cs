@@ -1,5 +1,4 @@
 ﻿using System;
-using SyncTool.FileSystem;
 
 namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {

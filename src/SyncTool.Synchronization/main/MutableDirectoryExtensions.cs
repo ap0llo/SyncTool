@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.Synchronization
 {
     internal static class MutableDirectoryExtensions
     {
-
          public static void EnsureDirectoryExists(this MutableDirectory directory, string path)
          {
              if (directory.DirectoryExists(path))
@@ -22,7 +21,5 @@ namespace SyncTool.FileSystem
                  directory = directory.GetDirectory(part);
              }            
          }
- 
-
     }
 }

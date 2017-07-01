@@ -1,8 +1,6 @@
-﻿using System;
-using SyncTool.FileSystem;
-using Directory = SyncTool.FileSystem.Directory;
+﻿using SyncTool.FileSystem;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.Synchronization
 {
     /// <summary>
     /// Assembly-internal extension methods for <see cref="IDirectory"/>

@@ -1,6 +1,4 @@
-﻿using SyncTool.FileSystem;
-
-namespace SyncTool.FileSystem.Versioning.MetaFileSystem
+﻿namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {
     public class FileSystemToMetaFileSystemConverter
     {
