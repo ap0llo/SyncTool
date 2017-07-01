@@ -19,7 +19,7 @@ namespace SyncTool.Common.Groups
         readonly IGroupModuleFactory m_ModuleFactory;
 
         readonly IDictionary<string, OpenedState> m_OpenedStates = new Dictionary<string, OpenedState>(StringComparer.InvariantCultureIgnoreCase);
-
+        readonly IDictionary<string, ILifetimeScope> m_OpenGroupScopes = new Dictionary<string, ILifetimeScope>(StringComparer.InvariantCultureIgnoreCase);
 
         public IEnumerable<string> Groups => m_GroupSettings.Keys;
 
@@ -51,12 +51,11 @@ namespace SyncTool.Common.Groups
             }        
             currentState.NotifyOpenedShared();
 
-
             var groupSettings = m_GroupSettings[name];
-            var groupScope = GetGroupScope(GetGroupStorage(name), groupSettings);
+            var scope = m_OpenGroupScopes.GetOrAdd(name, () => GetGroupScope(GetGroupStorage(name), groupSettings));
 
-            var group = new Group(groupSettings, groupScope);
-            group.Disposed += HandleReadOnlyGroupDisposed;
+            var group = new Group(groupSettings, scope);
+            group.Disposed += HandleSharedGroupDisposed;
          
             return group;
         }
@@ -72,12 +71,15 @@ namespace SyncTool.Common.Groups
                 throw new GroupOpenedException("Group is already opened and cannot be opened for writing");
             }
             currentState.NotifyOpenedExclusively();
+            
+            m_OpenGroupScopes.GetValueOrDefault(name)?.Dispose();
+            m_OpenGroupScopes.Remove(name);
 
             var groupSettings = m_GroupSettings[name];
             var groupScope = GetGroupScope(GetGroupStorage(name), groupSettings);
 
             var group = new Group(groupSettings, groupScope);
-            group.Disposed += HandleWritableGroupDisposed;            
+            group.Disposed += HandleExclusiveGroupDisposed;            
             return group;
         }
 
@@ -184,7 +186,7 @@ namespace SyncTool.Common.Groups
             return new GroupStorage(path);
         }
 
-        void HandleWritableGroupDisposed(object sender, EventArgs e)
+        void HandleExclusiveGroupDisposed(object sender, EventArgs e)
         {
             var group = (Group) sender;
             
@@ -194,10 +196,10 @@ namespace SyncTool.Common.Groups
                 .NotifyClosedExclusively();
             
             group.LifetimeScope.Dispose();
-            group.Disposed -= HandleWritableGroupDisposed;
+            group.Disposed -= HandleExclusiveGroupDisposed;
         }
 
-        void HandleReadOnlyGroupDisposed(object sender, EventArgs e)
+        void HandleSharedGroupDisposed(object sender, EventArgs e)
         {
             var group = (Group) sender;
 
@@ -205,9 +207,8 @@ namespace SyncTool.Common.Groups
             m_OpenedStates
                 .GetOrAdd(group.Name, () => new OpenedState())
                 .NotifyClosedShared();
-            
-            group.LifetimeScope.Dispose();
-            group.Disposed -= HandleReadOnlyGroupDisposed;
+                        
+            group.Disposed -= HandleSharedGroupDisposed;
         }
     }
 }

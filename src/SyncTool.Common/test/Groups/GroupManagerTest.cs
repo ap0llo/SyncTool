@@ -7,6 +7,7 @@ using SyncTool.Common.TestHelpers;
 using Xunit;
 using Autofac;
 using System.IO;
+using Autofac.Core.Lifetime;
 using SyncTool.Utilities;
 using SyncTool.Common.Groups;
 
@@ -110,12 +111,8 @@ namespace SyncTool.Common.Test.Groups
         }
 
         #endregion
-
-
-       
-
         
-        #region OpenRead
+        #region OpenShared
 
         [Fact]
         public void OpenShared_throws_GroupNotFoundExceptin_if_Group_does_not_exist()
@@ -168,11 +165,77 @@ namespace SyncTool.Common.Test.Groups
                 instance.AddGroup("Group1", "Irrelevant");
 
                 using (var group = instance.OpenShared("grOUp1"))
-                {
-                    
+                {                    
                 }
             }
         }
+
+        [Fact]
+        public void OpenShared_reuses_group_lifetime_scopes()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
+                instance.AddGroup("Group1", "Irrelevant");
+
+                ILifetimeScope lifetime;
+                using (var groupInstance1 = instance.OpenShared("Group1"))
+                using (var groupInstance2 = instance.OpenShared("Group1"))
+                {
+                    Assert.Same(((Group)groupInstance1).LifetimeScope, ((Group)groupInstance2).LifetimeScope);                    
+                    lifetime = ((Group)groupInstance1).LifetimeScope;
+                }
+            }
+        }
+
+        [Fact]
+        public void OpenShared_reuses_group_lifetime_scopes_after_they_have_been_disposed()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
+                instance.AddGroup("Group1", "Irrelevant");
+
+                ILifetimeScope lifetime1;
+                ILifetimeScope lifetime2;
+
+                using(var group = instance.OpenShared("Group1"))
+                {
+                    lifetime1 = ((Group) group).LifetimeScope;
+                }
+
+                using (var group = instance.OpenShared("Group1"))
+                {
+                    lifetime2 = ((Group)group).LifetimeScope;
+                }
+
+                Assert.Same(lifetime1, lifetime2);
+            }
+        }
+
+        [Fact]
+        public void OpenShared_creates_a_new_group_lifetime_scope_after_group_has_been_opened_exclusively()
+        {
+            using (var container = GetContainerWithDummyDependencies())
+            {
+                var instance = container.Resolve<GroupManager>();
+                instance.AddGroup("Group1", "Irrelevant");
+
+                var groupInstance1 = (Group) instance.OpenShared("Group1");
+                groupInstance1.Dispose();                
+
+                var groupInstance2 = (Group)instance.OpenExclusively("Group1");
+                groupInstance2.Dispose();
+
+                var groupInstance3 = (Group) instance.OpenShared("Group1");
+                groupInstance3.Dispose();
+                
+                Assert.NotSame(groupInstance1.LifetimeScope, groupInstance2.LifetimeScope);
+                Assert.NotSame(groupInstance1.LifetimeScope, groupInstance3.LifetimeScope);
+                Assert.NotSame(groupInstance2.LifetimeScope, groupInstance3.LifetimeScope); 
+            }
+        }
+
 
         #endregion
 
