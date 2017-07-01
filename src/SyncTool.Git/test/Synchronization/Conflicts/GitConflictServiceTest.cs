@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using SyncTool.Common.Groups;
 using SyncTool.Common.Services;
-using SyncTool.Git.Common;
+using SyncTool.Git.RepositoryAccess;
+using SyncTool.Git.Synchronization.Conflicts;
 using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization.Conflicts;
 using Xunit;
-using SyncTool.Synchronization.State;
 
-namespace SyncTool.Git.Synchronization.Conflicts
+namespace SyncTool.Git.Test.Synchronization.Conflicts
 {
     /// <summary>
     /// Tests for <see cref="GitConflictService"/>

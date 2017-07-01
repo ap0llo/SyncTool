@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using SyncTool.Git.Common;
 using SyncTool.Common.Groups;
+using SyncTool.Git.RepositoryAccess;
+using SyncTool.Git.Synchronization.State;
 using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization.State;
 using SyncTool.Synchronization.TestHelpers;
 using Xunit;
 
-namespace SyncTool.Git.Synchronization.State
+namespace SyncTool.Git.Test.Synchronization.State
 {
     /// <summary>
     /// Tests for <see cref="GitSyncPointService" />

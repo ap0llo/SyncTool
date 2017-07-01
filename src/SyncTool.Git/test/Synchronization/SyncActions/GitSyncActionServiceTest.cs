@@ -2,13 +2,14 @@
 using System.Linq;
 using SyncTool.Common.Groups;
 using SyncTool.FileSystem;
-using SyncTool.Git.Common;
+using SyncTool.Git.RepositoryAccess;
+using SyncTool.Git.Synchronization.SyncActions;
 using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization;
 using SyncTool.Synchronization.SyncActions;
 using Xunit;
 
-namespace SyncTool.Git.Synchronization.SyncActions
+namespace SyncTool.Git.Test.Synchronization.SyncActions
 {
     /// <summary>
     /// Tests for <see cref="GitSyncActionService"/>

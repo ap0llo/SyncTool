@@ -6,7 +6,8 @@ using LibGit2Sharp;
 using SyncTool.Common.Services;
 using SyncTool.Configuration;
 using SyncTool.FileSystem;
-using SyncTool.Git.Common;
+using SyncTool.Git.Common.Services;
+using SyncTool.Git.RepositoryAccess;
 
 using NativeDirectory = System.IO.Directory;
 using NativeFile = System.IO.File;
@@ -60,7 +61,6 @@ namespace SyncTool.Git.Configuration
                 }
             }
         }
-
 
 
         public GitBasedConfigurationService(GitRepository repository) : base(repository)
@@ -146,7 +146,5 @@ namespace SyncTool.Git.Configuration
             }
             return Items.Any(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         }
-
-             
     }
 }

@@ -5,16 +5,14 @@ using LibGit2Sharp;
 using SyncTool.Common.Services;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
+using SyncTool.Git.Common.Services;
+using SyncTool.Git.RepositoryAccess;
 
 
 namespace SyncTool.Git.FileSystem.Versioning
 {
     public sealed class GitBasedHistoryService : GitBasedService, IHistoryService
     {
-        
-
-
-
         public IFileSystemHistory this[string name]
         {
             get
@@ -46,12 +44,10 @@ namespace SyncTool.Git.FileSystem.Versioning
         }
 
 
-
         public GitBasedHistoryService(GitRepository repository) : base(repository)
         {
 
         }
-
 
 
         public bool ItemExists(string name) => Repository.Value.LocalBranchExists(new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name));
@@ -70,7 +66,5 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             Repository.Value.CreateBranch(branchName, parentCommit);
         }
-
-
     }
 }

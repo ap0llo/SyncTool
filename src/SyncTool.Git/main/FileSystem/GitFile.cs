@@ -24,10 +24,6 @@ namespace SyncTool.Git.FileSystem
 
         public Stream OpenRead() => m_Blob.GetContentStream();
 
-        public IFile WithParent(IDirectory newParent)
-        {
-            return new GitFile(newParent, this.Name, this.LastWriteTime, m_Blob);
-        }
-
+        public IFile WithParent(IDirectory newParent) => new GitFile(newParent, this.Name, this.LastWriteTime, m_Blob);
     }
 }

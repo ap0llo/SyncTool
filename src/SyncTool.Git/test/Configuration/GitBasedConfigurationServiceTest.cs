@@ -3,18 +3,18 @@ using System.Linq;
 using LibGit2Sharp;
 using SyncTool.Common.Services;
 using SyncTool.Configuration;
-using SyncTool.Git.Common;
+using SyncTool.Git.Configuration;
+using SyncTool.Git.RepositoryAccess;
 using SyncTool.Git.TestHelpers;
 using Xunit;
 
-namespace SyncTool.Git.Configuration
+namespace SyncTool.Git.Test.Configuration
 {
     /// <summary>
     /// Tests for <see cref="GitBasedConfigurationService"/>
     /// </summary>
     public class GitBasedConfigurationServiceTest : GitGroupBasedTest
     {
-
         #region Items
 
         [Fact]
@@ -184,7 +184,5 @@ namespace SyncTool.Git.Configuration
 
 
         #endregion
-
-
     }
 }

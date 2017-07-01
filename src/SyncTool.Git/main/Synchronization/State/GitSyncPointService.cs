@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Local;
-using SyncTool.Git.Common;
+using SyncTool.Git.RepositoryAccess;
+using SyncTool.Git.Common.Services;
 using SyncTool.Git.FileSystem;
 using SyncTool.Synchronization.State;
 

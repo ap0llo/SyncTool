@@ -14,7 +14,7 @@ using SyncTool.Synchronization.SyncActions;
 using SyncTool.Synchronization.TestHelpers;
 using Xunit;
 
-namespace SyncTool.Git.Synchronization
+namespace SyncTool.Git.Test.Synchronization
 {
     /// <summary>
     /// Tests for <see cref="Synchronizer"/>.

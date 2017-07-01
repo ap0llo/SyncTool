@@ -6,6 +6,7 @@ using SyncTool.FileSystem;
 using SyncTool.FileSystem.Local;
 using SyncTool.Git.Common;
 using SyncTool.Git.FileSystem;
+using SyncTool.Git.RepositoryAccess;
 using Xunit;
 using Directory = SyncTool.FileSystem.Directory;
 

@@ -6,6 +6,7 @@ using SyncTool.FileSystem;
 using SyncTool.FileSystem.Local;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
+using SyncTool.Git.RepositoryAccess;
 using NativeDirectory = System.IO.Directory;
 using Path = System.IO.Path;
 
@@ -131,6 +132,5 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             return result;
         } 
-
     }
 }

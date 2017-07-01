@@ -5,10 +5,11 @@ using Moq;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.TestHelpers;
 using SyncTool.FileSystem.Versioning;
-using SyncTool.Git.Common;
+using SyncTool.Git.FileSystem.Versioning;
+using SyncTool.Git.RepositoryAccess;
 using Xunit;
 
-namespace SyncTool.Git.FileSystem.Versioning
+namespace SyncTool.Git.Test.FileSystem.Versioning
 {
     /// <summary>
     /// Tests for <see cref="GitBasedFileSystemSnapshot"/>

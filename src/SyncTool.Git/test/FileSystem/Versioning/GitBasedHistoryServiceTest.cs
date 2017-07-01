@@ -2,20 +2,18 @@
 using System.Linq;
 using LibGit2Sharp;
 using SyncTool.Common.Services;
-using SyncTool.Git.Common;
 using SyncTool.FileSystem.Versioning;
+using SyncTool.Git.FileSystem.Versioning;
 using SyncTool.Git.TestHelpers;
 using Xunit;
 
-namespace SyncTool.Git.FileSystem.Versioning
+namespace SyncTool.Git.Test.FileSystem.Versioning
 {
-
     /// <summary>
     /// Tests for <see cref="GitBasedHistoryService"/>
     /// </summary>
     public class GitBasedHistoryServiceTest : GitGroupBasedTest
     {
-
         [Fact]
         public void CreateHistory_can_create_multiple_histories()
         {
@@ -125,7 +123,5 @@ namespace SyncTool.Git.FileSystem.Versioning
 
 
         }
-
-
     }
 }

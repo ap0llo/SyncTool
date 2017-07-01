@@ -5,7 +5,7 @@ using SyncTool.FileSystem;
 using SyncTool.FileSystem.Local;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.FileSystem.Versioning.MetaFileSystem;
-using SyncTool.Git.Common;
+using SyncTool.Git.RepositoryAccess;
 
 namespace SyncTool.Git.FileSystem.Versioning
 {

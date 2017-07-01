@@ -16,9 +16,8 @@ namespace SyncTool.Git.FileSystem
         readonly Tree m_Tree;
 
         bool m_Loaded = false;
+
         
-
-
         public GitDirectory(IDirectory parent, string name, Commit commit) : this(parent, name, commit.Author.When.DateTime, commit.Tree)
         {            
         }
@@ -30,41 +29,7 @@ namespace SyncTool.Git.FileSystem
             m_Tree = tree;
         }
 
-
-        void LoadTree()
-        {
-            lock (this)
-            {
-                if (m_Loaded)
-                {
-                    return;
-                }                
-
-                foreach (var treeEntry in m_Tree)
-                {
-                    switch (treeEntry.TargetType)
-                    {
-                        case TreeEntryTargetType.Blob:
-
-                            var blob = (Blob) treeEntry.Target;                            
-                            Add(d => new GitFile(d, treeEntry.Name, m_CommitTime, blob));
-                            break;
-
-                        case TreeEntryTargetType.Tree:
-                            var subTree = (Tree)treeEntry.Target;                                                    
-
-                            Add(d => new GitDirectory(d, treeEntry.Name, m_CommitTime, subTree));                        
-                            break;
-                    }
-                }
-
-                m_Loaded = true;
-
-            }
-            
-        }
         
-
         public override IEnumerable<IDirectory> Directories
         {
             get
@@ -105,6 +70,37 @@ namespace SyncTool.Git.FileSystem
         {
             LoadTree();
             return base.DirectoryExists(path);
+        }
+
+
+        void LoadTree()
+        {
+            lock (this)
+            {
+                if (m_Loaded)
+                    return;
+
+                foreach (var treeEntry in m_Tree)
+                {
+                    switch (treeEntry.TargetType)
+                    {
+                        case TreeEntryTargetType.Blob:
+
+                            var blob = (Blob)treeEntry.Target;
+                            Add(d => new GitFile(d, treeEntry.Name, m_CommitTime, blob));
+                            break;
+
+                        case TreeEntryTargetType.Tree:
+                            var subTree = (Tree)treeEntry.Target;
+
+                            Add(d => new GitDirectory(d, treeEntry.Name, m_CommitTime, subTree));
+                            break;
+                    }
+                }
+
+                m_Loaded = true;
+            }
+
         }
     }
 }

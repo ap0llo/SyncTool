@@ -1,6 +1,6 @@
 ﻿using SyncTool.Common.TestHelpers;
-using SyncTool.Git.Common;
 using SyncTool.Git.DI;
+using SyncTool.Git.RepositoryAccess;
 
 namespace SyncTool.Git.TestHelpers
 {

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using LibGit2Sharp;
 using SyncTool.FileSystem.Versioning;
-using SyncTool.Git.Common;
+using SyncTool.Git.Common.Services;
+using SyncTool.Git.RepositoryAccess;
 
 namespace SyncTool.Git.FileSystem.Versioning
 {
@@ -259,6 +260,5 @@ namespace SyncTool.Git.FileSystem.Versioning
                 throw new InvalidRangeException($"Snapshot {descandantId} is not an descendant of {ancestorId}");
             }
         }
-
     }
 }
