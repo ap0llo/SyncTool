@@ -1,17 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Compile Remove="Configuration\Reader\**" />
+    <EmbeddedResource Remove="Configuration\Reader\**" />
+    <None Remove="Configuration\Reader\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.Synchronization\test\SyncTool.Synchronization.Test.csproj" />    
   </ItemGroup>
 
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="Configuration\Reader\" />
   </ItemGroup>
 
 </Project>

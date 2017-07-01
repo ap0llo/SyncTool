@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\main\SyncTool.FileSystem.Versioning.csproj" />
-    <ProjectReference Include="..\..\SyncTool.Configuration\main\SyncTool.Configuration.csproj" />
+    <Compile Remove="FileSystem\Versioning\**" />
+    <EmbeddedResource Remove="FileSystem\Versioning\**" />
+    <None Remove="FileSystem\Versioning\**" />
   </ItemGroup>
 
-
   <ItemGroup>
-    <Folder Include="FileSystem\Versioning\" />
+    <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\main\SyncTool.FileSystem.Versioning.csproj" />
+    <ProjectReference Include="..\..\SyncTool.Configuration\main\SyncTool.Configuration.csproj" />
   </ItemGroup>
   
 </Project>

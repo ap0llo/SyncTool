@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SyncTool.Common;
+using SyncTool.Common.Services;
 
 namespace SyncTool.Synchronization.Conflicts
 {

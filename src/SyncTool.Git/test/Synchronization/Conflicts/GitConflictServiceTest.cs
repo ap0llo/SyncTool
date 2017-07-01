@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
+using SyncTool.Common.Services;
 using SyncTool.Git.Common;
 using SyncTool.TestHelpers;
 using SyncTool.Synchronization.Conflicts;

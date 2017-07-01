@@ -7,7 +7,7 @@ using System.IO;
 using Xunit;
 using Autofac;
 using LibGit2Sharp;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 using SyncTool.Git.Common;
 using SyncTool.TestHelpers;
 

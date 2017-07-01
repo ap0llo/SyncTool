@@ -1,5 +1,5 @@
 ﻿using System.Security.Cryptography.X509Certificates;
-using SyncTool.Common;
+using SyncTool.Common.Services;
 
 namespace SyncTool.Synchronization.State
 {

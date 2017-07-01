@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 using Microsoft.AspNetCore.Mvc;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.WebUI.Model.Snapshots;

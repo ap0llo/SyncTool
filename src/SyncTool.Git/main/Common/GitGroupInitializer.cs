@@ -1,5 +1,5 @@
 ﻿using LibGit2Sharp;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 using SyncTool.Utilities;
 using System;
 using System.IO;
@@ -22,7 +22,7 @@ namespace SyncTool.Git.Common
 
             if (Directory.Exists(localPath) && Directory.EnumerateFileSystemEntries(localPath).Any())
             {
-                throw new InitializationException($"Cannot create repository for SyncGroup '{groupName}'. Directory already exists and is not empty");
+                throw new GroupInitializationException($"Cannot create repository for SyncGroup '{groupName}'. Directory already exists and is not empty");
             }
 
             Directory.CreateDirectory(localPath);

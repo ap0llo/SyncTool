@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 using SyncTool.Configuration;
 using SyncTool.WebUI.Model.Folders;
 using System;

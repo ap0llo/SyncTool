@@ -1,4 +1,4 @@
-﻿using SyncTool.Common;
+﻿using SyncTool.Common.Groups;
 
 namespace SyncTool.Synchronization
 {

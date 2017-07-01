@@ -2,7 +2,7 @@
 using System.Linq;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 using SyncTool.TestHelpers;
 using Xunit;
 

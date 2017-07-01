@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LibGit2Sharp;
-using SyncTool.Common;
+using SyncTool.Common.Services;
 using SyncTool.Configuration;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
 using SyncTool.Git.Common;
+
 using NativeDirectory = System.IO.Directory;
 using NativeFile = System.IO.File;
 

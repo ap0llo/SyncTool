@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LibGit2Sharp;
-using SyncTool.Common;
+using SyncTool.Common.Services;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
 

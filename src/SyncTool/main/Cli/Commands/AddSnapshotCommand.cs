@@ -2,7 +2,7 @@
 using CommandLine;
 using SyncTool.Cli.Framework;
 using SyncTool.Cli.Output;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem.Local;
 using SyncTool.FileSystem.Versioning;

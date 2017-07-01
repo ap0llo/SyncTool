@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 using SyncTool.WebUI.Model.Groups;
-using System;
 
 namespace SyncTool.WebUI.Controllers
 {

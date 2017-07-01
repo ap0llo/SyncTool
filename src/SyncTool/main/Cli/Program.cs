@@ -26,7 +26,7 @@ namespace SyncTool.Cli
             containerBuilder.RegisterConfiguration();
             containerBuilder.RegisterType<Updater>().AsSelf().SingleInstance();
 
-            containerBuilder.RegisterModule<CommonModule>();
+            containerBuilder.RegisterModule<CommonApplicationScopeModule>();
             containerBuilder.RegisterModule<FileSystemModule>();
             containerBuilder.RegisterModule<GitModuleFactoryModule>();
             containerBuilder.RegisterModule<CliModule>();

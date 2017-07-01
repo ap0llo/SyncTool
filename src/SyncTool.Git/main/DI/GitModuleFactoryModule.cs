@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using SyncTool.Git.Common;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 
 namespace SyncTool.Git.DI
 {

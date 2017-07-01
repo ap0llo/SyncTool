@@ -46,7 +46,7 @@ namespace SyncTool.WebUI
             
             // Create the container builder.
             var builder = new ContainerBuilder();
-            builder.RegisterModule<CommonModule>();
+            builder.RegisterModule<CommonApplicationScopeModule>();
             builder.RegisterModule<FileSystemModule>();
             builder.RegisterModule<GitModuleFactoryModule>();
             builder.Populate(services);

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 using SyncTool.FileSystem;
 using SyncTool.Git.Common;
 using SyncTool.TestHelpers;

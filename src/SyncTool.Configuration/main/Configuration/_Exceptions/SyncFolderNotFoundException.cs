@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using SyncTool.Common;
+using SyncTool.Common.Services;
 
 namespace SyncTool.Configuration
 {

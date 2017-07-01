@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using SyncTool.Common;
+using SyncTool.Common.Groups;
 
 namespace SyncTool.Common.TestHelpers
 {

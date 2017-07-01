@@ -1,5 +1,5 @@
 ﻿using LibGit2Sharp;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 using SyncTool.Git.FileSystem;
 using System;
 using System.Collections.Generic;

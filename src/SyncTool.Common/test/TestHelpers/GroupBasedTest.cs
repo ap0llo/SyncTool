@@ -4,6 +4,7 @@ using Directory = System.IO.Directory;
 using SyncTool.Common;
 using Autofac;
 using SyncTool.Common.DI;
+using SyncTool.Common.Groups;
 using SyncTool.Utilities;
 
 
@@ -35,7 +36,7 @@ namespace SyncTool.TestHelpers
             Directory.CreateDirectory(groupSettingsDirectoy);
 
             var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule<CommonModule>();
+            containerBuilder.RegisterModule<CommonApplicationScopeModule>();
             containerBuilder.RegisterModule<TModuleFactoryModule>();
             
             containerBuilder.RegisterInstance(new JsonGroupSettingsProvider(groupSettingsDirectoy)).As<IGroupSettingsProvider>();

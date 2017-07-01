@@ -1,4 +1,4 @@
-﻿using SyncTool.Common;
+﻿using SyncTool.Common.Groups;
 using System;
 using System.Collections.Generic;
 using System.Linq;

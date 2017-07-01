@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using LibGit2Sharp;
-using SyncTool.Common;
+using SyncTool.Common.Services;
 using SyncTool.Configuration;
 using SyncTool.Configuration.Model;
 using SyncTool.Git.Common;

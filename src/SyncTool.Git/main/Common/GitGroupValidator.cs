@@ -1,4 +1,4 @@
-﻿using SyncTool.Common;
+﻿using SyncTool.Common.Groups;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,13 +26,13 @@ namespace SyncTool.Git.Common
             }
             catch (TransactionCloneException ex) when (ex is TransactionCloneException || ex is GitTransactionException)
             {
-                throw new ValidationException($"Error cloning repository for group '{groupName}'", ex);
+                throw new GroupValidationException($"Error cloning repository for group '{groupName}'", ex);
             }
 
             // cloning succeeded, now verify that the local directory is actually a repository for a group           
             if (!RepositoryVerifier.IsValid(transaction.LocalPath))
             {
-                throw new ValidationException($"Repository for group '{groupName}' is not valid");
+                throw new GroupValidationException($"Repository for group '{groupName}' is not valid");
             }
 
             transaction.Commit();

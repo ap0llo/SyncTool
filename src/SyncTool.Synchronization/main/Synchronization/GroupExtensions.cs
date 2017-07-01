@@ -1,4 +1,4 @@
-﻿using SyncTool.Common;
+﻿using SyncTool.Common.Groups;
 using SyncTool.Synchronization.Conflicts;
 using SyncTool.Synchronization.State;
 using SyncTool.Synchronization.SyncActions;

@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using LibGit2Sharp;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 using SyncTool.Git.Common;
 using SyncTool.TestHelpers;
 using System;
@@ -35,7 +35,7 @@ namespace SyncTool.Git.Test.Common
             using (var container = GetContainer())
             {
                 var instance = container.Resolve<GitGroupValidator>();
-                Assert.Throws<ValidationException>(() => instance.EnsureGroupIsValid("Group1", "Address1"));
+                Assert.Throws<GroupValidationException>(() => instance.EnsureGroupIsValid("Group1", "Address1"));
             }
         }
 
@@ -47,7 +47,7 @@ namespace SyncTool.Git.Test.Common
             {
                 var instance = container.Resolve<GitGroupValidator>();
                 Repository.Init(remote.Location, true);
-                Assert.Throws<ValidationException>(() => instance.EnsureGroupIsValid("Group1", remote.Location));
+                Assert.Throws<GroupValidationException>(() => instance.EnsureGroupIsValid("Group1", remote.Location));
             }
         }
 

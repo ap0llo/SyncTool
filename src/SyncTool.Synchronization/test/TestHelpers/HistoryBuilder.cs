@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SyncTool.Common;
+using SyncTool.Common.Groups;
 using SyncTool.Configuration;
 using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SyncTool.Common;
+using SyncTool.Common.Services;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Local;
 using SyncTool.Git.Common;
