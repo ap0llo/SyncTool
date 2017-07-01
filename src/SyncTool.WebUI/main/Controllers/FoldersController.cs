@@ -17,7 +17,7 @@ namespace SyncTool.WebUI.Controllers
 
         public IActionResult Index([FromQuery] string groupName, [FromQuery] string folderName)
         {
-            using(var group = m_GroupManager.OpenExclusively(groupName))
+            using(var group = m_GroupManager.OpenShared(groupName))
             {
                 var configService = group.GetConfigurationService();
 

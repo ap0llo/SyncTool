@@ -10,9 +10,8 @@ namespace SyncTool.WebUI.Controllers
     public abstract class ControllerBase : Controller
     {
         protected readonly IGroupManager m_GroupManager;
-
-
-        public ControllerBase(IGroupManager groupManager)
+        
+        protected ControllerBase(IGroupManager groupManager)
         {
             m_GroupManager = groupManager ?? throw new ArgumentNullException(nameof(groupManager));
         }
