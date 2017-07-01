@@ -8,8 +8,6 @@ namespace SyncTool.FileSystem.TestHelpers
     /// </summary>
     public static class FileSystemAssert
     {
-
-
         public static void DirectoryEqual(IDirectory expected, IDirectory actual)
         {
             Assert.Equal(expected.Path, actual.Path);
@@ -30,7 +28,6 @@ namespace SyncTool.FileSystem.TestHelpers
             }
         }
 
-
         public static void FileEqual(IFile expected, IFile actual)
         {
             Assert.Equal(expected.Path, actual.Path);
@@ -38,7 +35,6 @@ namespace SyncTool.FileSystem.TestHelpers
             Assert.Equal(expected.Length, actual.Length);
             Assert.Equal(expected.LastWriteTime, actual.LastWriteTime);
         }
-
 
         public static void FileReferenceMatches(IFile file, IFileReference reference)
         {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SyncTool.FileSystem
 {
@@ -23,6 +22,5 @@ namespace SyncTool.FileSystem
         bool FileExists(IFileReference reference);
 
         bool DirectoryExists(string path);
-
     }
 }

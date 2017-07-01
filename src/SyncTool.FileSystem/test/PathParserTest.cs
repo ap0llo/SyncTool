@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.FileSystem.Test
 {
     /// <summary>
     /// Tests for <see cref="PathParser"/>
@@ -24,6 +24,5 @@ namespace SyncTool.FileSystem
             Assert.Equal("/root", PathParser.GetDirectoryName("/root/file"));
             Assert.Equal("dir", PathParser.GetDirectoryName("dir/file"));
         }
-
     }
 }

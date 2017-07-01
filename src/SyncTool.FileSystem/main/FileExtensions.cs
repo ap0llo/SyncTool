@@ -13,18 +13,11 @@ namespace SyncTool.FileSystem
 
         public static string GetExtension(this IFile file) => Path.GetExtension(file.Name);
 
-        public static bool HasExtensions(this IFile file, string extension)
+        public static bool HasExtension(this IFile file, string extension)
         {
             return file.GetExtension().TrimStart(s_TrimChars).Equals(extension.TrimStart(s_TrimChars), StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static IFileReference ToReference(this IFile file)
-        {
-            if (file == null)
-            {
-                throw new ArgumentNullException(nameof(file));
-            }
-            return new FileReference(file.Path, file.LastWriteTime, file.Length);
-        }
+        public static IFileReference ToReference(this IFile file) => new FileReference(file.Path, file.LastWriteTime, file.Length);
     }
 }

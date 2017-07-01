@@ -7,7 +7,6 @@ namespace SyncTool.FileSystem
     //TODO: Rename "Ensure.." methods to "Assert..."
     public static class PathValidator
     {
-
         public static void EnsureIsValidDirectoryPath(string path) => EnsureIsValidPath(path);
 
         public static void EnsureIsValidFilePath(string path)
@@ -21,7 +20,6 @@ namespace SyncTool.FileSystem
             }
         }
 
-
         public static void EnsureIsRootedPath(string path)
         {
             if (!path.StartsWith(Constants.DirectorySeparatorChar))
@@ -31,7 +29,7 @@ namespace SyncTool.FileSystem
         }
 
 
-        private static void EnsureIsValidPath(string path)
+        static void EnsureIsValidPath(string path)
         {
             // path must not be null
             if (path == null)
@@ -57,10 +55,5 @@ namespace SyncTool.FileSystem
                 throw new FormatException("The path contains invalid characters");
             }
         }
-
-
-
-
-
     }
 }

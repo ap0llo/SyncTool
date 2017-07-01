@@ -39,15 +39,10 @@ namespace SyncTool.FileSystem
         }
 
 
-        public IEnumerator<IFileSystemItem> GetEnumerator()
-        {
-            return Directories.Cast<IFileSystemItem>().Union(Files).GetEnumerator();
-        }
+        public IEnumerator<IFileSystemItem> GetEnumerator() 
+            => Directories.Cast<IFileSystemItem>().Union(Files).GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 
         // Make Add() method public
@@ -55,6 +50,5 @@ namespace SyncTool.FileSystem
         
         // Make Add() method public
         new public IFile Add(Func<IDirectory, IFile> createFile) => base.Add(createFile);
-        
     }
 }

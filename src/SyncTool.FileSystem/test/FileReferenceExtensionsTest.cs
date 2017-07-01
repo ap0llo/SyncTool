@@ -2,15 +2,15 @@
 using SyncTool.FileSystem.TestHelpers;
 using Xunit;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.FileSystem.Test
 {
     public class FileReferenceExtensionsTest
     {
         readonly IFile m_File1;
         readonly IFile m_File2;
         readonly IFile m_File3;
-        private readonly DateTime m_LastWriteTime2;
-        private long m_Length3 = 42;
+        readonly DateTime m_LastWriteTime2;
+        const long s_Length = 42;
 
         public FileReferenceExtensionsTest()
         {
@@ -29,10 +29,9 @@ namespace SyncTool.FileSystem
             m_File3 = FileMockingHelper.GetFileMock()
                 .Named("file1")
                 .WithParentNamed("dir1")
-                .WithLength(m_Length3)
+                .WithLength(s_Length)
                 .Object;
         }
-
 
 
         [Fact]
@@ -56,7 +55,6 @@ namespace SyncTool.FileSystem
             Assert.False(reference.Matches(m_File1));
         }
 
-
         [Fact]
         public void Matches_checks_LastWriteTime_if_specified_in_reference()
         {
@@ -66,12 +64,11 @@ namespace SyncTool.FileSystem
             Assert.False(reference2.Matches(m_File2));
         }
 
-
         [Fact]
         public void Matches_checks_Length_if_specified_in_reference()
         {
-            var reference1 = new FileReference("/dir1/file1", null, m_Length3);
-            var reference2 = new FileReference("/dir1/file1", null, m_Length3 + 1);
+            var reference1 = new FileReference("/dir1/file1", null, s_Length);
+            var reference2 = new FileReference("/dir1/file1", null, s_Length + 1);
             Assert.True(reference1.Matches(m_File3));
             Assert.False(reference2.Matches(m_File3));
         }

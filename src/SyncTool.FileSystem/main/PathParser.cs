@@ -4,7 +4,6 @@ namespace SyncTool.FileSystem
 {
     public static class PathParser
     {
-
         public static string GetFileName(string path)
         {
             PathValidator.EnsureIsValidDirectoryPath(path);
@@ -20,7 +19,6 @@ namespace SyncTool.FileSystem
                 return path;
             }
         }
-
 
         public static string GetDirectoryName(string path)
         {
@@ -45,9 +43,5 @@ namespace SyncTool.FileSystem
                 return "";
             }
         }
-
-
-
-
     }
 }

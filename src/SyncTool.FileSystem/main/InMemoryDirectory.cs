@@ -18,13 +18,11 @@ namespace SyncTool.FileSystem
         public override IEnumerable<IFile> Files => m_Files.Values;
         
 
-
         protected InMemoryDirectory(IDirectory parent, string name, IEnumerable<IDirectory> directories, IEnumerable<IFile> files) : base(parent, name)
         {            
             m_Directories = directories.ToDictionary(dir => dir.Name, StringComparer.InvariantCultureIgnoreCase);
             m_Files = files.ToDictionary(file => file.Name, StringComparer.InvariantCultureIgnoreCase);
         }
-
 
 
         protected override bool FileExistsByName(string name) => m_Files.ContainsKey(name);

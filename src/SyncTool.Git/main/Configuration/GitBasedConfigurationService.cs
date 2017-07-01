@@ -44,7 +44,7 @@ namespace SyncTool.Git.Configuration
                 var directory = Repository.GetConfigurationRootDirectory();
                 if (directory.DirectoryExists(s_SyncFolders))
                 {
-                    var configFiles = directory.GetDirectory(s_SyncFolders).Files.Where(f => f.HasExtensions(s_Json)).Cast<IReadableFile>();
+                    var configFiles = directory.GetDirectory(s_SyncFolders).Files.Where(f => f.HasExtension(s_Json)).Cast<IReadableFile>();
 
                     return configFiles.Select(file =>
                     {

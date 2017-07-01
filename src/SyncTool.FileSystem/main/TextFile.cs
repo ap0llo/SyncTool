@@ -5,12 +5,11 @@ namespace SyncTool.FileSystem
 {
     public class TextFile : FileSystemItem, IReadableFile
     {
-    
         public string Content { get; }
 
         public DateTime LastWriteTime { get; protected set; }
 
-        public long Length { get { throw new NotSupportedException(); } }
+        public long Length => throw new NotSupportedException();
 
 
         public TextFile(IDirectory parent, string name, string content) : base(parent, name)
@@ -38,9 +37,7 @@ namespace SyncTool.FileSystem
         public static TextFile Load(IDirectory parentDirectory, IReadableFile file)
         {
             if (file == null)
-            {
                 throw new ArgumentNullException(nameof(file));
-            }
 
             using (var reader = new StreamReader(file.OpenRead()))
             {

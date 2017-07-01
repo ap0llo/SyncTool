@@ -2,7 +2,7 @@
 using SyncTool.FileSystem.TestHelpers;
 using Xunit;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.FileSystem.Test
 {
     public class TextFileTest : DirectoryBasedTest
     {
@@ -11,7 +11,6 @@ namespace SyncTool.FileSystem
         {
             Assert.Throws<ArgumentNullException>(() => new TextFile(null, "Irrelevant", null));
         }
-
 
         [Fact]
         public void Loading_from_file_returns_expected_value()

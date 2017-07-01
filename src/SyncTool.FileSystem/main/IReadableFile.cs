@@ -7,8 +7,6 @@ namespace SyncTool.FileSystem
     /// </summary>
     public interface IReadableFile : IFile
     {
-
         Stream OpenRead();
-               
     }
 }

@@ -2,11 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using SyncTool.FileSystem.Local;
 using Xunit;
+
 using NativeDirectory = System.IO.Directory;
 using NativeFile = System.IO.File;
 
-namespace SyncTool.FileSystem.Local
+namespace SyncTool.FileSystem.Test.Local
 {
     public class LocalItemCreatorTest
     {
@@ -15,7 +17,6 @@ namespace SyncTool.FileSystem.Local
         const string s_File1 = "file1";
 
         readonly LocalItemCreator m_Instance;
-
 
 
         public LocalItemCreatorTest()
@@ -136,6 +137,7 @@ namespace SyncTool.FileSystem.Local
                 }
                 m_Content = content;                
             }
+
 
             public Stream OpenRead()
             {

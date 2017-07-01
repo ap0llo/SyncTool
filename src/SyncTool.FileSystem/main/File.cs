@@ -8,15 +8,16 @@ namespace SyncTool.FileSystem
 
         public long Length { get; set; }
 
-        public virtual IFile WithParent(IDirectory newParent)
-        {
-            return new File(newParent, this.Name) { LastWriteTime =  this.LastWriteTime, Length =  this.Length};
-        }
-
 
         public File(IDirectory parent , string name) : base(parent, name)
         {
         }
 
+        public virtual IFile WithParent(IDirectory newParent) 
+            => new File(newParent, Name)
+               {
+                   LastWriteTime = LastWriteTime,
+                   Length = this.Length
+               };
     }
 }

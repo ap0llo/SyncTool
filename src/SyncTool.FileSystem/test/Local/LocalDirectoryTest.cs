@@ -1,15 +1,15 @@
 ﻿using System.IO;
 using System.Linq;
+using SyncTool.FileSystem.Local;
 using Xunit;
 using NativeDirectory = System.IO.Directory;
 using NativeFile = System.IO.File;
 
-namespace SyncTool.FileSystem.Local
+namespace SyncTool.FileSystem.Test.Local
 {
     public class LocalDirectoryTest
     {
         readonly LocalItemCreator m_LocalItemCreator = new LocalItemCreator();
-
 
 
         [Fact]
@@ -114,7 +114,5 @@ namespace SyncTool.FileSystem.Local
 
             }
         }
-        
-       
     }
 }

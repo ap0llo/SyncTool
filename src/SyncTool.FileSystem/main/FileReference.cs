@@ -29,14 +29,10 @@ namespace SyncTool.FileSystem
         public bool Equals(IFileReference other)
         {
             if (other == null)
-            {
                 return false;
-            }
 
             if (ReferenceEquals(this, other))
-            {
                 return true;
-            }
 
             return StringComparer.InvariantCultureIgnoreCase.Equals(this.Path, other.Path) &&
                    LastWriteTime == other.LastWriteTime &&

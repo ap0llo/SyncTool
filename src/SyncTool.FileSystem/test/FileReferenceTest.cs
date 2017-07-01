@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.FileSystem.Test
 {
     public class FileReferenceTest
     {
@@ -12,13 +12,11 @@ namespace SyncTool.FileSystem
             Assert.Throws<FormatException>(() => new FileReference("  "));
         }
 
-
         [Fact]
         public void Constructor_throws_FormatException_if_path_contains_a_backslash()
         {
             Assert.Throws<FormatException>(() => new FileReference("name\\name"));
         }
-
 
         [Fact]
         public void Constructor_throws_FormatException_if_path_ends_with_directory_separator_char()
@@ -26,7 +24,6 @@ namespace SyncTool.FileSystem
             Assert.Throws<FormatException>(() => new FileReference("name/"));
             Assert.Throws<FormatException>(() => new FileReference("name/someOtherName/"));
         }
-
 
         [Fact]
         public void Constructor_throws_FormatException_if_path_consits_only_of_slashes()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SyncTool.FileSystem;
 
 namespace SyncTool.FileSystem
 {
@@ -11,15 +10,11 @@ namespace SyncTool.FileSystem
     {
         public bool Equals(IFile x, IFile y)
         {
-            if (Object.ReferenceEquals(x, y))
-            {
+            if (ReferenceEquals(x, y))
                 return true;
-            }
 
             if (x == null || y == null)
-            {
                 return false;
-            }
 
             return StringComparer.InvariantCultureIgnoreCase.Equals(x.Path, y.Path) &&
                    x.Length == y.Length &&

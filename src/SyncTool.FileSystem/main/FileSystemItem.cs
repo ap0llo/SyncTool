@@ -28,13 +28,10 @@ namespace SyncTool.FileSystem
         protected FileSystemItem(IDirectory parent, string name)
         {
             if (String.IsNullOrWhiteSpace(name))
-            {
                 throw new ArgumentException("Name must not be empty or whitespace", nameof(name));
-            }
 
             Parent = parent;
             Name = name;
         }
-
     }
 }

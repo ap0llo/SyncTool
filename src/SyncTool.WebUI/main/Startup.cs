@@ -12,8 +12,8 @@ using SyncTool.Synchronization.DI;
 using SyncTool.Common;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using SyncTool.FileSystem.FileSystem.DI;
 using SyncTool.Common.DI;
+using SyncTool.FileSystem.DI;
 
 namespace SyncTool.WebUI
 {

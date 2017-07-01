@@ -9,7 +9,6 @@ namespace SyncTool.FileSystem
     /// </summary>
     public static class SerializationExtensions
     {
-
         /// <summary>
         /// Serializes the object to JSON and writes it to the specified stream
         /// </summary>
@@ -33,7 +32,6 @@ namespace SyncTool.FileSystem
             jsonWriter.Flush();
             streamWriter.Flush();
         }
-        
 
         /// <summary>
         /// Reads a object of type <typeparamref name="T"/> serialized to JSON from the stream 
@@ -46,7 +44,5 @@ namespace SyncTool.FileSystem
 
             return serializer.Deserialize<T>(jsonReader);
         }
-
-
     }
 }

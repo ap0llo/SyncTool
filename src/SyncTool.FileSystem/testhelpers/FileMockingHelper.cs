@@ -13,7 +13,6 @@ namespace SyncTool.FileSystem.TestHelpers
 
         public static IFile GetMockedFile(string path, DateTime lastWriteTime, long length) => GetFileMock(path, lastWriteTime, length).Object;
 
-
         public static Mock<IFile> GetFileMock()
         {
             var mock = new Mock<IFile>(MockBehavior.Strict);
@@ -68,10 +67,5 @@ namespace SyncTool.FileSystem.TestHelpers
             mock.Setup(m => m.Path).Returns("/" + name + "/" + mock.Object.Name);
             return mock;
         }
-
-    }
-
-
-
-    
+    }    
 }

@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace SyncTool.FileSystem
 {
     public static class DirectoryExtensions
     {
-
         /// <summary>
         /// Gets the file with the specified path from the directory or null if the file does not exist
         /// </summary>
-        public static IFile GetFileOrDefault(this IDirectory directory, string path)
-        {
-            return directory.FileExists(path) ? directory.GetFile(path) : default(IFile);
-        }
+        public static IFile GetFileOrDefault(this IDirectory directory, string path) 
+            => directory.FileExists(path) ? directory.GetFile(path) : default(IFile);
 
 
         public static IEnumerable<IFile> EnumerateFilesRecursively(this IDirectory directory)
@@ -21,7 +16,6 @@ namespace SyncTool.FileSystem
             foreach (var file in directory.Files)
             {
                 yield return file;
-
             }
 
             foreach (var dir in directory.Directories)
@@ -32,7 +26,5 @@ namespace SyncTool.FileSystem
                 }
             }
         }
-
-
     }
 }

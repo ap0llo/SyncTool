@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Xunit;
 
-namespace SyncTool.FileSystem
+namespace SyncTool.FileSystem.Test
 {
     public class InMemoryDirectoryTest
     {
@@ -35,6 +35,7 @@ namespace SyncTool.FileSystem
                 }
             };
         }
+
 
         #region GetFile()
 
@@ -77,8 +78,6 @@ namespace SyncTool.FileSystem
             Assert.Throws<FormatException>(() => m_Root.GetFile("/"));
             Assert.Throws<FormatException>(() => m_Root.GetFile("//"));
         }
-
-
 
         [Fact]
         public void GetFile_returns_direct_child()
@@ -169,7 +168,6 @@ namespace SyncTool.FileSystem
             Assert.Throws<FormatException>(() => m_Root.FileExists("/"));
             Assert.Throws<FormatException>(() => m_Root.FileExists("//"));
         }
-
 
         [Fact]
         public void FileExists_returns_expected_result()
@@ -310,8 +308,6 @@ namespace SyncTool.FileSystem
             Assert.Throws<FormatException>(() => m_Root.DirectoryExists("name/someOtherName/"));
         }
 
-
-
         [Fact]
         public void DirectoryExists_returns_the_expected_result()
         {
@@ -352,7 +348,6 @@ namespace SyncTool.FileSystem
                 : base(parent, name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
             {
             }
-
 
             // Make Add() method public
             public new void Add(Func<IDirectory, IDirectory> createDirectory) => base.Add(createDirectory);
