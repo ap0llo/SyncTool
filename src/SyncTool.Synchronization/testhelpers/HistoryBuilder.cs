@@ -6,7 +6,7 @@ using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 
-namespace SyncTool.TestHelpers
+namespace SyncTool.Synchronization.TestHelpers
 {
     public class HistoryBuilder
     {

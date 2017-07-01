@@ -4,8 +4,9 @@ using System.Linq;
 using SyncTool.Configuration.Model;
 using SyncTool.Git.Common;
 using SyncTool.Common.Groups;
+using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization.State;
-using SyncTool.TestHelpers;
+using SyncTool.Synchronization.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Git.Synchronization.State

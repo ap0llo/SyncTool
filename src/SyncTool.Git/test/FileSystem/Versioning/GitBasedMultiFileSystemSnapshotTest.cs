@@ -1,4 +1,4 @@
-﻿using SyncTool.TestHelpers;
+﻿using SyncTool.Git.TestHelpers;
 
 namespace SyncTool.Git.FileSystem.Versioning
 {

@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Xunit;
 
-namespace SyncTool.TestHelpers
+namespace SyncTool.Common.TestHelpers
 {
     public static class DictionaryAssert
     {
@@ -11,6 +10,5 @@ namespace SyncTool.TestHelpers
             Assert.Equal(expected?.Keys, actual?.Keys);
             Assert.Equal(expected?.Values, actual?.Values);                          
         }
-
     }
 }

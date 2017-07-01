@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using SyncTool.FileSystem;
-using SyncTool.TestHelpers;
+using SyncTool.FileSystem.TestHelpers;
 using Xunit;
 
 namespace SyncTool.FileSystem.Versioning.MetaFileSystem

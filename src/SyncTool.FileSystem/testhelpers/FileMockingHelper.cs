@@ -1,8 +1,7 @@
 ﻿using System;
 using Moq;
-using SyncTool.FileSystem;
 
-namespace SyncTool.TestHelpers
+namespace SyncTool.FileSystem.TestHelpers
 {
     public static class FileMockingHelper
     {

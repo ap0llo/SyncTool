@@ -3,7 +3,7 @@ using System.Linq;
 using SyncTool.Common.Groups;
 using SyncTool.FileSystem;
 using SyncTool.Git.Common;
-using SyncTool.TestHelpers;
+using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization;
 using SyncTool.Synchronization.SyncActions;
 using Xunit;

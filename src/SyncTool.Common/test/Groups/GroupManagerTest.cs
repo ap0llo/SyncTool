@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using SyncTool.Common;
-using SyncTool.TestHelpers;
+using SyncTool.Common.TestHelpers;
 using Xunit;
 using Autofac;
 using System.IO;

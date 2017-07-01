@@ -3,7 +3,9 @@ using System.Linq;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Common.Groups;
-using SyncTool.TestHelpers;
+using SyncTool.FileSystem.TestHelpers;
+using SyncTool.Git.TestHelpers;
+using SyncTool.Synchronization.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Git.FileSystem.Versioning

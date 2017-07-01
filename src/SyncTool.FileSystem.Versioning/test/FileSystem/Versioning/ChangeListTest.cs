@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using SyncTool.TestHelpers;
 using Xunit;
 
 namespace SyncTool.FileSystem.Versioning

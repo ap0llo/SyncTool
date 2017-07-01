@@ -3,8 +3,8 @@ using System.Linq;
 using LibGit2Sharp;
 using SyncTool.Common.Services;
 using SyncTool.Git.Common;
-using SyncTool.TestHelpers;
 using SyncTool.FileSystem.Versioning;
+using SyncTool.Git.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Git.FileSystem.Versioning

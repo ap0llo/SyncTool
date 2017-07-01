@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.Common\test\SyncTool.Common.Test.csproj" />
+    <ProjectReference Include="..\..\SyncTool.Common\testhelpers\SyncTool.Common.TestHelpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Synchronization.State;
 using SyncTool.Synchronization.SyncActions;
 using Xunit;
 
-namespace SyncTool.TestHelpers
+namespace SyncTool.Synchronization.TestHelpers
 {
     public static class SyncAssert
     {    

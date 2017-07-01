@@ -1,7 +1,7 @@
 ﻿using System;
 using SyncTool.FileSystem.Local;
 
-namespace SyncTool.TestHelpers
+namespace SyncTool.FileSystem.TestHelpers
 {
     public abstract class DirectoryBasedTest : IDisposable
     {

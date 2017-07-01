@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using LibGit2Sharp;
-using SyncTool.TestHelpers;
+using SyncTool.FileSystem.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Git.Common

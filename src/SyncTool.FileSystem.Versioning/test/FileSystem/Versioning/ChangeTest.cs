@@ -1,5 +1,4 @@
 ﻿using System;
-using SyncTool.TestHelpers;
 using Xunit;
 
 namespace SyncTool.FileSystem.Versioning

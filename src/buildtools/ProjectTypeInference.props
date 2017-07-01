@@ -7,7 +7,9 @@
   <!-- Determine if the project is a test project -->
   <PropertyGroup>
     <IsTestProject>False</IsTestProject>
+    <IsTestHelperProject>False</IsTestHelperProject>
     <IsTestProject Condition="$(MSBuildProjectDirectory.EndsWith('test')) AND $(MSBuildProjectName.EndsWith('.Test'))">True</IsTestProject>    
+    <IsTestHelperProject Condition="$(MSBuildProjectDirectory.EndsWith('testhelpers')) AND $(MSBuildProjectName.EndsWith('.TestHelpers'))">True</IsTestHelperProject>    
   </PropertyGroup>
 
 </Project>

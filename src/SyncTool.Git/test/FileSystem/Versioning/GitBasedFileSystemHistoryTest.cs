@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using LibGit2Sharp;
 using SyncTool.FileSystem;
-using SyncTool.TestHelpers;
+using SyncTool.FileSystem.TestHelpers;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
 using Xunit;

@@ -5,9 +5,11 @@
     <BuildToolsDirectory>$(SrcRootDirectory)buildtools\</BuildToolsDirectory>
   </PropertyGroup>
 
+  <Import Project="$(BuildToolsDirectory)PackageVersions.props" />
   <Import Project="$(BuildToolsDirectory)ProjectTypeInference.props" />
   <Import Project="$(BuildToolsDirectory)OutputSettings.props" />
   <Import Project="$(BuildToolsDirectory)Dependencies.props" />
   <Import Project="$(BuildToolsDirectory)Dependencies.Test.props" Condition="$(IsTestProject)" />
+  <Import Project="$(BuildToolsDirectory)Dependencies.TestHelpers.props" Condition="$(IsTestHelperProject)" />
   
 </Project>

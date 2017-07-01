@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using SyncTool.TestHelpers;
+using SyncTool.Common.TestHelpers;
 using Xunit;
 using SyncTool.Common.Groups;
 

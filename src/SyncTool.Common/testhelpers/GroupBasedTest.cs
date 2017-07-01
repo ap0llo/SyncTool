@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Directory = System.IO.Directory;
+using System.Text.RegularExpressions;
 using SyncTool.Common;
 using Autofac;
 using SyncTool.Common.DI;
 using SyncTool.Common.Groups;
 using SyncTool.Utilities;
+using Directory = System.IO.Directory;
 
 
-namespace SyncTool.TestHelpers
+namespace SyncTool.Common.TestHelpers
 {
     /// <summary>
     /// Test base class for tests that require a <see cref="Group"/>

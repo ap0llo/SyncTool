@@ -4,7 +4,7 @@ using System.Linq;
 using SyncTool.Common.Groups;
 using SyncTool.Common.Services;
 using SyncTool.Git.Common;
-using SyncTool.TestHelpers;
+using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization.Conflicts;
 using Xunit;
 using SyncTool.Synchronization.State;

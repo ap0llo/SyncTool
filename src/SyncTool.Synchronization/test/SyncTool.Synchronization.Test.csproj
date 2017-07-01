@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\test\SyncTool.FileSystem.Versioning.Test.csproj" />
-    <ProjectReference Include="..\..\SyncTool.Configuration\test\SyncTool.Configuration.Test.csproj" />
+    <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\test\SyncTool.FileSystem.Versioning.Test.csproj" />    
   </ItemGroup>
 
   <ItemGroup>

@@ -3,9 +3,9 @@ using System.Linq;
 using LibGit2Sharp;
 using Moq;
 using SyncTool.FileSystem;
+using SyncTool.FileSystem.TestHelpers;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.Common;
-using SyncTool.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Git.FileSystem.Versioning

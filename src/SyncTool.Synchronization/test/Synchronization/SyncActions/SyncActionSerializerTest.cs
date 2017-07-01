@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
-using SyncTool.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Synchronization.SyncActions

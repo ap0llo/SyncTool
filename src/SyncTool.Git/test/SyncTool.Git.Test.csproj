@@ -7,7 +7,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SyncTool.Synchronization\test\SyncTool.Synchronization.Test.csproj" />    
+    <ProjectReference Include="..\..\SyncTool.Common\testhelpers\SyncTool.Common.TestHelpers.csproj" />
+    <ProjectReference Include="..\..\SyncTool.FileSystem\testhelpers\SyncTool.FileSystem.TestHelpers.csproj" />
+    <ProjectReference Include="..\..\SyncTool.Synchronization\testhelpers\SyncTool.Synchronization.TestHelpers.csproj" />    
   </ItemGroup>
 
 

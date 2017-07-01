@@ -8,8 +8,8 @@ using Xunit;
 using Autofac;
 using LibGit2Sharp;
 using SyncTool.Common.Groups;
+using SyncTool.FileSystem.TestHelpers;
 using SyncTool.Git.Common;
-using SyncTool.TestHelpers;
 
 namespace SyncTool.Git.Test.Common
 {

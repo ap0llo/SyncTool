@@ -2,13 +2,13 @@
 using LibGit2Sharp;
 using SyncTool.Common.Groups;
 using SyncTool.Git.Common;
-using SyncTool.TestHelpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SyncTool.FileSystem.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Git.Test.Common

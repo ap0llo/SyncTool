@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
-using SyncTool.FileSystem;
+﻿using System.Linq;
 using Xunit;
 
-namespace SyncTool.TestHelpers
+namespace SyncTool.FileSystem.TestHelpers
 {
     /// <summary>
     /// Provides assertions for SyncTool.FileSystem types 

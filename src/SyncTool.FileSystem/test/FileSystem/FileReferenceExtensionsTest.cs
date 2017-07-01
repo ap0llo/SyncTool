@@ -1,5 +1,5 @@
 ﻿using System;
-using SyncTool.TestHelpers;
+using SyncTool.FileSystem.TestHelpers;
 using Xunit;
 
 namespace SyncTool.FileSystem

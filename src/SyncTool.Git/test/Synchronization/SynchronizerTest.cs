@@ -7,11 +7,12 @@ using SyncTool.Configuration.Model;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.FileSystem.Versioning;
+using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization;
 using SyncTool.Synchronization.Conflicts;
 using SyncTool.Synchronization.State;
 using SyncTool.Synchronization.SyncActions;
-using SyncTool.TestHelpers;
+using SyncTool.Synchronization.TestHelpers;
 using Xunit;
 
 namespace SyncTool.Git.Synchronization
