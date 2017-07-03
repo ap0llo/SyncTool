@@ -1,20 +1,19 @@
 ﻿using System;
 using LibGit2Sharp;
-using SyncTool.FileSystem.Local;
+using SyncTool.Utilities;
 
 namespace SyncTool.Git.RepositoryAccess
 {
     public sealed class TemporaryWorkingDirectory : IDisposable
     {
-        readonly LocalItemCreator m_LocalItemCreator = new LocalItemCreator();
+        readonly TemporaryDirectory m_TempDirectory;
         readonly Repository m_Repository;
-        readonly DisposableLocalDirectoryWrapper m_TempDirectory;
         readonly string m_BranchName;
 
         /// <summary>
         /// Gets the location of the working directory in the file system
         /// </summary>
-        public string Location => m_TempDirectory.Directory.Location;
+        public string Location => m_TempDirectory.FullName;
 
         /// <summary>
         /// Gets whether there are any changes in the working directory 
@@ -23,14 +22,15 @@ namespace SyncTool.Git.RepositoryAccess
 
         
 
-        public TemporaryWorkingDirectory(string sourceUrl, string branchName)
+        public TemporaryWorkingDirectory(GitOptions options, string sourceUrl, string branchName)
         {
-            m_TempDirectory = m_LocalItemCreator.CreateTemporaryDirectory();
+            options = options ?? new GitOptions();
+            m_TempDirectory = new TemporaryDirectory(options.TempPath);
 
             m_BranchName = branchName;
 
-            Repository.Clone(sourceUrl, m_TempDirectory.Directory.Location, new CloneOptions {BranchName = branchName, Checkout = true});
-            m_Repository = new Repository(m_TempDirectory.Directory.Location);
+            Repository.Clone(sourceUrl, m_TempDirectory, new CloneOptions {BranchName = branchName, Checkout = true});
+            m_Repository = new Repository(m_TempDirectory);
         }
 
 
@@ -51,10 +51,7 @@ namespace SyncTool.Git.RepositoryAccess
         /// <summary>
         /// Pushes all changes to the repository the temporary working directory was cloned from
         /// </summary>
-        public void Push()
-        {            
-            m_Repository.Network.Push(m_Repository.Branches[m_BranchName]);
-        }
+        public void Push() => m_Repository.Network.Push(m_Repository.Branches[m_BranchName]);
 
         /// <summary>
         /// Disposes the temporary working directory

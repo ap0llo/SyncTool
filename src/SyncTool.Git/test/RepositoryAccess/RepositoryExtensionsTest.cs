@@ -24,7 +24,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
             string descandantId;
                    
             // create 2 commits on master branch
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_TempDirectory.Location, "master"))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, m_TempDirectory.Location, "master"))
             {
                 File.WriteAllText(Path.Combine(workingDirectory.Location, "file1.txt"), "Irrelevant");
                 ancestorId = workingDirectory.Commit("Commit1");
@@ -46,7 +46,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
             m_Repository.CreateBranch("branch2", m_Repository.Commits.Single());
 
             string ancestorId;
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_TempDirectory.Location, "branch1"))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, m_TempDirectory.Location, "branch1"))
             {
                 File.WriteAllText(Path.Combine(workingDirectory.Location, "file1.txt"), "Irrelevant");
                 ancestorId = workingDirectory.Commit("Commit1");                
@@ -54,7 +54,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
             }
         
             string descandantId;
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_TempDirectory.Location, "branch2"))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, m_TempDirectory.Location, "branch2"))
             {
                 File.WriteAllText(Path.Combine(workingDirectory.Location, "file1.txt"), "Irrelevant");
                 descandantId = workingDirectory.Commit("Commit2");
@@ -72,7 +72,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
             string descandantId;
 
             // create 2 commits on master branch
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_TempDirectory.Location, "master"))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, m_TempDirectory.Location, "master"))
             {
                 File.WriteAllText(Path.Combine(workingDirectory.Location, "file1.txt"), "Irrelevant");
                 ancestorId = workingDirectory.Commit("Commit1");

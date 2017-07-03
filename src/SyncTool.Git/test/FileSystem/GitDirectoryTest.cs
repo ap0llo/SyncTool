@@ -56,7 +56,7 @@ namespace SyncTool.Git.FileSystem
         {
             // arrange
             string commitId;
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_Repository.Directory.Location, "master"))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, m_Repository.Directory.Location, "master"))
             {                
                 var directory = new Directory(Path.GetFileName(workingDirectory.Location))
                 {

@@ -101,7 +101,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
         [Fact]
         public void Constructor_clones_the_repository_and_checks_out_a_working_copy()
         {
-            using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
+            using (var instance = new TemporaryWorkingDirectory(null, m_MasterRepository.Directory.Location, "master"))
             {
                 Assert.True(IODirectory.Exists(instance.Location));
                 Assert.True(IODirectory.Exists(Path.Combine(instance.Location, ".git")));
@@ -113,7 +113,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
         [Fact]
         public void Dispose_deletes_the_working_directory()
         {
-            var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master");
+            var instance = new TemporaryWorkingDirectory(null, m_MasterRepository.Directory.Location, "master");
             Assert.True(IODirectory.Exists(instance.Location));
             instance.Dispose();
             Assert.False(IODirectory.Exists(instance.Location));
@@ -122,7 +122,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
         [Fact]
         public void HasChanges_Returns_False_if_no_changes_were_made()
         {
-            using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
+            using (var instance = new TemporaryWorkingDirectory(null, m_MasterRepository.Directory.Location, "master"))
             {
                 Assert.False(instance.HasChanges);
             }
@@ -131,7 +131,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
         [Fact]
         public void HasChanges_Returns_True_if_a_file_was_modified()
         {
-            using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
+            using (var instance = new TemporaryWorkingDirectory(null, m_MasterRepository.Directory.Location, "master"))
             {
                 var filePath = Path.Combine(instance.Location, s_File1);
                 IOFile.WriteAllText(filePath, "Hello_World");
@@ -150,7 +150,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
         [Fact]
         public void HasChanges_Returns_True_if_a_file_was_deleted()
         {
-            using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
+            using (var instance = new TemporaryWorkingDirectory(null, m_MasterRepository.Directory.Location, "master"))
             {
                 IOFile.Delete(Path.Combine(instance.Location, "dummy.txt"));
 
@@ -162,7 +162,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
         [Fact]
         public void HasChanges_Returns_True_if_a_file_was_added()
         {
-            using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
+            using (var instance = new TemporaryWorkingDirectory(null, m_MasterRepository.Directory.Location, "master"))
             {
                 CreateFile(instance, "file2.txt");
 
@@ -174,7 +174,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
         [Fact]
         public void HasChanges_Returns_False_after_Commit()
         {
-            using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
+            using (var instance = new TemporaryWorkingDirectory(null, m_MasterRepository.Directory.Location, "master"))
             {
                 CreateFile(instance, "file2.txt");
 
@@ -187,7 +187,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
         [Fact]
         public void Commit_creates_a_new_commit()
         {
-            using (var instance = new TemporaryWorkingDirectory(m_MasterRepository.Directory.Location, "master"))
+            using (var instance = new TemporaryWorkingDirectory(null, m_MasterRepository.Directory.Location, "master"))
             {
                 CreateFile(instance, "file2.txt");
 
@@ -206,7 +206,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
         public void Push_transfers_changes_to_master_directory()
         {
             var fileName = Path.GetRandomFileName();
-            using (var instance = new TemporaryWorkingDirectory(m_BareMasterRepository.Directory.Location, "master"))
+            using (var instance = new TemporaryWorkingDirectory(null, m_BareMasterRepository.Directory.Location, "master"))
             {
                 CreateFile(instance, fileName);
 
@@ -215,7 +215,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
             }
             
             // clone repo again to check if the file we created shows up in new clone
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_BareMasterRepository.Directory.Location, "master"))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, m_BareMasterRepository.Directory.Location, "master"))
             {
                 Assert.True(IOFile.Exists(Path.Combine(workingDirectory.Location, fileName)));
             }

@@ -346,7 +346,7 @@ namespace SyncTool.Git.Test.FileSystem.Versioning
             var snapshot1 = m_Instance.CreateSnapshot(state1);
 
             // create unrelated change between two snapshots
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_Repository.Info.Path, m_Instance.Id))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, m_Repository.Info.Path, m_Instance.Id))
             {
                 NativeFile.WriteAllText(Path.Combine(workingDirectory.Location, "foo"), "Hello World");
                 workingDirectory.Commit();
@@ -795,7 +795,7 @@ namespace SyncTool.Git.Test.FileSystem.Versioning
             var snapshot1 = m_Instance.CreateSnapshot(state1);
 
             // create unrelated change between two snapshots
-            using (var workingDirectory = new TemporaryWorkingDirectory(m_Repository.Info.Path, m_Instance.Id))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, m_Repository.Info.Path, m_Instance.Id))
             {
                 NativeFile.WriteAllText(Path.Combine(workingDirectory.Location, "foo"), "Hello World");
                 workingDirectory.Commit();

@@ -469,7 +469,7 @@ namespace SyncTool.Git.Test.RepositoryAccess.Transactions
         /// </summary>
         protected void AddFile(IGitTransaction transaction, string branchName, string fileName)
         {
-            using (var workingDirectory = new TemporaryWorkingDirectory(transaction.LocalPath, branchName))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, transaction.LocalPath, branchName))
             {
                 var path = Path.Combine(workingDirectory.Location, fileName);
                 File.WriteAllText(path, "Some file content");

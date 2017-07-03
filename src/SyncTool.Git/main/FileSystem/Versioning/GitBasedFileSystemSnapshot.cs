@@ -46,7 +46,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             var branch = repository.GetBranch(branchName);
 
             string commitId;
-            using (var workingRepository = new TemporaryWorkingDirectory(repository.Info.Path, branch.FriendlyName))
+            using (var workingRepository = new TemporaryWorkingDirectory(null, repository.Info.Path, branch.FriendlyName))
             {                 
                 var metaDirectory = metaFileSystemCreator.CreateMetaDirectory(rootDirectory);
                

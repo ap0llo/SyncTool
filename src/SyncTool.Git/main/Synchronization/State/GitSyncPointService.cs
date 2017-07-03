@@ -114,7 +114,7 @@ namespace SyncTool.Git.Synchronization.State
                 d => new SyncPointStateFile(d, state)
             };
 
-            using (var workingDirectory = new TemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, Repository.Value.Info.Path, BranchName.ToString()))
             {
                 var localItemCreator = new LocalItemCreator();
                 localItemCreator.CreateDirectory(directory, workingDirectory.Location);

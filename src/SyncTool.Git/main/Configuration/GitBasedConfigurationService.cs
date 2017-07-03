@@ -76,7 +76,7 @@ namespace SyncTool.Git.Configuration
             }            
 
             // add config file for the sync folder to the configuration directory
-            using (var workingDirectory = new TemporaryWorkingDirectory(Repository.Value.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, Repository.Value.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
             {
                 var syncFoldersPath = Path.Combine(workingDirectory.Location, s_SyncFolders);
 
@@ -109,7 +109,7 @@ namespace SyncTool.Git.Configuration
                 throw new SyncFolderNotFoundException($"A sync folder named '{folder.Name}' could not be found");
             }
 
-            using (var workingDirectory = new TemporaryWorkingDirectory(Repository.Value.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
+            using (var workingDirectory = new TemporaryWorkingDirectory(null, Repository.Value.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
             {
                 var syncFoldersPath = Path.Combine(workingDirectory.Location, s_SyncFolders);
                 
