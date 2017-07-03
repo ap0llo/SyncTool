@@ -12,7 +12,7 @@ namespace SyncTool.Cli.Installation
     {
         const string s_LastUpdateTimeStampFileName = "lastUpdate.timestamp";
 
-        readonly UpdateConfiguration m_Configuration;
+        readonly UpdateOptions m_Options;
         Task m_UpdateTask;
 
 
@@ -21,9 +21,9 @@ namespace SyncTool.Cli.Installation
         public string Error { get; private set; }
 
 
-        public Updater([NotNull] UpdateConfiguration configuration)
+        public Updater([NotNull] UpdateOptions options)
         {
-            m_Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));            
+            m_Options = options ?? throw new ArgumentNullException(nameof(options));            
         }
 
         public void Start()
@@ -69,20 +69,20 @@ namespace SyncTool.Cli.Installation
         bool CanUpdate()
         {
             return ApplicationInfo.IsInstalled &&
-                   m_Configuration.Enable &&
-                   m_Configuration.Source != UpdateSource.NotConfigured &&
-                   !String.IsNullOrEmpty(m_Configuration.Path);
+                   m_Options.Enable &&
+                   m_Options.Source != UpdateSource.NotConfigured &&
+                   !String.IsNullOrEmpty(m_Options.Path);
         }
         
         async Task StartUpdateTask()
         {
             var lastUpdateTime = GetLastUpdateTime();
-            if (lastUpdateTime.HasValue && (DateTime.UtcNow - lastUpdateTime.Value) < m_Configuration.Interval)
+            if (lastUpdateTime.HasValue && (DateTime.UtcNow - lastUpdateTime.Value) < m_Options.Interval)
             {
                 return;
             }
             
-            switch (m_Configuration.Source)
+            switch (m_Options.Source)
             {
                 case UpdateSource.NotConfigured:
                     throw new InvalidOperationException();
@@ -106,7 +106,7 @@ namespace SyncTool.Cli.Installation
 
         async Task StartFileSystemUpdateTask()
         {        
-            using (var updateManager = new UpdateManager(m_Configuration.Path))
+            using (var updateManager = new UpdateManager(m_Options.Path))
             {                
                 await updateManager.UpdateApp();                
             }
@@ -115,8 +115,8 @@ namespace SyncTool.Cli.Installation
         async Task StartGitHubUpdateTask()
         {
             using (var updateManager = await UpdateManager.GitHubUpdateManager(
-                repoUrl: m_Configuration.Path, 
-                prerelease:m_Configuration.InstallPreReleaseVersions))
+                repoUrl: m_Options.Path, 
+                prerelease:m_Options.InstallPreReleaseVersions))
             {
                 await updateManager.UpdateApp();
             }

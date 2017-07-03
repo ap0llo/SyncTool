@@ -18,8 +18,8 @@ namespace SyncTool.Cli.Configuration
         {
             var root = GetConfigurationRoot();
 
-            var updateConfiguration = root.GetSection(s_UpdateSectionName).Get<UpdateConfiguration>();
-            updateConfiguration = updateConfiguration ?? new UpdateConfiguration();
+            var updateConfiguration = root.GetSection(s_UpdateSectionName).Get<UpdateOptions>();
+            updateConfiguration = updateConfiguration ?? new UpdateOptions();
 
             containerBuilder.RegisterInstance(updateConfiguration).AsSelf();
         }

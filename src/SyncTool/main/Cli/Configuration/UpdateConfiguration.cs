@@ -2,7 +2,7 @@
 
 namespace SyncTool.Cli.Configuration
 {
-    class UpdateConfiguration
+    class UpdateOptions
     {
         public bool Enable { get; set; } = false;
 
