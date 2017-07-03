@@ -14,7 +14,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         readonly IHistoryService m_HistoryService;
 
 
-        public GitBasedMultiFileSystemHistoryService(GitRepository repository, IHistoryService historyService) : base(repository)
+        public GitBasedMultiFileSystemHistoryService(GitRepository repository, WorkingDirectoryFactory workingDirectoryFactory, IHistoryService historyService) : base(repository, workingDirectoryFactory)
         {
             m_HistoryService = historyService ?? throw new ArgumentNullException(nameof(historyService));
         }
@@ -66,7 +66,7 @@ namespace SyncTool.Git.FileSystem.Versioning
                 Repository.Value.CreateBranch(BranchName, Repository.Value.GetInitialCommit());
             }
 
-            return GitBasedMultiFileSystemSnapshot.Create(Repository.Value, BranchName, m_HistoryService);
+            return GitBasedMultiFileSystemSnapshot.Create(WorkingDirectoryFactory, Repository.Value, BranchName, m_HistoryService);
         }
 
         public string[] GetChangedFiles(string toId)

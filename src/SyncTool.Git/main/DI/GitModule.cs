@@ -31,6 +31,7 @@ namespace SyncTool.Git.DI
             builder.RegisterType<GitGroupValidator>().As<IGroupValidator>();
             builder.RegisterType<GitGroupInitializer>().As<IGroupInitializer>();
             builder.RegisterType<GitBasedFileSystemHistoryFactory>().AsSelf().InstancePerMatchingLifetimeScope(Scope.Group);
+            builder.RegisterType<WorkingDirectoryFactory>().AsSelf();
 
             base.Load(builder);
         }        

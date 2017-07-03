@@ -63,7 +63,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
         }
 
 
-        public GitConflictService(GitRepository repository) : base(repository)
+        public GitConflictService(GitRepository repository, WorkingDirectoryFactory workingDirectoryFactory) : base(repository, workingDirectoryFactory)
         {
         }
 
@@ -100,7 +100,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
             }
 
 
-            using (var workingDirectory = new TemporaryWorkingDirectory(null, Repository.Value.Info.Path, BranchName.ToString()))
+            using (var workingDirectory = WorkingDirectoryFactory.CreateTemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
             {                
                 var localItemCreator = new LocalItemCreator();
                 localItemCreator.CreateDirectoryInPlace(createdRoot, workingDirectory.Location);
@@ -145,7 +145,7 @@ namespace SyncTool.Git.Synchronization.Conflicts
 
 
             // delete conflict info files
-            using (var workingDirectory = new TemporaryWorkingDirectory(null, Repository.Value.Info.Path, BranchName.ToString()))
+            using (var workingDirectory = WorkingDirectoryFactory.CreateTemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
             {
                 var localDirectory= new LocalDirectory(null, workingDirectory.Location);
 

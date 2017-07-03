@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using LibGit2Sharp;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
@@ -11,6 +12,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 {
     public class GitBasedFileSystemHistory : IFileSystemHistory
     {
+        readonly WorkingDirectoryFactory m_WorkingDirectoryFactory;
         public const string BranchNamePrefix = "filesystemHistory";
 
         readonly Repository m_Repository;
@@ -47,8 +49,9 @@ namespace SyncTool.Git.FileSystem.Versioning
         public IEnumerable<IFileSystemSnapshot> Snapshots => m_Snapshots.Value.Values;
 
 
-        public GitBasedFileSystemHistory(Repository repository, BranchName branchName)
+        public GitBasedFileSystemHistory([NotNull] WorkingDirectoryFactory workingDirectoryFactory, [NotNull] Repository repository, [NotNull] BranchName branchName)
         {
+            m_WorkingDirectoryFactory = workingDirectoryFactory ?? throw new ArgumentNullException(nameof(workingDirectoryFactory));
             m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
             var branch = repository.GetBranch(branchName ?? throw new ArgumentNullException(nameof(branchName)));
             m_BranchName = BranchName.Parse(branch.FriendlyName);
@@ -67,7 +70,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
             var snapshots = m_Snapshots.Value;
 
-            var snapshot = GitBasedFileSystemSnapshot.Create(m_Repository, m_BranchName, this, fileSystemState);
+            var snapshot = GitBasedFileSystemSnapshot.Create(m_WorkingDirectoryFactory, m_Repository, m_BranchName, this, fileSystemState);
 
             if (!snapshots.ContainsKey(snapshot.Id))
             {

@@ -14,6 +14,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using SyncTool.Common.DI;
 using SyncTool.FileSystem.DI;
+using SyncTool.Git;
 
 namespace SyncTool.WebUI
 {
@@ -49,6 +50,7 @@ namespace SyncTool.WebUI
             builder.RegisterModule<CommonApplicationScopeModule>();
             builder.RegisterModule<FileSystemModule>();
             builder.RegisterModule<GitModuleFactoryModule>();
+            builder.RegisterInstance(new GitOptions()).AsSelf();
             builder.Populate(services);
 
             ApplicationContainer = builder.Build();

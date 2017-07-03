@@ -139,7 +139,7 @@ namespace SyncTool.Git.Test.Synchronization.Conflicts
             m_Service.AddItems(conflict1, conflict2);
             Assert.Equal(commitCount +1 , m_Repository.Value.GetAllCommits().Count());
 
-            var newServiceInstance = new GitConflictService(m_Repository);
+            var newServiceInstance = new GitConflictService(m_Repository, new WorkingDirectoryFactory(new GitOptions()));
             Assert.Equal(2, newServiceInstance.Items.Count());            
         }
 

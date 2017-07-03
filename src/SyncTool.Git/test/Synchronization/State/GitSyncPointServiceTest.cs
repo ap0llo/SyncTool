@@ -107,7 +107,7 @@ namespace SyncTool.Git.Test.Synchronization.State
 
             // create another service instance that needs to load the state from disk
 
-            var service  = new GitSyncPointService(m_Group.GetService<GitRepository>());
+            var service  = new GitSyncPointService(m_Group.GetService<GitRepository>(), new WorkingDirectoryFactory(new GitOptions()));
 
             Assert.Equal(2, service.Items.Count());
             Assert.True(service.ItemExists(1));

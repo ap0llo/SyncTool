@@ -241,7 +241,7 @@ namespace SyncTool.Git.Test.Synchronization.SyncActions
 
             m_Service.AddItems(action1, action2);
 
-            var newService = new GitSyncActionService(m_Repository);
+            var newService = new GitSyncActionService(m_Repository, new WorkingDirectoryFactory(new GitOptions()));
 
             Assert.Equal(2, newService[SyncActionState.Active].Count());
             Assert.Single(newService[SyncActionState.Active, action1.Path]);

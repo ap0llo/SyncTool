@@ -38,7 +38,7 @@ namespace SyncTool.Git.FileSystem.Versioning
         }
 
         
-        public static GitBasedFileSystemSnapshot Create(Repository repository, BranchName branchName, IFileSystemHistory history, IDirectory rootDirectory)
+        public static GitBasedFileSystemSnapshot Create(WorkingDirectoryFactory workingDirectoryFactory, Repository repository, BranchName branchName, IFileSystemHistory history, IDirectory rootDirectory)
         {
             var directoryCreator = new LocalItemCreator();
             var metaFileSystemCreator = new FileSystemToMetaFileSystemConverter();
@@ -46,7 +46,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             var branch = repository.GetBranch(branchName);
 
             string commitId;
-            using (var workingRepository = new TemporaryWorkingDirectory(null, repository.Info.Path, branch.FriendlyName))
+            using (var workingRepository = workingDirectoryFactory.CreateTemporaryWorkingDirectory(repository.Info.Path, branch.FriendlyName))
             {                 
                 var metaDirectory = metaFileSystemCreator.CreateMetaDirectory(rootDirectory);
                

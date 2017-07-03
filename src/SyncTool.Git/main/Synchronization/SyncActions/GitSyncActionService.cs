@@ -127,7 +127,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
         }
 
 
-        public GitSyncActionService(GitRepository repository) : base(repository)
+        public GitSyncActionService(GitRepository repository, WorkingDirectoryFactory workingDirectoryFactory) : base(repository, workingDirectoryFactory)
         {
         }
 
@@ -166,7 +166,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
 
 
             // store the actions
-            using (var workingDir = new TemporaryWorkingDirectory(null, Repository.Value.Info.Path, BranchName.ToString()))
+            using (var workingDir = WorkingDirectoryFactory.CreateTemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
             {               
                 // create the actions on disk
                 var localItemCreator = new LocalItemCreator();
@@ -190,7 +190,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             // make sure all to be updated actions exist (no need to check the state, this property might have changed)
             AssertSyncActionsExist(syncActions, false);
             
-            using (var workingDir = new TemporaryWorkingDirectory(null, Repository.Value.Info.Path, BranchName.ToString()))
+            using (var workingDir = WorkingDirectoryFactory.CreateTemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
             {
                 var root = new Directory(null, "root");
 
@@ -236,7 +236,7 @@ namespace SyncTool.Git.Synchronization.SyncActions
             // make sure all to be updated actions exist (otherwise we cannot remove them)
             AssertSyncActionsExist(syncActions, true);
 
-            using (var workingDir = new TemporaryWorkingDirectory(null, Repository.Value.Info.Path, BranchName.ToString()))
+            using (var workingDir = WorkingDirectoryFactory.CreateTemporaryWorkingDirectory(Repository.Value.Info.Path, BranchName.ToString()))
             {
                 var localDirectory = new LocalDirectory(null, workingDir.Location);
 

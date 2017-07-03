@@ -47,7 +47,7 @@ namespace SyncTool.Git.Test.FileSystem.Versioning
 
             using (var repository = new Repository(m_TempDirectory.Location))
             {
-                var snapshot = GitBasedFileSystemSnapshot.Create(repository, new BranchName(branchPrefix, branchName), new Mock<IFileSystemHistory>().Object, directory);
+                var snapshot = GitBasedFileSystemSnapshot.Create(new WorkingDirectoryFactory(new GitOptions()), repository, new BranchName(branchPrefix, branchName), new Mock<IFileSystemHistory>().Object, directory);
 
                 FileSystemAssert.DirectoryEqual(directory, snapshot.RootDirectory);
             }

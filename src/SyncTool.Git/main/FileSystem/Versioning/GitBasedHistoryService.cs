@@ -47,7 +47,8 @@ namespace SyncTool.Git.FileSystem.Versioning
         }
 
 
-        public GitBasedHistoryService(GitRepository repository, [NotNull] GitBasedFileSystemHistoryFactory historyFactory) : base(repository)
+        public GitBasedHistoryService(GitRepository repository, WorkingDirectoryFactory workingDirectoryFactory, [NotNull] GitBasedFileSystemHistoryFactory historyFactory) 
+            : base(repository, workingDirectoryFactory)
         {
             m_HistoryFactory = historyFactory ?? throw new ArgumentNullException(nameof(historyFactory));
         }

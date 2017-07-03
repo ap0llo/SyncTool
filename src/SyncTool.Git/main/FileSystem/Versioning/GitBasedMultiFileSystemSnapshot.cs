@@ -64,14 +64,14 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         public static bool IsSnapshot(Commit commit) => commit.Tree[s_SnapshotDirectoryName] != null;
 
-        public static GitBasedMultiFileSystemSnapshot Create(Repository repository, BranchName branchName, IHistoryService historyService)
+        public static GitBasedMultiFileSystemSnapshot Create(WorkingDirectoryFactory workingDirectoryFactory, Repository repository, BranchName branchName, IHistoryService historyService)
         {
             var directoryCreator = new LocalItemCreator();            
 
             var branch = repository.GetBranch(branchName);
 
             string commitId;
-            using (var workingRepository = new TemporaryWorkingDirectory(null, repository.Info.Path, branch.FriendlyName))
+            using (var workingRepository = workingDirectoryFactory.CreateTemporaryWorkingDirectory(repository.Info.Path, branch.FriendlyName))
             {
 
                 var snapshotDirectory = new Directory(null, s_SnapshotDirectoryName);

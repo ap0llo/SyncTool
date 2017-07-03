@@ -100,13 +100,13 @@ namespace SyncTool.Git.Test.Configuration
             using (var group = CreateGroup())
             {
                 var repository = group.GetService<GitRepository>();
-                var service = new GitBasedConfigurationService(repository);
+                var service = new GitBasedConfigurationService(repository, new WorkingDirectoryFactory(new GitOptions()));
                 service.AddItem(folder);
 
                 folder.Path = "UpdatedPath";
                 service.UpdateItem(folder);
 
-                var service2 = new GitBasedConfigurationService(repository);
+                var service2 = new GitBasedConfigurationService(repository, new WorkingDirectoryFactory(new GitOptions()));
                 Assert.Equal(folder.Path, service2["SyncFolder"].Path);
             }
 
@@ -118,7 +118,7 @@ namespace SyncTool.Git.Test.Configuration
             using (var group = CreateGroup())
             {
                 var repository = group.GetService<GitRepository>();
-                var service = new GitBasedConfigurationService(repository);                
+                var service = new GitBasedConfigurationService(repository, new WorkingDirectoryFactory(new GitOptions()));                
 
                 // ARRANGE
                 {
