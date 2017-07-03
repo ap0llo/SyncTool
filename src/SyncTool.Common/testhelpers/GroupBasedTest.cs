@@ -12,7 +12,7 @@ namespace SyncTool.Common.TestHelpers
     /// <summary>
     /// Test base class for tests that require a <see cref="Group"/>
     /// </summary>
-    public abstract class GroupBasedTest<TModuleFactoryModule> where TModuleFactoryModule : Module, new()
+    public abstract class GroupBasedTest
     {
         protected readonly string m_RemotePath;
         readonly TemporaryDirectory m_TempDirectory;        
@@ -33,11 +33,13 @@ namespace SyncTool.Common.TestHelpers
             Directory.CreateDirectory(groupSettingsDirectoy);
 
             var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule<CommonApplicationScopeModule>();
-            containerBuilder.RegisterModule<TModuleFactoryModule>();
+            containerBuilder.RegisterModule<CommonApplicationScopeModule>();            
             
             containerBuilder.RegisterInstance(new JsonGroupSettingsProvider(groupSettingsDirectoy)).As<IGroupSettingsProvider>();
-            containerBuilder.RegisterInstance(new SingleDirectoryGroupDirectoryPathProvider(groupStorageRoot)).As<IGroupDirectoryPathProvider>();
+            containerBuilder.RegisterInstance(new SingleDirectoryGroupDirectoryPathProvider(groupStorageRoot)).As<IGroupDirectoryPathProvider>();            
+
+
+            RegisterServices(containerBuilder);
 
             m_Container = containerBuilder.Build();
             m_ApplicationScope = m_Container.BeginLifetimeScope(Scope.Application);
@@ -60,5 +62,8 @@ namespace SyncTool.Common.TestHelpers
 
             m_TempDirectory.Dispose();      
         }
+
+
+        protected abstract void RegisterServices(ContainerBuilder containerBuilder);
     }
 }
