@@ -2,7 +2,7 @@
 
 namespace SyncTool.Cli.Configuration
 {
-    class UpdateOptions
+    sealed class UpdateOptions
     {
         public bool Enable { get; set; } = false;
 
@@ -13,6 +13,5 @@ namespace SyncTool.Cli.Configuration
         public bool InstallPreReleaseVersions { get; set; } = false;
 
         public TimeSpan Interval { get; set; } = TimeSpan.FromHours(1);
-    }
-    
+    }    
 }

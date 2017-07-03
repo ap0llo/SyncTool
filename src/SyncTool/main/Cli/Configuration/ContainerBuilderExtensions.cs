@@ -3,6 +3,7 @@ using System.Reflection;
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using SyncTool.Cli.Installation;
+using SyncTool.Git;
 
 namespace SyncTool.Cli.Configuration
 {
@@ -10,7 +11,8 @@ namespace SyncTool.Cli.Configuration
     {
         public const string ConfigFileName = "config.json";
         public const string DebugConfigFileName = "config.Debug.json";
-        const string s_UpdateSectionName = "Update";
+        const string s_UpdateOptionsSectionName = "Update";
+        const string s_GitOptionsSectionName = "Git";
 
 
 
@@ -18,10 +20,8 @@ namespace SyncTool.Cli.Configuration
         {
             var root = GetConfigurationRoot();
 
-            var updateConfiguration = root.GetSection(s_UpdateSectionName).Get<UpdateOptions>();
-            updateConfiguration = updateConfiguration ?? new UpdateOptions();
-
-            containerBuilder.RegisterInstance(updateConfiguration).AsSelf();
+            RegisterSection<UpdateOptions>(root, containerBuilder, s_UpdateOptionsSectionName);
+            RegisterSection<GitOptions>(root, containerBuilder, s_GitOptionsSectionName);            
         }
 
         static IConfigurationRoot GetConfigurationRoot()
@@ -34,6 +34,14 @@ namespace SyncTool.Cli.Configuration
             return configuration;
         }
 
-       
+        static void RegisterSection<T>(IConfigurationRoot configurationRoot, ContainerBuilder containerBuilder, string sectionName) where T : class, new()
+        {
+            var options = configurationRoot.GetSection(sectionName).Get<T>();
+            options = options ?? new T();
+
+            containerBuilder.RegisterInstance(options).AsSelf();
+        }
+
+
     }
 }

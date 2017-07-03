@@ -9,5 +9,9 @@
     // Format: (D).hh:mm:ss
     // defaut: 1 hour
     "Interval": "01:00:00"
+  },
+
+  "Git": {
+    // "TempPath" : "C:\Some Path"
   }
 }
