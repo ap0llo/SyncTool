@@ -49,14 +49,14 @@
 
     <!-- Run nuget pack -->
     <Target Name="_RunNuget" 
-            DependsOnTargets="_CreateNuspec">
+            DependsOnTargets="_CreateNuspec;_DetermineSetupNuGetVersion">
 
         <PropertyGroup>
-            <_NugetPath>$(NuGetPackageRoot)Nuget.CommandLine\$(NugetVersion)\tools\nuget.exe</_NugetPath>
+            <_NugetPath>$(NuGetPackageRoot)Nuget.CommandLine\$(SetupNuGetVersion)\tools\nuget.exe</_NugetPath>
         </PropertyGroup>
 
-        <Error Text="Nuget version could not be determined. Make sure Nuget.Commandline package is installed and the 'NugetVersion' variable ist set"
-               Condition=" '$(NugetVersion)' == ''"/>        
+        <Error Text="Nuget version could not be determined. Make sure Nuget.Commandline package is installed"
+               Condition=" '$(SetupNuGetVersion)' == ''"/>        
         <Error Text="nuget.exe could not be found. Make sure the 'Nuget.Commandline' package is installed. Path: '$(_NugetPath)'"
                Condition="!Exists('$(_NugetPath)')" />        
 
@@ -65,15 +65,41 @@
     </Target>
 
 
+    <Target Name="_DetermineSetupNuGetVersion" Condition="'$(SetupNugetVersion)' == ''">
+        <ItemGroup>
+            <Package-Nuget-CommandLine Include="@(PackageReference)" Condition=" '%(Identity)' == 'Nuget.CommandLine' " />            
+        </ItemGroup>
+
+        <CreateProperty Value="%(Package-Nuget-CommandLine.Version)">  
+            <Output TaskParameter="Value" PropertyName="SetupNuGetVersion" />  
+        </CreateProperty>     
+
+        <Message Text="Automatically detected Nuget version: $(SetupNugetVersion)" />     
+    </Target>
+
+
+    <Target Name="_DetermineSetupSquirrelVersion" Condition="'$(SetupSquirrelVersion)' == ''">
+        <ItemGroup>
+            <Package-Squirrel-Windows Include="@(PackageReference)" Condition=" '%(Identity)' == 'Squirrel.Windows' " />            
+        </ItemGroup>
+        
+        <CreateProperty Value="%(Package-Squirrel-Windows.Version)">  
+            <Output TaskParameter="Value" PropertyName="SetupSquirrelVersion" />  
+        </CreateProperty>          
+
+        <Message Text="Automatically detected Squirrel.Windows version: $(SetupSquirrelVersion)" />     
+    </Target>
+
+
     <!-- Build a squirrel setup package from the nuget package we created -->
-    <Target Name="_RunSquirrel">
+    <Target Name="_RunSquirrel" DependsOnTargets="_DetermineSetupSquirrelVersion">
 
         <PropertyGroup>
-            <_SquirrelPath>$(NuGetPackageRoot)Squirrel.Windows\$(SquirrelVersion)\tools\Squirrel.exe</_SquirrelPath>
+            <_SquirrelPath>$(NuGetPackageRoot)Squirrel.Windows\$(SetupSquirrelVersion)\tools\Squirrel.exe</_SquirrelPath>
         </PropertyGroup>
 
-        <Error Text="Squirrel version could not be determined. Make sure Squirrel.Windows is installed and teh SquirrelVersion variable ist set"
-               Condition=" '$(SquirrelVersion)' == ''"/>        
+        <Error Text="Squirrel version could not be determined. Make sure Squirrel.Windows is installed "
+               Condition=" '$(SetupSquirrelVersion)' == ''"/>        
         <Error Text="Squirrel.exe could not be found. Make sure Squirrel.Windows is installed. Path: '$(_SquirrelPath)'"
                Condition="!Exists('$(_SquirrelPath)')" />        
 
