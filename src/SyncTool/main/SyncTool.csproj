@@ -22,7 +22,7 @@
   
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.0.275-beta" />
-    <PackageReference Include="Squirrel.Windows" Version="1.7.5" /> 
+    <PackageReference Include="Squirrel.Windows" Version="1.7.7" /> 
     <PackageReference Include="Nuget.Commandline" Version="4.1.0" /> 
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
