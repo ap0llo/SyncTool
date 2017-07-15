@@ -6,7 +6,6 @@
 
   <!-- Nuget package properties -->
   <PropertyGroup>
-    <PackageId>$(MsBuildProjectName)</PackageId>
     <Authors>Andreas Gruenwald</Authors>
     <Description>SyncTool Command Line</Description>        
   </PropertyGroup>
@@ -27,6 +26,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="1.1.2" />
+    <PackageReference Include="Grynwald.Utilities.Squirrel.Build" Version="1.0.15" />
   </ItemGroup>
   
   <ItemGroup>
@@ -34,8 +34,6 @@
     <None Update="config.Debug.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   
-  <Import Project="$(BuildToolsDirectory)Setup.targets" />
-
   <Target Name="DetermineSetupInputFiles">
     <ItemGroup>
       <SetupInputFiles Include="$(OutDir)**\*.dll" />
