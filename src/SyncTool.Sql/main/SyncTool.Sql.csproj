@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\SyncTool.Synchronization\main\SyncTool.Synchronization.csproj" />    
+  </ItemGroup>
+
+</Project>
