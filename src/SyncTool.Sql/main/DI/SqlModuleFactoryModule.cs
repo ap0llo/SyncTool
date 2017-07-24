@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using SyncTool.Common.Groups;
-using SyncTool.Sql.Common.Groups;
 
 namespace SyncTool.Sql.DI
 {

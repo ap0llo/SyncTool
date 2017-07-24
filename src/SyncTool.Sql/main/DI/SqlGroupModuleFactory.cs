@@ -1,8 +1,7 @@
 ﻿using Autofac;
 using SyncTool.Common.Groups;
-using SyncTool.Sql.DI;
 
-namespace SyncTool.Sql.Common.Groups
+namespace SyncTool.Sql.DI
 {
     class SqlGroupModuleFactory : IGroupModuleFactory
     {

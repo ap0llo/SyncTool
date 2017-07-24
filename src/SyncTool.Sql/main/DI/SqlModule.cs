@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using SyncTool.Common;
 
 namespace SyncTool.Sql.DI
 {
