@@ -5,15 +5,15 @@ using JetBrains.Annotations;
 using LibGit2Sharp;
 using SyncTool.Common.Services;
 using SyncTool.FileSystem.Versioning;
-using SyncTool.Git.Common;
-using SyncTool.Git.Common.Services;
 using SyncTool.Git.RepositoryAccess;
 
 
 namespace SyncTool.Git.FileSystem.Versioning
 {
-    public sealed class GitBasedHistoryService : GitBasedService, IHistoryService
+    public sealed class GitBasedHistoryService : IHistoryService
     {
+        private readonly GitRepository m_Repository;
+        private readonly WorkingDirectoryFactory m_WorkingDirectoryFactory;
         readonly GitBasedFileSystemHistoryFactory m_HistoryFactory;
 
         public IFileSystemHistory this[string name]
@@ -27,12 +27,12 @@ namespace SyncTool.Git.FileSystem.Versioning
 
                 var branchName = new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name);
                 
-                if (!Repository.Value.LocalBranchExists(branchName))
+                if (!m_Repository.Value.LocalBranchExists(branchName))
                 {
                     throw new ItemNotFoundException($"An item named '{name}' was not found");
                 }
 
-                return m_HistoryFactory.CreateGitBasedFileSystemHistory(Repository.Value, name);
+                return m_HistoryFactory.CreateGitBasedFileSystemHistory(m_Repository.Value, name);
             }
         }
 
@@ -40,35 +40,35 @@ namespace SyncTool.Git.FileSystem.Versioning
         {
             get
             {
-                return Repository.Value.Branches
+                return m_Repository.Value.Branches
                     .GetLocalBranchesByPrefix(GitBasedFileSystemHistory.BranchNamePrefix)
-                    .Select(b => m_HistoryFactory.CreateGitBasedFileSystemHistory(Repository.Value, BranchName.Parse(b.FriendlyName)));
+                    .Select(b => m_HistoryFactory.CreateGitBasedFileSystemHistory(m_Repository.Value, BranchName.Parse(b.FriendlyName)));
             }
         }
 
 
-        public GitBasedHistoryService(GitRepository repository, WorkingDirectoryFactory workingDirectoryFactory, [NotNull] GitBasedFileSystemHistoryFactory historyFactory) 
-            : base(repository, workingDirectoryFactory)
+        public GitBasedHistoryService(GitRepository repository, WorkingDirectoryFactory workingDirectoryFactory, [NotNull] GitBasedFileSystemHistoryFactory historyFactory)         
         {
+            m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            m_WorkingDirectoryFactory = workingDirectoryFactory ?? throw new ArgumentNullException(nameof(workingDirectoryFactory));
             m_HistoryFactory = historyFactory ?? throw new ArgumentNullException(nameof(historyFactory));
         }
 
 
-        public bool ItemExists(string name) => Repository.Value.LocalBranchExists(new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name));
+        public bool ItemExists(string name) => m_Repository.Value.LocalBranchExists(new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name));
 
         public void CreateHistory(string name)
         {
-            var branchName = new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name);
-
-            if (Repository.Value.LocalBranchExists(branchName))
+            if (ItemExists(name))
             {
                 throw new DuplicateFileSystemHistoryException(name);
             }
 
-            var parentCommitId = Repository.Value.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
-            var parentCommit = Repository.Value.Lookup<Commit>(parentCommitId);
+            var parentCommitId = m_Repository.Value.Tags[RepositoryInitHelper.InitialCommitTagName].Target.Sha;
+            var parentCommit = m_Repository.Value.Lookup<Commit>(parentCommitId);
 
-            Repository.Value.CreateBranch(branchName, parentCommit);
+            var branchName = new BranchName(GitBasedFileSystemHistory.BranchNamePrefix, name);
+            m_Repository.Value.CreateBranch(branchName, parentCommit);
         }
     }
 }
