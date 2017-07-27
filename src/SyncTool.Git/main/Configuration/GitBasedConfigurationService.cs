@@ -14,35 +14,20 @@ using NativeFile = System.IO.File;
 
 namespace SyncTool.Git.Configuration
 {
-    public sealed class GitBasedConfigurationService : GitBasedService, IConfigurationService
+    public sealed class GitBasedConfigurationService : AbstractConfigurationService, IConfigurationService
     {
         const string s_SyncFolders = "SyncFolders";
-        const string s_Json = "json";               
-        
+        const string s_Json = "json";
 
-        public SyncFolder this[string name]
+        readonly GitRepository m_Repository;
+        readonly WorkingDirectoryFactory m_WorkingDirectoryFactory;
+
+
+        public override IEnumerable<SyncFolder> Items
         {
             get
             {
-                if (String.IsNullOrWhiteSpace(name))
-                {
-                    throw new ArgumentNullException(nameof(name));
-                }
-
-                var item = Items.SingleOrDefault(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                if (item == null)
-                {
-                    throw new ItemNotFoundException($"An item named '{name}' was not found");
-                }
-                return item;
-            }
-        }
-
-        public IEnumerable<SyncFolder> Items
-        {
-            get
-            {
-                var directory = Repository.GetConfigurationRootDirectory();
+                var directory = m_Repository.GetConfigurationRootDirectory();
                 if (directory.DirectoryExists(s_SyncFolders))
                 {
                     var configFiles = directory.GetDirectory(s_SyncFolders).Files.Where(f => f.HasExtension(s_Json)).Cast<IReadableFile>();
@@ -63,20 +48,17 @@ namespace SyncTool.Git.Configuration
         }
 
 
-        public GitBasedConfigurationService(GitRepository repository, WorkingDirectoryFactory workingDirectoryFactory) : base(repository, workingDirectoryFactory)
-        {            
+        public GitBasedConfigurationService(GitRepository repository, WorkingDirectoryFactory workingDirectoryFactory) 
+        {
+            m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            m_WorkingDirectoryFactory = workingDirectoryFactory ?? throw new ArgumentNullException(nameof(workingDirectoryFactory));
         }
 
 
-        public void AddItem(SyncFolder folder)
-        {
-            if (this.Items.Any(f => f.Name.Equals(folder.Name, StringComparison.CurrentCultureIgnoreCase)))
-            {
-                throw new DuplicateSyncFolderException(folder.Name);
-            }            
-
+        protected override void DoAddItem(SyncFolder folder)
+        {        
             // add config file for the sync folder to the configuration directory
-            using (var workingDirectory = WorkingDirectoryFactory.CreateTemporaryWorkingDirectory(Repository.Value.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
+            using (var workingDirectory = m_WorkingDirectoryFactory.CreateTemporaryWorkingDirectory(m_Repository.Value.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
             {
                 var syncFoldersPath = Path.Combine(workingDirectory.Location, s_SyncFolders);
 
@@ -97,7 +79,7 @@ namespace SyncTool.Git.Configuration
             
         }
 
-        public void UpdateItem(SyncFolder folder)
+        protected override void DoUpdateItem(SyncFolder folder)
         {
             if (folder == null)
             {
@@ -109,7 +91,7 @@ namespace SyncTool.Git.Configuration
                 throw new SyncFolderNotFoundException($"A sync folder named '{folder.Name}' could not be found");
             }
 
-            using (var workingDirectory = WorkingDirectoryFactory.CreateTemporaryWorkingDirectory(Repository.Value.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
+            using (var workingDirectory = m_WorkingDirectoryFactory.CreateTemporaryWorkingDirectory(m_Repository.Value.Info.Path, RepositoryInitHelper.ConfigurationBranchName.ToString()))
             {
                 var syncFoldersPath = Path.Combine(workingDirectory.Location, s_SyncFolders);
                 
@@ -136,15 +118,6 @@ namespace SyncTool.Git.Configuration
                 }
 
             }
-        }
-
-        public bool ItemExists(string name)
-        {
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-            return Items.Any(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-        }
+        }       
     }
 }

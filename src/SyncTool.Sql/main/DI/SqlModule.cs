@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using SyncTool.Configuration;
+using SyncTool.Sql.Services;
 
 namespace SyncTool.Sql.DI
 {
@@ -6,10 +8,11 @@ namespace SyncTool.Sql.DI
     {
         protected override void Load(ContainerBuilder builder)
         { 
+            builder.RegisterType<SqlConfigurationService>().As<IConfigurationService>().AsSelf();
+
             /*                                             
             builder.RegisterType<GitRepository>().AsSelf().InstancePerMatchingLifetimeScope(Scope.Group);
 
-            builder.RegisterType<GitBasedConfigurationService>().As<IConfigurationService>().AsSelf();
             builder.RegisterType<GitBasedHistoryService>().As<IHistoryService>().AsSelf();
             builder.RegisterType<GitSyncPointService>().As<ISyncPointService>().AsSelf();
             builder.RegisterType<GitConflictService>().As<IConflictService>().AsSelf();
