@@ -12,9 +12,5 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql " Version="1.1.2" />   
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.1" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
   
 </Project>

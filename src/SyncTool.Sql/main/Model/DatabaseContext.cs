@@ -6,6 +6,13 @@ namespace SyncTool.Sql.Model
     {
         public DbSet<SyncFolderDo> SyncFolders { get; set; }
         
-        protected override abstract void OnConfiguring(DbContextOptionsBuilder optionsBuilder);        
+        public DbSet<FileSystemHistoryDo> FileSystemHistories { get; set; }
+
+        protected override abstract void OnConfiguring(DbContextOptionsBuilder optionsBuilder);
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<FileSystemHistoryDo>().HasAlternateKey(c => c.Name);               
+        }
     }
 }

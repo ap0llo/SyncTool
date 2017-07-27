@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SyncTool.Sql.Test
+namespace SyncTool.Sql.Test.Services
 {
     public class SqlConfigurationServiceTest : IDisposable
     {
