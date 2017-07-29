@@ -18,12 +18,14 @@ namespace SyncTool.Sql.Test.Services
     public class SqlHistoryServiceTest : SqlTestBase
     {
 
+        SqlHistoryService CreateInstance() => new SqlHistoryService(ContextFactory);
+
         [Fact]
         public void CreateHistory_can_create_multiple_histories()
         {
             var historyNames = new[] { "history1", "histroy2" };
 
-            var historyService = new SqlHistoryService(m_Context);
+            var historyService = CreateInstance();
             foreach (var name in historyNames)
             {
                 historyService.CreateHistory(name);
@@ -39,13 +41,16 @@ namespace SyncTool.Sql.Test.Services
         [InlineData(100)]
         public void CreateHistory_creates_entries_in_the_database(int numberOfHistoriesToCreate)
         {
-            var historyService = new SqlHistoryService(m_Context);
+            var historyService = CreateInstance();
             for (var i = 0; i < numberOfHistoriesToCreate; i++)
             {
                 historyService.CreateHistory($"history-{i}");
             }
-            
-            Assert.Equal(numberOfHistoriesToCreate, m_Context.FileSystemHistories.Count());            
+
+            using (var context = ContextFactory.CreateContext())
+            {
+                Assert.Equal(numberOfHistoriesToCreate, context.FileSystemHistories.Count());            
+            }
         }
 
         [Fact]
@@ -53,7 +58,7 @@ namespace SyncTool.Sql.Test.Services
         {
             const string historyName = "history1";
             
-            var historyService = new SqlHistoryService(m_Context);
+            var historyService = CreateInstance();
             historyService.CreateHistory(historyName);
 
             Assert.Throws<DuplicateFileSystemHistoryException>(() => historyService.CreateHistory(historyName));
@@ -63,7 +68,7 @@ namespace SyncTool.Sql.Test.Services
         [Fact]
         public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
         {            
-            var service = new SqlHistoryService(m_Context);
+            var service = CreateInstance();
 
             Assert.Throws<ArgumentNullException>(() => service[null]);
             Assert.Throws<ArgumentNullException>(() => service[""]);
@@ -72,14 +77,14 @@ namespace SyncTool.Sql.Test.Services
         [Fact]
         public void Indexer_Get_throws_ItemNotFoundException_if_requested_item_could_not_be_found()
         {            
-            var service = new SqlHistoryService(m_Context);
+            var service = CreateInstance();
             Assert.Throws<ItemNotFoundException>(() => service["Irrelevant"]);
         }
 
         [Fact]
         public void Indexer_Get_returns_expected_item()
         {            
-            var service = new SqlHistoryService(m_Context);
+            var service = CreateInstance();
 
             service.CreateHistory("item1");
 

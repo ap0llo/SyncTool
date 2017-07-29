@@ -10,9 +10,16 @@ namespace SyncTool.Sql.TestHelpers
 {
     class InMemoryDatabaseContext : DatabaseContext
     {
+        private readonly string m_DatabaseName;
+
+        public InMemoryDatabaseContext(string databaseName)
+        {
+            m_DatabaseName = databaseName ?? throw new ArgumentNullException(nameof(databaseName));
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());
+            optionsBuilder.UseInMemoryDatabase(m_DatabaseName);
         }
     }
 }

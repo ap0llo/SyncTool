@@ -8,41 +8,56 @@ namespace SyncTool.Sql.Services
 {
     class SqlHistoryService : AbstractHistoryService
     {
-        private readonly DatabaseContext m_Context;
+        private readonly IDatabaseContextFactory m_ContextFactory;
 
 
         public override IEnumerable<IFileSystemHistory> Items
         {
-            get => m_Context
-                    .FileSystemHistories
-                    .ToArray()
-                    .Select(historyDo => new SqlFileSystemHistory(historyDo));            
+            get
+            {
+                using (var context = m_ContextFactory.CreateContext())
+                {
+                    return context
+                       .FileSystemHistories
+                       .ToArray()
+                       .Select(historyDo => new SqlFileSystemHistory(historyDo));
+                }
+            }
         }
 
 
-        public SqlHistoryService(DatabaseContext context)
+        public SqlHistoryService(IDatabaseContextFactory contextFactory)
         {
-            m_Context = context ?? throw new ArgumentNullException(nameof(context));
+            m_ContextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));
         }
         
 
         public override bool ItemExists(string name)
         {
-            return m_Context.FileSystemHistories.Any(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            using (var context = m_ContextFactory.CreateContext())
+            {
+               return context.FileSystemHistories.Any(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            }
         }
 
 
         protected override void DoCreateHistory(string name)
         {
-            var historyDo = new FileSystemHistoryDo() { Name = name };
-            m_Context.FileSystemHistories.Add(historyDo);
-            m_Context.SaveChanges();
+            using (var context = m_ContextFactory.CreateContext())
+            {
+                var historyDo = new FileSystemHistoryDo() { Name = name };
+                context.FileSystemHistories.Add(historyDo);
+                context.SaveChanges();
+            }
         }
 
         protected override IFileSystemHistory DoGetHistory(string name)
         {
-            var historyDo = m_Context.FileSystemHistories.Single(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-            return new SqlFileSystemHistory(historyDo);
+            using (var context = m_ContextFactory.CreateContext())
+            {
+                var historyDo = context.FileSystemHistories.Single(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                return new SqlFileSystemHistory(historyDo);
+            }
         }
     }
 }

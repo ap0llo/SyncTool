@@ -3,15 +3,29 @@ using System;
 
 namespace SyncTool.Sql.TestHelpers
 {
-    public class SqlTestBase : IDisposable
+    public class SqlTestBase
     {
-        protected readonly DatabaseContext m_Context;
+
+        private class TestContextFactory : IDatabaseContextFactory
+        {
+            private readonly string m_DatabaseName;
+
+            public TestContextFactory(string databaseName)
+            {
+                m_DatabaseName = databaseName;
+            }
+
+            public DatabaseContext CreateContext() => new InMemoryDatabaseContext(m_DatabaseName);
+        }
+        
+        
+        protected IDatabaseContextFactory ContextFactory { get; }
+
 
         public SqlTestBase()
-        {
-            m_Context = new InMemoryDatabaseContext();
+        {                     
+            ContextFactory = new TestContextFactory(Guid.NewGuid().ToString());
         }
-
-        public void Dispose() => m_Context.Dispose();
+        
     }
 }

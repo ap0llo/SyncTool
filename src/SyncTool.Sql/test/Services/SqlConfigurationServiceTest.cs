@@ -13,14 +13,16 @@ using Xunit;
 namespace SyncTool.Sql.Test.Services
 {
     public class SqlConfigurationServiceTest : SqlTestBase
-    {      
+    {
+
+        SqlConfigurationService CreateInstance() => new SqlConfigurationService(ContextFactory);
 
         #region Items
 
         [Fact]
         public void Items_is_empty_for_empty_database()
         {            
-            var instance = new SqlConfigurationService(m_Context);
+            var instance = CreateInstance();
             Assert.Empty(instance.Items);
         }
 
@@ -34,7 +36,7 @@ namespace SyncTool.Sql.Test.Services
         {
             var syncFolder = new SyncFolder("folder1") { Path = "foo" };
 
-            var service = new SqlConfigurationService(m_Context);
+            var service = CreateInstance();
             service.AddItem(syncFolder);
 
             Assert.Single(service.Items);
@@ -48,7 +50,7 @@ namespace SyncTool.Sql.Test.Services
             var syncFolder1 = new SyncFolder("folder1") { Path = "foo" };
             var syncFolder2 = new SyncFolder("folder1") { Path = "bar" };
 
-            var service= new SqlConfigurationService(m_Context);
+            var service= CreateInstance();
             service.AddItem(syncFolder1);
             Assert.Throws<DuplicateSyncFolderException>(() => service.AddItem(syncFolder2));
         }
@@ -59,7 +61,7 @@ namespace SyncTool.Sql.Test.Services
             var syncFolder1 = new SyncFolder("folder1") { Path = "foo" };
             var syncFolder2 = new SyncFolder("folDER1") { Path = "bar" };
 
-            var service = new SqlConfigurationService(m_Context);
+            var service = CreateInstance();
             service.AddItem(syncFolder1);
             Assert.Throws<DuplicateSyncFolderException>(() => service.AddItem(syncFolder2));
         }
@@ -74,7 +76,7 @@ namespace SyncTool.Sql.Test.Services
         {
             var updatedFolder = new SyncFolder("NewFolder");
 
-            var service = new SqlConfigurationService(m_Context);
+            var service = CreateInstance();
             Assert.Throws<SyncFolderNotFoundException>(() => service.UpdateItem(updatedFolder));
         }
 
@@ -83,10 +85,10 @@ namespace SyncTool.Sql.Test.Services
         {
             var folder = new SyncFolder("SyncFolder") { Path = "Path" };
 
-            var service = new SqlConfigurationService(m_Context);
+            var service = CreateInstance();
             service.AddItem(folder);
            
-            var service2 = new SqlConfigurationService(m_Context);
+            var service2 = CreateInstance();
             Assert.Equal(folder.Path, service2["SyncFolder"].Path);
 
         }
@@ -100,7 +102,7 @@ namespace SyncTool.Sql.Test.Services
         [Fact]
         public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()
         {
-            var service = new SqlConfigurationService(m_Context);
+            var service = CreateInstance();
             Assert.Throws<ArgumentNullException>(() => service[null]);
             Assert.Throws<ArgumentNullException>(() => service[""]);
             Assert.Throws<ArgumentNullException>(() => service[" "]);
@@ -109,14 +111,14 @@ namespace SyncTool.Sql.Test.Services
         [Fact]
         public void Indexer_Get_throws_ItemNotFoundException_if_the_requested_item_was_not_found()
         {
-            var service = new SqlConfigurationService(m_Context);
+            var service = CreateInstance();
             Assert.Throws<ItemNotFoundException>(() => service["SomeName"]);
         }
 
         [Fact]
         public void Indexer_Get_returns_the_expected_Item()
         {
-            var service = new SqlConfigurationService(m_Context);
+            var service = CreateInstance();
             service.AddItem(new SyncFolder("folder1"));
             Assert.NotNull(service["folder1"]);
             // name has to be treated case-invariant
@@ -131,7 +133,7 @@ namespace SyncTool.Sql.Test.Services
         [Fact]
         public void ItemExists_compares_names_case_invariant()
         {
-            var service = new SqlConfigurationService(m_Context);
+            var service = CreateInstance();
             service.AddItem(new SyncFolder("folder1"));
 
             Assert.True(service.ItemExists("folder1"));

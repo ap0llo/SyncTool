@@ -8,15 +8,22 @@ namespace SyncTool.Sql.Services
 {
     class SqlConfigurationService : AbstractConfigurationService, IConfigurationService
     {
-        readonly DatabaseContext m_Context;
+        private readonly IDatabaseContextFactory m_ContextFactory;
 
-                
-        public override IEnumerable<SyncFolder> Items => m_Context.SyncFolders.Select(x => x.ToSyncFolder());
-
-
-        public SqlConfigurationService(DatabaseContext context)
+        public override IEnumerable<SyncFolder> Items
         {
-            m_Context = context ?? throw new ArgumentNullException(nameof(context));
+            get
+            {
+                using (var context = m_ContextFactory.CreateContext())
+                {
+                    return context.SyncFolders.Select(x => x.ToSyncFolder()).ToArray();
+                }
+            }
+        }
+
+        public SqlConfigurationService(IDatabaseContextFactory contextFactory)
+        {
+            m_ContextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));            
         }
 
 
@@ -27,26 +34,38 @@ namespace SyncTool.Sql.Services
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return m_Context.SyncFolders.Any(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            using (var context = m_ContextFactory.CreateContext())
+            {
+                return context.SyncFolders.Any(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            }
         }
 
         protected override SyncFolder GetItemOrDefault(string name)
         {
-            return m_Context.SyncFolders.SingleOrDefault(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))?.ToSyncFolder();
+            using (var context = m_ContextFactory.CreateContext())
+            {
+                return context.SyncFolders.SingleOrDefault(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))?.ToSyncFolder();
+            }
         }
 
         protected override void DoAddItem(SyncFolder folder)
-        {                        
-            m_Context.Add(SyncFolderDo.FromSyncFolder(folder));
-            m_Context.SaveChanges();
+        {
+            using (var context = m_ContextFactory.CreateContext())
+            {
+                context.Add(SyncFolderDo.FromSyncFolder(folder));
+                context.SaveChanges();
+            }
         }       
 
         protected override void DoUpdateItem(SyncFolder folder)
-        {            
-            var existingItem = m_Context.SyncFolders.Single(x => x.Name.Equals(folder.Name, StringComparison.InvariantCultureIgnoreCase));
-            existingItem.Path = folder.Path;
+        {
+            using (var context = m_ContextFactory.CreateContext())
+            {
+                var existingItem = context.SyncFolders.Single(x => x.Name.Equals(folder.Name, StringComparison.InvariantCultureIgnoreCase));
+                existingItem.Path = folder.Path;
 
-            m_Context.Update(existingItem);            
+                context.Update(existingItem);            
+            }
         }
     }
 }
