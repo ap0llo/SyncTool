@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using SyncTool.Sql.Model;
 
-namespace SyncTool.Sql.Model
+namespace SyncTool.Sql.TestHelpers
 {
     class InMemoryDatabaseContext : DatabaseContext
     {

@@ -2,6 +2,7 @@
 using SyncTool.Configuration;
 using SyncTool.Sql.Model;
 using SyncTool.Sql.Services;
+using SyncTool.Sql.TestHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,17 +12,8 @@ using Xunit;
 
 namespace SyncTool.Sql.Test.Services
 {
-    public class SqlConfigurationServiceTest : IDisposable
-    {
-        readonly DatabaseContext m_Context;
-
-        public SqlConfigurationServiceTest()
-        {
-            m_Context = new InMemoryDatabaseContext();          
-        }
-
-        public void Dispose() => m_Context.Dispose();
-
+    public class SqlConfigurationServiceTest : SqlTestBase
+    {      
 
         #region Items
 

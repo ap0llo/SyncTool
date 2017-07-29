@@ -2,6 +2,7 @@
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Sql.Model;
 using SyncTool.Sql.Services;
+using SyncTool.Sql.TestHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,18 +15,8 @@ namespace SyncTool.Sql.Test.Services
     /// <summary>
     /// Tests for <see cref="SqlHistoryService"/>
     /// </summary>
-    public class SqlHistoryServiceTest : IDisposable
+    public class SqlHistoryServiceTest : SqlTestBase
     {
-
-        readonly DatabaseContext m_Context;
-
-        public SqlHistoryServiceTest()
-        {
-            m_Context = new InMemoryDatabaseContext();
-        }
-
-        public void Dispose() => m_Context.Dispose();
-
 
         [Fact]
         public void CreateHistory_can_create_multiple_histories()
