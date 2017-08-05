@@ -19,26 +19,14 @@ namespace SyncTool.Sql.Services
         {
             get
             {
-                if(String.IsNullOrWhiteSpace(id))
-                {
-                    throw new ArgumentNullException("Value cannot be null or whitespace");
-                }
-
-                if(!int.TryParse(id, out var dbId))
-                {
-                    throw new SnapshotNotFoundException(id);
-                }
+                var dbId = ParseId(id);
+                var snapshotDo = GetSnapshotDo(dbId);
                 
-                using (var context = m_ContextFactory.CreateContext())
-                {
-                    var snapshotDo = context
-                        .FileSystemSnapshots
-                        .Single(snapshot => snapshot.Id == dbId);
-
-                    return m_SnapshotFactory.Invoke(this, snapshotDo);
-                }
+                return m_SnapshotFactory.Invoke(this, snapshotDo);
             }
         }
+
+       
 
         public string Name => m_HistoryDo.Name;
 
@@ -53,7 +41,7 @@ namespace SyncTool.Sql.Services
                     var snapshotDo = context
                         .FileSystemSnapshots
                         .Where(x => x.History.Id == m_HistoryDo.Id)
-                        .OrderByDescending(x => x.CreationTimeUtc)
+                        .OrderByDescending(x => x.SequenceNumber)
                         .FirstOrDefault();
 
                     return snapshotDo == null ? null : m_SnapshotFactory.Invoke(this, snapshotDo);                    
@@ -70,7 +58,7 @@ namespace SyncTool.Sql.Services
                     return context
                         .FileSystemSnapshots
                         .Where(snapshot => snapshot.History.Id == m_HistoryDo.Id)
-                        .OrderByDescending(snapshot => snapshot.CreationTimeUtc)
+                        .OrderByDescending(snapshot => snapshot.SequenceNumber)
                         .ToArray()
                         .Select(snapshotDo => m_SnapshotFactory.Invoke(this, snapshotDo));
                 }
@@ -93,7 +81,8 @@ namespace SyncTool.Sql.Services
                 var fileInstances = new List<FileInstanceDo>();
                 var directoryInstanceDo = AddDirectoryInstance(context, fileInstances, fileSystemState);
 
-                var snapshotDo = new FileSystemSnapshotDo(m_HistoryDo, DateTime.UtcNow, directoryInstanceDo, fileInstances);
+                var sequenceNumber = context.FileSystemSnapshots.Count() + 1;
+                var snapshotDo = new FileSystemSnapshotDo(m_HistoryDo, DateTime.UtcNow, directoryInstanceDo, fileInstances, sequenceNumber);
                 context.FileSystemSnapshots.Add(snapshotDo);
 
                 // update the version proeprty so confllcits can be detected                
@@ -129,10 +118,22 @@ namespace SyncTool.Sql.Services
         }
 
         public string GetPreviousSnapshotId(string id)
-        {
-            throw new NotImplementedException();
+        {            
+            var snapshotDo = GetSnapshotDo(ParseId(id));
+            using (var context = m_ContextFactory.CreateContext())
+            {
+                var previousSnapshot = context
+                    .FileSystemSnapshots
+                    .Where(x => x.History.Id == m_HistoryDo.Id)
+                    .Where(x => x.SequenceNumber < snapshotDo.SequenceNumber)
+                    .OrderByDescending(x => x.SequenceNumber)
+                    .FirstOrDefault();
+
+                return (previousSnapshot?.Id)?.ToString();
+            }
         }
 
+      
 
         private DirectoryInstanceDo AddDirectoryInstance(DatabaseContext context, List<FileInstanceDo> allFileInstances, IDirectory directory)
         {
@@ -207,6 +208,28 @@ namespace SyncTool.Sql.Services
         private string GetNormalizedPath(IFileSystemItem item)
         {            
             return item.Path.ToLowerInvariant();
+        }
+
+        private static int ParseId(string id)
+        {
+            if (String.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException("Value cannot be null or whitespace");
+            }
+
+            return int.Parse(id);            
+        }
+
+        private FileSystemSnapshotDo GetSnapshotDo(int dbId)
+        {
+            using (var context = m_ContextFactory.CreateContext())
+            {
+                var result = context
+                        .FileSystemSnapshots
+                        .SingleOrDefault(snapshot => snapshot.Id == dbId);
+
+                return result ?? throw new SnapshotNotFoundException(dbId.ToString());                
+            }
         }
     }
 }

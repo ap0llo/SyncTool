@@ -847,7 +847,7 @@ namespace SyncTool.Sql.Test.Services
         [Fact]
         public void Indexer_throws_SnapshotNotFoundException_for_unknown_snapshot_id()
         {
-            Assert.Throws<SnapshotNotFoundException>(() => m_Instance["SomeId"]);
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance["1"]);
         }
 
         [Fact]
@@ -891,13 +891,13 @@ namespace SyncTool.Sql.Test.Services
 
         #region GetPreviousSnapshotId
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetPreviousSnapshotId_throws_a_SnapshotNotFoundException_is_the_Id_is_unknown()
         {
-            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetPreviousSnapshotId("someId"));
+            Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetPreviousSnapshotId("23"));
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetPreviousSnapshotId_returns_null_if_a_snapshot_is_the_first_snapshot()
         {
             var state = new Directory(s_Dir1)
@@ -910,8 +910,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Null(m_Instance.GetPreviousSnapshotId(snapshot.Id));
         }
 
-
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetPreviousSnapshotId_returns_the_expected_value()
         {
             var state1 = new Directory(s_Dir1)

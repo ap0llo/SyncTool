@@ -35,6 +35,7 @@ namespace SyncTool.Sql.Model
             modelBuilder.Entity<DirectoryDo>().HasAlternateKey(c => c.NormalizedPath);
 
             modelBuilder.Entity<FileSystemSnapshotDo>().HasOne(x => x.History);
+            modelBuilder.Entity<FileSystemSnapshotDo>().HasAlternateKey(x => x.SequenceNumber);
         }
     }
 }
