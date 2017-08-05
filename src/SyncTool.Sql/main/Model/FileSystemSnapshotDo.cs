@@ -13,6 +13,23 @@ namespace SyncTool.Sql.Model
 
         public DirectoryInstanceDo RootDirectory { get; set; }
 
-        public List<FileInstanceDo> IncludedFiles { get; set; }
+        public List<FileInstanceDo> IncludedFiles { get; set; } = new List<FileInstanceDo>();
+
+
+        public FileSystemSnapshotDo()
+        {
+        }
+
+        public FileSystemSnapshotDo(
+            FileSystemHistoryDo history, 
+            DateTime creationTimeUtc, 
+            DirectoryInstanceDo rootDirectory,
+            List<FileInstanceDo> includedFiles)
+        {
+            History = history;
+            CreationTimeUtc = creationTimeUtc;
+            RootDirectory = rootDirectory;
+            IncludedFiles = includedFiles;
+        }
     }
 }

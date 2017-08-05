@@ -14,6 +14,17 @@ namespace SyncTool.Sql.Model
 
         public string NormalizedName { get; set; }
         
-        public int Version { get; set; }        
+        public int Version { get; set; }
+
+
+        public FileSystemHistoryDo()
+        {
+        }
+
+        public FileSystemHistoryDo(string name)
+        {
+            Name = name;
+            NormalizedName = name.NormalizeCaseInvariant();
+        }
     }
 }

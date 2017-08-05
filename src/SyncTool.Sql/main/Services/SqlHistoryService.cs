@@ -46,11 +46,7 @@ namespace SyncTool.Sql.Services
         {
             using (var context = m_ContextFactory.CreateContext())
             {
-                var historyDo = new FileSystemHistoryDo()
-                {
-                    Name = name,
-                    NormalizedName = name.Trim().ToUpperInvariant()
-                };
+                var historyDo = new FileSystemHistoryDo(name);
                 context.FileSystemHistories.Add(historyDo);
                 context.SaveChanges();
             }

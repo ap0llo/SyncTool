@@ -26,11 +26,7 @@ namespace SyncTool.Sql.Test.Services
 
         public SqlFileSystemHistoryTest()
         {
-            var historyDo = new FileSystemHistoryDo()
-            {
-                Name = "History1",
-                NormalizedName = "HISTORY1"                
-            };
+            var historyDo = new FileSystemHistoryDo("History1");
 
             using (var context = ContextFactory.CreateContext())
             {

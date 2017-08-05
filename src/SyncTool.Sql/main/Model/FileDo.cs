@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SyncTool.FileSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,21 @@ namespace SyncTool.Sql.Model
 
         public string Name { get; set; }
 
-        public List<FileInstanceDo> Instances { get; set; }    
+        public List<FileInstanceDo> Instances { get; set; }
+
+
+        public FileDo()
+        {
+        }
+
+        public static FileDo FromFile(IFile file)
+        {
+            return new FileDo()
+            {
+                Name = file.Name,
+                NormalizedPath = file.Path.NormalizeCaseInvariant(),
+                Instances = new List<FileInstanceDo>()
+            };
+        }
     }
 }

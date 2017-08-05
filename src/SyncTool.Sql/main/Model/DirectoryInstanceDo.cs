@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SyncTool.Sql.Model
 {
@@ -11,9 +8,19 @@ namespace SyncTool.Sql.Model
         public int Id { get; set; }
 
         public DirectoryDo Directory { get; set; }
-        
-        public List<DirectoryInstanceDo> Directories { get; set; }
 
-        public List<FileInstanceDo> Files { get; set; }
+        public List<DirectoryInstanceDo> Directories { get; set; } = new List<DirectoryInstanceDo>();
+
+        public List<FileInstanceDo> Files { get; set; } = new List<FileInstanceDo>();
+
+
+        public DirectoryInstanceDo()
+        {
+        }
+
+        public DirectoryInstanceDo(DirectoryDo directoryDo)
+        {
+            Directory = directoryDo ?? throw new ArgumentNullException(nameof(directoryDo));
+        }
     }
 }

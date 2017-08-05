@@ -92,13 +92,8 @@ namespace SyncTool.Sql.Services
             {
                 var fileInstances = new List<FileInstanceDo>();
                 var directoryInstanceDo = AddDirectoryInstance(context, fileInstances, fileSystemState);
-                var snapshotDo = new FileSystemSnapshotDo()
-                {
-                    CreationTimeUtc = DateTime.UtcNow,
-                    History = m_HistoryDo,
-                    RootDirectory = directoryInstanceDo,
-                    IncludedFiles = fileInstances
-                };
+
+                var snapshotDo = new FileSystemSnapshotDo(m_HistoryDo, DateTime.UtcNow, directoryInstanceDo, fileInstances);
                 context.FileSystemSnapshots.Add(snapshotDo);
 
                 // update the version proeprty so confllcits can be detected                
@@ -141,12 +136,9 @@ namespace SyncTool.Sql.Services
 
         private DirectoryInstanceDo AddDirectoryInstance(DatabaseContext context, List<FileInstanceDo> allFileInstances, IDirectory directory)
         {
-            var instanceDo = new DirectoryInstanceDo()
-            {
-                Directory = GetOrAddDirectory(context, directory),
-                Directories = new List<DirectoryInstanceDo>(),
-                Files = new List<FileInstanceDo>()
-            };
+            var directoryDo = GetOrAddDirectory(context, directory);
+
+            var instanceDo = new DirectoryInstanceDo(directoryDo);
             context.DirectoryInstances.Add(instanceDo);
 
             foreach(var dir in directory.Directories)
@@ -170,13 +162,7 @@ namespace SyncTool.Sql.Services
 
             if(directoryDo == null)
             {
-                directoryDo = new DirectoryDo()
-                {
-                    Name = dir.Name,
-                    NormalizedPath = normalizedPath,
-                    Instances = new List<DirectoryInstanceDo>()
-                };
-
+                directoryDo = DirectoryDo.FromDirectory(dir);                
                 context.Directories.Add(directoryDo);
             }
 
@@ -184,20 +170,12 @@ namespace SyncTool.Sql.Services
         }
 
         private FileDo GetOrAddFile(DatabaseContext context, IFile file)
-        {
-            var normalizedPath = GetNormalizedPath(file);
-
-            var fileDo = context.Files.SingleOrDefault(d => d.NormalizedPath == normalizedPath);
+        {            
+            var fileDo = context.Files.SingleOrDefault(d => d.NormalizedPath == file.Path.NormalizeCaseInvariant());
 
             if(fileDo == null)
             {
-                fileDo = new FileDo()
-                {
-                    Name = file.Name,
-                    NormalizedPath = normalizedPath,
-                    Instances = new List<FileInstanceDo>()
-                };
-
+                fileDo = FileDo.FromFile(file);
                 context.Files.Add(fileDo);
             }
 
@@ -218,14 +196,7 @@ namespace SyncTool.Sql.Services
                 
             if (instanceDo == null)
             {
-                instanceDo = new FileInstanceDo()
-                {
-                    File = fileDo,
-                    //TODO: this seems like a stupid hack, find a way to avoid ths
-                    LastWriteTimeUtc = file.LastWriteTime == DateTime.MinValue ? DateTime.MinValue : file.LastWriteTime.ToUniversalTime(),
-                    Length = file.Length
-                };
-
+                instanceDo = new FileInstanceDo(fileDo, file.LastWriteTime, file.Length);
                 context.FileInstances.Add(instanceDo);
             }
 

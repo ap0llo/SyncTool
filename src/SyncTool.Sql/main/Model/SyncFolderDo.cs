@@ -13,6 +13,7 @@ namespace SyncTool.Sql.Model
         public string Path { get; set; }
 
 
+
         public SyncFolder ToSyncFolder() => new SyncFolder(Name) { Path = Path };
 
         public static SyncFolderDo FromSyncFolder(SyncFolder folder)
