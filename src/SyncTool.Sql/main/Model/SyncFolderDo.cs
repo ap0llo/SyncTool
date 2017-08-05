@@ -1,5 +1,4 @@
-﻿
-using SyncTool.Configuration;
+﻿using SyncTool.Configuration;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,6 +23,5 @@ namespace SyncTool.Sql.Model
                 Path = folder.Path
             };
         }
-
     }
 }

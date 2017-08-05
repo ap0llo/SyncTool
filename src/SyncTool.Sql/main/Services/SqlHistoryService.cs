@@ -9,7 +9,7 @@ namespace SyncTool.Sql.Services
     class SqlHistoryService : AbstractHistoryService
     {
         private readonly IDatabaseContextFactory m_ContextFactory;
-
+        private readonly Func<FileSystemHistoryDo, SqlFileSystemHistory> m_HistoryFactory;
 
         public override IEnumerable<IFileSystemHistory> Items
         {
@@ -20,15 +20,16 @@ namespace SyncTool.Sql.Services
                     return context
                        .FileSystemHistories
                        .ToArray()
-                       .Select(historyDo => new SqlFileSystemHistory(historyDo));
+                       .Select(historyDo => m_HistoryFactory.Invoke(historyDo));
                 }
             }
         }
 
 
-        public SqlHistoryService(IDatabaseContextFactory contextFactory)
+        public SqlHistoryService(IDatabaseContextFactory contextFactory, Func<FileSystemHistoryDo, SqlFileSystemHistory> historyFactory)
         {
             m_ContextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));
+            m_HistoryFactory = historyFactory ?? throw new ArgumentNullException(nameof(historyFactory));
         }
         
 
@@ -45,7 +46,11 @@ namespace SyncTool.Sql.Services
         {
             using (var context = m_ContextFactory.CreateContext())
             {
-                var historyDo = new FileSystemHistoryDo() { Name = name };
+                var historyDo = new FileSystemHistoryDo()
+                {
+                    Name = name,
+                    NormalizedName = name.Trim().ToUpperInvariant()
+                };
                 context.FileSystemHistories.Add(historyDo);
                 context.SaveChanges();
             }
@@ -56,7 +61,7 @@ namespace SyncTool.Sql.Services
             using (var context = m_ContextFactory.CreateContext())
             {
                 var historyDo = context.FileSystemHistories.Single(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                return new SqlFileSystemHistory(historyDo);
+                return m_HistoryFactory.Invoke(historyDo);
             }
         }
     }

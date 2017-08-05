@@ -18,7 +18,9 @@ namespace SyncTool.Sql.Test.Services
     public class SqlHistoryServiceTest : SqlTestBase
     {
 
-        SqlHistoryService CreateInstance() => new SqlHistoryService(ContextFactory);
+        SqlHistoryService CreateInstance() => new SqlHistoryService(
+            ContextFactory, 
+            historyDo => new SqlFileSystemHistory(ContextFactory, (_,__) => null, historyDo));
 
         [Fact]
         public void CreateHistory_can_create_multiple_histories()
