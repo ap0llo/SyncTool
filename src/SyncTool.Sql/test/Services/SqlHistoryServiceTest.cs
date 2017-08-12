@@ -19,7 +19,7 @@ namespace SyncTool.Sql.Test.Services
     {
 
         SqlHistoryService CreateInstance() => new SqlHistoryService(
-            ContextFactory, 
+            new FileSystemHistoryRepository(ContextFactory), 
             historyDo => new SqlFileSystemHistory(ContextFactory, (_,__) => null, historyDo));
 
         [Fact]
@@ -49,9 +49,10 @@ namespace SyncTool.Sql.Test.Services
                 historyService.CreateHistory($"history-{i}");
             }
 
-            using (var context = ContextFactory.CreateContext())
+            using (var connection = ContextFactory.OpenConnection())
             {
-                Assert.Equal(numberOfHistoriesToCreate, context.FileSystemHistories.Count());            
+                var count = connection.ExecuteScalar<int>("SELECT count(*) FROM FileSystemHistories");
+                Assert.Equal(numberOfHistoriesToCreate, count);            
             }
         }
 
@@ -64,8 +65,7 @@ namespace SyncTool.Sql.Test.Services
             historyService.CreateHistory(historyName);
 
             Assert.Throws<DuplicateFileSystemHistoryException>(() => historyService.CreateHistory(historyName));
-        }
-
+        }    
 
         [Fact]
         public void Indexer_Get_throws_ArgumentNullException_if_name_is_null_or_whitespace()

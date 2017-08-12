@@ -8,6 +8,9 @@ namespace SyncTool.Sql.Model
 {
     public class FileSystemHistoryDo
     {
+        public const string TableName = "FileSystemHistories";
+
+
         public int Id { get; set; }
         
         public string Name { get; set; }
