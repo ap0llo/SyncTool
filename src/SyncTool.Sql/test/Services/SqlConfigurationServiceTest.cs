@@ -15,7 +15,7 @@ namespace SyncTool.Sql.Test.Services
     public class SqlConfigurationServiceTest : SqlTestBase
     {
 
-        SqlConfigurationService CreateInstance() => new SqlConfigurationService(ContextFactory);
+        SqlConfigurationService CreateInstance() => new SqlConfigurationService(new SyncFolderRepository(ContextFactory));
 
         #region Items
 

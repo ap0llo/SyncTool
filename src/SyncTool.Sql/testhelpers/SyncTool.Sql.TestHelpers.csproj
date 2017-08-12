@@ -1,8 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="1.1.1" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.Common\testhelpers\SyncTool.Common.TestHelpers.csproj" />
     <ProjectReference Include="..\..\SyncTool.Synchronization\testhelpers\SyncTool.Synchronization.TestHelpers.csproj" />
   </ItemGroup>
+  
+
+  <Target Name="CopySqliteBinaries" AfterTargets="Build">
+    <ItemGroup>
+      <SqliteBinary Include="$(NugetPackageRoot)sqlite\3.13.0\runtimes\**\sqlite3.dll" />
+    </ItemGroup>    
+    <Error Text="Sqlite binaries not found" Condition="'@(SqliteBinary)' == ''" />
+    <Copy SourceFiles="@(SqliteBinary)" DestinationFolder="$(OutputPath)runtimes\%(SqliteBinary.RecursiveDir)" />    
+  </Target>
   
 </Project>

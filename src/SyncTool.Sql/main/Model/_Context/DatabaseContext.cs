@@ -3,9 +3,7 @@
 namespace SyncTool.Sql.Model
 {
     public abstract class DatabaseContext : DbContext
-    {
-        public DbSet<SyncFolderDo> SyncFolders { get; set; }
-        
+    {        
         public DbSet<FileSystemHistoryDo> FileSystemHistories { get; set; }
 
         public DbSet<FileSystemSnapshotDo> FileSystemSnapshots { get; set; }

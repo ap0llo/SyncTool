@@ -9,5 +9,17 @@
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="sqlite" Version="3.13.0" />
+  </ItemGroup>
   
+  <Target Name="CopySqliteBinaries" AfterTargets="Build">
+    <ItemGroup>
+      <SqliteBinary Include="$(NugetPackageRoot)sqlite\3.13.0\runtimes\**\sqlite3.dll" />
+    </ItemGroup>
+    <Error Text="Sqlite binaries not found" Condition="'@(SqliteBinary)' == ''" />
+    <Copy SourceFiles="@(SqliteBinary)" DestinationFolder="$(OutputPath)runtimes\%(SqliteBinary.RecursiveDir)" />
+  </Target>
+
 </Project>

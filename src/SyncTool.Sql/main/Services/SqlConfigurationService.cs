@@ -9,21 +9,19 @@ namespace SyncTool.Sql.Services
     class SqlConfigurationService : AbstractConfigurationService, IConfigurationService
     {
         private readonly IDatabaseContextFactory m_ContextFactory;
+        private readonly SyncFolderRepository m_Repository;
 
         public override IEnumerable<SyncFolder> Items
         {
             get
             {
-                using (var context = m_ContextFactory.CreateContext())
-                {
-                    return context.SyncFolders.Select(x => x.ToSyncFolder()).ToArray();
-                }
+                return m_Repository.Items.Select(x => x.ToSyncFolder()).ToArray();                
             }
         }
 
-        public SqlConfigurationService(IDatabaseContextFactory contextFactory)
+        public SqlConfigurationService(SyncFolderRepository repository)
         {
-            m_ContextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));            
+            m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
 
@@ -34,38 +32,25 @@ namespace SyncTool.Sql.Services
                 throw new ArgumentNullException(nameof(name));
             }
 
-            using (var context = m_ContextFactory.CreateContext())
-            {
-                return context.SyncFolders.Any(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-            }
+            return m_Repository.GetItemOrDefault(name) != null;            
         }
 
         protected override SyncFolder GetItemOrDefault(string name)
         {
-            using (var context = m_ContextFactory.CreateContext())
-            {
-                return context.SyncFolders.SingleOrDefault(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))?.ToSyncFolder();
-            }
+            return m_Repository.GetItemOrDefault(name)?.ToSyncFolder();            
         }
 
         protected override void DoAddItem(SyncFolder folder)
         {
-            using (var context = m_ContextFactory.CreateContext())
-            {
-                context.Add(SyncFolderDo.FromSyncFolder(folder));
-                context.SaveChanges();
-            }
+            m_Repository.AddItem(SyncFolderDo.FromSyncFolder(folder));
         }       
 
         protected override void DoUpdateItem(SyncFolder folder)
         {
-            using (var context = m_ContextFactory.CreateContext())
-            {
-                var existingItem = context.SyncFolders.Single(x => x.Name.Equals(folder.Name, StringComparison.InvariantCultureIgnoreCase));
-                existingItem.Path = folder.Path;
+            var existingItem = m_Repository.GetItemOrDefault(folder.Name);
+            existingItem.Path = folder.Path;
 
-                context.Update(existingItem);            
-            }
+            m_Repository.UpdateItem(existingItem);                   
         }
     }
 }

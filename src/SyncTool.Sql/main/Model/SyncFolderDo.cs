@@ -1,17 +1,17 @@
 ﻿using SyncTool.Configuration;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SyncTool.Sql.Model
 {
     public class SyncFolderDo
-    {        
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]        
+    {
+        internal const string TableName = "SyncFolders";
+        
+
         public string Name { get; set; }
 
         public string Path { get; set; }
 
+        public int Version { get; set; }
 
 
         public SyncFolder ToSyncFolder() => new SyncFolder(Name) { Path = Path };
