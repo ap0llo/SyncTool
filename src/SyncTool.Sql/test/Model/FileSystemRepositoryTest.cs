@@ -56,10 +56,13 @@ namespace SyncTool.Sql.Test.Model
         {
             var instance = CreateInstance();
             var file = new FileDo() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant() };
-            var inserted = instance.AddFile(file);
-            var inserted2 = instance.AddFile(file);
+            var duplicate = new FileDo() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant() };
 
-            Assert.Equal(inserted.Id, inserted2.Id);
+            instance.AddFile(file);
+            instance.AddFile(duplicate);
+
+            Assert.Equal(file.Id, duplicate.Id);
+            Assert.Single(instance.Files);
         }
 
         [Fact]
@@ -104,10 +107,12 @@ namespace SyncTool.Sql.Test.Model
         {
             var instance = CreateInstance();
             var dir = new DirectoryDo() { Id = 0, Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
-            var inserted = instance.AddDirectory(dir);
-            var inserted2 = instance.AddDirectory(dir);
+            var duplicate = new DirectoryDo() { Id = 0, Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
 
-            Assert.Equal(inserted.Id, inserted2.Id);
+            instance.AddDirectory(dir);
+            instance.AddDirectory(duplicate);
+
+            Assert.Equal(dir.Id, duplicate.Id);
         }
 
 
@@ -117,7 +122,7 @@ namespace SyncTool.Sql.Test.Model
             var file = new FileDo() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant() };
             var fileInstance = new FileInstanceDo(file, DateTime.UtcNow, 23);
             fileInstance.Id = 1;
-            Assert.Throws<ArgumentException>(() => CreateInstance().AddFileInstance(file, fileInstance));
+            Assert.Throws<ArgumentException>(() => CreateInstance().AddFileInstance(fileInstance));
         }
 
         [Fact]
@@ -128,7 +133,7 @@ namespace SyncTool.Sql.Test.Model
             
             var instance = CreateInstance();
             Assert.Empty(instance.Files);
-            instance.AddFileInstance(file, fileInstance);
+            instance.AddFileInstance(fileInstance);
             Assert.Single(instance.Files);
         }
 
@@ -139,24 +144,65 @@ namespace SyncTool.Sql.Test.Model
             var fileInstance = new FileInstanceDo(file, DateTime.UtcNow, 23);
 
             var instance = CreateInstance();
-            var insertedFile = instance.AddFile(file);            
-            var insertedFileInstance = instance.AddFileInstance(file, fileInstance);
 
-            Assert.Equal(insertedFile.Id, insertedFileInstance.FileId);
+            instance.AddFile(file);            
+            instance.AddFileInstance(fileInstance);
+
+            Assert.Equal(file.Id, fileInstance.File.Id);
+            Assert.Single(instance.Files);
         }
+
         [Fact]
         public void AddFileInstance_does_not_insert_duplicate_entries()
         {
+            var time = DateTime.UtcNow;
             var instance = CreateInstance();
 
             var file = new FileDo() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant() };
-            var fileInstance = new FileInstanceDo(file, DateTime.UtcNow, 23);
+            var fileInstance = new FileInstanceDo(file, time, 23);
+            var duplicate = new FileInstanceDo(file, time, 23);
 
-            var inserted = instance.AddFileInstance(file, fileInstance);
-            var inserted2 = instance.AddFileInstance(file, fileInstance);
+            instance.AddFileInstance(fileInstance);
+            instance.AddFileInstance(duplicate);
 
-            Assert.Equal(inserted.Id, inserted2.Id);
+            Assert.Equal(fileInstance.Id, duplicate.Id);
         }
 
+        [Fact]
+        public void AddRecursively_adds_all_files_and_directories()
+        {
+            // ARRANGE
+            var root = new DirectoryInstanceDo(new DirectoryDo() { Name = "Root", NormalizedPath = "/" });
+            var dir1 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() });
+            var dir11 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir11", NormalizedPath = "/dir1/dir11".NormalizeCaseInvariant() });
+            var dir2 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir2", NormalizedPath = "/dir2".NormalizeCaseInvariant() });
+            dir1.Directories.Add(dir11);
+            root.Directories.Add(dir1);
+            root.Directories.Add(dir2);
+            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", NormalizedPath = "/dir1/file1".NormalizeCaseInvariant() }, DateTime.Now, 42);
+            dir1.Files.Add(file1);
+
+
+            //ACT
+            var repository = CreateInstance();
+            repository.AddRecursively(root);
+
+            //ASSERT
+            Assert.Single(repository.Files);
+            Assert.Single(repository.FileInstancess);
+            Assert.Equal(4, repository.Directories.Count());
+            Assert.Equal(4, repository.DirectorieInstances.Count());
+
+            Assert.NotEqual(0, root.Id);
+            Assert.NotEqual(0, root.Directory.Id);
+            Assert.NotEqual(0, dir1.Id);
+            Assert.NotEqual(0, dir1.Directory.Id);
+            Assert.NotEqual(0, dir11.Id);
+            Assert.NotEqual(0, dir11.Directory.Id);
+            Assert.NotEqual(0, dir2.Id);
+            Assert.NotEqual(0, dir2.Directory.Id);
+            Assert.NotEqual(0, file1.Id);
+            Assert.NotEqual(0, file1.File.Id);
+        }
     }
 }

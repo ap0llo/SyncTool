@@ -4,12 +4,8 @@ namespace SyncTool.Sql.Model
 {
     public class FileInstanceDo
     {
-        public const string TableName = "FileInstances";
-
         public int Id { get; set; }
-
-        public int FileId { get; set; }
-
+        
         public FileDo File { get; set; }
                 
         public long LastWriteTimeTicks { get; set; }
