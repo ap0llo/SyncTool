@@ -192,7 +192,7 @@ namespace SyncTool.Sql.Services
             instanceDo = context
                 .FileInstances
                 .Where(instance => instance.File.Id == fileDo.Id)
-                .Where(instance => instance.Length == file.Length && instance.LastWriteTimeUtc == file.LastWriteTime.ToUniversalTime())
+                .Where(instance => instance.Length == file.Length && instance.LastWriteTimeTicks == file.LastWriteTime.Ticks)
                 .SingleOrDefault();                               
                 
             if (instanceDo == null)

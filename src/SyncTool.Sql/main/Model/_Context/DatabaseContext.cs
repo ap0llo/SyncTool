@@ -25,7 +25,7 @@ namespace SyncTool.Sql.Model
             modelBuilder.Entity<FileSystemHistoryDo>().Property(e => e.Version).IsConcurrencyToken();
             
             modelBuilder.Entity<FileInstanceDo>().HasOne(e => e.File).WithMany(e => e.Instances);
-            modelBuilder.Entity<FileInstanceDo>().Property(e => e.LastWriteTimeUtc).IsRequired();
+            modelBuilder.Entity<FileInstanceDo>().Property(e => e.LastWriteTimeTicks).IsRequired();
             modelBuilder.Entity<FileInstanceDo>().Property(e => e.Length).IsRequired();
 
             modelBuilder.Entity<FileDo>().HasAlternateKey(c => c.NormalizedPath);

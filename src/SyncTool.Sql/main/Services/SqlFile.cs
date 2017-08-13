@@ -12,7 +12,7 @@ namespace SyncTool.Sql.Services
         readonly FileInstanceDo m_FileDo;
 
         //TODO: Special-casing DateTime.MinValue seems wrong, needs to be investigated
-        public DateTime LastWriteTime => m_FileDo.LastWriteTimeUtc == DateTime.MinValue ? DateTime.MinValue : m_FileDo.LastWriteTimeUtc.ToLocalTime();
+        public DateTime LastWriteTime => m_FileDo.LastWriteTimeTicks == 0 ? DateTime.MinValue : new DateTime(m_FileDo.LastWriteTimeTicks, DateTimeKind.Utc);
 
         public long Length => m_FileDo.Length;
 

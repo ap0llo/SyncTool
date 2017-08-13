@@ -5,6 +5,8 @@ namespace SyncTool.Sql.Model
 {
     public class DirectoryDo
     {
+        public const string TableName = "Directories";
+
         public int Id { get; set; }
 
         public string NormalizedPath { get; set; }

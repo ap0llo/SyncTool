@@ -9,6 +9,8 @@ namespace SyncTool.Sql.Model
 {
     public class FileDo
     {
+        public const string TableName = "Files";
+
         public int Id { get; set; }
 
         public string NormalizedPath { get; set; }
