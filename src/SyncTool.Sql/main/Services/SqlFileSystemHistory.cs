@@ -71,12 +71,42 @@ namespace SyncTool.Sql.Services
 
         public string[] GetChangedFiles(string toId)
         {
-            throw new NotImplementedException();
+            var changedFiles = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+            
+            // load snapshot to ensure it exists
+            var toSnapshot = GetSnapshotDo(ParseId(toId));
+
+            // iterate over all snpshot and get the changed files for every item
+            var currentSnapshot = toSnapshot;
+            while (currentSnapshot != null)
+            {
+                changedFiles.AddAll(m_SnapshotRepository.GetChangedFiles(currentSnapshot));
+                currentSnapshot = m_SnapshotRepository.GetPrecedingSnapshot(currentSnapshot);
+            }
+
+            return changedFiles.ToArray();            
         }
 
         public string[] GetChangedFiles(string fromId, string toId)
         {
-            throw new NotImplementedException();
+            var changedFiles = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
+            // load snapshots to ensure they exists
+            var fromSnapshot = GetSnapshotDo(ParseId(fromId));
+            var toSnapshot = GetSnapshotDo(ParseId(toId));
+
+            if(fromSnapshot.SequenceNumber >= toSnapshot.SequenceNumber)
+                throw new InvalidRangeException($"Snapshot {toId} is not an descendant of {fromId}");
+
+            // iterate over all snpshot and get the changed files for every item
+            var currentSnapshot = toSnapshot;            
+            while (currentSnapshot.SequenceNumber > fromSnapshot.SequenceNumber)
+            {
+                changedFiles.AddAll(m_SnapshotRepository.GetChangedFiles(currentSnapshot));                
+                currentSnapshot = m_SnapshotRepository.GetPrecedingSnapshot(currentSnapshot);
+            }
+
+            return changedFiles.ToArray();
         }
 
         public IFileSystemDiff GetChanges(string toId, string[] pathFilter = null)
@@ -96,10 +126,18 @@ namespace SyncTool.Sql.Services
         }
 
 
-        static int ParseId(string id) => 
-            !String.IsNullOrWhiteSpace(id) 
-                ? int.Parse(id)
-                : throw new ArgumentNullException(nameof(id), "Value cannot be null or whitespace");
+        static int ParseId(string id)
+        {
+            if(String.IsNullOrWhiteSpace(id))
+                throw new ArgumentNullException(nameof(id), "Value cannot be null or whitespace");
+
+            if (!int.TryParse(id, out var result))
+            {
+                throw new SnapshotNotFoundException(id);
+            }
+
+            return result;
+        }
 
         FileSystemSnapshotDo GetSnapshotDo(int id) => 
             m_SnapshotRepository.GetSnapshotOrDefault(m_HistoryDo.Id, id) ?? throw new SnapshotNotFoundException(id.ToString());

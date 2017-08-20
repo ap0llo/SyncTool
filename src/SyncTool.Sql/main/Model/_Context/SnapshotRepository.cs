@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Markup;
 using Dapper;
 using static SyncTool.Sql.Model.TypeMapper;
 
@@ -13,6 +12,7 @@ namespace SyncTool.Sql.Model
         const string s_SnapshotId = "SnapshotId";
         const string s_FileInstanceId = "FileInstanceId";
         const string s_TmpId = "tmpId";
+        const string s_FileId = "FileId";
 
         readonly IDatabaseContextFactory m_ConnectionFactory;
 
@@ -175,6 +175,64 @@ namespace SyncTool.Sql.Model
                     LIMIT 2
                 ",
                 new { historyId = snapshot.HistoryId , sequenceNumber = snapshot.SequenceNumber });
+            }
+        }
+
+        public IEnumerable<string> GetChangedFiles(FileSystemSnapshotDo snapshot)
+        {
+            using (var connection = m_ConnectionFactory.OpenConnection())
+            {
+                //TODO: Try to optimize query to avoid calling GetPrecedingSnapshot()
+                var precedingSnapshot = GetPrecedingSnapshot(snapshot);
+
+                string query;
+                if (precedingSnapshot == null)
+                {
+                    query = $@"
+                        SELECT * 
+                        FROM {Table<FileDo>()}
+                        WHERE {nameof(FileDo.Id)} IN (
+                            SELECT {s_FileId} 
+                            FROM {Table<FileInstanceDo>()}
+                            WHERE {nameof(FileInstanceDo.Id)} IN (
+                                    SELECT {s_FileInstanceId} 
+                                    FROM {s_IncludesFileInstance}
+                                    WHERE {s_SnapshotId} = {snapshot.Id}
+                                )                            
+                        );";
+                }
+                else
+                {
+                    //TODO: Optimize query
+                    query = $@"
+                        SELECT * 
+                        FROM {Table<FileDo>()}
+                        WHERE {nameof(FileDo.Id)} IN (
+                            SELECT {s_FileId} 
+                            FROM {Table<FileInstanceDo>()}
+                            WHERE ({nameof(FileInstanceDo.Id)} IN (
+                                    SELECT {s_FileInstanceId} 
+                                    FROM {s_IncludesFileInstance}
+                                    WHERE {s_SnapshotId} = {snapshot.Id}
+                                ) 
+                            AND {nameof(FileInstanceDo.Id)} NOT IN (
+                                    SELECT {s_FileInstanceId} 
+                                    FROM {s_IncludesFileInstance}
+                                    WHERE {s_SnapshotId} = {precedingSnapshot.Id}
+                                ))
+                            OR ({nameof(FileInstanceDo.Id)} IN (
+                                    SELECT {s_FileInstanceId} 
+                                    FROM {s_IncludesFileInstance}
+                                    WHERE {s_SnapshotId} = {precedingSnapshot.Id}
+                                ) 
+                            AND {nameof(FileInstanceDo.Id)} NOT IN (
+                                    SELECT {s_FileInstanceId} 
+                                    FROM {s_IncludesFileInstance}
+                                    WHERE {s_SnapshotId} = {snapshot.Id}
+                                ))
+                        );";                    
+                }                
+                return connection.Query<FileDo>(query).Select(x => x.Path).ToArray();
             }
         }
     }

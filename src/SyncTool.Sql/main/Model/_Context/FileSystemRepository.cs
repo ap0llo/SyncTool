@@ -77,7 +77,8 @@ namespace SyncTool.Sql.Model
                     CREATE TABLE IF NOT EXISTS {Table<FileDo>()} (                
                         {nameof(FileDo.Id)} INTEGER PRIMARY KEY,
                         {nameof(FileDo.Name)} TEXT NOT NULL,
-                        {nameof(FileDo.NormalizedPath)} TEXT UNIQUE NOT NULL);
+                        {nameof(FileDo.NormalizedPath)} TEXT UNIQUE NOT NULL,
+                        {nameof(FileDo.Path)} TEXT NOT NULL);
 
                     CREATE TABLE IF NOT EXISTS {Table<DirectoryDo>()} (                
                         {nameof(DirectoryDo.Id)} INTEGER PRIMARY KEY,
@@ -297,14 +298,16 @@ namespace SyncTool.Sql.Model
                     
                     INSERT OR IGNORE INTO {Table<FileDo>()} (
                         {nameof(FileDo.Name)},
-                        {nameof(FileDo.NormalizedPath)} )
-                    VALUES (@name, @path) ;
+                        {nameof(FileDo.NormalizedPath)},
+                        {nameof(FileDo.Path)} )
+                    VALUES (@name, @normalizedPath, @path) ;
                     
                     SELECT {nameof(FileDo.Id)} FROM {Table<FileDo>()}
-                    WHERE {nameof(FileDo.NormalizedPath)} = @path;",
+                    WHERE {nameof(FileDo.NormalizedPath)} = @normalizedPath;",
 
-                    ("name", file.Name),
-                    ("path", file.NormalizedPath)
+                    ("name", file.Name),          
+                    ("path", file.Path),
+                    ("normalizedPath", file.NormalizedPath)
                 );
         }
 

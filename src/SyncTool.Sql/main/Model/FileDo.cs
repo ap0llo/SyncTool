@@ -10,6 +10,8 @@ namespace SyncTool.Sql.Model
 
         public string NormalizedPath { get; set; }
 
+        public string Path { get; set; }
+
         public string Name { get; set; }
 
         public List<FileInstanceDo> Instances { get; set; }
@@ -24,6 +26,7 @@ namespace SyncTool.Sql.Model
             return new FileDo()
             {
                 Name = file.Name,
+                Path = file.Path,
                 NormalizedPath = file.Path.NormalizeCaseInvariant(),
                 Instances = new List<FileInstanceDo>()
             };

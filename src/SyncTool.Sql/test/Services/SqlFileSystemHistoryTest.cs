@@ -564,7 +564,7 @@ namespace SyncTool.Sql.Test.Services
 
         #region GetChangedFiles
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChangedFiles_throws_a_SnapshotNotFoundException_is_the_Id_is_unknown()
         {
             Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChangedFiles("someId", "someOtherId"));
@@ -588,7 +588,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChangedFiles("someId"));
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChangedFiles_detects_modification_of_files()
         {
             //ARRANGE
@@ -614,7 +614,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Equal(state2.GetFile(s_File1).Path, changedFiles.Single());
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChangedFiles_detects_additions_of_files()
         {
             //ARRANGE
@@ -643,7 +643,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Equal(state2.GetFile(s_File2).Path, changedFiles.Single());
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChangedFiles_detects_deletions_of_files()
         {
             //ARRANGE
@@ -665,7 +665,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Equal(state1.GetFile(s_File1).Path, changedFiles.Single());
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChangedFiles_ignores_Additions_of_empty_directories()
         {
             //ARRANGE
@@ -685,7 +685,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Empty(changedFiles);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChangedFiles_ignores_Deletions_of_empty_directories()
         {
             //ARRANGE
@@ -705,8 +705,8 @@ namespace SyncTool.Sql.Test.Services
             //ASSERT
             Assert.Empty(changedFiles);
         }
-       
-        [Fact(Skip = "Not implemented yet")]
+
+        [Fact]
         public void GetChangedFiles_with_single_id_gets_all_changes_since_the_initial_commit()
         {
             //ARRANGE
@@ -725,7 +725,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Single(changedFiles);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChangedFiles_Multiple_changes_to_the_same_file()
         {
             //ARRANGE
@@ -749,7 +749,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Single(changedFiles);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChangedFiles_A_file_gets_added_modified_and_deleted()
         {
             //ARRANGE
@@ -778,7 +778,7 @@ namespace SyncTool.Sql.Test.Services
             // addition            
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChangedFiles_A_file_gets_added_modified_and_deleted_between_snapshots()
         {
             //ARRANGE
@@ -809,7 +809,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Single(changedFiles);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChangedFiles_ChangeList_Paths_are_rooted()
         {
             var state = new Directory(s_Dir1)
@@ -825,8 +825,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.True(changedFiles.Single().StartsWith("/"));
         }
 
-
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChangedFiles_throws_InvalidRangeException()
         {
             var state1 = new Directory(s_Dir1) { dir1 => new EmptyFile(dir1, "file1") };
