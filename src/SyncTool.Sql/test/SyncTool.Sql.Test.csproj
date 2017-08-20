@@ -19,7 +19,7 @@
       <SqliteBinary Include="$(NugetPackageRoot)sqlite\3.13.0\runtimes\**\sqlite3.dll" />
     </ItemGroup>
     <Error Text="Sqlite binaries not found" Condition="'@(SqliteBinary)' == ''" />
-    <Copy SourceFiles="@(SqliteBinary)" DestinationFolder="$(OutputPath)runtimes\%(SqliteBinary.RecursiveDir)" />
+    <Copy SourceFiles="@(SqliteBinary)" DestinationFolder="$(OutputPath)runtimes\%(SqliteBinary.RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

@@ -4,9 +4,6 @@ namespace SyncTool.Sql.Model
 {
     public class SyncFolderDo
     {
-        internal const string TableName = "SyncFolders";
-        
-
         public string Name { get; set; }
 
         public string Path { get; set; }

@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace SyncTool.Sql.Model
 {
@@ -13,6 +14,7 @@ namespace SyncTool.Sql.Model
         public long Length { get; set; }
 
 
+        [UsedImplicitly]
         public FileInstanceDo()
         {
         }

@@ -10,21 +10,18 @@ namespace SyncTool.Sql.TestHelpers
 {
     public class SqlTestBase
     {
-        private class TestContextFactory : IDatabaseContextFactory
+        class TestContextFactory : IDatabaseContextFactory
         {
-            private readonly string m_DatabaseName;
-            private readonly string m_SqlitePath;
+            readonly string m_DatabaseName;
+            readonly string m_SqlitePath;
 
             public TestContextFactory(string databaseName)
             {
                 m_DatabaseName = databaseName;
                 m_SqlitePath = Path.Combine(Path.GetTempPath(), m_DatabaseName + ".db");
-                
-
             }
 
-            public DatabaseContext CreateContext() => new InMemoryDatabaseContext(m_DatabaseName);
-
+          
             public IDbConnection OpenConnection()
             {
                 var connectionStringBuilder = new SqliteConnectionStringBuilder()
@@ -54,8 +51,6 @@ namespace SyncTool.Sql.TestHelpers
 
         static void LoadSqlite()
         {
-            var rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
             var relativePath = IntPtr.Size == 8
                 ? "runtimes\\win7-x64\\native"
                 : "runtimes\\win7-x86\\native";

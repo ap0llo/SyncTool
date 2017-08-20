@@ -26,19 +26,17 @@ namespace SyncTool.Sql.Test.Services
 
         public SqlFileSystemHistoryTest()
         {
+            var historyRepository = new FileSystemHistoryRepository(ContextFactory);
+            var fileSystemRepository = new FileSystemRepository(ContextFactory);
+            var snapshotRepository = new SnapshotRepository(ContextFactory);
+
             var historyDo = new FileSystemHistoryDo("History1");
-
-            using (var context = ContextFactory.CreateContext())
-            {
-                context.FileSystemHistories.Add(historyDo);
-                context.SaveChanges();
-
-                Debug.Assert(historyDo.Id != 0);
-            }
-
+            historyRepository.AddItem(historyDo);
+            
             m_Instance = new SqlFileSystemHistory(
-                ContextFactory,
-                (histoy, snapshotDo) => new SqlFileSystemSnapshot(ContextFactory, histoy, snapshotDo),
+                snapshotRepository,
+                fileSystemRepository,                                
+                (history, snapshotDo) => new SqlFileSystemSnapshot(fileSystemRepository, history, snapshotDo),
                 historyDo);
         }
 

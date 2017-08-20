@@ -1,16 +1,11 @@
 ﻿using SyncTool.FileSystem;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace SyncTool.Sql.Model
 {
     public class FileDo
     {
-        
-
         public int Id { get; set; }
 
         public string NormalizedPath { get; set; }
@@ -19,7 +14,7 @@ namespace SyncTool.Sql.Model
 
         public List<FileInstanceDo> Instances { get; set; }
 
-
+        [UsedImplicitly]
         public FileDo()
         {
         }

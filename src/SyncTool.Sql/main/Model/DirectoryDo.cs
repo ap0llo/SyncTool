@@ -1,5 +1,6 @@
 ﻿using SyncTool.FileSystem;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace SyncTool.Sql.Model
 {
@@ -15,6 +16,7 @@ namespace SyncTool.Sql.Model
         public List<DirectoryInstanceDo> Instances { get; set; } = new List<DirectoryInstanceDo>();
 
         
+        [UsedImplicitly]
         public DirectoryDo()
         {
         }

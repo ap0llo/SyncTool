@@ -4,10 +4,7 @@ using SyncTool.Sql.Model;
 using SyncTool.Sql.Services;
 using SyncTool.Sql.TestHelpers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace SyncTool.Sql.Test.Services
@@ -18,9 +15,16 @@ namespace SyncTool.Sql.Test.Services
     public class SqlHistoryServiceTest : SqlTestBase
     {
 
-        SqlHistoryService CreateInstance() => new SqlHistoryService(
-            new FileSystemHistoryRepository(ContextFactory), 
-            historyDo => new SqlFileSystemHistory(ContextFactory, (_,__) => null, historyDo));
+        SqlHistoryService CreateInstance()
+        {
+            var historyRepository = new FileSystemHistoryRepository(ContextFactory);
+            var fileSystemRepository = new FileSystemRepository(ContextFactory);
+            var snapshotRepository = new SnapshotRepository(ContextFactory);
+
+            return new SqlHistoryService(
+                historyRepository,
+                historyDo => new SqlFileSystemHistory(snapshotRepository, fileSystemRepository, (_, __) => null, historyDo));
+        }
 
         [Fact]
         public void CreateHistory_can_create_multiple_histories()

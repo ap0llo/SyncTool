@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SyncTool.Sql.Model
 {
@@ -13,7 +10,10 @@ namespace SyncTool.Sql.Model
             {typeof(DirectoryInstanceDo), "DirectoryInstances" },
             {typeof(DirectoryDo), "Directories" },
             {typeof(FileInstanceDo), "FileInstances" },
-            {typeof(FileDo), "Files" }
+            {typeof(FileDo), "Files" },
+            {typeof(FileSystemHistoryDo), "FileSystemHistories" },
+            {typeof(SyncFolderDo), "SyncFolders" },
+            {typeof(FileSystemSnapshotDo), "FileSystemSnapshots" }
         };
 
         public static string Table<T>() => s_TableNames[typeof(T)];

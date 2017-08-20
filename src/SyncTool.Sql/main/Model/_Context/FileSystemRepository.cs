@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using static SyncTool.Sql.Model.TypeMapper;
 
 namespace SyncTool.Sql.Model
@@ -13,8 +14,10 @@ namespace SyncTool.Sql.Model
         const string s_ContainsDirectory = "ContainsDirectory";
         const string s_ContainsFile = "ContainsFile";
         const string s_TmpId = "tmpId";
+        const string s_FileId = "FileId";
+        const string s_DirectoryId = "DirectoryId";
 
-        private readonly IDatabaseContextFactory m_ConnectionFactory;
+        readonly IDatabaseContextFactory m_ConnectionFactory;
 
 
         public IEnumerable<FileDo> Files
@@ -39,8 +42,6 @@ namespace SyncTool.Sql.Model
             }
         }
 
-
-
         public IEnumerable<FileInstanceDo> FileInstancess
         {
             get
@@ -63,6 +64,7 @@ namespace SyncTool.Sql.Model
             }
         }
 
+
         public FileSystemRepository(IDatabaseContextFactory connectionFactory)
         {
             m_ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
@@ -84,20 +86,20 @@ namespace SyncTool.Sql.Model
                 
                     CREATE TABLE IF NOT EXISTS {Table <FileInstanceDo>()} (                
                         {nameof(FileInstanceDo.Id)} INTEGER PRIMARY KEY,
-                        {nameof(FileInstanceDo.File)}Id INTEGER NOT NULL,
+                        {s_FileId} INTEGER NOT NULL,
                         {nameof(FileInstanceDo.LastWriteTimeTicks)} INTEGER NOT NULL,
                         {nameof(FileInstanceDo.Length)} INTEGER NOT NULL,
-                        FOREIGN KEY ({nameof(FileInstanceDo.File)}Id) REFERENCES {Table<FileDo>()}({nameof(FileDo.Id)}),
+                        FOREIGN KEY ({s_FileId}) REFERENCES {Table<FileDo>()}({nameof(FileDo.Id)}),
                         CONSTRAINT FileInstance_Unique UNIQUE (
-                            {nameof(FileInstanceDo.File)}Id, 
+                            {s_FileId}, 
                             {nameof(FileInstanceDo.LastWriteTimeTicks)}, 
                             {nameof(FileInstanceDo.Length)}) ); 
 
                     CREATE TABLE IF NOT EXISTS {Table<DirectoryInstanceDo>()} (
                         {nameof(DirectoryInstanceDo.Id)} INTEGER PRIMARY KEY,
-                        {nameof(DirectoryInstanceDo.Directory)}Id INTEGER NOT NULL,    
+                        {s_DirectoryId} INTEGER NOT NULL,    
                         {s_TmpId} TEXT UNIQUE,
-                        FOREIGN KEY ({nameof(DirectoryInstanceDo.Directory)}Id) REFERENCES {Table<DirectoryDo>()}({nameof(DirectoryDo.Id)}));
+                        FOREIGN KEY ({s_DirectoryId}) REFERENCES {Table<DirectoryDo>()}({nameof(DirectoryDo.Id)}));
 
                     CREATE TABLE IF NOT EXISTS {s_ContainsDirectory} (
                         {s_ParentId} INTEGER NOT NULL,
@@ -138,7 +140,10 @@ namespace SyncTool.Sql.Model
 
             if (directory.Id != 0)
                 throw new ArgumentException("Cannot add directory with id != 0", nameof(directory));
-            
+
+            if (String.IsNullOrWhiteSpace(directory.NormalizedPath))
+                throw new ArgumentException($"{nameof(directory.NormalizedPath)} must not be empty");
+
             using (var connection = m_ConnectionFactory.OpenConnection())
             {
                 Insert(connection, directory);
@@ -161,23 +166,107 @@ namespace SyncTool.Sql.Model
         
         public void AddRecursively(DirectoryInstanceDo rootDirectory)
         {
-
-
             using (var connection = m_ConnectionFactory.OpenConnection())
             using (var transaction = connection.BeginTransaction())
             {                
                 Insert(connection, rootDirectory);               
                 transaction.Commit();
             }
+        }
 
+        public DirectoryInstanceDo GetDirectoryInstance(int id)
+        {
+            using (var connection = m_ConnectionFactory.OpenConnection())
+            {
+                return connection.QuerySingle<DirectoryInstanceDo>($@"
+                    SELECT * 
+                    FROM {Table<DirectoryInstanceDo>()}
+                    WHERE {nameof(DirectoryInstanceDo.Id)} = @id;
+                ", 
+                new { id = id });
+            }
+        }
+
+        public void LoadDirectories(DirectoryInstanceDo parentDirectoryInstance)
+        {
+            using (var connection = m_ConnectionFactory.OpenConnection())
+            {
+                var directories = connection.Query<DirectoryInstanceDo>($@"    
+                    SELECT * 
+                    FROM {Table<DirectoryInstanceDo>()}
+                    WHERE {nameof(DirectoryInstanceDo.Id)} IN (
+                        SELECT {s_ChildId}
+                        FROM {s_ContainsDirectory}
+                        WHERE {s_ParentId} = @id        
+                    );
+                ",
+                new { id = parentDirectoryInstance.Id });
+
+                parentDirectoryInstance.Directories = directories.ToList();
+
+            }
+        }
+
+        public void LoadDirectory(DirectoryInstanceDo directoryInstance)
+        {
+            using (var connection = m_ConnectionFactory.OpenConnection())
+            {
+                var dir = connection.QuerySingle<DirectoryDo>($@"
+                    SELECT * 
+                    FROM {Table<DirectoryDo>()}
+                    WHERE {nameof(DirectoryDo.Id)} IN (
+                        SELECT {s_DirectoryId}
+                        FROM {Table<DirectoryInstanceDo>()}
+                        WHERE {nameof(DirectoryInstanceDo.Id)} = @id
+                    )
+                ", 
+                new {id = directoryInstance.Id});
+
+                directoryInstance.Directory = dir;
+            }
+        }
+
+        public void LoadFiles(DirectoryInstanceDo parentDirectoryInstance)
+        {
+            using (var connection = m_ConnectionFactory.OpenConnection())
+            {
+                var files = connection.Query<FileInstanceDo>($@"    
+                    SELECT * 
+                    FROM {Table<FileInstanceDo>()}
+                    WHERE {nameof(FileInstanceDo.Id)} IN (
+                        SELECT {s_ChildId}
+                        FROM {s_ContainsFile}
+                        WHERE {s_ParentId} = @id        
+                    );
+                ",
+                    new { id = parentDirectoryInstance.Id });
+
+                parentDirectoryInstance.Files = files.ToList();
+            }
+        }
+
+        public void LoadFile(FileInstanceDo fileInstance)
+        {        
+            using (var connection = m_ConnectionFactory.OpenConnection())
+            {
+                var file = connection.QuerySingle<FileDo>($@"
+                    SELECT * 
+                    FROM {Table<FileDo>()}
+                    WHERE {nameof(FileDo.Id)} IN (
+                        SELECT {s_FileId} 
+                        FROM {Table<FileInstanceDo>()}
+                        WHERE {nameof(FileInstanceDo.Id)} = @id
+                    )
+                ",  
+                new { id = fileInstance.Id });
+
+                fileInstance.File = file;                    
+            }                
         }
 
 
         void Insert(IDbConnection connection, DirectoryDo directory)
-        {
-            if (String.IsNullOrWhiteSpace(directory.NormalizedPath))
-                throw new ArgumentException($"{nameof(directory.NormalizedPath)} must not be empty");
-
+        {            
             if (directory.Id != 0)
                 return;
 
@@ -238,10 +327,10 @@ namespace SyncTool.Sql.Model
 
             var tmpId = Guid.NewGuid().ToString();
             directoryInstance.Id = connection.ExecuteScalar<int>($@"
-                    INSERT INTO {Table<DirectoryInstanceDo>()} ({nameof(DirectoryInstanceDo.Directory)}Id, {s_TmpId})
+                    INSERT INTO {Table<DirectoryInstanceDo>()} ({s_DirectoryId}, {s_TmpId})
                     VALUES (@directoryId, @tmpId);
 
-                    SELECT {nameof(DirectoryInstanceDo.Directory)}Id 
+                    SELECT {nameof(DirectoryInstanceDo.Id)} 
                     FROM {Table<DirectoryInstanceDo>()}
                     WHERE {s_TmpId} = @tmpId",
 

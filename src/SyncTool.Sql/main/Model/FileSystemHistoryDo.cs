@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using JetBrains.Annotations;
 
 namespace SyncTool.Sql.Model
 {
     public class FileSystemHistoryDo
-    {
-        public const string TableName = "FileSystemHistories";
-
-
+    {        
         public int Id { get; set; }
         
         public string Name { get; set; }
@@ -20,6 +13,7 @@ namespace SyncTool.Sql.Model
         public int Version { get; set; }
 
 
+        [UsedImplicitly]
         public FileSystemHistoryDo()
         {
         }

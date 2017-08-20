@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using static SyncTool.Sql.Model.TypeMapper;
 
 namespace SyncTool.Sql.Model
 {
@@ -16,7 +16,7 @@ namespace SyncTool.Sql.Model
             {
                 using (var connection = m_ConnectionFactory.OpenConnection())
                 {
-                    return connection.Query<SyncFolderDo>($"SELECT * FROM {SyncFolderDo.TableName}");               
+                    return connection.Query<SyncFolderDo>($"SELECT * FROM {Table<SyncFolderDo>()}");               
                 }                
             }
         }
@@ -30,7 +30,7 @@ namespace SyncTool.Sql.Model
             using (var connection = m_ConnectionFactory.OpenConnection())
             {
                 connection.ExecuteNonQuery($@"                
-                    CREATE TABLE IF NOT EXISTS {SyncFolderDo.TableName} (
+                    CREATE TABLE IF NOT EXISTS {Table<SyncFolderDo>()} (
                         {nameof(SyncFolderDo.Name)} TEXT PRIMARY KEY,
                         {nameof(SyncFolderDo.Path)} TEXT,
                         {nameof(SyncFolderDo.Version)} INTEGER NOT NULL DEFAULT 0)"
@@ -44,7 +44,7 @@ namespace SyncTool.Sql.Model
             using(var connection = m_ConnectionFactory.OpenConnection())
             {
                 return connection.QuerySingleOrDefault<SyncFolderDo>($@"
-                            SELECT * FROM {SyncFolderDo.TableName}
+                            SELECT * FROM {Table<SyncFolderDo>()}
                             WHERE lower({nameof(SyncFolderDo.Name)}) = lower(@name)", 
                             new { name }
                         );
@@ -57,7 +57,7 @@ namespace SyncTool.Sql.Model
             {
                 return connection.QuerySingle<SyncFolderDo>($@"
 
-                    INSERT INTO {SyncFolderDo.TableName} (
+                    INSERT INTO {Table<SyncFolderDo>()} (
                         {nameof(SyncFolderDo.Name)}, 
                         {nameof(SyncFolderDo.Path)}, 
                         {nameof(SyncFolderDo.Version)}
@@ -68,7 +68,7 @@ namespace SyncTool.Sql.Model
                         1
                     );
 
-                    SELECT * FROM {SyncFolderDo.TableName} 
+                    SELECT * FROM {Table<SyncFolderDo>()} 
                     WHERE {nameof(SyncFolderDo.Name)} = @{nameof(SyncFolderDo.Name)} AND 
                           {nameof(SyncFolderDo.Version)} = 1;  ", 
                     item
@@ -83,7 +83,7 @@ namespace SyncTool.Sql.Model
                 var transaction = connection.BeginTransaction();
 
                 var changedRows = connection.ExecuteNonQuery($@"
-                    UPDATE {SyncFolderDo.TableName}                    
+                    UPDATE {Table<SyncFolderDo>()}                    
                     SET {nameof(SyncFolderDo.Path)} = @path,
                         {nameof(SyncFolderDo.Version)} = @newVersion
                     WHERE {nameof(SyncFolderDo.Version)} = @oldVersion AND
