@@ -80,7 +80,7 @@ namespace SyncTool.Sql.Services
             var currentSnapshot = toSnapshot;
             while (currentSnapshot != null)
             {
-                changedFiles.AddAll(m_SnapshotRepository.GetChangedFiles(currentSnapshot));
+                changedFiles.UnionWith(m_SnapshotRepository.GetChangedFiles(currentSnapshot));
                 currentSnapshot = m_SnapshotRepository.GetPrecedingSnapshot(currentSnapshot);
             }
 
@@ -102,7 +102,7 @@ namespace SyncTool.Sql.Services
             var currentSnapshot = toSnapshot;            
             while (currentSnapshot.SequenceNumber > fromSnapshot.SequenceNumber)
             {
-                changedFiles.AddAll(m_SnapshotRepository.GetChangedFiles(currentSnapshot));                
+                changedFiles.UnionWith(m_SnapshotRepository.GetChangedFiles(currentSnapshot));                
                 currentSnapshot = m_SnapshotRepository.GetPrecedingSnapshot(currentSnapshot);
             }
 
