@@ -181,57 +181,56 @@ namespace SyncTool.Sql.Model
         public IEnumerable<string> GetChangedFiles(FileSystemSnapshotDo snapshot)
         {
             using (var connection = m_ConnectionFactory.OpenConnection())
-            {
-                //TODO: Try to optimize query to avoid calling GetPrecedingSnapshot()
-                var precedingSnapshot = GetPrecedingSnapshot(snapshot);
+            {                                                                
+                var query = $@"
 
-                string query;
-                if (precedingSnapshot == null)
-                {
-                    query = $@"
-                        SELECT * 
-                        FROM {Table<FileDo>()}
-                        WHERE {nameof(FileDo.Id)} IN (
-                            SELECT {s_FileId} 
-                            FROM {Table<FileInstanceDo>()}
-                            WHERE {nameof(FileInstanceDo.Id)} IN (
-                                    SELECT {s_FileInstanceId} 
-                                    FROM {s_IncludesFileInstance}
-                                    WHERE {s_SnapshotId} = {snapshot.Id}
-                                )                            
-                        );";
-                }
-                else
-                {
-                    //TODO: Optimize query
-                    query = $@"
-                        SELECT * 
-                        FROM {Table<FileDo>()}
-                        WHERE {nameof(FileDo.Id)} IN (
-                            SELECT {s_FileId} 
-                            FROM {Table<FileInstanceDo>()}
-                            WHERE ({nameof(FileInstanceDo.Id)} IN (
-                                    SELECT {s_FileInstanceId} 
-                                    FROM {s_IncludesFileInstance}
-                                    WHERE {s_SnapshotId} = {snapshot.Id}
-                                ) 
-                            AND {nameof(FileInstanceDo.Id)} NOT IN (
-                                    SELECT {s_FileInstanceId} 
-                                    FROM {s_IncludesFileInstance}
-                                    WHERE {s_SnapshotId} = {precedingSnapshot.Id}
-                                ))
-                            OR ({nameof(FileInstanceDo.Id)} IN (
-                                    SELECT {s_FileInstanceId} 
-                                    FROM {s_IncludesFileInstance}
-                                    WHERE {s_SnapshotId} = {precedingSnapshot.Id}
-                                ) 
-                            AND {nameof(FileInstanceDo.Id)} NOT IN (
-                                    SELECT {s_FileInstanceId} 
-                                    FROM {s_IncludesFileInstance}
-                                    WHERE {s_SnapshotId} = {snapshot.Id}
-                                ))
-                        );";                    
-                }                
+                    -- query database for preceding snapshot
+                    WITH precedingSnapshotId AS 
+                    (
+                        SELECT {nameof(FileSystemSnapshotDo.Id)} FROM {Table<FileSystemSnapshotDo>()}
+                        WHERE {nameof(FileSystemSnapshotDo.HistoryId)} = {snapshot.HistoryId} AND
+                              {nameof(FileSystemSnapshotDo.SequenceNumber)} < {snapshot.SequenceNumber}
+                        ORDER BY {nameof(FileSystemSnapshotDo.SequenceNumber)} DESC
+                        LIMIT 1 
+                    ),
+
+                    -- get ids of file instances included in the current snapshot
+                    fileInstanceIds AS 
+                    (
+                        SELECT {s_FileInstanceId} FROM {s_IncludesFileInstance}
+                        WHERE {s_SnapshotId} = {snapshot.Id} 
+                    ),
+                    
+                    -- get ids of file instances included in the preceding snapshot
+                    previousFileInstanceIds AS 
+                    (
+                        SELECT {s_FileInstanceId} FROM {s_IncludesFileInstance}
+                        WHERE {s_SnapshotId} IN precedingSnapshotId
+                    ),
+
+                    -- find the instances that are *not* 
+                    -- included in both the current and the preceding snapshot
+                    -- and select the ids of the correspondig file's id
+                    changedFileIds AS 
+                    (
+                        SELECT DISTINCT {s_FileId} FROM {Table<FileInstanceDo>()}
+                        WHERE 
+                        (
+                            {nameof(FileInstanceDo.Id)} IN fileInstanceIds AND
+                            {nameof(FileInstanceDo.Id)} NOT IN previousFileInstanceIds
+                        ) 
+                        OR 
+                        (
+                            {nameof(FileInstanceDo.Id)} IN previousFileInstanceIds AND 
+                            {nameof(FileInstanceDo.Id)} NOT IN fileInstanceIds
+                        )
+                    )
+
+                    -- using the list of ids of changed files, get files from the database
+                    SELECT * FROM {Table<FileDo>()}
+                    WHERE {nameof(FileDo.Id)} IN changedFileIds;
+                        
+                ";                    
                 return connection.Query<FileDo>(query).Select(x => x.Path).ToArray();
             }
         }
