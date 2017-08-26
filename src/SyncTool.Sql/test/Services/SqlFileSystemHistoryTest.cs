@@ -100,7 +100,7 @@ namespace SyncTool.Sql.Test.Services
 
         #region GetChanges
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact(Skip = "Not compeletely implemented yet")]
         public void GetChanges_throws_a_SnapshotNotFoundException_is_the_Id_is_unknown()
         {
             Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges("someId", "someOtherId"));
@@ -129,10 +129,9 @@ namespace SyncTool.Sql.Test.Services
 
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_detects_modification_of_files()
         {
-
             //ARRANGE
 
             var state1 = new Directory(s_Dir1)
@@ -157,8 +156,8 @@ namespace SyncTool.Sql.Test.Services
 
             //ASSERT
 
-            Assert.Equal(diff.FromSnapshot, snapshot1);
-            Assert.Equal(diff.ToSnapshot, snapshot2);
+            Assert.Equal(diff.FromSnapshot.Id, snapshot1.Id);
+            Assert.Equal(diff.ToSnapshot.Id, snapshot2.Id);
 
             Assert.Single(diff.ChangeLists);
             Assert.Single(diff.ChangeLists.Single().Changes);
@@ -168,7 +167,7 @@ namespace SyncTool.Sql.Test.Services
             FileSystemAssert.FileReferenceMatches(state2.GetFile(s_File1), diff.ChangeLists.Single().Changes.Single().ToVersion);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_detects_additions_of_files()
         {
             //ARRANGE
@@ -197,8 +196,8 @@ namespace SyncTool.Sql.Test.Services
 
             //ASSERT
 
-            Assert.Equal(diff.FromSnapshot, snapshot1);
-            Assert.Equal(diff.ToSnapshot, snapshot2);
+            Assert.Equal(diff.FromSnapshot.Id, snapshot1.Id);
+            Assert.Equal(diff.ToSnapshot.Id, snapshot2.Id);
 
             Assert.Single(diff.ChangeLists);
 
@@ -208,7 +207,7 @@ namespace SyncTool.Sql.Test.Services
             FileSystemAssert.FileReferenceMatches(state2.GetFile(s_File2), changes.Single().ToVersion);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_detects_deletions_of_files()
         {
             //ARRANGE
@@ -230,8 +229,8 @@ namespace SyncTool.Sql.Test.Services
 
             //ASSERT
 
-            Assert.Equal(diff.FromSnapshot, snapshot1);
-            Assert.Equal(diff.ToSnapshot, snapshot2);
+            Assert.Equal(diff.FromSnapshot.Id, snapshot1.Id);
+            Assert.Equal(diff.ToSnapshot.Id, snapshot2.Id);
 
             Assert.Single(diff.ChangeLists);
             var changes = diff.ChangeLists.Single().Changes.ToList();
@@ -242,7 +241,7 @@ namespace SyncTool.Sql.Test.Services
             FileSystemAssert.FileReferenceMatches(state1.GetFile(s_File1), changes.Single().FromVersion);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_ignores_Additions_of_empty_directories()
         {
             //ARRANGE
@@ -265,7 +264,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Empty(diff.ChangeLists);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_ignores_Deletions_of_empty_directories()
         {
             //ARRANGE
@@ -289,7 +288,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Empty(diff.ChangeLists);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_with_single_id_gets_all_changes_since_the_initial_commit()
         {
             //ARRANGE
@@ -317,7 +316,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Equal(ChangeType.Added, changes.Single().Type);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_Multiple_changes_to_the_same_file()
         {
             //ARRANGE
@@ -361,7 +360,7 @@ namespace SyncTool.Sql.Test.Services
             FileSystemAssert.FileReferenceMatches(state2.GetFile("file1"), changes[1].ToVersion);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_A_file_gets_added_modified_and_deleted()
         {
             //ARRANGE
@@ -416,7 +415,7 @@ namespace SyncTool.Sql.Test.Services
 
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_A_file_gets_added_modified_and_deleted_between_snapshots()
         {
             //ARRANGE
@@ -446,8 +445,8 @@ namespace SyncTool.Sql.Test.Services
             //ASSERT
 
             Assert.NotNull(diff);
-            Assert.Equal(snapshot0, diff.FromSnapshot);
-            Assert.Equal(snapshot3, diff.ToSnapshot);
+            Assert.Equal(snapshot0.Id, diff.FromSnapshot.Id);
+            Assert.Equal(snapshot3.Id, diff.ToSnapshot.Id);
 
             Assert.Single(diff.ChangeLists);
             var changes = diff.ChangeLists.Single().Changes.ToArray();
@@ -511,7 +510,6 @@ namespace SyncTool.Sql.Test.Services
             Assert.Equal(2, m_Instance.GetChanges(snapshot.Id, new[] { "/dir2/file3", "/file1" }).ChangeLists.Count());
             Assert.Equal(3, m_Instance.GetChanges(snapshot.Id, null).ChangeLists.Count());
         }
-
 
         [Fact(Skip = "Not implemented yet")]
         public void GetChanges_throws_FormatException_if_path_filter_contains_relative_paths()
