@@ -18,9 +18,9 @@ namespace SyncTool.Sql.Test.Model
         
         public SnapshotRepositoryTest()
         {            
-            m_HistoryRepository = new FileSystemHistoryRepository(ContextFactory);
-            m_FileSystemRepository = new FileSystemRepository(ContextFactory);
-            m_Instance = new SnapshotRepository(ContextFactory);
+            m_HistoryRepository = new FileSystemHistoryRepository(Database);
+            m_FileSystemRepository = new FileSystemRepository(Database);
+            m_Instance = new SnapshotRepository(Database);
 
             var historyDo = new FileSystemHistoryDo("history1");
             m_HistoryRepository.AddItem(historyDo);

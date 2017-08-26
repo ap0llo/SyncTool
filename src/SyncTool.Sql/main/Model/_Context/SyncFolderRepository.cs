@@ -7,14 +7,14 @@ namespace SyncTool.Sql.Model
 {
     class SyncFolderRepository
     {
-        readonly IDatabaseContextFactory m_ConnectionFactory;
+        readonly IDatabase m_Database;
 
 
         public IEnumerable<SyncFolderDo> Items
         {
             get
             {
-                using (var connection = m_ConnectionFactory.OpenConnection())
+                using (var connection = m_Database.OpenConnection())
                 {
                     return connection.Query<SyncFolderDo>($"SELECT * FROM {SyncFoldersTable.Name}");               
                 }                
@@ -22,12 +22,12 @@ namespace SyncTool.Sql.Model
         }
 
 
-        public SyncFolderRepository(IDatabaseContextFactory connectionFactory)
+        public SyncFolderRepository(IDatabase database)
         {
-            m_ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+            m_Database = database ?? throw new ArgumentNullException(nameof(database));
 
             //TODO: Should happen on first access??
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 SyncFoldersTable.Create(connection);        
             }
@@ -36,7 +36,7 @@ namespace SyncTool.Sql.Model
 
         public SyncFolderDo GetItemOrDefault(string name)
         {
-            using(var connection = m_ConnectionFactory.OpenConnection())
+            using(var connection = m_Database.OpenConnection())
             {
                 return connection.QuerySingleOrDefault<SyncFolderDo>($@"
                             SELECT * FROM {SyncFoldersTable.Name}
@@ -48,7 +48,7 @@ namespace SyncTool.Sql.Model
 
         public SyncFolderDo AddItem(SyncFolderDo item)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 return connection.QuerySingle<SyncFolderDo>($@"
 
@@ -75,7 +75,7 @@ namespace SyncTool.Sql.Model
 
         public void UpdateItem(SyncFolderDo item)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 var transaction = connection.BeginTransaction();
 

@@ -7,7 +7,7 @@ namespace SyncTool.Sql.Services
     class SqlFile : FileSystemItem, IFile
     {
         readonly FileSystemRepository m_Repository;
-        readonly IDatabaseContextFactory m_ContextFactory;
+        readonly IDatabase m_Database;
         readonly FileInstanceDo m_FileInstance;
 
         //TODO: Special-casing DateTime.MinValue seems wrong, needs to be investigated

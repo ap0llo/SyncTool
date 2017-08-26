@@ -7,14 +7,14 @@ namespace SyncTool.Sql.Model
 {    
     class FileSystemHistoryRepository
     {
-        readonly IDatabaseContextFactory m_ConnectionFactory;
+        readonly IDatabase m_Database;
 
 
         public IEnumerable<FileSystemHistoryDo> Items
         {
             get
             {
-                using (var connection = m_ConnectionFactory.OpenConnection())
+                using (var connection = m_Database.OpenConnection())
                 {
                     return connection.Query<FileSystemHistoryDo>(
                         $"SELECT * FROM {FileSystemHistoriesTable.Name}"
@@ -24,12 +24,12 @@ namespace SyncTool.Sql.Model
         }
 
 
-        public FileSystemHistoryRepository(IDatabaseContextFactory connectionFactory)
+        public FileSystemHistoryRepository(IDatabase database)
         {
-            m_ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+            m_Database = database ?? throw new ArgumentNullException(nameof(database));
 
             //TODO: Should happen on first access??
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 FileSystemHistoriesTable.Create(connection);
             }
@@ -38,7 +38,7 @@ namespace SyncTool.Sql.Model
 
         public FileSystemHistoryDo GetItemOrDefault(string name)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 return connection.QuerySingleOrDefault<FileSystemHistoryDo>($@"
                             SELECT * FROM {FileSystemHistoriesTable.Name}
@@ -50,7 +50,7 @@ namespace SyncTool.Sql.Model
 
         public FileSystemHistoryDo AddItem(FileSystemHistoryDo item)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 return connection.QuerySingle<FileSystemHistoryDo>($@"
 

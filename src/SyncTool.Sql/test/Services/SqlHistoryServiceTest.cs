@@ -17,9 +17,9 @@ namespace SyncTool.Sql.Test.Services
 
         SqlHistoryService CreateInstance()
         {
-            var historyRepository = new FileSystemHistoryRepository(ContextFactory);
-            var fileSystemRepository = new FileSystemRepository(ContextFactory);
-            var snapshotRepository = new SnapshotRepository(ContextFactory);
+            var historyRepository = new FileSystemHistoryRepository(Database);
+            var fileSystemRepository = new FileSystemRepository(Database);
+            var snapshotRepository = new SnapshotRepository(Database);
 
             return new SqlHistoryService(
                 historyRepository,
@@ -53,7 +53,7 @@ namespace SyncTool.Sql.Test.Services
                 historyService.CreateHistory($"history-{i}");
             }
 
-            using (var connection = ContextFactory.OpenConnection())
+            using (var connection = Database.OpenConnection())
             {
                 var count = connection.ExecuteScalar<int>("SELECT count(*) FROM FileSystemHistories");
                 Assert.Equal(numberOfHistoriesToCreate, count);            

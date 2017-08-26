@@ -10,12 +10,12 @@ namespace SyncTool.Sql.TestHelpers
 {
     public class SqlTestBase
     {
-        class TestContextFactory : IDatabaseContextFactory
+        class TestDatabase : IDatabase
         {
             readonly string m_DatabaseName;
             readonly string m_SqlitePath;
 
-            public TestContextFactory(string databaseName)
+            public TestDatabase(string databaseName)
             {
                 m_DatabaseName = databaseName;
                 m_SqlitePath = Path.Combine(Path.GetTempPath(), m_DatabaseName + ".db");
@@ -35,13 +35,12 @@ namespace SyncTool.Sql.TestHelpers
         }
         
         
-        protected IDatabaseContextFactory ContextFactory { get; }
+        protected IDatabase Database { get; }
 
 
         public SqlTestBase()
         {                     
-            ContextFactory = new TestContextFactory(Guid.NewGuid().ToString());
-            
+            Database = new TestDatabase(Guid.NewGuid().ToString());            
         }
 
         static SqlTestBase()

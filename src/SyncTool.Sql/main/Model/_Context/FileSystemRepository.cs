@@ -9,13 +9,13 @@ namespace SyncTool.Sql.Model
 {
     class FileSystemRepository
     {
-        readonly IDatabaseContextFactory m_ConnectionFactory;
+        readonly IDatabase m_Database;
 
         public IEnumerable<FileDo> Files
         {
             get
             {
-                using (var connection = m_ConnectionFactory.OpenConnection())
+                using (var connection = m_Database.OpenConnection())
                 {
                     return connection.Query<FileDo>($"SELECT * FROM {FilesTable.Name}");
                 } 
@@ -26,7 +26,7 @@ namespace SyncTool.Sql.Model
         {
             get
             {
-                using (var connection = m_ConnectionFactory.OpenConnection())
+                using (var connection = m_Database.OpenConnection())
                 {
                     return connection.Query<DirectoryDo>($"SELECT * FROM {DirectoriesTable.Name}");
                 }
@@ -37,7 +37,7 @@ namespace SyncTool.Sql.Model
         {
             get
             {
-                using (var connection = m_ConnectionFactory.OpenConnection())
+                using (var connection = m_Database.OpenConnection())
                 {
                     return connection.Query<FileInstanceDo>($"SELECT * FROM {FileInstancesTable.Name}");
                 }
@@ -48,7 +48,7 @@ namespace SyncTool.Sql.Model
         {
             get
             {
-                using (var connection = m_ConnectionFactory.OpenConnection())
+                using (var connection = m_Database.OpenConnection())
                 {
                     return connection.Query<DirectoryInstanceDo>($"SELECT * FROM {DirectoryInstancesTable.Name}");
                 }
@@ -56,12 +56,12 @@ namespace SyncTool.Sql.Model
         }
 
 
-        public FileSystemRepository(IDatabaseContextFactory connectionFactory)
+        public FileSystemRepository(IDatabase database)
         {
-            m_ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+            m_Database = database ?? throw new ArgumentNullException(nameof(database));
 
             //TODO: Should happen on first access??
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             using (var transaction = connection.BeginTransaction())
             {
                 FilesTable.Create(connection);
@@ -84,7 +84,7 @@ namespace SyncTool.Sql.Model
             if (file.Id != 0)
                 throw new ArgumentException("Cannot add file with id != 0", nameof(file));
             
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 Insert(connection, file);
             }
@@ -101,7 +101,7 @@ namespace SyncTool.Sql.Model
             if (String.IsNullOrWhiteSpace(directory.NormalizedPath))
                 throw new ArgumentException($"{nameof(directory.NormalizedPath)} must not be empty");
 
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 Insert(connection, directory);
             }
@@ -115,7 +115,7 @@ namespace SyncTool.Sql.Model
             if (fileInstance.Id != 0)
                 throw new ArgumentException("Cannot add file instance with id != 0", nameof(fileInstance));
 
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 Insert(connection, fileInstance);
             }
@@ -123,7 +123,7 @@ namespace SyncTool.Sql.Model
         
         public void AddRecursively(DirectoryInstanceDo rootDirectory)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             using (var transaction = connection.BeginTransaction())
             {                
                 Insert(connection, rootDirectory);               
@@ -133,7 +133,7 @@ namespace SyncTool.Sql.Model
 
         public DirectoryInstanceDo GetDirectoryInstance(int id)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 return connection.QuerySingle<DirectoryInstanceDo>($@"
                     SELECT * 
@@ -146,7 +146,7 @@ namespace SyncTool.Sql.Model
 
         public void LoadDirectories(DirectoryInstanceDo parentDirectoryInstance)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 var directories = connection.Query<DirectoryInstanceDo>($@"    
                     SELECT * 
@@ -165,7 +165,7 @@ namespace SyncTool.Sql.Model
 
         public void LoadDirectory(DirectoryInstanceDo directoryInstance)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 var dir = connection.QuerySingle<DirectoryDo>($@"
                     SELECT * 
@@ -184,7 +184,7 @@ namespace SyncTool.Sql.Model
 
         public void LoadFiles(DirectoryInstanceDo parentDirectoryInstance)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 var files = connection.Query<FileInstanceDo>($@"    
                     SELECT * 
@@ -203,7 +203,7 @@ namespace SyncTool.Sql.Model
 
         public void LoadFile(FileInstanceDo fileInstance)
         {        
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 var file = connection.QuerySingle<FileDo>($@"
                     SELECT * 

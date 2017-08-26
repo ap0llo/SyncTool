@@ -39,15 +39,15 @@ namespace SyncTool.Sql.Model
             }
         }
                                 
-        readonly IDatabaseContextFactory m_ConnectionFactory;
+        readonly IDatabase m_Database;
 
 
-        public SnapshotRepository(IDatabaseContextFactory connectionFactory)
+        public SnapshotRepository(IDatabase database)
         {
-            m_ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+            m_Database = database ?? throw new ArgumentNullException(nameof(database));
 
             //TODO: Should happen on first access??
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             using (var transaction = connection.BeginTransaction())
             {
                 FileSystemSnapshotsTable.Create(connection);
@@ -59,7 +59,7 @@ namespace SyncTool.Sql.Model
 
         public FileSystemSnapshotDo GetSnapshotOrDefault(int historyId, int id)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 return connection.QuerySingleOrDefault<FileSystemSnapshotDo>($@"
                     SELECT *
@@ -73,7 +73,7 @@ namespace SyncTool.Sql.Model
 
         public FileSystemSnapshotDo GetLatestSnapshotOrDefault(int historyId)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 return connection.QueryFirstOrDefault<FileSystemSnapshotDo>($@"
                     SELECT *
@@ -88,7 +88,7 @@ namespace SyncTool.Sql.Model
 
         public IEnumerable<FileSystemSnapshotDo> GetSnapshots(int historyId)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 return connection.Query<FileSystemSnapshotDo>($@"
                     SELECT *
@@ -103,7 +103,7 @@ namespace SyncTool.Sql.Model
         {
             //TODO: make sure no other snapshots were added for the history ?? Is this a Problem?            
 
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             using (var transaction = connection.BeginTransaction())
             {
                 var tmpId = Guid.NewGuid().ToString();
@@ -167,7 +167,7 @@ namespace SyncTool.Sql.Model
 
         public void LoadIncludedFiles(FileSystemSnapshotDo snapshot)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 var files = connection.Query<FileInstanceDo>($@"
                     SELECT * 
@@ -187,7 +187,7 @@ namespace SyncTool.Sql.Model
 
         public FileSystemSnapshotDo GetPrecedingSnapshot(FileSystemSnapshotDo snapshot)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 return connection.QueryFirstOrDefault<FileSystemSnapshotDo>($@"
                     SELECT *
@@ -203,7 +203,7 @@ namespace SyncTool.Sql.Model
 
         public IEnumerable<string> GetChangedFiles(FileSystemSnapshotDo snapshot)
         {
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 const string s_PrecedingSnapshotId = "precedingSnapshotId";
                 const string s_FileInstanceIds = "fileInstanceIds";
@@ -269,7 +269,7 @@ namespace SyncTool.Sql.Model
 
         public IEnumerable<(FileInstanceDo previous, FileInstanceDo current)> GetChanges(FileSystemSnapshotDo snapshot)
         {            
-            using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var connection = m_Database.OpenConnection())
             {
                 const string s_ChangeTable = "changeTable";
                 const string s_PrecedingSnapshotId = "precedingSnapshotId";

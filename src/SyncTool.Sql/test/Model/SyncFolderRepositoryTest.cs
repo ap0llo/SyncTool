@@ -14,7 +14,7 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void UpdateItem_throws_DatabaseUpdateException_if_syncfolder_version_does_not_match()
         {
-            var instance = new SyncFolderRepository(ContextFactory);
+            var instance = new SyncFolderRepository(Database);
 
             var syncFolder = new SyncFolderDo() { Name = "folder1" };
             var version1 = instance.AddItem(syncFolder);

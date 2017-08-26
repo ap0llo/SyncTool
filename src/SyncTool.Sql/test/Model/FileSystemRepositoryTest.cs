@@ -8,7 +8,7 @@ namespace SyncTool.Sql.Test.Model
 {
     public class FileSystemRepositoryTest : SqlTestBase
     {
-        FileSystemRepository CreateRepository() => new FileSystemRepository(ContextFactory);
+        FileSystemRepository CreateRepository() => new FileSystemRepository(Database);
 
 
         [Fact]

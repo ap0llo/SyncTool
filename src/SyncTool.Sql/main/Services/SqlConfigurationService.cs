@@ -8,7 +8,7 @@ namespace SyncTool.Sql.Services
 {
     class SqlConfigurationService : AbstractConfigurationService
     {
-        readonly IDatabaseContextFactory m_ContextFactory;
+        readonly IDatabase m_Database;
         readonly SyncFolderRepository m_Repository;
 
         public override IEnumerable<SyncFolder> Items => m_Repository.Items.Select(x => x.ToSyncFolder()).ToArray();

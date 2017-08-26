@@ -2,7 +2,7 @@
 
 namespace SyncTool.Sql.Model
 {
-    public interface IDatabaseContextFactory
+    public interface IDatabase
     {
         IDbConnection OpenConnection();
     }
