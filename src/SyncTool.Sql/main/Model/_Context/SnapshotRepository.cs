@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dapper;
 
-using static SyncTool.Sql.Model.TypeMapper;
+using SyncTool.Sql.Model.Tables;
 
 namespace SyncTool.Sql.Model
 {
@@ -25,7 +25,6 @@ namespace SyncTool.Sql.Model
             
             public long? PreviousLength { get; set; }
 
-
             public void Deconstruct(out FileInstanceDo previous, out FileInstanceDo current, out int fileId)
             {
                 previous = PreviousId.HasValue
@@ -39,13 +38,7 @@ namespace SyncTool.Sql.Model
                 fileId = FileId;
             }
         }
-
-        const string s_IncludesFileInstance = "IncludesFileInstance";
-        const string s_SnapshotId = "SnapshotId";
-        const string s_FileInstanceId = "FileInstanceId";
-        const string s_TmpId = "tmpId";
-        const string s_FileId = "FileId";
-        
+                                
         readonly IDatabaseContextFactory m_ConnectionFactory;
 
 
@@ -55,27 +48,11 @@ namespace SyncTool.Sql.Model
 
             //TODO: Should happen on first access??
             using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var transaction = connection.BeginTransaction())
             {
-                connection.ExecuteNonQuery($@"
-                    CREATE TABLE {Table<FileSystemSnapshotDo>()}(
-                        {nameof(FileSystemSnapshotDo.Id)} INTEGER PRIMARY KEY,
-                        {nameof(FileSystemSnapshotDo.HistoryId)} INTEGER NOT NULL,
-                        {nameof(FileSystemSnapshotDo.SequenceNumber)} INTEGER UNIQUE NOT NULL,
-                        {nameof(FileSystemSnapshotDo.CreationTimeTicks)} INTEGER NOT NULL,
-                        {nameof(FileSystemSnapshotDo.RootDirectoryInstanceId)} INTEGER NOT NULL,
-                        {s_TmpId} TEXT UNIQUE,
-                        FOREIGN KEY ({nameof(FileSystemSnapshotDo.HistoryId)}) REFERENCES {Table<FileSystemHistoryDo>()}({nameof(FileSystemHistoryDo.Id)})
-                        FOREIGN KEY ({nameof(FileSystemSnapshotDo.RootDirectoryInstanceId)}) REFERENCES {Table<DirectoryInstanceDo>()}({nameof(DirectoryInstanceDo.Id)})
-                    );
-
-                    CREATE TABLE {s_IncludesFileInstance}(
-                        {s_SnapshotId} INTEGER NOT NULL,
-                        {s_FileInstanceId} INTEGER NOT NULL,
-                        FOREIGN KEY ({s_SnapshotId}) REFERENCES {Table<FileSystemSnapshotDo>()}({nameof(FileSystemSnapshotDo.Id)}),
-                        FOREIGN KEY ({s_FileInstanceId}) REFERENCES {Table<FileInstanceDo>()}({nameof(FileInstanceDo.Id)}),
-                        CONSTRAINT {s_IncludesFileInstance}_Unique UNIQUE({s_SnapshotId},{s_FileInstanceId})
-                    );                    
-                ");
+                FileSystemSnapshotsTable.Create(connection);
+                IncludesFileInstanceTable.Create(connection);
+                transaction.Commit();
             }
         }
 
@@ -86,9 +63,9 @@ namespace SyncTool.Sql.Model
             {
                 return connection.QuerySingleOrDefault<FileSystemSnapshotDo>($@"
                     SELECT *
-                    FROM {Table<FileSystemSnapshotDo>()}
-                    WHERE {nameof(FileSystemSnapshotDo.Id)} = @id AND
-                          {nameof(FileSystemSnapshotDo.HistoryId)} = @historyId;
+                    FROM {FileSystemSnapshotsTable.Name}
+                    WHERE {FileSystemSnapshotsTable.Column.Id} = @id AND
+                          {FileSystemSnapshotsTable.Column.HistoryId} = @historyId;
                 ",
                 new { historyId = historyId, id = id });
             }
@@ -100,9 +77,9 @@ namespace SyncTool.Sql.Model
             {
                 return connection.QueryFirstOrDefault<FileSystemSnapshotDo>($@"
                     SELECT *
-                    FROM {Table<FileSystemSnapshotDo>()}
-                    WHERE {nameof(FileSystemSnapshotDo.HistoryId)} = @historyId
-                    ORDER BY {nameof(FileSystemSnapshotDo.SequenceNumber)} DESC
+                    FROM {FileSystemSnapshotsTable.Name}
+                    WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId
+                    ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
                     LIMIT 2
                 ",
                 new { historyId = historyId });
@@ -115,8 +92,8 @@ namespace SyncTool.Sql.Model
             {
                 return connection.Query<FileSystemSnapshotDo>($@"
                     SELECT *
-                    FROM {Table<FileSystemSnapshotDo>()}
-                    WHERE {nameof(FileSystemSnapshotDo.HistoryId)} = @historyId;
+                    FROM {FileSystemSnapshotsTable.Name}
+                    WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId;
                 ",
                 new { historyId = historyId });
             }
@@ -131,21 +108,30 @@ namespace SyncTool.Sql.Model
             {
                 var tmpId = Guid.NewGuid().ToString();
                 var inserted = connection.QuerySingle<FileSystemSnapshotDo>($@"
-                        INSERT INTO {Table<FileSystemSnapshotDo>()} (                          
-                            {nameof(FileSystemSnapshotDo.HistoryId)} ,
-                            {nameof(FileSystemSnapshotDo.SequenceNumber)},
-                            {nameof(FileSystemSnapshotDo.CreationTimeTicks)} ,
-                            {nameof(FileSystemSnapshotDo.RootDirectoryInstanceId)},
-                            {s_TmpId}
+                        INSERT INTO {FileSystemSnapshotsTable.Name} 
+                        (                          
+                            {FileSystemSnapshotsTable.Column.HistoryId} ,
+                            {FileSystemSnapshotsTable.Column.SequenceNumber},
+                            {FileSystemSnapshotsTable.Column.CreationTimeTicks} ,
+                            {FileSystemSnapshotsTable.Column.RootDirectoryInstanceId},
+                            {FileSystemSnapshotsTable.Column.TmpId}
                         )
-                        VALUES (@historyId, (SELECT count(*) FROM {Table<FileSystemSnapshotDo>()}), @ticks, @directoryId, @tmpId);
+                        VALUES 
+                        (   
+                            @historyId, 
+                            (SELECT count(*) FROM {FileSystemSnapshotsTable.Name}), 
+                            @ticks, 
+                            @directoryId, 
+                            @tmpId
+                        );
 
                         SELECT *
-                        FROM {Table<FileSystemSnapshotDo>()}
-                        WHERE {s_TmpId} = @tmpId;
+                        FROM {FileSystemSnapshotsTable.Name}
+                        WHERE {FileSystemSnapshotsTable.Column.TmpId} = @tmpId;
 
-                        UPDATE {Table<FileSystemSnapshotDo>()}
-                        SET {s_TmpId} = NULL WHERE {s_TmpId} = @tmpId;
+                        UPDATE {FileSystemSnapshotsTable.Name}
+                        SET {FileSystemSnapshotsTable.Column.TmpId} = NULL 
+                        WHERE {FileSystemSnapshotsTable.Column.TmpId} = @tmpId;
                 ",
                 new
                 {
@@ -160,10 +146,14 @@ namespace SyncTool.Sql.Model
                 {
                     connection.ExecuteNonQuery($@"
                         
-                        INSERT INTO {s_IncludesFileInstance} ({s_SnapshotId}, {s_FileInstanceId})
+                        INSERT INTO {IncludesFileInstanceTable.Name} 
+                        (
+                            {IncludesFileInstanceTable.Column.SnapshotId}, 
+                            {IncludesFileInstanceTable.Column.FileInstanceId}
+                        )
                         VALUES (@snapshotId, @fileInstanceId)",
 
-                        ("snapshotId", inserted.Id),
+                        ("snapshotId", inserted.Id), 
                         ("fileInstanceId", fileInstance.Id)
                     );
                 }
@@ -181,11 +171,12 @@ namespace SyncTool.Sql.Model
             {
                 var files = connection.Query<FileInstanceDo>($@"
                     SELECT * 
-                    FROM {Table<FileInstanceDo>()}
-                    WHERE {nameof(FileInstanceDo.Id)} IN (
-                        SELECT {s_FileInstanceId}
-                        FROM {s_IncludesFileInstance}
-                        WHERE {s_SnapshotId} = @snapshotId
+                    FROM {FileInstancesTable.Name}
+                    WHERE {FileInstancesTable.Column.Id} IN 
+                    (
+                        SELECT {IncludesFileInstanceTable.Column.FileInstanceId}
+                        FROM {IncludesFileInstanceTable.Name}
+                        WHERE {IncludesFileInstanceTable.Column.SnapshotId} = @snapshotId
                     );
                 ",
                 new { snapshotId = snapshot.Id });
@@ -200,10 +191,10 @@ namespace SyncTool.Sql.Model
             {
                 return connection.QueryFirstOrDefault<FileSystemSnapshotDo>($@"
                     SELECT *
-                    FROM {Table<FileSystemSnapshotDo>()}
-                    WHERE {nameof(FileSystemSnapshotDo.HistoryId)} = @historyId AND
-                          {nameof(FileSystemSnapshotDo.SequenceNumber)} < @sequenceNumber
-                    ORDER BY {nameof(FileSystemSnapshotDo.SequenceNumber)} DESC
+                    FROM {FileSystemSnapshotsTable.Name}
+                    WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId AND
+                          {FileSystemSnapshotsTable.Column.SequenceNumber} < @sequenceNumber
+                    ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
                     LIMIT 2
                 ",
                 new { historyId = snapshot.HistoryId, sequenceNumber = snapshot.SequenceNumber });
@@ -224,25 +215,28 @@ namespace SyncTool.Sql.Model
                     -- query database for preceding snapshot
                     WITH {s_PrecedingSnapshotId} AS 
                     (
-                        SELECT {nameof(FileSystemSnapshotDo.Id)} FROM {Table<FileSystemSnapshotDo>()}
-                        WHERE  {nameof(FileSystemSnapshotDo.HistoryId)} = {snapshot.HistoryId} AND
-                               {nameof(FileSystemSnapshotDo.SequenceNumber)} < {snapshot.SequenceNumber}
-                        ORDER BY {nameof(FileSystemSnapshotDo.SequenceNumber)} DESC
+                        SELECT {FileSystemSnapshotsTable.Column.Id} 
+                        FROM {FileSystemSnapshotsTable.Name}
+                        WHERE  {FileSystemSnapshotsTable.Column.HistoryId} = {snapshot.HistoryId} AND
+                               {FileSystemSnapshotsTable.Column.SequenceNumber} < {snapshot.SequenceNumber}
+                        ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
                         LIMIT 1 
                     ),
 
                     -- get ids of file instances included in the current snapshot
                     {s_FileInstanceIds} AS 
                     (
-                        SELECT {s_FileInstanceId} FROM {s_IncludesFileInstance}
-                        WHERE {s_SnapshotId} = {snapshot.Id} 
+                        SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
+                        FROM {IncludesFileInstanceTable.Name}
+                        WHERE {IncludesFileInstanceTable.Column.SnapshotId} = {snapshot.Id} 
                     ),
                     
                     -- get ids of file instances included in the preceding snapshot
                     {s_PreviousFileInstanceIds} AS 
                     (
-                        SELECT {s_FileInstanceId} FROM {s_IncludesFileInstance}
-                        WHERE {s_SnapshotId} IN {s_PrecedingSnapshotId}
+                        SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
+                        FROM {IncludesFileInstanceTable.Name}
+                        WHERE {IncludesFileInstanceTable.Column.SnapshotId} IN {s_PrecedingSnapshotId}
                     ),
 
                     -- find the instances that are *not* 
@@ -250,22 +244,22 @@ namespace SyncTool.Sql.Model
                     -- and select the ids of the correspondig file's id
                     {s_ChangedFileIds} AS 
                     (
-                        SELECT DISTINCT {s_FileId} FROM {Table<FileInstanceDo>()}
+                        SELECT DISTINCT {FileInstancesTable.Column.FileId} FROM {FileInstancesTable.Name}
                         WHERE 
                         (
-                            {nameof(FileInstanceDo.Id)} IN {s_FileInstanceIds} AND
-                            {nameof(FileInstanceDo.Id)} NOT IN {s_PreviousFileInstanceIds}
+                            {FileInstancesTable.Column.Id} IN {s_FileInstanceIds} AND
+                            {FileInstancesTable.Column.Id} NOT IN {s_PreviousFileInstanceIds}
                         ) 
                         OR 
                         (
-                            {nameof(FileInstanceDo.Id)} IN {s_PreviousFileInstanceIds} AND 
-                            {nameof(FileInstanceDo.Id)} NOT IN {s_FileInstanceIds}
+                            {FileInstancesTable.Column.Id} IN {s_PreviousFileInstanceIds} AND 
+                            {FileInstancesTable.Column.Id} NOT IN {s_FileInstanceIds}
                         )
                     )
 
                     -- using the list of ids of changed files, get files from the database
-                    SELECT * FROM {Table<FileDo>()}
-                    WHERE {nameof(FileDo.Id)} IN {s_ChangedFileIds};
+                    SELECT * FROM {FilesTable.Name}
+                    WHERE {FilesTable.Column.Id} IN {s_ChangedFileIds};
                         
                 ";
 
@@ -289,8 +283,8 @@ namespace SyncTool.Sql.Model
                 const string s_PreviousId = nameof(ChangeTableRecord.PreviousId);
                 const string s_PreviousTicks = nameof(ChangeTableRecord.PreviousLastWriteTimeTicks);
                 const string s_PreviousLength = nameof(ChangeTableRecord.PreviousLength);
-                string s_FileInstances = $"(SELECT * FROM {Table<FileInstanceDo>()} WHERE {nameof(FileInstanceDo.Id)} IN {s_FileInstanceIds})";
-                string s_PreviousFileInstances = $"(SELECT * FROM {Table<FileInstanceDo>()} WHERE {nameof(FileInstanceDo.Id)} in {s_PreviousFileInstanceIds})";
+                string s_FileInstances = $"(SELECT * FROM {FileInstancesTable.Name} WHERE {FileInstancesTable.Column.Id} IN {s_FileInstanceIds})";
+                string s_PreviousFileInstances = $"(SELECT * FROM {FileInstancesTable.Name} WHERE {FileInstancesTable.Column.Id} IN {s_PreviousFileInstanceIds})";
 
                 connection.ExecuteNonQuery($@"                    
 
@@ -299,57 +293,59 @@ namespace SyncTool.Sql.Model
                         -- query database for preceding snapshot
                         WITH {s_PrecedingSnapshotId} AS 
                         (
-                            SELECT {nameof(FileSystemSnapshotDo.Id)} FROM {Table<FileSystemSnapshotDo>()}
-                            WHERE {nameof(FileSystemSnapshotDo.HistoryId)} = {snapshot.HistoryId} AND
-                                  {nameof(FileSystemSnapshotDo.SequenceNumber)} < {snapshot.SequenceNumber}
-                            ORDER BY {nameof(FileSystemSnapshotDo.SequenceNumber)} DESC
+                            SELECT {FileSystemSnapshotsTable.Column.Id} FROM {FileSystemSnapshotsTable.Name}
+                            WHERE {FileSystemSnapshotsTable.Column.HistoryId} = {snapshot.HistoryId} AND
+                                  {FileSystemSnapshotsTable.Column.SequenceNumber} < {snapshot.SequenceNumber}
+                            ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
                             LIMIT 1 
                         ),
                     
                         -- get ids of file instances included in the current snapshot
                         {s_FileInstanceIds} AS 
                         (
-                            SELECT {s_FileInstanceId} FROM {s_IncludesFileInstance}
-                            WHERE {s_SnapshotId} = {snapshot.Id} 
+                            SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
+                            FROM {IncludesFileInstanceTable.Name}
+                            WHERE {IncludesFileInstanceTable.Column.SnapshotId} = {snapshot.Id} 
                         ),
                                         
                         -- get ids of file instances included in the preceding snapshot
                         {s_PreviousFileInstanceIds} AS 
                         (
-                            SELECT {s_FileInstanceId} FROM {s_IncludesFileInstance}
-                            WHERE {s_SnapshotId} IN {s_PrecedingSnapshotId}
+                            SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
+                            FROM {IncludesFileInstanceTable.Name}
+                            WHERE {IncludesFileInstanceTable.Column.SnapshotId} IN {s_PrecedingSnapshotId}
                         )                        
 
                         -- (SQLite does not support a full outer join, so we need to combine two left joins)  
                         SELECT 
-                            {s_Current}.{s_FileId}                                   AS {nameof(ChangeTableRecord.FileId)},
-                            {s_Current}.{nameof(FileInstanceDo.Id)}                  AS {s_CurrentId},
-                            {s_Current}.{nameof(FileInstanceDo.LastWriteTimeTicks)}  AS {s_CurrentTicks},
-                            {s_Current}.{nameof(FileInstanceDo.Length)}              AS {s_CurrentLength},
-                            {s_Previous}.{nameof(FileInstanceDo.Id)}                 AS {s_PreviousId},
-                            {s_Previous}.{nameof(FileInstanceDo.LastWriteTimeTicks)} AS {s_PreviousTicks},
-                            {s_Previous}.{nameof(FileInstanceDo.Length)}             AS {s_PreviousLength}
+                            {s_Current}.{FileInstancesTable.Column.FileId}              AS {nameof(ChangeTableRecord.FileId)},
+                            {s_Current}.{FileInstancesTable.Column.Id}                  AS {s_CurrentId},
+                            {s_Current}.{FileInstancesTable.Column.LastWriteTimeTicks}  AS {s_CurrentTicks},
+                            {s_Current}.{FileInstancesTable.Column.Length}              AS {s_CurrentLength},
+                            {s_Previous}.{FileInstancesTable.Column.Id}                 AS {s_PreviousId},
+                            {s_Previous}.{FileInstancesTable.Column.LastWriteTimeTicks} AS {s_PreviousTicks},
+                            {s_Previous}.{FileInstancesTable.Column.Length}             AS {s_PreviousLength}
                         FROM {s_FileInstances} AS {s_Current} 
                         LEFT OUTER JOIN {s_PreviousFileInstances} AS {s_Previous}
-                        ON {s_Current}.{s_FileId} = {s_Previous}.{s_FileId}                        
+                        ON {s_Current}.{FileInstancesTable.Column.FileId} = {s_Previous}.{FileInstancesTable.Column.FileId}                        
                         UNION
                             SELECT 
-                                {s_Previous}.{s_FileId}                                  AS {nameof(ChangeTableRecord.FileId)},
-                                {s_Current}.{nameof(FileInstanceDo.Id)}                  AS {s_CurrentId},
-                                {s_Current}.{nameof(FileInstanceDo.LastWriteTimeTicks)}  AS {s_CurrentTicks},
-                                {s_Current}.{nameof(FileInstanceDo.Length)}              AS {s_CurrentLength},
-                                {s_Previous}.{nameof(FileInstanceDo.Id)}                 AS {s_PreviousId},
-                                {s_Previous}.{nameof(FileInstanceDo.LastWriteTimeTicks)} AS {s_PreviousTicks},
-                                {s_Previous}.{nameof(FileInstanceDo.Length)}             AS {s_PreviousLength}
+                                {s_Previous}.{FileInstancesTable.Column.FileId}             AS {nameof(ChangeTableRecord.FileId)},
+                                {s_Current}.{FileInstancesTable.Column.Id}                  AS {s_CurrentId},
+                                {s_Current}.{FileInstancesTable.Column.LastWriteTimeTicks}  AS {s_CurrentTicks},
+                                {s_Current}.{FileInstancesTable.Column.Length}              AS {s_CurrentLength},
+                                {s_Previous}.{FileInstancesTable.Column.Id}                 AS {s_PreviousId},
+                                {s_Previous}.{FileInstancesTable.Column.LastWriteTimeTicks} AS {s_PreviousTicks},
+                                {s_Previous}.{FileInstancesTable.Column.Length}             AS {s_PreviousLength}
                             FROM {s_PreviousFileInstances} AS {s_Previous}
                             LEFT OUTER JOIN {s_FileInstances} AS {s_Current}                                 
-                            ON {s_Current}.{s_FileId} = {s_Previous}.{s_FileId};                                                                
+                            ON {s_Current}.{FileInstancesTable.Column.FileId} = {s_Previous}.{FileInstancesTable.Column.FileId};                                                                
                 ");
 
 
                 var fileDos = connection.Query<FileDo>($@"                    
-                    SELECT * FROM {Table<FileDo>()}
-                    WHERE {nameof(FileDo.Id)} IN (SELECT DISTINCT {s_FileId} FROM {s_ChangeTable});
+                    SELECT * FROM {FilesTable.Name}
+                    WHERE {FilesTable.Column.Id} IN (SELECT DISTINCT {nameof(ChangeTableRecord.FileId)} FROM {s_ChangeTable});
                 "
                 ).ToDictionary(record => record.Id);
 

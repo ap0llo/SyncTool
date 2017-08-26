@@ -1,24 +1,15 @@
 ﻿using Dapper;
+using SyncTool.Sql.Model.Tables;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using static SyncTool.Sql.Model.TypeMapper;
 
 namespace SyncTool.Sql.Model
 {
     class FileSystemRepository
     {
-        const string s_ParentId = "ParentId"; 
-        const string s_ChildId = "ChildId";
-        const string s_ContainsDirectory = "ContainsDirectory";
-        const string s_ContainsFile = "ContainsFile";
-        const string s_TmpId = "tmpId";
-        const string s_FileId = "FileId";
-        const string s_DirectoryId = "DirectoryId";
-
         readonly IDatabaseContextFactory m_ConnectionFactory;
-
 
         public IEnumerable<FileDo> Files
         {
@@ -26,7 +17,7 @@ namespace SyncTool.Sql.Model
             {
                 using (var connection = m_ConnectionFactory.OpenConnection())
                 {
-                    return connection.Query<FileDo>($"SELECT * FROM {Table<FileDo>()}");
+                    return connection.Query<FileDo>($"SELECT * FROM {FilesTable.Name}");
                 } 
             }
         }
@@ -37,7 +28,7 @@ namespace SyncTool.Sql.Model
             {
                 using (var connection = m_ConnectionFactory.OpenConnection())
                 {
-                    return connection.Query<DirectoryDo>($"SELECT * FROM {Table<DirectoryDo>()}");
+                    return connection.Query<DirectoryDo>($"SELECT * FROM {DirectoriesTable.Name}");
                 }
             }
         }
@@ -48,7 +39,7 @@ namespace SyncTool.Sql.Model
             {
                 using (var connection = m_ConnectionFactory.OpenConnection())
                 {
-                    return connection.Query<FileInstanceDo>($"SELECT * FROM {Table<FileInstanceDo>()}");
+                    return connection.Query<FileInstanceDo>($"SELECT * FROM {FileInstancesTable.Name}");
                 }
             }
         }
@@ -59,7 +50,7 @@ namespace SyncTool.Sql.Model
             {
                 using (var connection = m_ConnectionFactory.OpenConnection())
                 {
-                    return connection.Query<DirectoryInstanceDo>($"SELECT * FROM {Table<DirectoryInstanceDo>()}");
+                    return connection.Query<DirectoryInstanceDo>($"SELECT * FROM {DirectoryInstancesTable.Name}");
                 }
             }
         }
@@ -71,51 +62,16 @@ namespace SyncTool.Sql.Model
 
             //TODO: Should happen on first access??
             using (var connection = m_ConnectionFactory.OpenConnection())
+            using (var transaction = connection.BeginTransaction())
             {
-                connection.ExecuteNonQuery($@"                
+                FilesTable.Create(connection);
+                FileInstancesTable.Create(connection);
+                DirectoriesTable.Create(connection);
+                DirectoryInstancesTable.Create(connection);
+                ContainsDirectoryTable.Create(connection);
+                ContainsFileTable.Create(connection);                
 
-                    CREATE TABLE IF NOT EXISTS {Table<FileDo>()} (                
-                        {nameof(FileDo.Id)} INTEGER PRIMARY KEY,
-                        {nameof(FileDo.Name)} TEXT NOT NULL,
-                        {nameof(FileDo.NormalizedPath)} TEXT UNIQUE NOT NULL,
-                        {nameof(FileDo.Path)} TEXT NOT NULL);
-
-                    CREATE TABLE IF NOT EXISTS {Table<DirectoryDo>()} (                
-                        {nameof(DirectoryDo.Id)} INTEGER PRIMARY KEY,
-                        {nameof(DirectoryDo.Name)} TEXT NOT NULL,
-                        {nameof(DirectoryDo.NormalizedPath)} TEXT UNIQUE NOT NULL) ;
-                
-                    CREATE TABLE IF NOT EXISTS {Table <FileInstanceDo>()} (                
-                        {nameof(FileInstanceDo.Id)} INTEGER PRIMARY KEY,
-                        {s_FileId} INTEGER NOT NULL,
-                        {nameof(FileInstanceDo.LastWriteTimeTicks)} INTEGER NOT NULL,
-                        {nameof(FileInstanceDo.Length)} INTEGER NOT NULL,
-                        FOREIGN KEY ({s_FileId}) REFERENCES {Table<FileDo>()}({nameof(FileDo.Id)}),
-                        CONSTRAINT FileInstance_Unique UNIQUE (
-                            {s_FileId}, 
-                            {nameof(FileInstanceDo.LastWriteTimeTicks)}, 
-                            {nameof(FileInstanceDo.Length)}) ); 
-
-                    CREATE TABLE IF NOT EXISTS {Table<DirectoryInstanceDo>()} (
-                        {nameof(DirectoryInstanceDo.Id)} INTEGER PRIMARY KEY,
-                        {s_DirectoryId} INTEGER NOT NULL,    
-                        {s_TmpId} TEXT UNIQUE,
-                        FOREIGN KEY ({s_DirectoryId}) REFERENCES {Table<DirectoryDo>()}({nameof(DirectoryDo.Id)}));
-
-                    CREATE TABLE IF NOT EXISTS {s_ContainsDirectory} (
-                        {s_ParentId} INTEGER NOT NULL,
-                        {s_ChildId} INTEGER NOT NULL,
-                        FOREIGN KEY ({s_ParentId}) REFERENCES {Table<DirectoryInstanceDo>()}({nameof(DirectoryInstanceDo.Id)}),
-                        FOREIGN KEY ({s_ChildId}) REFERENCES {Table<DirectoryInstanceDo>()}({nameof(DirectoryInstanceDo.Id)}),
-                        CONSTRAINT {s_ContainsDirectory}_Unique UNIQUE({s_ParentId},{s_ChildId}) );
-                    
-                    CREATE TABLE IF NOT EXISTS {s_ContainsFile} (
-                        {s_ParentId} INTEGER NOT NULL,
-                        {s_ChildId} INTEGER NOT NULL,
-                        FOREIGN KEY ({s_ParentId}) REFERENCES {Table<DirectoryInstanceDo>()}({nameof(DirectoryInstanceDo.Id)}),
-                        FOREIGN KEY ({s_ChildId}) REFERENCES {Table<FileInstanceDo>()}({nameof(FileInstanceDo.Id)}),
-                        CONSTRAINT {s_ContainsDirectory}_Unique UNIQUE({s_ParentId},{s_ChildId}) );
-                ");
+                transaction.Commit();
             }
         }
 
@@ -181,8 +137,8 @@ namespace SyncTool.Sql.Model
             {
                 return connection.QuerySingle<DirectoryInstanceDo>($@"
                     SELECT * 
-                    FROM {Table<DirectoryInstanceDo>()}
-                    WHERE {nameof(DirectoryInstanceDo.Id)} = @id;
+                    FROM {DirectoryInstancesTable.Name}
+                    WHERE {DirectoryInstancesTable.Column.Id} = @id;
                 ", 
                 new { id = id });
             }
@@ -194,17 +150,16 @@ namespace SyncTool.Sql.Model
             {
                 var directories = connection.Query<DirectoryInstanceDo>($@"    
                     SELECT * 
-                    FROM {Table<DirectoryInstanceDo>()}
-                    WHERE {nameof(DirectoryInstanceDo.Id)} IN (
-                        SELECT {s_ChildId}
-                        FROM {s_ContainsDirectory}
-                        WHERE {s_ParentId} = @id        
+                    FROM {DirectoryInstancesTable.Name}
+                    WHERE {DirectoryInstancesTable.Column.Id} IN (
+                        SELECT {ContainsDirectoryTable.Column.ChildId}
+                        FROM {ContainsDirectoryTable.Name}
+                        WHERE {ContainsDirectoryTable.Column.ParentId} = @id        
                     );
                 ",
                 new { id = parentDirectoryInstance.Id });
 
                 parentDirectoryInstance.Directories = directories.ToList();
-
             }
         }
 
@@ -214,11 +169,11 @@ namespace SyncTool.Sql.Model
             {
                 var dir = connection.QuerySingle<DirectoryDo>($@"
                     SELECT * 
-                    FROM {Table<DirectoryDo>()}
-                    WHERE {nameof(DirectoryDo.Id)} IN (
-                        SELECT {s_DirectoryId}
-                        FROM {Table<DirectoryInstanceDo>()}
-                        WHERE {nameof(DirectoryInstanceDo.Id)} = @id
+                    FROM {DirectoriesTable.Name}
+                    WHERE {DirectoriesTable.Column.Id} IN (
+                        SELECT {DirectoryInstancesTable.Column.DirectoryId}
+                        FROM {DirectoryInstancesTable.Name}
+                        WHERE {DirectoryInstancesTable.Column.Id} = @id
                     )
                 ", 
                 new {id = directoryInstance.Id});
@@ -233,11 +188,11 @@ namespace SyncTool.Sql.Model
             {
                 var files = connection.Query<FileInstanceDo>($@"    
                     SELECT * 
-                    FROM {Table<FileInstanceDo>()}
-                    WHERE {nameof(FileInstanceDo.Id)} IN (
-                        SELECT {s_ChildId}
-                        FROM {s_ContainsFile}
-                        WHERE {s_ParentId} = @id        
+                    FROM {FileInstancesTable.Name}
+                    WHERE {FileInstancesTable.Column.Id} IN (
+                        SELECT {ContainsFileTable.Column.ChildId}
+                        FROM {ContainsFileTable.Name}
+                        WHERE {ContainsFileTable.Column.ParentId} = @id        
                     );
                 ",
                     new { id = parentDirectoryInstance.Id });
@@ -252,11 +207,11 @@ namespace SyncTool.Sql.Model
             {
                 var file = connection.QuerySingle<FileDo>($@"
                     SELECT * 
-                    FROM {Table<FileDo>()}
-                    WHERE {nameof(FileDo.Id)} IN (
-                        SELECT {s_FileId} 
-                        FROM {Table<FileInstanceDo>()}
-                        WHERE {nameof(FileInstanceDo.Id)} = @id
+                    FROM {FilesTable.Name}
+                    WHERE {FilesTable.Column.Id} IN (
+                        SELECT {FileInstancesTable.Column.FileId} 
+                        FROM {FileInstancesTable.Name}
+                        WHERE {FileInstancesTable.Column.Id} = @id
                     )
                 ",  
                 new { id = fileInstance.Id });
@@ -273,13 +228,15 @@ namespace SyncTool.Sql.Model
 
             directory.Id = connection.ExecuteScalar<int>($@"
 
-                    INSERT OR IGNORE INTO {Table<DirectoryDo>()} (
-                        {nameof(DirectoryDo.Name)},
-                        {nameof(DirectoryDo.NormalizedPath)} )
+                    INSERT OR IGNORE INTO {DirectoriesTable.Name} 
+                    (
+                        {DirectoriesTable.Column.Name},
+                        {DirectoriesTable.Column.NormalizedPath} 
+                    )
                     VALUES (@name, @path);
 
-                    SELECT {nameof(DirectoryDo.Id)} FROM {Table<DirectoryDo>()}
-                    WHERE {nameof(DirectoryDo.NormalizedPath)} = @path;
+                    SELECT {DirectoriesTable.Column.Id} FROM {DirectoriesTable.Name}
+                    WHERE {DirectoriesTable.Column.NormalizedPath} = @path;
                 ",
                 ("name", directory.Name),
                 ("path", directory.NormalizedPath)
@@ -296,14 +253,16 @@ namespace SyncTool.Sql.Model
 
             file.Id = connection.ExecuteScalar<int>($@"
                     
-                    INSERT OR IGNORE INTO {Table<FileDo>()} (
-                        {nameof(FileDo.Name)},
-                        {nameof(FileDo.NormalizedPath)},
-                        {nameof(FileDo.Path)} )
+                    INSERT OR IGNORE INTO {FilesTable.Name} 
+                    (
+                        {FilesTable.Column.Name},
+                        {FilesTable.Column.NormalizedPath},
+                        {FilesTable.Column.Path} 
+                    )
                     VALUES (@name, @normalizedPath, @path) ;
                     
-                    SELECT {nameof(FileDo.Id)} FROM {Table<FileDo>()}
-                    WHERE {nameof(FileDo.NormalizedPath)} = @normalizedPath;",
+                    SELECT {FilesTable.Column.Id} FROM {FilesTable.Name}
+                    WHERE {FilesTable.Column.NormalizedPath} = @normalizedPath;",
 
                     ("name", file.Name),          
                     ("path", file.Path),
@@ -330,22 +289,31 @@ namespace SyncTool.Sql.Model
 
             var tmpId = Guid.NewGuid().ToString();
             directoryInstance.Id = connection.ExecuteScalar<int>($@"
-                    INSERT INTO {Table<DirectoryInstanceDo>()} ({s_DirectoryId}, {s_TmpId})
+                    INSERT INTO {DirectoryInstancesTable.Name} 
+                    (
+                        {DirectoryInstancesTable.Column.DirectoryId}, 
+                        {DirectoryInstancesTable.Column.TmpId}
+                    )
                     VALUES (@directoryId, @tmpId);
 
-                    SELECT {nameof(DirectoryInstanceDo.Id)} 
-                    FROM {Table<DirectoryInstanceDo>()}
-                    WHERE {s_TmpId} = @tmpId",
+                    SELECT {DirectoryInstancesTable.Column.Id} 
+                    FROM {DirectoryInstancesTable.Name}
+                    WHERE {DirectoryInstancesTable.Column.TmpId} = @tmpId",
 
                     ("directoryId", directoryInstance.Directory.Id),
                     ("tmpId", tmpId)
                 );
-
-
+        
             foreach(var file in directoryInstance.Files)
             {
                 connection.ExecuteNonQuery($@"
-                    INSERT INTO {s_ContainsFile} ({s_ParentId}, {s_ChildId}) VALUES (@parentId, @childId);",
+                    INSERT INTO {ContainsFileTable.Name} 
+                    (
+                        {ContainsFileTable.Column.ParentId}, 
+                        {ContainsFileTable.Column.ChildId}
+                    ) 
+                    VALUES (@parentId, @childId);",
+
                     ("parentId", directoryInstance.Id),
                     ("childId", file.Id)
                 );
@@ -354,14 +322,23 @@ namespace SyncTool.Sql.Model
             foreach (var childDir in directoryInstance.Directories)
             {
                 connection.ExecuteNonQuery($@"
-                    INSERT INTO {s_ContainsDirectory} ({s_ParentId}, {s_ChildId}) VALUES (@parentId, @childId);",
+                    INSERT INTO {ContainsDirectoryTable.Name} 
+                    (
+                        {ContainsDirectoryTable.Column.ParentId}, 
+                        {ContainsDirectoryTable.Column.ChildId}
+                    ) 
+                    VALUES (@parentId, @childId);",
+
                     ("parentId", directoryInstance.Id),
                     ("childId", childDir.Id)
                 );
             }
 
-            connection.ExecuteNonQuery(
-                $"UPDATE {Table<DirectoryInstanceDo>()} SET {s_TmpId} = NULL WHERE {s_TmpId} = @tmpId", 
+            connection.ExecuteNonQuery($@"
+                UPDATE {DirectoryInstancesTable.Name} 
+                SET {DirectoryInstancesTable.Column.TmpId} = NULL 
+                WHERE {DirectoryInstancesTable.Column.TmpId} = @tmpId", 
+
                 ("tmpId", tmpId)
             );
 
@@ -375,16 +352,18 @@ namespace SyncTool.Sql.Model
             Insert(connection, fileInstance.File);
 
             fileInstance.Id = connection.ExecuteScalar<int>($@"
-                    INSERT OR IGNORE INTO {Table<FileInstanceDo>()} (
-                        {nameof(FileInstanceDo.File)}Id,
-                        {nameof(FileInstanceDo.LastWriteTimeTicks)},
-                        {nameof(FileInstanceDo.Length)} )
+                    INSERT OR IGNORE INTO {FileInstancesTable.Name} 
+                    (
+                        {FileInstancesTable.Column.FileId},
+                        {FileInstancesTable.Column.LastWriteTimeTicks},
+                        {FileInstancesTable.Column.Length} 
+                    )
                     VALUES (@fileId, @ticks, @length );
 
-                    SELECT * FROM {Table<FileInstanceDo>()}
-                    WHERE {nameof(FileInstanceDo.File)}Id = @fileId AND
-                            {nameof(FileInstanceDo.LastWriteTimeTicks)} = @ticks AND 
-                            {nameof(FileInstanceDo.Length)} = @length ;
+                    SELECT * FROM {FileInstancesTable.Name}
+                    WHERE {FileInstancesTable.Column.FileId} = @fileId  AND
+                          {FileInstancesTable.Column.LastWriteTimeTicks} = @ticks AND 
+                          {FileInstancesTable.Column.Length} = @length ;
                 ",
                 ("fileId", fileInstance.File.Id),
                 ("ticks", fileInstance.LastWriteTimeTicks),

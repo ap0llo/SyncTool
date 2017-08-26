@@ -1,7 +1,7 @@
 ﻿using Dapper;
+using SyncTool.Sql.Model.Tables;
 using System;
 using System.Collections.Generic;
-using static SyncTool.Sql.Model.TypeMapper;
 
 namespace SyncTool.Sql.Model
 {
@@ -16,7 +16,7 @@ namespace SyncTool.Sql.Model
             {
                 using (var connection = m_ConnectionFactory.OpenConnection())
                 {
-                    return connection.Query<SyncFolderDo>($"SELECT * FROM {Table<SyncFolderDo>()}");               
+                    return connection.Query<SyncFolderDo>($"SELECT * FROM {SyncFoldersTable.Name}");               
                 }                
             }
         }
@@ -29,12 +29,7 @@ namespace SyncTool.Sql.Model
             //TODO: Should happen on first access??
             using (var connection = m_ConnectionFactory.OpenConnection())
             {
-                connection.ExecuteNonQuery($@"                
-                    CREATE TABLE IF NOT EXISTS {Table<SyncFolderDo>()} (
-                        {nameof(SyncFolderDo.Name)} TEXT PRIMARY KEY,
-                        {nameof(SyncFolderDo.Path)} TEXT,
-                        {nameof(SyncFolderDo.Version)} INTEGER NOT NULL DEFAULT 0)"
-                    );                
+                SyncFoldersTable.Create(connection);        
             }
         }
 
@@ -44,8 +39,8 @@ namespace SyncTool.Sql.Model
             using(var connection = m_ConnectionFactory.OpenConnection())
             {
                 return connection.QuerySingleOrDefault<SyncFolderDo>($@"
-                            SELECT * FROM {Table<SyncFolderDo>()}
-                            WHERE lower({nameof(SyncFolderDo.Name)}) = lower(@name)", 
+                            SELECT * FROM {SyncFoldersTable.Name}
+                            WHERE lower({SyncFoldersTable.Column.Name}) = lower(@name)", 
                             new { name }
                         );
             }            
@@ -57,20 +52,22 @@ namespace SyncTool.Sql.Model
             {
                 return connection.QuerySingle<SyncFolderDo>($@"
 
-                    INSERT INTO {Table<SyncFolderDo>()} (
-                        {nameof(SyncFolderDo.Name)}, 
-                        {nameof(SyncFolderDo.Path)}, 
-                        {nameof(SyncFolderDo.Version)}
+                    INSERT INTO {SyncFoldersTable.Name} 
+                    (
+                        {SyncFoldersTable.Column.Name}, 
+                        {SyncFoldersTable.Column.Path}, 
+                        {SyncFoldersTable.Column.Version}
                     ) 
-                    VALUES (
-                        @{nameof(SyncFolderDo.Name)}, 
-                        @{nameof(SyncFolderDo.Path)}, 
+                    VALUES 
+                    (
+                        @{nameof(item.Name)}, 
+                        @{nameof(item.Path)}, 
                         1
                     );
 
-                    SELECT * FROM {Table<SyncFolderDo>()} 
-                    WHERE {nameof(SyncFolderDo.Name)} = @{nameof(SyncFolderDo.Name)} AND 
-                          {nameof(SyncFolderDo.Version)} = 1;  ", 
+                    SELECT * FROM {SyncFoldersTable.Name} 
+                    WHERE {SyncFoldersTable.Column.Name} = @{nameof(item.Name)} AND 
+                          {SyncFoldersTable.Column.Version} = 1;  ", 
                     item
                 );                                       
             }
@@ -83,11 +80,12 @@ namespace SyncTool.Sql.Model
                 var transaction = connection.BeginTransaction();
 
                 var changedRows = connection.ExecuteNonQuery($@"
-                    UPDATE {Table<SyncFolderDo>()}                    
-                    SET {nameof(SyncFolderDo.Path)} = @path,
-                        {nameof(SyncFolderDo.Version)} = @newVersion
-                    WHERE {nameof(SyncFolderDo.Version)} = @oldVersion AND
-                          lower({nameof(SyncFolderDo.Name)}) = lower(@name)", 
+                    UPDATE {SyncFoldersTable.Name}                    
+                    SET {SyncFoldersTable.Column.Path} = @path,
+                        {SyncFoldersTable.Column.Version} = @newVersion
+                    WHERE {SyncFoldersTable.Column.Version} = @oldVersion AND
+                          lower({SyncFoldersTable.Column.Name}) = lower(@name)",
+                          
                         ("name", item.Name),
                         ("path" , item.Path),
                         ("oldVersion", item.Version),

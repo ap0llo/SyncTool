@@ -1,8 +1,7 @@
 ﻿using Dapper;
+using SyncTool.Sql.Model.Tables;
 using System;
 using System.Collections.Generic;
-
-using static SyncTool.Sql.Model.TypeMapper;
 
 namespace SyncTool.Sql.Model
 {    
@@ -18,11 +17,12 @@ namespace SyncTool.Sql.Model
                 using (var connection = m_ConnectionFactory.OpenConnection())
                 {
                     return connection.Query<FileSystemHistoryDo>(
-                        $"SELECT * FROM {Table<FileSystemHistoryDo>()}"
+                        $"SELECT * FROM {FileSystemHistoriesTable.Name}"
                     );
                 }
             }
         }
+
 
         public FileSystemHistoryRepository(IDatabaseContextFactory connectionFactory)
         {
@@ -31,16 +31,9 @@ namespace SyncTool.Sql.Model
             //TODO: Should happen on first access??
             using (var connection = m_ConnectionFactory.OpenConnection())
             {
-                connection.ExecuteNonQuery($@"                
-                    CREATE TABLE IF NOT EXISTS {Table<FileSystemHistoryDo>()} (            
-                        {nameof(FileSystemHistoryDo.Id)} INTEGER PRIMARY KEY,
-                        {nameof(FileSystemHistoryDo.Name)} TEXT NOT NULL,
-                        {nameof(FileSystemHistoryDo.NormalizedName)} TEXT UNIQUE NOT NULL,
-                        {nameof(FileSystemHistoryDo.Version)} INTEGER NOT NULL DEFAULT 0)"
-                    );
+                FileSystemHistoriesTable.Create(connection);
             }
         }
-
 
 
         public FileSystemHistoryDo GetItemOrDefault(string name)
@@ -48,8 +41,8 @@ namespace SyncTool.Sql.Model
             using (var connection = m_ConnectionFactory.OpenConnection())
             {
                 return connection.QuerySingleOrDefault<FileSystemHistoryDo>($@"
-                            SELECT * FROM {Table<FileSystemHistoryDo>()}
-                            WHERE lower({nameof(FileSystemHistoryDo.Name)}) = lower(@name)",
+                            SELECT * FROM {FileSystemHistoriesTable.Name}
+                            WHERE lower({FileSystemHistoriesTable.Column.Name}) = lower(@name)",
                             new { name }
                         );
             }
@@ -61,20 +54,20 @@ namespace SyncTool.Sql.Model
             {
                 return connection.QuerySingle<FileSystemHistoryDo>($@"
 
-                    INSERT INTO {Table<FileSystemHistoryDo>()} (
-                        {nameof(FileSystemHistoryDo.Name)}, 
-                        {nameof(FileSystemHistoryDo.NormalizedName)}, 
-                        {nameof(FileSystemHistoryDo.Version)}
+                    INSERT INTO {FileSystemHistoriesTable.Name} (
+                        {FileSystemHistoriesTable.Column.Name}, 
+                        {FileSystemHistoriesTable.Column.NormalizedName}, 
+                        {FileSystemHistoriesTable.Column.Version}
                     ) 
                     VALUES (
-                        @{nameof(FileSystemHistoryDo.Name)}, 
-                        @{nameof(FileSystemHistoryDo.NormalizedName)}, 
+                        @{nameof(item.Name)}, 
+                        @{nameof(item.NormalizedName)}, 
                         1
                     );
 
-                    SELECT * FROM {Table<FileSystemHistoryDo>()} 
-                    WHERE {nameof(FileSystemHistoryDo.Name)} = @{nameof(FileSystemHistoryDo.Name)} AND 
-                          {nameof(FileSystemHistoryDo.Version)} = 1;  ",
+                    SELECT * FROM {FileSystemHistoriesTable.Name} 
+                    WHERE {FileSystemHistoriesTable.Column.Name} = @{nameof(item.Name)} AND 
+                          {FileSystemHistoriesTable.Column.Version} = 1;  ",
                     item
                 );
             }
