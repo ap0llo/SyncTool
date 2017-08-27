@@ -5,11 +5,7 @@ using SyncTool.Sql.Model;
 using SyncTool.Sql.Services;
 using SyncTool.Sql.TestHelpers;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace SyncTool.Sql.Test.Services
@@ -100,7 +96,7 @@ namespace SyncTool.Sql.Test.Services
 
         #region GetChanges
 
-        [Fact(Skip = "Not compeletely implemented yet")]
+        [Fact]
         public void GetChanges_throws_a_SnapshotNotFoundException_is_the_Id_is_unknown()
         {
             Assert.Throws<SnapshotNotFoundException>(() => m_Instance.GetChanges("someId", "someOtherId"));
@@ -470,7 +466,7 @@ namespace SyncTool.Sql.Test.Services
 
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChages_returns_empty_result_if_empty_path_filter_is_supplied()
         {
             //ARRANGE            
@@ -484,7 +480,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Empty(diff.ChangeLists);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_returns_filtered_list_of_changes_if_path_filter_is_supplied()
         {
             //ARRANGE
@@ -511,27 +507,27 @@ namespace SyncTool.Sql.Test.Services
             Assert.Equal(3, m_Instance.GetChanges(snapshot.Id, null).ChangeLists.Count());
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_throws_FormatException_if_path_filter_contains_relative_paths()
         {
             // all paths passed to GetChanges() must be rooted
-            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "fileName" }));
-            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "relative/path/to/file" }));
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("1", new string[] { "fileName" }));
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("1", new string[] { "relative/path/to/file" }));
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_throws_FormatException_if_path_filter_contains_invalid_paths()
         {
-            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChanges("irrelevant", new string[] { null }));
-            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "" }));
-            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { " " }));
-            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "\t" }));
-            Assert.Throws<FormatException>(() => m_Instance.GetChanges("irrelevant", new string[] { "/" }));
+            Assert.Throws<ArgumentNullException>(() => m_Instance.GetChanges("1", new string[] { null }));
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("1", new string[] { "" }));
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("1", new string[] { " " }));
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("1", new string[] { "\t" }));
+            Assert.Throws<FormatException>(() => m_Instance.GetChanges("1", new string[] { "/" }));
 
         }
 
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_ChangeList_Paths_are_rooted()
         {
             var state = new Directory(s_Dir1)
@@ -545,7 +541,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.True(m_Instance.GetChanges(snapshot.Id).ChangeLists.Single().Path.StartsWith("/"));
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void GetChanges_throws_InvalidRangeException()
         {
             var state1 = new Directory(s_Dir1) { dir1 => new EmptyFile(dir1, "file1") };

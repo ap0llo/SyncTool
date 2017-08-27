@@ -377,8 +377,8 @@ namespace SyncTool.Git.FileSystem.Versioning
                 PathValidator.EnsureIsValidFilePath(path);
                 PathValidator.EnsureIsRootedPath(path);
             }
-
         }
+
         void AssertIsAncestor(string ancestorId, string descandantId)
         {
             if (!m_Repository.IsCommitAncestor(ancestorId, descandantId))

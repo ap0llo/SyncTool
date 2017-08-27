@@ -92,17 +92,16 @@ namespace SyncTool.Sql.Services
 
         public IFileSystemDiff GetChanges(string toId, string[] pathFilter = null)
         {
-            //TODO: Implement path filter
-            if (pathFilter != null)
-                throw new NotImplementedException("Path filters are not implemted yet");
+            var toDbId = ParseId(toId);
+            AssertIsValidPathFilter(pathFilter);
 
-            var toSnapshot = GetSnapshotDo(ParseId(toId));
+            var toSnapshot = GetSnapshotDo(toDbId);
 
             // iterate over all snapshots and get the changed files for every item
             var changeLists = new Dictionary<string, LinkedList<IChange>>(StringComparer.InvariantCultureIgnoreCase);            
             foreach (var snapshot in EnumerateSnapshots(toSnapshot.Id))
             {
-                AppendChanges(snapshot, changeLists);
+                AppendChanges(snapshot, changeLists, pathFilter);
             }
 
             return new FileSystemDiff(
@@ -113,18 +112,18 @@ namespace SyncTool.Sql.Services
         
         public IFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null)
         {
-            //TODO: Implement path filter
-            if (pathFilter != null)
-                throw new NotImplementedException("Path filters are not implemted yet");
+            var fromDbId = ParseId(fromId);
+            var toDbId = ParseId(toId);
+            AssertIsValidPathFilter(pathFilter);
 
-            var fromSnapshot = GetSnapshotDo(ParseId(fromId));
-            var toSnapshot = GetSnapshotDo(ParseId(toId));
+            var fromSnapshot = GetSnapshotDo(fromDbId);
+            var toSnapshot = GetSnapshotDo(toDbId);
 
             // iterate over all snapshots and get the changed files for every item
             var changeLists = new Dictionary<string, LinkedList<IChange>>(StringComparer.InvariantCultureIgnoreCase);
             foreach (var snapshot in EnumerateSnapshots(fromSnapshot.Id, toSnapshot.Id))
             {
-                AppendChanges(snapshot, changeLists);
+                AppendChanges(snapshot, changeLists, pathFilter);
             }
 
             return new FileSystemDiff(
@@ -203,9 +202,9 @@ namespace SyncTool.Sql.Services
             }            
         }
 
-        void AppendChanges(FileSystemSnapshotDo currentSnapshot, Dictionary<string, LinkedList<IChange>> changeLists)
+        void AppendChanges(FileSystemSnapshotDo currentSnapshot, Dictionary<string, LinkedList<IChange>> changeLists, string[] pathFilter)
         {            
-            foreach (var (previous, current) in m_SnapshotRepository.GetChanges(currentSnapshot))
+            foreach (var (previous, current) in m_SnapshotRepository.GetChanges(currentSnapshot, pathFilter))
             {
                 var change = GetChange(previous, current);
 
@@ -216,7 +215,7 @@ namespace SyncTool.Sql.Services
             }
         }
 
-        private static IChange GetChange(FileInstanceDo previous, FileInstanceDo current)
+        static IChange GetChange(FileInstanceDo previous, FileInstanceDo current)
         {
             if (previous == null && current != null)
                 return new Change(ChangeType.Added, null, GetFileReference(current));
@@ -226,6 +225,20 @@ namespace SyncTool.Sql.Services
                 return new Change(ChangeType.Modified, GetFileReference(previous), GetFileReference(current));
             else
                 throw new InvalidOperationException();            
+        }
+
+        void AssertIsValidPathFilter(string[] pathFilter)
+        {
+            if (pathFilter == null)
+            {
+                return;
+            }
+
+            foreach (var path in pathFilter)
+            {
+                PathValidator.EnsureIsValidFilePath(path);
+                PathValidator.EnsureIsRootedPath(path);
+            }
         }
     }
 }

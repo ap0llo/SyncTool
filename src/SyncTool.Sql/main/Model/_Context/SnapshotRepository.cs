@@ -237,10 +237,10 @@ namespace SyncTool.Sql.Model
             return m_Database.Query<FileDo>(query).Select(x => x.Path).ToArray();
         }
 
-        public IEnumerable<(FileInstanceDo previous, FileInstanceDo current)> GetChanges(FileSystemSnapshotDo snapshot)
+        public IEnumerable<(FileInstanceDo previous, FileInstanceDo current)> GetChanges(FileSystemSnapshotDo snapshot, string[] pathFilter)
         {            
             using (var connection = m_Database.OpenConnection())
-            {
+            {                
                 const string s_ChangeTable = "changeTable";
                 const string s_PrecedingSnapshotId = "precedingSnapshotId";
                 const string s_FileInstanceIds = "fileInstanceIds";
@@ -312,9 +312,47 @@ namespace SyncTool.Sql.Model
                             ON {s_Current}.{FileInstancesTable.Column.FileId} = {s_Previous}.{FileInstancesTable.Column.FileId};                                                                
                 ");
 
+                const string s_PathFilter = "pathFilter";
+                const string s_Path = "path";
+                const string s_FilteredFiles ="filteredFiles";
+
+                if(pathFilter != null)
+                {
+                    connection.ExecuteNonQuery($@"
+
+                        CREATE TEMPORARY TABLE {s_PathFilter} (
+                            {s_Path} TEXT PRIMARY KEY            
+                        )
+                    ");
+
+                    foreach(var path in pathFilter)
+                    {
+                        connection.ExecuteNonQuery($@"
+                            INSERT INTO {s_PathFilter} ({s_Path}) VALUES (@path);",
+                            ("path", path)
+                        );
+                    }
+
+                    connection.ExecuteNonQuery($@"
+                        CREATE TEMPORARY VIEW {s_FilteredFiles} AS 
+                            SELECT * FROM {FilesTable.Name}
+                            WHERE lower({FilesTable.Column.Path}) IN 
+                            (
+                                SELECT {s_Path} FROM {s_PathFilter}
+                            );
+                    ");
+                }
+                else
+                {
+                    connection.ExecuteNonQuery($@"
+                        CREATE TEMPORARY VIEW {s_FilteredFiles} AS 
+                            SELECT * FROM {FilesTable.Name};
+                    ");
+                }
+
 
                 var fileDos = connection.Query<FileDo>($@"                    
-                    SELECT * FROM {FilesTable.Name}
+                    SELECT * FROM {s_FilteredFiles}
                     WHERE {FilesTable.Column.Id} IN (SELECT DISTINCT {nameof(ChangeTableRecord.FileId)} FROM {s_ChangeTable});
                 "
                 ).ToDictionary(record => record.Id);
@@ -322,7 +360,10 @@ namespace SyncTool.Sql.Model
 
                 var changeQuery = $@"
                     SELECT * FROM {s_ChangeTable}
-                    WHERE {s_CurrentId} IS NULL OR {s_PreviousId} IS NULL OR {s_CurrentId} != {s_PreviousId}
+                    WHERE 
+                        ({s_CurrentId} IS NULL OR {s_PreviousId} IS NULL OR {s_CurrentId} != {s_PreviousId})
+                        AND 
+                        ({nameof(ChangeTableRecord.FileId)} IN (SELECT {FilesTable.Column.Id} FROM {s_FilteredFiles}))
                 ;";
 
                 var changes = new LinkedList<(FileInstanceDo, FileInstanceDo)>();
