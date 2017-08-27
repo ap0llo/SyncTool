@@ -59,44 +59,33 @@ namespace SyncTool.Sql.Model
 
         public FileSystemSnapshotDo GetSnapshotOrDefault(int historyId, int id)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                return connection.QuerySingleOrDefault<FileSystemSnapshotDo>($@"
-                    SELECT *
-                    FROM {FileSystemSnapshotsTable.Name}
-                    WHERE {FileSystemSnapshotsTable.Column.Id} = @id AND
-                          {FileSystemSnapshotsTable.Column.HistoryId} = @historyId;
-                ",
-                new { historyId = historyId, id = id });
-            }
+            return m_Database.QuerySingleOrDefault<FileSystemSnapshotDo>($@"
+                SELECT *
+                FROM {FileSystemSnapshotsTable.Name}
+                WHERE {FileSystemSnapshotsTable.Column.Id} = @id AND
+                        {FileSystemSnapshotsTable.Column.HistoryId} = @historyId;
+            ",
+            new { historyId = historyId, id = id });
         }
 
         public FileSystemSnapshotDo GetLatestSnapshotOrDefault(int historyId)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                return connection.QueryFirstOrDefault<FileSystemSnapshotDo>($@"
-                    SELECT *
-                    FROM {FileSystemSnapshotsTable.Name}
-                    WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId
-                    ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
-                    LIMIT 2
-                ",
+            return m_Database.QueryFirstOrDefault<FileSystemSnapshotDo>($@"
+                SELECT *
+                FROM {FileSystemSnapshotsTable.Name}
+                WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId
+                ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
+                LIMIT 2",
                 new { historyId = historyId });
-            }
         }
 
         public IEnumerable<FileSystemSnapshotDo> GetSnapshots(int historyId)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                return connection.Query<FileSystemSnapshotDo>($@"
-                    SELECT *
-                    FROM {FileSystemSnapshotsTable.Name}
-                    WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId;
-                ",
+            return m_Database.Query<FileSystemSnapshotDo>($@"
+                SELECT *
+                FROM {FileSystemSnapshotsTable.Name}
+                WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId;",
                 new { historyId = historyId });
-            }
         }
 
         public void AddSnapshot(FileSystemSnapshotDo snapshot)
@@ -167,104 +156,94 @@ namespace SyncTool.Sql.Model
 
         public void LoadIncludedFiles(FileSystemSnapshotDo snapshot)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                var files = connection.Query<FileInstanceDo>($@"
-                    SELECT * 
-                    FROM {FileInstancesTable.Name}
-                    WHERE {FileInstancesTable.Column.Id} IN 
-                    (
-                        SELECT {IncludesFileInstanceTable.Column.FileInstanceId}
-                        FROM {IncludesFileInstanceTable.Name}
-                        WHERE {IncludesFileInstanceTable.Column.SnapshotId} = @snapshotId
-                    );
-                ",
-                new { snapshotId = snapshot.Id });
+            var files = m_Database.Query<FileInstanceDo>($@"
+                SELECT * 
+                FROM {FileInstancesTable.Name}
+                WHERE {FileInstancesTable.Column.Id} IN 
+                (
+                    SELECT {IncludesFileInstanceTable.Column.FileInstanceId}
+                    FROM {IncludesFileInstanceTable.Name}
+                    WHERE {IncludesFileInstanceTable.Column.SnapshotId} = @snapshotId
+                );
+            ",
+            new { snapshotId = snapshot.Id });
 
-                snapshot.IncludedFiles = files.ToList();
-            }
+            snapshot.IncludedFiles = files.ToList();            
         }
 
         public FileSystemSnapshotDo GetPrecedingSnapshot(FileSystemSnapshotDo snapshot)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                return connection.QueryFirstOrDefault<FileSystemSnapshotDo>($@"
-                    SELECT *
-                    FROM {FileSystemSnapshotsTable.Name}
-                    WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId AND
-                          {FileSystemSnapshotsTable.Column.SequenceNumber} < @sequenceNumber
-                    ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
-                    LIMIT 2
-                ",
+            return m_Database.QueryFirstOrDefault<FileSystemSnapshotDo>($@"
+                SELECT *
+                FROM {FileSystemSnapshotsTable.Name}
+                WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId AND
+                        {FileSystemSnapshotsTable.Column.SequenceNumber} < @sequenceNumber
+                ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
+                LIMIT 2",
                 new { historyId = snapshot.HistoryId, sequenceNumber = snapshot.SequenceNumber });
-            }
         }
 
         public IEnumerable<string> GetChangedFiles(FileSystemSnapshotDo snapshot)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                const string s_PrecedingSnapshotId = "precedingSnapshotId";
-                const string s_FileInstanceIds = "fileInstanceIds";
-                const string s_PreviousFileInstanceIds = "previousFileInstanceIds";
-                const string s_ChangedFileIds = "changedFileIds";
+            const string s_PrecedingSnapshotId = "precedingSnapshotId";
+            const string s_FileInstanceIds = "fileInstanceIds";
+            const string s_PreviousFileInstanceIds = "previousFileInstanceIds";
+            const string s_ChangedFileIds = "changedFileIds";
 
-                var query = $@"
+            var query = $@"
 
-                    -- query database for preceding snapshot
-                    WITH {s_PrecedingSnapshotId} AS 
-                    (
-                        SELECT {FileSystemSnapshotsTable.Column.Id} 
-                        FROM {FileSystemSnapshotsTable.Name}
-                        WHERE  {FileSystemSnapshotsTable.Column.HistoryId} = {snapshot.HistoryId} AND
-                               {FileSystemSnapshotsTable.Column.SequenceNumber} < {snapshot.SequenceNumber}
-                        ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
-                        LIMIT 1 
-                    ),
+                -- query database for preceding snapshot
+                WITH {s_PrecedingSnapshotId} AS 
+                (
+                    SELECT {FileSystemSnapshotsTable.Column.Id} 
+                    FROM {FileSystemSnapshotsTable.Name}
+                    WHERE  {FileSystemSnapshotsTable.Column.HistoryId} = {snapshot.HistoryId} AND
+                            {FileSystemSnapshotsTable.Column.SequenceNumber} < {snapshot.SequenceNumber}
+                    ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
+                    LIMIT 1 
+                ),
 
-                    -- get ids of file instances included in the current snapshot
-                    {s_FileInstanceIds} AS 
-                    (
-                        SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
-                        FROM {IncludesFileInstanceTable.Name}
-                        WHERE {IncludesFileInstanceTable.Column.SnapshotId} = {snapshot.Id} 
-                    ),
+                -- get ids of file instances included in the current snapshot
+                {s_FileInstanceIds} AS 
+                (
+                    SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
+                    FROM {IncludesFileInstanceTable.Name}
+                    WHERE {IncludesFileInstanceTable.Column.SnapshotId} = {snapshot.Id} 
+                ),
                     
-                    -- get ids of file instances included in the preceding snapshot
-                    {s_PreviousFileInstanceIds} AS 
-                    (
-                        SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
-                        FROM {IncludesFileInstanceTable.Name}
-                        WHERE {IncludesFileInstanceTable.Column.SnapshotId} IN {s_PrecedingSnapshotId}
-                    ),
+                -- get ids of file instances included in the preceding snapshot
+                {s_PreviousFileInstanceIds} AS 
+                (
+                    SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
+                    FROM {IncludesFileInstanceTable.Name}
+                    WHERE {IncludesFileInstanceTable.Column.SnapshotId} IN {s_PrecedingSnapshotId}
+                ),
 
-                    -- find the instances that are *not* 
-                    -- included in both the current and the preceding snapshot
-                    -- and select the ids of the correspondig file's id
-                    {s_ChangedFileIds} AS 
+                -- find the instances that are *not* 
+                -- included in both the current and the preceding snapshot
+                -- and select the ids of the correspondig file's id
+                {s_ChangedFileIds} AS 
+                (
+                    SELECT DISTINCT {FileInstancesTable.Column.FileId} FROM {FileInstancesTable.Name}
+                    WHERE 
                     (
-                        SELECT DISTINCT {FileInstancesTable.Column.FileId} FROM {FileInstancesTable.Name}
-                        WHERE 
-                        (
-                            {FileInstancesTable.Column.Id} IN {s_FileInstanceIds} AND
-                            {FileInstancesTable.Column.Id} NOT IN {s_PreviousFileInstanceIds}
-                        ) 
-                        OR 
-                        (
-                            {FileInstancesTable.Column.Id} IN {s_PreviousFileInstanceIds} AND 
-                            {FileInstancesTable.Column.Id} NOT IN {s_FileInstanceIds}
-                        )
+                        {FileInstancesTable.Column.Id} IN {s_FileInstanceIds} AND
+                        {FileInstancesTable.Column.Id} NOT IN {s_PreviousFileInstanceIds}
+                    ) 
+                    OR 
+                    (
+                        {FileInstancesTable.Column.Id} IN {s_PreviousFileInstanceIds} AND 
+                        {FileInstancesTable.Column.Id} NOT IN {s_FileInstanceIds}
                     )
+                )
 
-                    -- using the list of ids of changed files, get files from the database
-                    SELECT * FROM {FilesTable.Name}
-                    WHERE {FilesTable.Column.Id} IN {s_ChangedFileIds};
+                -- using the list of ids of changed files, get files from the database
+                SELECT * FROM {FilesTable.Name}
+                WHERE {FilesTable.Column.Id} IN {s_ChangedFileIds};
                         
-                ";
+            ";
 
-                return connection.Query<FileDo>(query).Select(x => x.Path).ToArray();
-            }
+            return m_Database.Query<FileDo>(query).Select(x => x.Path).ToArray();
         }
 
         public IEnumerable<(FileInstanceDo previous, FileInstanceDo current)> GetChanges(FileSystemSnapshotDo snapshot)

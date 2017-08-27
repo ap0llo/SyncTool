@@ -10,16 +10,7 @@ namespace SyncTool.Sql.Model
         readonly IDatabase m_Database;
 
 
-        public IEnumerable<SyncFolderDo> Items
-        {
-            get
-            {
-                using (var connection = m_Database.OpenConnection())
-                {
-                    return connection.Query<SyncFolderDo>($"SELECT * FROM {SyncFoldersTable.Name}");               
-                }                
-            }
-        }
+        public IEnumerable<SyncFolderDo> Items => m_Database.Query<SyncFolderDo>($"SELECT * FROM {SyncFoldersTable.Name}");
 
 
         public SyncFolderRepository(IDatabase database)
@@ -36,60 +27,53 @@ namespace SyncTool.Sql.Model
 
         public SyncFolderDo GetItemOrDefault(string name)
         {
-            using(var connection = m_Database.OpenConnection())
-            {
-                return connection.QuerySingleOrDefault<SyncFolderDo>($@"
-                            SELECT * FROM {SyncFoldersTable.Name}
-                            WHERE lower({SyncFoldersTable.Column.Name}) = lower(@name)", 
-                            new { name }
-                        );
-            }            
+            return m_Database.QuerySingleOrDefault<SyncFolderDo>($@"
+                        SELECT * FROM {SyncFoldersTable.Name}
+                        WHERE lower({SyncFoldersTable.Column.Name}) = lower(@name)", 
+                        new { name }
+                    );
         }
 
         public SyncFolderDo AddItem(SyncFolderDo item)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                return connection.QuerySingle<SyncFolderDo>($@"
+            return m_Database.QuerySingle<SyncFolderDo>($@"
 
-                    INSERT INTO {SyncFoldersTable.Name} 
-                    (
-                        {SyncFoldersTable.Column.Name}, 
-                        {SyncFoldersTable.Column.Path}, 
-                        {SyncFoldersTable.Column.Version}
-                    ) 
-                    VALUES 
-                    (
-                        @{nameof(item.Name)}, 
-                        @{nameof(item.Path)}, 
-                        1
-                    );
+                INSERT INTO {SyncFoldersTable.Name} 
+                (
+                    {SyncFoldersTable.Column.Name}, 
+                    {SyncFoldersTable.Column.Path}, 
+                    {SyncFoldersTable.Column.Version}
+                ) 
+                VALUES 
+                (
+                    @{nameof(item.Name)}, 
+                    @{nameof(item.Path)}, 
+                    1
+                );
 
-                    SELECT * FROM {SyncFoldersTable.Name} 
-                    WHERE {SyncFoldersTable.Column.Name} = @{nameof(item.Name)} AND 
-                          {SyncFoldersTable.Column.Version} = 1;  ", 
-                    item
-                );                                       
-            }
+                SELECT * FROM {SyncFoldersTable.Name} 
+                WHERE {SyncFoldersTable.Column.Name} = @{nameof(item.Name)} AND 
+                        {SyncFoldersTable.Column.Version} = 1;  ", 
+                item
+            );                                       
         }
 
         public void UpdateItem(SyncFolderDo item)
         {
             using (var connection = m_Database.OpenConnection())
+            using (var transaction = connection.BeginTransaction())
             {
-                var transaction = connection.BeginTransaction();
-
                 var changedRows = connection.ExecuteNonQuery($@"
                     UPDATE {SyncFoldersTable.Name}                    
                     SET {SyncFoldersTable.Column.Path} = @path,
                         {SyncFoldersTable.Column.Version} = @newVersion
                     WHERE {SyncFoldersTable.Column.Version} = @oldVersion AND
                           lower({SyncFoldersTable.Column.Name}) = lower(@name)",
-                          
+
                         ("name", item.Name),
-                        ("path" , item.Path),
+                        ("path", item.Path),
                         ("oldVersion", item.Version),
-                        ("newVersion" , item.Version + 1)
+                        ("newVersion", item.Version + 1)
                 );
 
                 if (changedRows == 0)

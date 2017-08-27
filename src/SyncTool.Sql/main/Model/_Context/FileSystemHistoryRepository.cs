@@ -10,18 +10,7 @@ namespace SyncTool.Sql.Model
         readonly IDatabase m_Database;
 
 
-        public IEnumerable<FileSystemHistoryDo> Items
-        {
-            get
-            {
-                using (var connection = m_Database.OpenConnection())
-                {
-                    return connection.Query<FileSystemHistoryDo>(
-                        $"SELECT * FROM {FileSystemHistoriesTable.Name}"
-                    );
-                }
-            }
-        }
+        public IEnumerable<FileSystemHistoryDo> Items => m_Database.Query<FileSystemHistoryDo>($"SELECT * FROM {FileSystemHistoriesTable.Name}");
 
 
         public FileSystemHistoryRepository(IDatabase database)
@@ -38,39 +27,35 @@ namespace SyncTool.Sql.Model
 
         public FileSystemHistoryDo GetItemOrDefault(string name)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                return connection.QuerySingleOrDefault<FileSystemHistoryDo>($@"
-                            SELECT * FROM {FileSystemHistoriesTable.Name}
-                            WHERE lower({FileSystemHistoriesTable.Column.Name}) = lower(@name)",
-                            new { name }
-                        );
-            }
+            return m_Database.QuerySingleOrDefault<FileSystemHistoryDo>($@"
+                        SELECT * FROM {FileSystemHistoriesTable.Name}
+                        WHERE lower({FileSystemHistoriesTable.Column.Name}) = lower(@name)",
+                        new { name }
+                    );
         }
 
         public FileSystemHistoryDo AddItem(FileSystemHistoryDo item)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                return connection.QuerySingle<FileSystemHistoryDo>($@"
+            return m_Database.QuerySingle<FileSystemHistoryDo>($@"
 
-                    INSERT INTO {FileSystemHistoriesTable.Name} (
-                        {FileSystemHistoriesTable.Column.Name}, 
-                        {FileSystemHistoriesTable.Column.NormalizedName}, 
-                        {FileSystemHistoriesTable.Column.Version}
-                    ) 
-                    VALUES (
-                        @{nameof(item.Name)}, 
-                        @{nameof(item.NormalizedName)}, 
-                        1
-                    );
-
-                    SELECT * FROM {FileSystemHistoriesTable.Name} 
-                    WHERE {FileSystemHistoriesTable.Column.Name} = @{nameof(item.Name)} AND 
-                          {FileSystemHistoriesTable.Column.Version} = 1;  ",
-                    item
+                INSERT INTO {FileSystemHistoriesTable.Name} 
+                (
+                    {FileSystemHistoriesTable.Column.Name}, 
+                    {FileSystemHistoriesTable.Column.NormalizedName}, 
+                    {FileSystemHistoriesTable.Column.Version}
+                ) 
+                VALUES 
+                (
+                    @{nameof(item.Name)}, 
+                    @{nameof(item.NormalizedName)}, 
+                    1
                 );
-            }
+
+                SELECT * FROM {FileSystemHistoriesTable.Name} 
+                WHERE {FileSystemHistoriesTable.Column.Name} = @{nameof(item.Name)} AND 
+                        {FileSystemHistoriesTable.Column.Version} = 1;  ",
+                item
+            );
         }
     }
 }

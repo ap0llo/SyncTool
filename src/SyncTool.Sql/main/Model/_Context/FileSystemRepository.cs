@@ -11,49 +11,14 @@ namespace SyncTool.Sql.Model
     {
         readonly IDatabase m_Database;
 
-        public IEnumerable<FileDo> Files
-        {
-            get
-            {
-                using (var connection = m_Database.OpenConnection())
-                {
-                    return connection.Query<FileDo>($"SELECT * FROM {FilesTable.Name}");
-                } 
-            }
-        }
 
-        public IEnumerable<DirectoryDo> Directories
-        {
-            get
-            {
-                using (var connection = m_Database.OpenConnection())
-                {
-                    return connection.Query<DirectoryDo>($"SELECT * FROM {DirectoriesTable.Name}");
-                }
-            }
-        }
+        public IEnumerable<FileDo> Files => m_Database.Query<FileDo>($"SELECT * FROM {FilesTable.Name}");
 
-        public IEnumerable<FileInstanceDo> FileInstancess
-        {
-            get
-            {
-                using (var connection = m_Database.OpenConnection())
-                {
-                    return connection.Query<FileInstanceDo>($"SELECT * FROM {FileInstancesTable.Name}");
-                }
-            }
-        }
+        public IEnumerable<DirectoryDo> Directories => m_Database.Query<DirectoryDo>($"SELECT * FROM {DirectoriesTable.Name}");
 
-        public IEnumerable<DirectoryInstanceDo> DirectorieInstances
-        {
-            get
-            {
-                using (var connection = m_Database.OpenConnection())
-                {
-                    return connection.Query<DirectoryInstanceDo>($"SELECT * FROM {DirectoryInstancesTable.Name}");
-                }
-            }
-        }
+        public IEnumerable<FileInstanceDo> FileInstancess => m_Database.Query<FileInstanceDo>($"SELECT * FROM {FileInstancesTable.Name}");
+
+        public IEnumerable<DirectoryInstanceDo> DirectorieInstances => m_Database.Query<DirectoryInstanceDo>($"SELECT * FROM {DirectoryInstancesTable.Name}");
 
 
         public FileSystemRepository(IDatabase database)
@@ -133,91 +98,75 @@ namespace SyncTool.Sql.Model
 
         public DirectoryInstanceDo GetDirectoryInstance(int id)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                return connection.QuerySingle<DirectoryInstanceDo>($@"
-                    SELECT * 
-                    FROM {DirectoryInstancesTable.Name}
-                    WHERE {DirectoryInstancesTable.Column.Id} = @id;
-                ", 
-                new { id = id });
-            }
+            return m_Database.QuerySingle<DirectoryInstanceDo>($@"
+                SELECT * 
+                FROM {DirectoryInstancesTable.Name}
+                WHERE {DirectoryInstancesTable.Column.Id} = @id;
+            ", 
+            new { id = id });
         }
 
         public void LoadDirectories(DirectoryInstanceDo parentDirectoryInstance)
-        {
-            using (var connection = m_Database.OpenConnection())
-            {
-                var directories = connection.Query<DirectoryInstanceDo>($@"    
-                    SELECT * 
-                    FROM {DirectoryInstancesTable.Name}
-                    WHERE {DirectoryInstancesTable.Column.Id} IN (
-                        SELECT {ContainsDirectoryTable.Column.ChildId}
-                        FROM {ContainsDirectoryTable.Name}
-                        WHERE {ContainsDirectoryTable.Column.ParentId} = @id        
-                    );
-                ",
-                new { id = parentDirectoryInstance.Id });
+        {            
+            var directories = m_Database.Query<DirectoryInstanceDo>($@"    
+                SELECT * 
+                FROM {DirectoryInstancesTable.Name}
+                WHERE {DirectoryInstancesTable.Column.Id} IN 
+                (
+                    SELECT {ContainsDirectoryTable.Column.ChildId}
+                    FROM {ContainsDirectoryTable.Name}
+                    WHERE {ContainsDirectoryTable.Column.ParentId} = @id        
+                );
+            ",
+            new { id = parentDirectoryInstance.Id });
 
-                parentDirectoryInstance.Directories = directories.ToList();
-            }
+            parentDirectoryInstance.Directories = directories.ToList();           
         }
 
         public void LoadDirectory(DirectoryInstanceDo directoryInstance)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                var dir = connection.QuerySingle<DirectoryDo>($@"
-                    SELECT * 
-                    FROM {DirectoriesTable.Name}
-                    WHERE {DirectoriesTable.Column.Id} IN (
-                        SELECT {DirectoryInstancesTable.Column.DirectoryId}
-                        FROM {DirectoryInstancesTable.Name}
-                        WHERE {DirectoryInstancesTable.Column.Id} = @id
-                    )
-                ", 
+            directoryInstance.Directory = m_Database.QuerySingle<DirectoryDo>($@"
+                SELECT * 
+                FROM {DirectoriesTable.Name}
+                WHERE {DirectoriesTable.Column.Id} IN 
+                (
+                    SELECT {DirectoryInstancesTable.Column.DirectoryId}
+                    FROM {DirectoryInstancesTable.Name}
+                    WHERE {DirectoryInstancesTable.Column.Id} = @id
+                )", 
                 new {id = directoryInstance.Id});
-
-                directoryInstance.Directory = dir;
-            }
         }
 
         public void LoadFiles(DirectoryInstanceDo parentDirectoryInstance)
         {
-            using (var connection = m_Database.OpenConnection())
-            {
-                var files = connection.Query<FileInstanceDo>($@"    
-                    SELECT * 
-                    FROM {FileInstancesTable.Name}
-                    WHERE {FileInstancesTable.Column.Id} IN (
-                        SELECT {ContainsFileTable.Column.ChildId}
-                        FROM {ContainsFileTable.Name}
-                        WHERE {ContainsFileTable.Column.ParentId} = @id        
-                    );
-                ",
-                    new { id = parentDirectoryInstance.Id });
+            var files = m_Database.Query<FileInstanceDo>($@"    
+                SELECT * 
+                FROM {FileInstancesTable.Name}
+                WHERE {FileInstancesTable.Column.Id} IN 
+                (
+                    SELECT {ContainsFileTable.Column.ChildId}
+                    FROM {ContainsFileTable.Name}
+                    WHERE {ContainsFileTable.Column.ParentId} = @id        
+                );",
+                new { id = parentDirectoryInstance.Id });
 
-                parentDirectoryInstance.Files = files.ToList();
-            }
+            parentDirectoryInstance.Files = files.ToList();
+            
         }
 
         public void LoadFile(FileInstanceDo fileInstance)
-        {        
-            using (var connection = m_Database.OpenConnection())
-            {
-                var file = connection.QuerySingle<FileDo>($@"
-                    SELECT * 
-                    FROM {FilesTable.Name}
-                    WHERE {FilesTable.Column.Id} IN (
-                        SELECT {FileInstancesTable.Column.FileId} 
-                        FROM {FileInstancesTable.Name}
-                        WHERE {FileInstancesTable.Column.Id} = @id
-                    )
-                ",  
-                new { id = fileInstance.Id });
-
-                fileInstance.File = file;                    
-            }                
+        {
+            fileInstance.File = m_Database.QuerySingle<FileDo>($@"
+                SELECT * 
+                FROM {FilesTable.Name}
+                WHERE {FilesTable.Column.Id} IN 
+                (
+                    SELECT {FileInstancesTable.Column.FileId} 
+                    FROM {FileInstancesTable.Name}
+                    WHERE {FileInstancesTable.Column.Id} = @id
+                )
+            ",  
+            new { id = fileInstance.Id });
         }
 
 
