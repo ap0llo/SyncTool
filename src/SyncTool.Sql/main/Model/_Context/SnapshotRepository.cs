@@ -9,7 +9,7 @@ namespace SyncTool.Sql.Model
 {
     public class SnapshotRepository
     {
-        private class ChangeTableRecord
+        private class ChangeRecord
         {
             public int FileId { get; set; }
 
@@ -186,11 +186,7 @@ namespace SyncTool.Sql.Model
                         WHERE {FilesTable.Column.Id} IN 
                         (
                             SELECT {ChangesView.Column.FileId} 
-                            FROM {changesView}
-                            WHERE                             
-                                {ChangesView.Column.CurrentId} IS NULL OR 
-                                {ChangesView.Column.PreviousId} IS NULL OR 
-                                {ChangesView.Column.CurrentId} != {ChangesView.Column.PreviousId}                            
+                            FROM {changesView}                                                 
                         )")
                     .ToArray();
             }            
@@ -205,25 +201,17 @@ namespace SyncTool.Sql.Model
 
                 var fileDos = connection.Query<FileDo>($@"                    
                         SELECT * FROM {filesView}
-                        WHERE {FilesTable.Column.Id} IN (SELECT DISTINCT {nameof(ChangeTableRecord.FileId)} FROM {changesView});")
+                        WHERE {FilesTable.Column.Id} IN (SELECT DISTINCT {ChangesView.Column.FileId} FROM {changesView});")
                     .ToDictionary(record => record.Id);
 
                 var changeQuery = $@"
                     SELECT * FROM {changesView}
-                    WHERE 
-                        (
-                            {ChangesView.Column.CurrentId} IS NULL OR 
-                            {ChangesView.Column.PreviousId} IS NULL OR 
-                            {ChangesView.Column.CurrentId} != {ChangesView.Column.PreviousId}
-                        )
-                        AND 
-                        (
-                            {nameof(ChangeTableRecord.FileId)} IN (SELECT {FilteredFilesView.Column.Id} FROM {filesView})
-                        )
+                    WHERE {ChangesView.Column.FileId} IN (SELECT {FilteredFilesView.Column.Id} FROM {filesView})
+                        
                 ;";
 
                 var changes = new LinkedList<(FileInstanceDo, FileInstanceDo)>();
-                foreach (var (previous, current, fileId) in connection.Query<ChangeTableRecord>(changeQuery))
+                foreach (var (previous, current, fileId) in connection.Query<ChangeRecord>(changeQuery))
                 {
                     var fileDo = fileDos[fileId];                    
 

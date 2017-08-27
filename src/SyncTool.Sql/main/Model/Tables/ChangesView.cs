@@ -27,10 +27,11 @@ namespace SyncTool.Sql.Model.Tables
             const string s_Previous = "previous";
             string s_FileInstances = $"(SELECT * FROM {FileInstancesTable.Name} WHERE {FileInstancesTable.Column.Id} IN {s_FileInstanceIds})";
             string s_PreviousFileInstances = $"(SELECT * FROM {FileInstancesTable.Name} WHERE {FileInstancesTable.Column.Id} IN {s_PreviousFileInstanceIds})";
+            const string s_UnfilteredChanged = Name + "_Unfiltered";
 
             connection.ExecuteNonQuery($@"                    
 
-                CREATE TEMPORARY VIEW {Name} AS 
+                CREATE TEMPORARY VIEW {s_UnfilteredChanged} AS 
 
                     -- query database for preceding snapshot
                     WITH {s_PrecedingSnapshotId} AS 
@@ -82,6 +83,20 @@ namespace SyncTool.Sql.Model.Tables
                         FROM {s_PreviousFileInstances} AS {s_Previous}
                         LEFT OUTER JOIN {s_FileInstances} AS {s_Current}                                 
                         ON {s_Current}.{FileInstancesTable.Column.FileId} = {s_Previous}.{FileInstancesTable.Column.FileId};                                                                
+
+
+                -- filter view to only include changes
+                -- CurrentId NULL => file was deleted
+                -- PreviousId NULL => file was added
+                -- CurrentId != PreviousId => file was modified
+                CREATE TEMPORARY VIEW {Name} AS
+                    SELECT * FROM {s_UnfilteredChanged} 
+                    WHERE   
+                    (
+                            {Column.CurrentId} IS NULL OR 
+                            {Column.PreviousId} IS NULL OR 
+                            {Column.CurrentId} != {ChangesView.Column.PreviousId}
+                    );
             ");
 
             return Name;
