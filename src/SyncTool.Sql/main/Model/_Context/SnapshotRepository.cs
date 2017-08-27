@@ -240,130 +240,27 @@ namespace SyncTool.Sql.Model
         public IEnumerable<(FileInstanceDo previous, FileInstanceDo current)> GetChanges(FileSystemSnapshotDo snapshot, string[] pathFilter)
         {            
             using (var connection = m_Database.OpenConnection())
-            {                
-                const string s_ChangeTable = "changeTable";
-                const string s_PrecedingSnapshotId = "precedingSnapshotId";
-                const string s_FileInstanceIds = "fileInstanceIds";
-                const string s_PreviousFileInstanceIds = "previousFileInstanceIds";
-                const string s_Current = "current";
-                const string s_Previous = "previous";
-                const string s_CurrentId = nameof(ChangeTableRecord.CurrentId);
-                const string s_CurrentTicks = nameof(ChangeTableRecord.CurrentLastWriteTimeTicks);
-                const string s_CurrentLength = nameof(ChangeTableRecord.CurrentLength);
-                const string s_PreviousId = nameof(ChangeTableRecord.PreviousId);
-                const string s_PreviousTicks = nameof(ChangeTableRecord.PreviousLastWriteTimeTicks);
-                const string s_PreviousLength = nameof(ChangeTableRecord.PreviousLength);
-                string s_FileInstances = $"(SELECT * FROM {FileInstancesTable.Name} WHERE {FileInstancesTable.Column.Id} IN {s_FileInstanceIds})";
-                string s_PreviousFileInstances = $"(SELECT * FROM {FileInstancesTable.Name} WHERE {FileInstancesTable.Column.Id} IN {s_PreviousFileInstanceIds})";
-
-                connection.ExecuteNonQuery($@"                    
-
-                    CREATE TEMPORARY VIEW {s_ChangeTable} AS 
-
-                        -- query database for preceding snapshot
-                        WITH {s_PrecedingSnapshotId} AS 
-                        (
-                            SELECT {FileSystemSnapshotsTable.Column.Id} FROM {FileSystemSnapshotsTable.Name}
-                            WHERE {FileSystemSnapshotsTable.Column.HistoryId} = {snapshot.HistoryId} AND
-                                  {FileSystemSnapshotsTable.Column.SequenceNumber} < {snapshot.SequenceNumber}
-                            ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
-                            LIMIT 1 
-                        ),
-                    
-                        -- get ids of file instances included in the current snapshot
-                        {s_FileInstanceIds} AS 
-                        (
-                            SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
-                            FROM {IncludesFileInstanceTable.Name}
-                            WHERE {IncludesFileInstanceTable.Column.SnapshotId} = {snapshot.Id} 
-                        ),
-                                        
-                        -- get ids of file instances included in the preceding snapshot
-                        {s_PreviousFileInstanceIds} AS 
-                        (
-                            SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
-                            FROM {IncludesFileInstanceTable.Name}
-                            WHERE {IncludesFileInstanceTable.Column.SnapshotId} IN {s_PrecedingSnapshotId}
-                        )                        
-
-                        -- (SQLite does not support a full outer join, so we need to combine two left joins)  
-                        SELECT 
-                            {s_Current}.{FileInstancesTable.Column.FileId}              AS {nameof(ChangeTableRecord.FileId)},
-                            {s_Current}.{FileInstancesTable.Column.Id}                  AS {s_CurrentId},
-                            {s_Current}.{FileInstancesTable.Column.LastWriteTimeTicks}  AS {s_CurrentTicks},
-                            {s_Current}.{FileInstancesTable.Column.Length}              AS {s_CurrentLength},
-                            {s_Previous}.{FileInstancesTable.Column.Id}                 AS {s_PreviousId},
-                            {s_Previous}.{FileInstancesTable.Column.LastWriteTimeTicks} AS {s_PreviousTicks},
-                            {s_Previous}.{FileInstancesTable.Column.Length}             AS {s_PreviousLength}
-                        FROM {s_FileInstances} AS {s_Current} 
-                        LEFT OUTER JOIN {s_PreviousFileInstances} AS {s_Previous}
-                        ON {s_Current}.{FileInstancesTable.Column.FileId} = {s_Previous}.{FileInstancesTable.Column.FileId}                        
-                        UNION
-                            SELECT 
-                                {s_Previous}.{FileInstancesTable.Column.FileId}             AS {nameof(ChangeTableRecord.FileId)},
-                                {s_Current}.{FileInstancesTable.Column.Id}                  AS {s_CurrentId},
-                                {s_Current}.{FileInstancesTable.Column.LastWriteTimeTicks}  AS {s_CurrentTicks},
-                                {s_Current}.{FileInstancesTable.Column.Length}              AS {s_CurrentLength},
-                                {s_Previous}.{FileInstancesTable.Column.Id}                 AS {s_PreviousId},
-                                {s_Previous}.{FileInstancesTable.Column.LastWriteTimeTicks} AS {s_PreviousTicks},
-                                {s_Previous}.{FileInstancesTable.Column.Length}             AS {s_PreviousLength}
-                            FROM {s_PreviousFileInstances} AS {s_Previous}
-                            LEFT OUTER JOIN {s_FileInstances} AS {s_Current}                                 
-                            ON {s_Current}.{FileInstancesTable.Column.FileId} = {s_Previous}.{FileInstancesTable.Column.FileId};                                                                
-                ");
-
-                const string s_PathFilter = "pathFilter";
-                const string s_Path = "path";
-                const string s_FilteredFiles ="filteredFiles";
-
-                if(pathFilter != null)
-                {
-                    connection.ExecuteNonQuery($@"
-
-                        CREATE TEMPORARY TABLE {s_PathFilter} (
-                            {s_Path} TEXT PRIMARY KEY            
-                        )
-                    ");
-
-                    foreach(var path in pathFilter)
-                    {
-                        connection.ExecuteNonQuery($@"
-                            INSERT INTO {s_PathFilter} ({s_Path}) VALUES (@path);",
-                            ("path", path)
-                        );
-                    }
-
-                    connection.ExecuteNonQuery($@"
-                        CREATE TEMPORARY VIEW {s_FilteredFiles} AS 
-                            SELECT * FROM {FilesTable.Name}
-                            WHERE lower({FilesTable.Column.Path}) IN 
-                            (
-                                SELECT {s_Path} FROM {s_PathFilter}
-                            );
-                    ");
-                }
-                else
-                {
-                    connection.ExecuteNonQuery($@"
-                        CREATE TEMPORARY VIEW {s_FilteredFiles} AS 
-                            SELECT * FROM {FilesTable.Name};
-                    ");
-                }
-
+            {
+                var changesView = ChangesView.CreateTemporary(connection, snapshot);
+                var filesView = FilteredFilesView.CreateTemporary(connection, pathFilter);
 
                 var fileDos = connection.Query<FileDo>($@"                    
-                    SELECT * FROM {s_FilteredFiles}
-                    WHERE {FilesTable.Column.Id} IN (SELECT DISTINCT {nameof(ChangeTableRecord.FileId)} FROM {s_ChangeTable});
-                "
-                ).ToDictionary(record => record.Id);
-
+                        SELECT * FROM {filesView}
+                        WHERE {FilesTable.Column.Id} IN (SELECT DISTINCT {nameof(ChangeTableRecord.FileId)} FROM {changesView});")
+                    .ToDictionary(record => record.Id);
 
                 var changeQuery = $@"
-                    SELECT * FROM {s_ChangeTable}
+                    SELECT * FROM {changesView}
                     WHERE 
-                        ({s_CurrentId} IS NULL OR {s_PreviousId} IS NULL OR {s_CurrentId} != {s_PreviousId})
+                        (
+                            {ChangesView.Column.CurrentId} IS NULL OR 
+                            {ChangesView.Column.PreviousId} IS NULL OR 
+                            {ChangesView.Column.CurrentId} != {ChangesView.Column.PreviousId}
+                        )
                         AND 
-                        ({nameof(ChangeTableRecord.FileId)} IN (SELECT {FilesTable.Column.Id} FROM {s_FilteredFiles}))
+                        (
+                            {nameof(ChangeTableRecord.FileId)} IN (SELECT {FilteredFilesView.Column.Id} FROM {filesView})
+                        )
                 ;";
 
                 var changes = new LinkedList<(FileInstanceDo, FileInstanceDo)>();
