@@ -73,7 +73,9 @@ namespace SyncTool.Sql.Services
         public string[] GetChangedFiles(string toId)
         {
             var changedFiles = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var snapshot in EnumerateSnapshots(ParseId(toId)))
+            var toSnapshot = GetSnapshotDo(ParseId(toId));
+
+            foreach (var snapshot in m_SnapshotRepository.GetSnapshotRange(toSnapshot))
             {
                 changedFiles.UnionWith(m_SnapshotRepository.GetChangedFiles(snapshot));
             }
@@ -83,7 +85,13 @@ namespace SyncTool.Sql.Services
         public string[] GetChangedFiles(string fromId, string toId)
         {
             var changedFiles = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var snapshot in EnumerateSnapshots(ParseId(fromId), ParseId(toId)))
+            var fromSnapshot = GetSnapshotDo(ParseId(fromId));
+            var toSnapshot = GetSnapshotDo(ParseId(toId));
+
+            if (fromSnapshot.SequenceNumber >= toSnapshot.SequenceNumber)
+                throw new InvalidRangeException($"Snapshot {toId} is not an descendant of {fromId}");
+
+            foreach (var snapshot in m_SnapshotRepository.GetSnapshotRange(fromSnapshot, toSnapshot))
             {
                 changedFiles.UnionWith(m_SnapshotRepository.GetChangedFiles(snapshot));
             }            
@@ -99,7 +107,7 @@ namespace SyncTool.Sql.Services
 
             // iterate over all snapshots and get the changed files for every item
             var changeLists = new Dictionary<string, LinkedList<IChange>>(StringComparer.InvariantCultureIgnoreCase);            
-            foreach (var snapshot in EnumerateSnapshots(toSnapshot.Id))
+            foreach (var snapshot in m_SnapshotRepository.GetSnapshotRange(toSnapshot))
             {
                 AppendChanges(snapshot, changeLists, pathFilter);
             }
@@ -119,9 +127,12 @@ namespace SyncTool.Sql.Services
             var fromSnapshot = GetSnapshotDo(fromDbId);
             var toSnapshot = GetSnapshotDo(toDbId);
 
+            if (fromSnapshot.SequenceNumber >= toSnapshot.SequenceNumber)
+                throw new InvalidRangeException($"Snapshot {toId} is not an descendant of {fromId}");
+
             // iterate over all snapshots and get the changed files for every item
             var changeLists = new Dictionary<string, LinkedList<IChange>>(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var snapshot in EnumerateSnapshots(fromSnapshot.Id, toSnapshot.Id))
+            foreach (var snapshot in m_SnapshotRepository.GetSnapshotRange(fromSnapshot, toSnapshot))
             {
                 AppendChanges(snapshot, changeLists, pathFilter);
             }
@@ -161,57 +172,16 @@ namespace SyncTool.Sql.Services
                 path: instanceDo.File.Path,
                 lastWriteTime: instanceDo.LastWriteTimeTicks == 0 ? DateTime.MinValue : new DateTime(instanceDo.LastWriteTimeTicks, DateTimeKind.Utc),
                 length: instanceDo.Length);
-
-        /// <summary>
-        /// Enumerates the specified snapshot and all earlier snapshots in reverse chronological order        
-        /// <returns></returns>
-        //TODO: Reverse order
-        IEnumerable<FileSystemSnapshotDo> EnumerateSnapshots(int toId)
-        {
-            // load snapshot to ensure it exists
-            var toSnapshot = GetSnapshotDo(toId);
-
-            // iterate over all snapshots and get the changed files for every item
-            var currentSnapshot = toSnapshot;
-            while (currentSnapshot != null)
-            {
-                yield return currentSnapshot;
-                currentSnapshot = m_SnapshotRepository.GetPrecedingSnapshot(currentSnapshot);
-            }            
-        }
-
-        /// <summary>
-        /// Enumerates the all snapshots older (inclusive) than toId and 
-        /// newer than fromId (eclusive) in reverse chronological order        
-        //TODO: Reverse order
-        IEnumerable<FileSystemSnapshotDo> EnumerateSnapshots(int fromId, int toId)
-        {
-            // load snapshots to ensure they exists
-            var fromSnapshot = GetSnapshotDo(fromId);
-            var toSnapshot = GetSnapshotDo(toId);
-
-            if (fromSnapshot.SequenceNumber >= toSnapshot.SequenceNumber)
-                throw new InvalidRangeException($"Snapshot {toId} is not an descendant of {fromId}");
-
-            // iterate over all snpshot and get the changed files for every item
-            var currentSnapshot = toSnapshot;
-            while (currentSnapshot.SequenceNumber > fromSnapshot.SequenceNumber)
-            {
-                yield return currentSnapshot;
-                currentSnapshot = m_SnapshotRepository.GetPrecedingSnapshot(currentSnapshot);
-            }            
-        }
-
+        
         void AppendChanges(FileSystemSnapshotDo currentSnapshot, Dictionary<string, LinkedList<IChange>> changeLists, string[] pathFilter)
         {            
             foreach (var (previous, current) in m_SnapshotRepository.GetChanges(currentSnapshot, pathFilter))
             {
                 var change = GetChange(previous, current);
-
-                //TODO: adjust when order of EnumerateSnapshots() was fixed
+                
                 changeLists
                     .GetOrAdd(change.Path, () => new LinkedList<IChange>())
-                    .AddFirst(change); // add first because snapshots are currently enumerated backwards
+                    .AddLast(change);
             }
         }
 

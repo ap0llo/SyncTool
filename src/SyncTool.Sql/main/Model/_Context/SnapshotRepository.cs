@@ -239,5 +239,42 @@ namespace SyncTool.Sql.Model
                 return changes;
             }
         }
+
+        /// <summary>
+        /// Gets all the snapshots between the specified snapshots
+        /// </summary>
+        /// <param name="fromSnapshot">The start of the range (exclusive)</param>
+        /// <param name="toSnapshot">The end of the range of snapshots to return (inclusive)</param>
+        public IEnumerable<FileSystemSnapshotDo> GetSnapshotRange(FileSystemSnapshotDo fromSnapshot, FileSystemSnapshotDo toSnapshot)
+        {
+            if (fromSnapshot.HistoryId != toSnapshot.HistoryId)
+                throw new ArgumentException("Cannot get range between snapshots of different histories");            
+
+            return m_Database.Query<FileSystemSnapshotDo>($@"
+                SELECT *
+                FROM {FileSystemSnapshotsTable.Name}
+                WHERE {FileSystemSnapshotsTable.Column.Id} > @fromId AND
+                      {FileSystemSnapshotsTable.Column.Id} <= @toId AND
+                      {FileSystemSnapshotsTable.Column.HistoryId} = @historyId
+                ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} ASC;
+                ",
+                new { fromId = fromSnapshot.Id, toId = toSnapshot.Id, historyId = fromSnapshot.HistoryId });
+        }
+
+        /// <summary>
+        /// Gets all the snapshots up to the specified snapshot
+        /// </summary>        
+        /// <param name="toSnapshot">The end of the range of snapshots to return (inclusive)</param>
+        public IEnumerable<FileSystemSnapshotDo> GetSnapshotRange(FileSystemSnapshotDo toSnapshot)
+        {            
+            return m_Database.Query<FileSystemSnapshotDo>($@"
+                SELECT *
+                FROM {FileSystemSnapshotsTable.Name}
+                WHERE {FileSystemSnapshotsTable.Column.Id} <= @toId AND
+                      {FileSystemSnapshotsTable.Column.HistoryId} = @historyId
+                ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} ASC;
+                ",
+                new { toId = toSnapshot.Id, historyId = toSnapshot.HistoryId });
+        }
     }
 }
