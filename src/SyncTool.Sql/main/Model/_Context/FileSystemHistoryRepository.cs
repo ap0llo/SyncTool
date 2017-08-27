@@ -7,21 +7,15 @@ namespace SyncTool.Sql.Model
 {    
     class FileSystemHistoryRepository
     {
-        readonly IDatabase m_Database;
+        readonly Database m_Database;
 
 
         public IEnumerable<FileSystemHistoryDo> Items => m_Database.Query<FileSystemHistoryDo>($"SELECT * FROM {FileSystemHistoriesTable.Name}");
 
 
-        public FileSystemHistoryRepository(IDatabase database)
+        public FileSystemHistoryRepository(Database database)
         {
             m_Database = database ?? throw new ArgumentNullException(nameof(database));
-
-            //TODO: Should happen on first access??
-            using (var connection = m_Database.OpenConnection())
-            {
-                FileSystemHistoriesTable.Create(connection);
-            }
         }
 
 

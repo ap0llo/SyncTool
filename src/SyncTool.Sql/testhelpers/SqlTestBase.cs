@@ -10,7 +10,7 @@ namespace SyncTool.Sql.TestHelpers
 {
     public class SqlTestBase
     {
-        class TestDatabase : IDatabase
+        class TestDatabase : Database
         {
             readonly string m_DatabaseName;
             readonly string m_SqlitePath;
@@ -22,7 +22,7 @@ namespace SyncTool.Sql.TestHelpers
             }
 
           
-            public IDbConnection OpenConnection()
+            protected override IDbConnection DoOpenConnection()
             {
                 var connectionStringBuilder = new SqliteConnectionStringBuilder()
                 {
@@ -35,7 +35,7 @@ namespace SyncTool.Sql.TestHelpers
         }
         
         
-        protected IDatabase Database { get; }
+        protected Database Database { get; }
 
 
         public SqlTestBase()

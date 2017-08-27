@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,17 @@ namespace SyncTool.Sql.Model
             return (T)Convert.ChangeType(command.ExecuteScalar(), typeof(T));
         }
 
+        public static bool TableExists(this IDbConnection connection, string tableName)
+        {
+            try
+            {
+                return connection.ExecuteScalar<int>($"SELECT 1 FROM {tableName}") == 1;
+            }
+            catch (DbException)
+            {
+                return false;
+            } 
+        }
 
         static IDbCommand CreateCommand(this IDbConnection connection, string sql, params (string name, object value)[] parameters)
         {

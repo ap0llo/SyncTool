@@ -7,21 +7,15 @@ namespace SyncTool.Sql.Model
 {
     class SyncFolderRepository
     {
-        readonly IDatabase m_Database;
+        readonly Database m_Database;
 
 
         public IEnumerable<SyncFolderDo> Items => m_Database.Query<SyncFolderDo>($"SELECT * FROM {SyncFoldersTable.Name}");
 
 
-        public SyncFolderRepository(IDatabase database)
+        public SyncFolderRepository(Database database)
         {
             m_Database = database ?? throw new ArgumentNullException(nameof(database));
-
-            //TODO: Should happen on first access??
-            using (var connection = m_Database.OpenConnection())
-            {
-                SyncFoldersTable.Create(connection);        
-            }
         }
 
 

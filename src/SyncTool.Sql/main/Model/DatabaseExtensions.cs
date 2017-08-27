@@ -6,7 +6,7 @@ namespace SyncTool.Sql.Model
 {
     static class DatabaseExtensions
     {    
-        public static int ExecuteNonQuery(this IDatabase database, string sql, params (string name, object value)[] parameters)
+        public static int ExecuteNonQuery(this Database database, string sql, params (string name, object value)[] parameters)
         {
             using (var connection = database.OpenConnection())
             {
@@ -14,7 +14,7 @@ namespace SyncTool.Sql.Model
             }                
         }
 
-        public static T ExecuteScalar<T>(this IDatabase database, string sql, params (string name, object value)[] parameters)
+        public static T ExecuteScalar<T>(this Database database, string sql, params (string name, object value)[] parameters)
         {
             using (var connection = database.OpenConnection())
             {
@@ -22,7 +22,7 @@ namespace SyncTool.Sql.Model
             }            
         }
 
-        public static IEnumerable<T> Query<T>(this IDatabase database, string sql, object param = null)
+        public static IEnumerable<T> Query<T>(this Database database, string sql, object param = null)
         {
             using (var connection = database.OpenConnection())
             {
@@ -31,7 +31,7 @@ namespace SyncTool.Sql.Model
         }
 
 
-        public static T QuerySingleOrDefault<T>(this IDatabase database, string sql, object param = null)
+        public static T QuerySingleOrDefault<T>(this Database database, string sql, object param = null)
         {
             using (var connection = database.OpenConnection())
             {
@@ -39,7 +39,7 @@ namespace SyncTool.Sql.Model
             }
         }
 
-        public static T QuerySingle<T>(this IDatabase database, string sql, object param = null)
+        public static T QuerySingle<T>(this Database database, string sql, object param = null)
         {
             using (var connection = database.OpenConnection())
             {
@@ -47,7 +47,7 @@ namespace SyncTool.Sql.Model
             }
         }
 
-        public static T QueryFirstOrDefault<T>(this IDatabase database, string sql, object param = null)
+        public static T QueryFirstOrDefault<T>(this Database database, string sql, object param = null)
         {
             using (var connection = database.OpenConnection())
             {

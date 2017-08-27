@@ -15,7 +15,7 @@ namespace SyncTool.Sql.Model.Tables
         public static void Create(IDbConnection connection)
         {
             connection.ExecuteNonQuery($@"
-                CREATE TABLE IF NOT EXISTS {Name} (
+                CREATE TABLE {Name} (
                     {Column.ParentId} INTEGER NOT NULL,
                     {Column.ChildId}  INTEGER NOT NULL,
                     FOREIGN KEY ({Column.ParentId}) REFERENCES {DirectoryInstancesTable.Name}({DirectoryInstancesTable.Column.Id}),

@@ -39,21 +39,12 @@ namespace SyncTool.Sql.Model
             }
         }
                                 
-        readonly IDatabase m_Database;
+        readonly Database m_Database;
 
 
-        public SnapshotRepository(IDatabase database)
+        public SnapshotRepository(Database database)
         {
             m_Database = database ?? throw new ArgumentNullException(nameof(database));
-
-            //TODO: Should happen on first access??
-            using (var connection = m_Database.OpenConnection())
-            using (var transaction = connection.BeginTransaction())
-            {
-                FileSystemSnapshotsTable.Create(connection);
-                IncludesFileInstanceTable.Create(connection);
-                transaction.Commit();
-            }
         }
 
 

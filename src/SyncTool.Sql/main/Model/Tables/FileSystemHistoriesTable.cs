@@ -17,7 +17,7 @@ namespace SyncTool.Sql.Model.Tables
         public static void Create(IDbConnection connection)
         {
             connection.ExecuteNonQuery($@"                
-                CREATE TABLE IF NOT EXISTS {Name} (            
+                CREATE TABLE {Name} (            
                     {Column.Id}             INTEGER PRIMARY KEY,
                     {Column.Name}           TEXT NOT NULL,
                     {Column.NormalizedName} TEXT UNIQUE NOT NULL,

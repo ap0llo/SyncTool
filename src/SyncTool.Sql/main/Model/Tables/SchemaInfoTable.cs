@@ -1,0 +1,34 @@
+﻿using System.Data;
+
+namespace SyncTool.Sql.Model.Tables
+{
+    static class SchemaInfoTable
+    {
+        public const string Name = "SchemaInfo";
+
+        public const int CurrentVersion = 1;
+
+        public enum Column
+        {
+            Name,
+            Version            
+        }        
+        
+        public static void Create(IDbConnection connection)
+        {
+            // table is supposed to only have a single row
+            // for that purpose, the "Name" column will always have 
+            // the same value and has a UNIQUE constraint 
+
+            connection.ExecuteNonQuery($@"
+                CREATE TABLE {Name} (
+                    {Column.Name} TEXT UNIQUE NOT NULL,                  
+                    {Column.Version} INTEGER UNIQUE NOT NULL                    
+                );
+
+                INSERT INTO {Name} ({Column.Name}, {Column.Version}) 
+                VALUES ('SchemaInfo', {CurrentVersion});
+            ");
+        }
+    }
+}

@@ -9,7 +9,7 @@ namespace SyncTool.Sql.Model
 {
     class FileSystemRepository
     {
-        readonly IDatabase m_Database;
+        readonly Database m_Database;
 
 
         public IEnumerable<FileDo> Files => m_Database.Query<FileDo>($"SELECT * FROM {FilesTable.Name}");
@@ -21,23 +21,9 @@ namespace SyncTool.Sql.Model
         public IEnumerable<DirectoryInstanceDo> DirectorieInstances => m_Database.Query<DirectoryInstanceDo>($"SELECT * FROM {DirectoryInstancesTable.Name}");
 
 
-        public FileSystemRepository(IDatabase database)
+        public FileSystemRepository(Database database)
         {
             m_Database = database ?? throw new ArgumentNullException(nameof(database));
-
-            //TODO: Should happen on first access??
-            using (var connection = m_Database.OpenConnection())
-            using (var transaction = connection.BeginTransaction())
-            {
-                FilesTable.Create(connection);
-                FileInstancesTable.Create(connection);
-                DirectoriesTable.Create(connection);
-                DirectoryInstancesTable.Create(connection);
-                ContainsDirectoryTable.Create(connection);
-                ContainsFileTable.Create(connection);                
-
-                transaction.Commit();
-            }
         }
 
 
