@@ -10,7 +10,7 @@ namespace SyncTool.Sql.Model
         readonly Database m_Database;
 
 
-        public IEnumerable<SyncFolderDo> Items => m_Database.Query<SyncFolderDo>($"SELECT * FROM {SyncFoldersTable.Name}");
+        public IEnumerable<SyncFoldersTable.Record> Items => m_Database.Query<SyncFoldersTable.Record>($"SELECT * FROM {SyncFoldersTable.Name}");
 
 
         public SyncFolderRepository(Database database)
@@ -19,18 +19,18 @@ namespace SyncTool.Sql.Model
         }
 
 
-        public SyncFolderDo GetItemOrDefault(string name)
+        public SyncFoldersTable.Record GetItemOrDefault(string name)
         {
-            return m_Database.QuerySingleOrDefault<SyncFolderDo>($@"
+            return m_Database.QuerySingleOrDefault<SyncFoldersTable.Record>($@"
                         SELECT * FROM {SyncFoldersTable.Name}
                         WHERE lower({SyncFoldersTable.Column.Name}) = lower(@name)", 
                         new { name }
                     );
         }
 
-        public SyncFolderDo AddItem(SyncFolderDo item)
+        public SyncFoldersTable.Record AddItem(SyncFoldersTable.Record item)
         {
-            return m_Database.QuerySingle<SyncFolderDo>($@"
+            return m_Database.QuerySingle<SyncFoldersTable.Record>($@"
 
                 INSERT INTO {SyncFoldersTable.Name} 
                 (
@@ -52,7 +52,7 @@ namespace SyncTool.Sql.Model
             );                                       
         }
 
-        public void UpdateItem(SyncFolderDo item)
+        public void UpdateItem(SyncFoldersTable.Record item)
         {
             using (var connection = m_Database.OpenConnection())
             using (var transaction = connection.BeginTransaction())

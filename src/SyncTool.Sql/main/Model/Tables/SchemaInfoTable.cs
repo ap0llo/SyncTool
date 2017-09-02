@@ -2,7 +2,7 @@
 
 namespace SyncTool.Sql.Model.Tables
 {
-    static class SchemaInfoTable
+    public static class SchemaInfoTable
     {
         public const string Name = "SchemaInfo";
 

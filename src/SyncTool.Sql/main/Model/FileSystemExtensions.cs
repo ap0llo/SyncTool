@@ -1,4 +1,5 @@
 ﻿using SyncTool.FileSystem;
+using SyncTool.Sql.Model.Tables;
 
 namespace SyncTool.Sql.Model
 {
@@ -8,9 +9,9 @@ namespace SyncTool.Sql.Model
     /// </summary>
     static class FileSystemExtensions
     {
-        public static DirectoryInstanceDo ToDirectoryInstanceDo(this IDirectory directory)
+        public static DirectoryInstancesTable.Record ToDirectoryInstanceDo(this IDirectory directory)
         {
-            var instanceDo = new DirectoryInstanceDo(DirectoryDo.FromDirectory(directory));
+            var instanceDo = new DirectoryInstancesTable.Record(DirectoriesTable.Record.FromDirectory(directory));
 
             foreach(var child in directory.Directories)
             {
@@ -25,7 +26,7 @@ namespace SyncTool.Sql.Model
             return instanceDo;
         }
 
-        public static FileInstanceDo ToFileInstanceDo(this IFile file) => new FileInstanceDo(FileDo.FromFile(file), file.LastWriteTime, file.Length);
+        public static FileInstancesTable.Record ToFileInstanceDo(this IFile file) => new FileInstancesTable.Record(FilesTable.Record.FromFile(file), file.LastWriteTime, file.Length);
 
     }
 }

@@ -12,13 +12,13 @@ namespace SyncTool.Sql.Model
         readonly Database m_Database;
 
 
-        public IEnumerable<FileDo> Files => m_Database.Query<FileDo>($"SELECT * FROM {FilesTable.Name}");
+        public IEnumerable<FilesTable.Record> Files => m_Database.Query<FilesTable.Record>($"SELECT * FROM {FilesTable.Name}");
 
-        public IEnumerable<DirectoryDo> Directories => m_Database.Query<DirectoryDo>($"SELECT * FROM {DirectoriesTable.Name}");
+        public IEnumerable<DirectoriesTable.Record> Directories => m_Database.Query<DirectoriesTable.Record>($"SELECT * FROM {DirectoriesTable.Name}");
 
-        public IEnumerable<FileInstanceDo> FileInstancess => m_Database.Query<FileInstanceDo>($"SELECT * FROM {FileInstancesTable.Name}");
+        public IEnumerable<FileInstancesTable.Record> FileInstancess => m_Database.Query<FileInstancesTable.Record>($"SELECT * FROM {FileInstancesTable.Name}");
 
-        public IEnumerable<DirectoryInstanceDo> DirectorieInstances => m_Database.Query<DirectoryInstanceDo>($"SELECT * FROM {DirectoryInstancesTable.Name}");
+        public IEnumerable<DirectoryInstancesTable.Record> DirectorieInstances => m_Database.Query<DirectoryInstancesTable.Record>($"SELECT * FROM {DirectoryInstancesTable.Name}");
 
 
         public FileSystemRepository(Database database)
@@ -27,7 +27,7 @@ namespace SyncTool.Sql.Model
         }
 
 
-        public void AddFile(FileDo file)
+        public void AddFile(FilesTable.Record file)
         {
             if (file == null)
                 throw new ArgumentNullException(nameof(file));
@@ -41,7 +41,7 @@ namespace SyncTool.Sql.Model
             }
         }
 
-        public void AddDirectory(DirectoryDo directory)
+        public void AddDirectory(DirectoriesTable.Record directory)
         {
             if (directory == null)
                 throw new ArgumentNullException(nameof(directory));
@@ -58,7 +58,7 @@ namespace SyncTool.Sql.Model
             }
         }
 
-        public void AddFileInstance(FileInstanceDo fileInstance)
+        public void AddFileInstance(FileInstancesTable.Record fileInstance)
         {
             if (fileInstance == null)
                 throw new ArgumentNullException(nameof(fileInstance));
@@ -72,7 +72,7 @@ namespace SyncTool.Sql.Model
             }
         }
         
-        public void AddRecursively(DirectoryInstanceDo rootDirectory)
+        public void AddRecursively(DirectoryInstancesTable.Record rootDirectory)
         {
             using (var connection = m_Database.OpenConnection())
             using (var transaction = connection.BeginTransaction())
@@ -82,9 +82,9 @@ namespace SyncTool.Sql.Model
             }
         }
 
-        public DirectoryInstanceDo GetDirectoryInstance(int id)
+        public DirectoryInstancesTable.Record GetDirectoryInstance(int id)
         {
-            return m_Database.QuerySingle<DirectoryInstanceDo>($@"
+            return m_Database.QuerySingle<DirectoryInstancesTable.Record>($@"
                 SELECT * 
                 FROM {DirectoryInstancesTable.Name}
                 WHERE {DirectoryInstancesTable.Column.Id} = @id;
@@ -92,9 +92,9 @@ namespace SyncTool.Sql.Model
             new { id = id });
         }
 
-        public void LoadDirectories(DirectoryInstanceDo parentDirectoryInstance)
+        public void LoadDirectories(DirectoryInstancesTable.Record parentDirectoryInstance)
         {            
-            var directories = m_Database.Query<DirectoryInstanceDo>($@"    
+            var directories = m_Database.Query<DirectoryInstancesTable.Record>($@"    
                 SELECT * 
                 FROM {DirectoryInstancesTable.Name}
                 WHERE {DirectoryInstancesTable.Column.Id} IN 
@@ -109,9 +109,9 @@ namespace SyncTool.Sql.Model
             parentDirectoryInstance.Directories = directories.ToList();           
         }
 
-        public void LoadDirectory(DirectoryInstanceDo directoryInstance)
+        public void LoadDirectory(DirectoryInstancesTable.Record directoryInstance)
         {
-            directoryInstance.Directory = m_Database.QuerySingle<DirectoryDo>($@"
+            directoryInstance.Directory = m_Database.QuerySingle<DirectoriesTable.Record>($@"
                 SELECT * 
                 FROM {DirectoriesTable.Name}
                 WHERE {DirectoriesTable.Column.Id} IN 
@@ -123,9 +123,9 @@ namespace SyncTool.Sql.Model
                 new {id = directoryInstance.Id});
         }
 
-        public void LoadFiles(DirectoryInstanceDo parentDirectoryInstance)
+        public void LoadFiles(DirectoryInstancesTable.Record parentDirectoryInstance)
         {
-            var files = m_Database.Query<FileInstanceDo>($@"    
+            var files = m_Database.Query<FileInstancesTable.Record>($@"    
                 SELECT * 
                 FROM {FileInstancesTable.Name}
                 WHERE {FileInstancesTable.Column.Id} IN 
@@ -140,9 +140,9 @@ namespace SyncTool.Sql.Model
             
         }
 
-        public void LoadFile(FileInstanceDo fileInstance)
+        public void LoadFile(FileInstancesTable.Record fileInstance)
         {
-            fileInstance.File = m_Database.QuerySingle<FileDo>($@"
+            fileInstance.File = m_Database.QuerySingle<FilesTable.Record>($@"
                 SELECT * 
                 FROM {FilesTable.Name}
                 WHERE {FilesTable.Column.Id} IN 
@@ -156,7 +156,7 @@ namespace SyncTool.Sql.Model
         }
 
 
-        void Insert(IDbConnection connection, DirectoryDo directory)
+        void Insert(IDbConnection connection, DirectoriesTable.Record directory)
         {            
             if (directory.Id != 0)
                 return;
@@ -178,10 +178,10 @@ namespace SyncTool.Sql.Model
             );
         }
 
-        void Insert(IDbConnection connection, FileDo file)
+        void Insert(IDbConnection connection, FilesTable.Record file)
         {
             if (String.IsNullOrWhiteSpace(file.NormalizedPath))
-                throw new ArgumentException($"{nameof(FileDo.NormalizedPath)} must not be empty");
+                throw new ArgumentException($"{nameof(FilesTable.Record.NormalizedPath)} must not be empty");
 
             if (file.Id != 0)
                 return;
@@ -205,7 +205,7 @@ namespace SyncTool.Sql.Model
                 );
         }
 
-        void Insert(IDbConnection connection, DirectoryInstanceDo directoryInstance)
+        void Insert(IDbConnection connection, DirectoryInstancesTable.Record directoryInstance)
         {
             if (directoryInstance.Id != 0)
                 return;
@@ -279,7 +279,7 @@ namespace SyncTool.Sql.Model
 
         }
 
-        void Insert(IDbConnection connection, FileInstanceDo fileInstance)
+        void Insert(IDbConnection connection, FileInstancesTable.Record fileInstance)
         {        
             if (fileInstance.Id != 0)
                 return;

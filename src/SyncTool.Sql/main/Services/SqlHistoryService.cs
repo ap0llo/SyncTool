@@ -1,5 +1,6 @@
 ﻿using SyncTool.FileSystem.Versioning;
 using SyncTool.Sql.Model;
+using SyncTool.Sql.Model.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace SyncTool.Sql.Services
     class SqlHistoryService : AbstractHistoryService
     {
         readonly FileSystemHistoryRepository m_Repository;
-        readonly Func<FileSystemHistoryDo, SqlFileSystemHistory> m_HistoryFactory;
+        readonly Func<FileSystemHistoriesTable.Record, SqlFileSystemHistory> m_HistoryFactory;
 
         public override IEnumerable<IFileSystemHistory> Items => m_Repository.Items.Select(m_HistoryFactory);
 
 
-        public SqlHistoryService(FileSystemHistoryRepository repository, Func<FileSystemHistoryDo, SqlFileSystemHistory> historyFactory)
+        public SqlHistoryService(FileSystemHistoryRepository repository, Func<FileSystemHistoriesTable.Record, SqlFileSystemHistory> historyFactory)
         {
             m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
             m_HistoryFactory = historyFactory ?? throw new ArgumentNullException(nameof(historyFactory));
@@ -31,7 +32,7 @@ namespace SyncTool.Sql.Services
         }
 
 
-        protected override void DoCreateHistory(string name) => m_Repository.AddItem(new FileSystemHistoryDo(name));
+        protected override void DoCreateHistory(string name) => m_Repository.AddItem(new FileSystemHistoriesTable.Record(name));
 
         protected override IFileSystemHistory DoGetHistory(string name)
         {

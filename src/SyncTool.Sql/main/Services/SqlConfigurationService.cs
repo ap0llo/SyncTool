@@ -1,5 +1,6 @@
 ﻿using SyncTool.Configuration;
 using SyncTool.Sql.Model;
+using SyncTool.Sql.Model.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace SyncTool.Sql.Services
 
         protected override SyncFolder GetItemOrDefault(string name) => m_Repository.GetItemOrDefault(name)?.ToSyncFolder();
 
-        protected override void DoAddItem(SyncFolder folder) => m_Repository.AddItem(SyncFolderDo.FromSyncFolder(folder));
+        protected override void DoAddItem(SyncFolder folder) => m_Repository.AddItem(SyncFoldersTable.Record.FromSyncFolder(folder));
 
         protected override void DoUpdateItem(SyncFolder folder)
         {

@@ -2,13 +2,14 @@
 using System;
 using SyncTool.FileSystem;
 using SyncTool.Sql.Model;
+using SyncTool.Sql.Model.Tables;
 
 namespace SyncTool.Sql.Services
 {
     class SqlFileSystemSnapshot : IFileSystemSnapshot
     {
         readonly FileSystemRepository m_FileSystemRepository;
-        readonly FileSystemSnapshotDo m_SnapshotDo;
+        readonly FileSystemSnapshotsTable.Record m_SnapshotDo;
         readonly Lazy<IDirectory> m_RootDirectory;
 
 
@@ -21,7 +22,7 @@ namespace SyncTool.Sql.Services
         public IDirectory RootDirectory => m_RootDirectory.Value;
 
 
-        public SqlFileSystemSnapshot(FileSystemRepository fileSystemRepository, SqlFileSystemHistory history, FileSystemSnapshotDo snapshotDo)
+        public SqlFileSystemSnapshot(FileSystemRepository fileSystemRepository, SqlFileSystemHistory history, FileSystemSnapshotsTable.Record snapshotDo)
         {            
             m_FileSystemRepository = fileSystemRepository ?? throw new ArgumentNullException(nameof(fileSystemRepository));
             History = history ?? throw new ArgumentNullException(nameof(history));

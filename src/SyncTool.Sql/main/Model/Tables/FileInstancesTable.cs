@@ -1,8 +1,10 @@
-﻿using System.Data;
+﻿using JetBrains.Annotations;
+using System;
+using System.Data;
 
 namespace SyncTool.Sql.Model.Tables
 {
-    static class FileInstancesTable
+    public static class FileInstancesTable
     {
         public const string Name = "FileInstances";
 
@@ -12,6 +14,28 @@ namespace SyncTool.Sql.Model.Tables
             FileId,
             LastWriteTimeTicks,
             Length
+        }
+
+        public class Record
+        {
+            public int Id { get; set; }
+
+            public FilesTable.Record File { get; set; }
+
+            public long LastWriteTimeTicks { get; set; }
+
+            public long Length { get; set; }
+
+
+            [UsedImplicitly]
+            public Record() { }
+
+            public Record(FilesTable.Record file, DateTime lastWriteTime, long length)
+            {
+                File = file;
+                LastWriteTimeTicks = lastWriteTime.Ticks;
+                Length = length;
+            }
         }
 
         public static void Create(IDbConnection connection)

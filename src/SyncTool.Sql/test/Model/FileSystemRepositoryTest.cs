@@ -1,4 +1,5 @@
 ﻿using SyncTool.Sql.Model;
+using SyncTool.Sql.Model.Tables;
 using SyncTool.Sql.TestHelpers;
 using System;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void Files_returns_expected_values()
         {
-            var file1 = new FileDo() { Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
+            var file1 = new FilesTable.Record() { Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
             var instance = CreateRepository();
 
             instance.AddFile(file1);
@@ -35,7 +36,7 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void AddFile_throws_ArgumentException_if_id_is_not_0()
         {
-            var file = new FileDo() { Id = 1, Name = "file1", Path = "/file1", NormalizedPath = "/file1".NormalizeCaseInvariant() };
+            var file = new FilesTable.Record() { Id = 1, Name = "file1", Path = "/file1", NormalizedPath = "/file1".NormalizeCaseInvariant() };
             Assert.Throws<ArgumentException>(() => CreateRepository().AddFile(file));
         }
 
@@ -43,17 +44,17 @@ namespace SyncTool.Sql.Test.Model
         public void AddFile_throws_ArgumentException_if_NormalizedPath_is_null_or_empty()
         {
             var instance = CreateRepository();
-            Assert.Throws<ArgumentException>(() => instance.AddFile(new FileDo() { Id = 0, Name = "file1", NormalizedPath = null }));
-            Assert.Throws<ArgumentException>(() => instance.AddFile(new FileDo() { Id = 0, Name = "file1", NormalizedPath = "" }));
-            Assert.Throws<ArgumentException>(() => instance.AddFile(new FileDo() { Id = 0, Name = "file1", NormalizedPath = "\t" }));
+            Assert.Throws<ArgumentException>(() => instance.AddFile(new FilesTable.Record() { Id = 0, Name = "file1", NormalizedPath = null }));
+            Assert.Throws<ArgumentException>(() => instance.AddFile(new FilesTable.Record() { Id = 0, Name = "file1", NormalizedPath = "" }));
+            Assert.Throws<ArgumentException>(() => instance.AddFile(new FilesTable.Record() { Id = 0, Name = "file1", NormalizedPath = "\t" }));
         }
 
         [Fact]
         public void AddFile_does_not_insert_duplicate_entries()
         {
             var instance = CreateRepository();
-            var file = new FileDo() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
-            var duplicate = new FileDo() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
+            var file = new FilesTable.Record() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
+            var duplicate = new FilesTable.Record() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
 
             instance.AddFile(file);
             instance.AddFile(duplicate);
@@ -72,7 +73,7 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void Directories_returns_expected_values()
         {
-            var dir = new DirectoryDo() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
+            var dir = new DirectoriesTable.Record() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
             var instance = CreateRepository();
 
             instance.AddDirectory(dir);
@@ -86,7 +87,7 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void AddDirectory_throws_ArgumentException_if_id_is_not_0()
         {
-            var dir = new DirectoryDo() { Id = 1, Name = "dir1", NormalizedPath = "/dir".NormalizeCaseInvariant() };
+            var dir = new DirectoriesTable.Record() { Id = 1, Name = "dir1", NormalizedPath = "/dir".NormalizeCaseInvariant() };
             Assert.Throws<ArgumentException>(() => CreateRepository().AddDirectory(dir));
         }
 
@@ -94,17 +95,17 @@ namespace SyncTool.Sql.Test.Model
         public void AddDirectory_throws_ArgumentException_if_NormalizedPath_is_null_or_empty()
         {
             var instance = CreateRepository();
-            Assert.Throws<ArgumentException>(() => instance.AddDirectory(new DirectoryDo() { Id = 0, Name = "dir1", NormalizedPath = null }));
-            Assert.Throws<ArgumentException>(() => instance.AddDirectory(new DirectoryDo() { Id = 0, Name = "dir1", NormalizedPath = "" }));
-            Assert.Throws<ArgumentException>(() => instance.AddDirectory(new DirectoryDo() { Id = 0, Name = "dir1", NormalizedPath = "\t" }));
+            Assert.Throws<ArgumentException>(() => instance.AddDirectory(new DirectoriesTable.Record() { Id = 0, Name = "dir1", NormalizedPath = null }));
+            Assert.Throws<ArgumentException>(() => instance.AddDirectory(new DirectoriesTable.Record() { Id = 0, Name = "dir1", NormalizedPath = "" }));
+            Assert.Throws<ArgumentException>(() => instance.AddDirectory(new DirectoriesTable.Record() { Id = 0, Name = "dir1", NormalizedPath = "\t" }));
         }
 
         [Fact]
         public void AddDirectory_does_not_insert_duplicate_entries()
         {
             var instance = CreateRepository();
-            var dir = new DirectoryDo() { Id = 0, Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
-            var duplicate = new DirectoryDo() { Id = 0, Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
+            var dir = new DirectoriesTable.Record() { Id = 0, Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
+            var duplicate = new DirectoriesTable.Record() { Id = 0, Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
 
             instance.AddDirectory(dir);
             instance.AddDirectory(duplicate);
@@ -116,8 +117,8 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void AddFileInstance_throws_ArgumentException_if_id_is_not_0()
         {
-            var file = new FileDo() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
-            var fileInstance = new FileInstanceDo(file, DateTime.UtcNow, 23);
+            var file = new FilesTable.Record() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
+            var fileInstance = new FileInstancesTable.Record(file, DateTime.UtcNow, 23);
             fileInstance.Id = 1;
             Assert.Throws<ArgumentException>(() => CreateRepository().AddFileInstance(fileInstance));
         }
@@ -125,8 +126,8 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void AddFileInstance_implicitly_add_a_file_if_it_does_not_exist()
         {
-            var file = new FileDo() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
-            var fileInstance = new FileInstanceDo(file, DateTime.UtcNow, 23);
+            var file = new FilesTable.Record() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
+            var fileInstance = new FileInstancesTable.Record(file, DateTime.UtcNow, 23);
             
             var instance = CreateRepository();
             Assert.Empty(instance.Files);
@@ -137,8 +138,8 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void AddFileInstance_assigns_file_id_of_existing_file_if_it_exists()
         {
-            var file = new FileDo() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
-            var fileInstance = new FileInstanceDo(file, DateTime.UtcNow, 23);
+            var file = new FilesTable.Record() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
+            var fileInstance = new FileInstancesTable.Record(file, DateTime.UtcNow, 23);
 
             var instance = CreateRepository();
 
@@ -155,9 +156,9 @@ namespace SyncTool.Sql.Test.Model
             var time = DateTime.UtcNow;
             var instance = CreateRepository();
 
-            var file = new FileDo() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
-            var fileInstance = new FileInstanceDo(file, time, 23);
-            var duplicate = new FileInstanceDo(file, time, 23);
+            var file = new FilesTable.Record() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
+            var fileInstance = new FileInstancesTable.Record(file, time, 23);
+            var duplicate = new FileInstancesTable.Record(file, time, 23);
 
             instance.AddFileInstance(fileInstance);
             instance.AddFileInstance(duplicate);
@@ -169,14 +170,14 @@ namespace SyncTool.Sql.Test.Model
         public void AddRecursively_adds_all_files_and_directories()
         {
             // ARRANGE
-            var root = new DirectoryInstanceDo(new DirectoryDo() { Name = "Root", NormalizedPath = "/" });
-            var dir1 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() });
-            var dir11 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir11", NormalizedPath = "/dir1/dir11".NormalizeCaseInvariant() });
-            var dir2 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir2", NormalizedPath = "/dir2".NormalizeCaseInvariant() });
+            var root = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "Root", NormalizedPath = "/" });
+            var dir1 = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() });
+            var dir11 = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "dir11", NormalizedPath = "/dir1/dir11".NormalizeCaseInvariant() });
+            var dir2 = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "dir2", NormalizedPath = "/dir2".NormalizeCaseInvariant() });
             dir1.Directories.Add(dir11);
             root.Directories.Add(dir1);
             root.Directories.Add(dir2);
-            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", NormalizedPath = "/dir1/file1".NormalizeCaseInvariant(), Path = "/dir1/file1" }, DateTime.Now, 42);
+            var file1 = new FileInstancesTable.Record(new FilesTable.Record() { Name = "file1", NormalizedPath = "/dir1/file1".NormalizeCaseInvariant(), Path = "/dir1/file1" }, DateTime.Now, 42);
             dir1.Files.Add(file1);
 
 
@@ -205,8 +206,8 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void LoadFile_loads_a_file_instances_file()
         {
-            var file = new FileDo() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
-            var fileInstance = new FileInstanceDo(file, DateTime.UtcNow, 23);
+            var file = new FilesTable.Record() { Id = 0, Name = "file1", NormalizedPath = "/file1".NormalizeCaseInvariant(), Path = "/file1" };
+            var fileInstance = new FileInstancesTable.Record(file, DateTime.UtcNow, 23);
 
             var repo = CreateRepository();
             repo.AddFileInstance(fileInstance);
@@ -225,8 +226,8 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void LoadDirectory_loads_a_directory_instances_directory()
         {
-            var directory = new DirectoryDo() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
-            var directoryInstance = new DirectoryInstanceDo(directory);
+            var directory = new DirectoriesTable.Record() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
+            var directoryInstance = new DirectoryInstancesTable.Record(directory);
 
             var repo = CreateRepository();
             repo.AddRecursively(directoryInstance);
@@ -246,14 +247,14 @@ namespace SyncTool.Sql.Test.Model
         public void LoadDirectories_loads_a_directorys_child_directories()
         {
             // ARRANGE
-            var root = new DirectoryInstanceDo(new DirectoryDo() { Name = "Root", NormalizedPath = "/" });
-            var dir1 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() });
-            var dir11 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir11", NormalizedPath = "/dir1/dir11".NormalizeCaseInvariant() });
-            var dir2 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir2", NormalizedPath = "/dir2".NormalizeCaseInvariant() });
+            var root = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "Root", NormalizedPath = "/" });
+            var dir1 = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() });
+            var dir11 = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "dir11", NormalizedPath = "/dir1/dir11".NormalizeCaseInvariant() });
+            var dir2 = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "dir2", NormalizedPath = "/dir2".NormalizeCaseInvariant() });
             dir1.Directories.Add(dir11);
             root.Directories.Add(dir1);
             root.Directories.Add(dir2);
-            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", NormalizedPath = "/dir1/file1".NormalizeCaseInvariant(), Path = "/dir1/file1" }, DateTime.Now, 42);
+            var file1 = new FileInstancesTable.Record(new FilesTable.Record() { Name = "file1", NormalizedPath = "/dir1/file1".NormalizeCaseInvariant(), Path = "/dir1/file1" }, DateTime.Now, 42);
             dir1.Files.Add(file1);
 
             var repo = CreateRepository();
@@ -276,14 +277,14 @@ namespace SyncTool.Sql.Test.Model
         public void LoadFiles_loads_a_directorys_child_directories()
         {
             // ARRANGE
-            var root = new DirectoryInstanceDo(new DirectoryDo() { Name = "Root", NormalizedPath = "/" });
-            var dir1 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() });
-            var dir11 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir11", NormalizedPath = "/dir1/dir11".NormalizeCaseInvariant() });
-            var dir2 = new DirectoryInstanceDo(new DirectoryDo() { Name = "dir2", NormalizedPath = "/dir2".NormalizeCaseInvariant() });
+            var root = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "Root", NormalizedPath = "/" });
+            var dir1 = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() });
+            var dir11 = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "dir11", NormalizedPath = "/dir1/dir11".NormalizeCaseInvariant() });
+            var dir2 = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "dir2", NormalizedPath = "/dir2".NormalizeCaseInvariant() });
             dir1.Directories.Add(dir11);
             root.Directories.Add(dir1);
             root.Directories.Add(dir2);
-            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", NormalizedPath = "/dir1/file1".NormalizeCaseInvariant(), Path = "/dir1/file1" }, DateTime.Now, 42);
+            var file1 = new FileInstancesTable.Record(new FilesTable.Record() { Name = "file1", NormalizedPath = "/dir1/file1".NormalizeCaseInvariant(), Path = "/dir1/file1" }, DateTime.Now, 42);
             dir1.Files.Add(file1);
 
             var repo = CreateRepository();
@@ -304,8 +305,8 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void GetDirectoryInstance_loads_the_instance_from_the_database()
         {
-            var directory = new DirectoryDo() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
-            var directoryInstance = new DirectoryInstanceDo(directory);
+            var directory = new DirectoriesTable.Record() { Name = "dir1", NormalizedPath = "/dir1".NormalizeCaseInvariant() };
+            var directoryInstance = new DirectoryInstancesTable.Record(directory);
 
             var repo = CreateRepository();
             repo.AddRecursively(directoryInstance);

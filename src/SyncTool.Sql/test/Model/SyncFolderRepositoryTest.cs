@@ -1,4 +1,5 @@
 ﻿using SyncTool.Sql.Model;
+using SyncTool.Sql.Model.Tables;
 using SyncTool.Sql.TestHelpers;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace SyncTool.Sql.Test.Model
         {
             var instance = new SyncFolderRepository(Database);
 
-            var syncFolder = new SyncFolderDo() { Name = "folder1" };
+            var syncFolder = new SyncFoldersTable.Record() { Name = "folder1" };
             var version1 = instance.AddItem(syncFolder);
             instance.UpdateItem(version1);
 
