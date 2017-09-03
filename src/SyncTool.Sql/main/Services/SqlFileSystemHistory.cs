@@ -5,7 +5,6 @@ using System.Linq;
 using SyncTool.FileSystem;
 using SyncTool.Sql.Model;
 using SyncTool.Utilities;
-using SyncTool.Sql.Model.Tables;
 
 namespace SyncTool.Sql.Services
 {    
@@ -13,8 +12,8 @@ namespace SyncTool.Sql.Services
     {
         readonly SnapshotRepository m_SnapshotRepository;
         readonly FileSystemRepository m_FileSystemRepository;        
-        readonly Func<SqlFileSystemHistory, FileSystemSnapshotsTable.Record, SqlFileSystemSnapshot> m_SnapshotFactory;
-        readonly FileSystemHistoriesTable.Record m_HistoryDo;
+        readonly Func<SqlFileSystemHistory, FileSystemSnapshotDo, SqlFileSystemSnapshot> m_SnapshotFactory;
+        readonly FileSystemHistoryDo m_HistoryDo;
 
 
         public IFileSystemSnapshot this[string id]
@@ -49,8 +48,8 @@ namespace SyncTool.Sql.Services
         public SqlFileSystemHistory(            
             SnapshotRepository snapshotRepository,
             FileSystemRepository fileSystemRepository,           
-            Func<SqlFileSystemHistory, FileSystemSnapshotsTable.Record, SqlFileSystemSnapshot> snapshotFactory,
-            FileSystemHistoriesTable.Record historyDo)
+            Func<SqlFileSystemHistory, FileSystemSnapshotDo,SqlFileSystemSnapshot> snapshotFactory, 
+            FileSystemHistoryDo historyDo)
         {            
             m_SnapshotRepository = snapshotRepository ?? throw new ArgumentNullException(nameof(snapshotRepository));
             m_FileSystemRepository = fileSystemRepository ?? throw new ArgumentNullException(nameof(fileSystemRepository));            
@@ -65,7 +64,7 @@ namespace SyncTool.Sql.Services
             var directoryInstance = fileSystemState.ToDirectoryInstanceDo();            
             m_FileSystemRepository.AddRecursively(directoryInstance);
 
-            var snapshotDo = new FileSystemSnapshotsTable.Record(m_HistoryDo.Id, DateTime.UtcNow.Ticks, directoryInstance.Id, directoryInstance.GetFilesRecursively());            
+            var snapshotDo = new FileSystemSnapshotDo(m_HistoryDo.Id, DateTime.UtcNow.Ticks, directoryInstance.Id, directoryInstance.GetFilesRecursively());            
             m_SnapshotRepository.AddSnapshot(snapshotDo);
 
             return m_SnapshotFactory.Invoke(this, snapshotDo);           
@@ -165,16 +164,16 @@ namespace SyncTool.Sql.Services
             return result;
         }
 
-        FileSystemSnapshotsTable.Record GetSnapshotDo(int id) => 
+        FileSystemSnapshotDo GetSnapshotDo(int id) => 
             m_SnapshotRepository.GetSnapshotOrDefault(m_HistoryDo.Id, id) ?? throw new SnapshotNotFoundException(id.ToString());
 
-        static IFileReference GetFileReference(FileInstancesTable.Record instanceDo) 
+        static IFileReference GetFileReference(FileInstanceDo instanceDo) 
             => new FileReference(
                 path: instanceDo.File.Path,
                 lastWriteTime: instanceDo.LastWriteTimeTicks == 0 ? DateTime.MinValue : new DateTime(instanceDo.LastWriteTimeTicks, DateTimeKind.Utc),
                 length: instanceDo.Length);
         
-        void AppendChanges(FileSystemSnapshotsTable.Record currentSnapshot, Dictionary<string, LinkedList<IChange>> changeLists, string[] pathFilter)
+        void AppendChanges(FileSystemSnapshotDo currentSnapshot, Dictionary<string, LinkedList<IChange>> changeLists, string[] pathFilter)
         {            
             foreach (var (previous, current) in m_SnapshotRepository.GetChanges(currentSnapshot, pathFilter))
             {
@@ -186,7 +185,7 @@ namespace SyncTool.Sql.Services
             }
         }
 
-        static IChange GetChange(FileInstancesTable.Record previous, FileInstancesTable.Record current)
+        static IChange GetChange(FileInstanceDo previous, FileInstanceDo current)
         {
             if (previous == null && current != null)
                 return new Change(ChangeType.Added, null, GetFileReference(current));

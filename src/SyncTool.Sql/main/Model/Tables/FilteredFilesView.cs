@@ -2,7 +2,7 @@
 
 namespace SyncTool.Sql.Model.Tables
 {
-    public static class FilteredFilesView
+    static class FilteredFilesView
     {
         const string Name = "FilteredFiles";
 
@@ -13,8 +13,6 @@ namespace SyncTool.Sql.Model.Tables
             NormalizedPath,
             Path
         }
-
-        //TODO: Add Record class
 
         public static string CreateTemporary(IDbConnection connection, string[] pathFilter)
         {
@@ -49,5 +47,6 @@ namespace SyncTool.Sql.Model.Tables
 
             return Name;
         }
+
     }
 }

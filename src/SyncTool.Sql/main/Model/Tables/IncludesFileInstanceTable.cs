@@ -2,7 +2,7 @@
 
 namespace SyncTool.Sql.Model.Tables
 {
-    public static class IncludesFileInstanceTable
+    static class IncludesFileInstanceTable
     {
         public const string Name = "IncludesFileInstance";
 

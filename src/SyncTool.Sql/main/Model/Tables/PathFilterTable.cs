@@ -3,7 +3,7 @@ using System.Data;
 
 namespace SyncTool.Sql.Model.Tables
 {
-    public static class PathFilterTable
+    static class PathFilterTable
     {
         const string Name = "PathFilter";
 

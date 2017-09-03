@@ -9,7 +9,35 @@ namespace SyncTool.Sql.Model
 {
     public class SnapshotRepository
     {
+        private class ChangeRecord
+        {
+            public int FileId { get; set; }
 
+            public int? CurrentId { get; set; }
+
+            public int? PreviousId { get; set; }
+
+            public long? CurrentLastWriteTimeTicks { get; set; }
+
+            public long? PreviousLastWriteTimeTicks { get; set; }
+
+            public long? CurrentLength { get; set; }
+            
+            public long? PreviousLength { get; set; }
+
+            public void Deconstruct(out FileInstanceDo previous, out FileInstanceDo current, out int fileId)
+            {
+                previous = PreviousId.HasValue
+                    ? new FileInstanceDo() { Id = PreviousId.Value, LastWriteTimeTicks = PreviousLastWriteTimeTicks.Value, Length = PreviousLength.Value }
+                    : null;
+
+                current = CurrentId.HasValue
+                    ? new FileInstanceDo() { Id = CurrentId.Value, LastWriteTimeTicks = CurrentLastWriteTimeTicks.Value, Length = CurrentLength.Value }
+                    : null;
+
+                fileId = FileId;
+            }
+        }
                                 
         readonly Database m_Database;
 
@@ -20,9 +48,9 @@ namespace SyncTool.Sql.Model
         }
 
 
-        public FileSystemSnapshotsTable.Record GetSnapshotOrDefault(int historyId, int id)
+        public FileSystemSnapshotDo GetSnapshotOrDefault(int historyId, int id)
         {
-            return m_Database.QuerySingleOrDefault<FileSystemSnapshotsTable.Record>($@"
+            return m_Database.QuerySingleOrDefault<FileSystemSnapshotDo>($@"
                 SELECT *
                 FROM {FileSystemSnapshotsTable.Name}
                 WHERE {FileSystemSnapshotsTable.Column.Id} = @id AND
@@ -31,9 +59,9 @@ namespace SyncTool.Sql.Model
             new { historyId = historyId, id = id });
         }
 
-        public FileSystemSnapshotsTable.Record GetLatestSnapshotOrDefault(int historyId)
+        public FileSystemSnapshotDo GetLatestSnapshotOrDefault(int historyId)
         {
-            return m_Database.QueryFirstOrDefault<FileSystemSnapshotsTable.Record>($@"
+            return m_Database.QueryFirstOrDefault<FileSystemSnapshotDo>($@"
                 SELECT *
                 FROM {FileSystemSnapshotsTable.Name}
                 WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId
@@ -42,16 +70,16 @@ namespace SyncTool.Sql.Model
                 new { historyId = historyId });
         }
 
-        public IEnumerable<FileSystemSnapshotsTable.Record> GetSnapshots(int historyId)
+        public IEnumerable<FileSystemSnapshotDo> GetSnapshots(int historyId)
         {
-            return m_Database.Query<FileSystemSnapshotsTable.Record>($@"
+            return m_Database.Query<FileSystemSnapshotDo>($@"
                 SELECT *
                 FROM {FileSystemSnapshotsTable.Name}
                 WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId;",
                 new { historyId = historyId });
         }
 
-        public void AddSnapshot(FileSystemSnapshotsTable.Record snapshot)
+        public void AddSnapshot(FileSystemSnapshotDo snapshot)
         {
             //TODO: make sure no other snapshots were added for the history ?? Is this a Problem?            
 
@@ -59,7 +87,7 @@ namespace SyncTool.Sql.Model
             using (var transaction = connection.BeginTransaction())
             {
                 var tmpId = Guid.NewGuid().ToString();
-                var inserted = connection.QuerySingle<FileSystemSnapshotsTable.Record>($@"
+                var inserted = connection.QuerySingle<FileSystemSnapshotDo>($@"
                         INSERT INTO {FileSystemSnapshotsTable.Name} 
                         (                          
                             {FileSystemSnapshotsTable.Column.HistoryId} ,
@@ -117,9 +145,9 @@ namespace SyncTool.Sql.Model
             }
         }
 
-        public void LoadIncludedFiles(FileSystemSnapshotsTable.Record snapshot)
+        public void LoadIncludedFiles(FileSystemSnapshotDo snapshot)
         {
-            var files = m_Database.Query<FileInstancesTable.Record>($@"
+            var files = m_Database.Query<FileInstanceDo>($@"
                 SELECT * 
                 FROM {FileInstancesTable.Name}
                 WHERE {FileInstancesTable.Column.Id} IN 
@@ -134,9 +162,9 @@ namespace SyncTool.Sql.Model
             snapshot.IncludedFiles = files.ToList();            
         }
 
-        public FileSystemSnapshotsTable.Record GetPrecedingSnapshot(FileSystemSnapshotsTable.Record snapshot)
+        public FileSystemSnapshotDo GetPrecedingSnapshot(FileSystemSnapshotDo snapshot)
         {
-            return m_Database.QueryFirstOrDefault<FileSystemSnapshotsTable.Record>($@"
+            return m_Database.QueryFirstOrDefault<FileSystemSnapshotDo>($@"
                 SELECT *
                 FROM {FileSystemSnapshotsTable.Name}
                 WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId AND
@@ -146,7 +174,7 @@ namespace SyncTool.Sql.Model
                 new { historyId = snapshot.HistoryId, sequenceNumber = snapshot.SequenceNumber });
         }
 
-        public IEnumerable<string> GetChangedFiles(FileSystemSnapshotsTable.Record snapshot)
+        public IEnumerable<string> GetChangedFiles(FileSystemSnapshotDo snapshot)
         {
             using (var connection = m_Database.OpenConnection())
             {
@@ -164,14 +192,14 @@ namespace SyncTool.Sql.Model
             }            
         }
 
-        public IEnumerable<(FileInstancesTable.Record previous, FileInstancesTable.Record current)> GetChanges(FileSystemSnapshotsTable.Record snapshot, string[] pathFilter)
+        public IEnumerable<(FileInstanceDo previous, FileInstanceDo current)> GetChanges(FileSystemSnapshotDo snapshot, string[] pathFilter)
         {            
             using (var connection = m_Database.OpenConnection())
             {
                 var changesView = ChangesView.CreateTemporary(connection, snapshot);
                 var filesView = FilteredFilesView.CreateTemporary(connection, pathFilter);
 
-                var fileDos = connection.Query<FilesTable.Record>($@"                    
+                var fileDos = connection.Query<FileDo>($@"                    
                         SELECT * FROM {filesView}
                         WHERE {FilesTable.Column.Id} IN (SELECT DISTINCT {ChangesView.Column.FileId} FROM {changesView});")
                     .ToDictionary(record => record.Id);
@@ -182,8 +210,8 @@ namespace SyncTool.Sql.Model
                         
                 ;";
 
-                var changes = new LinkedList<(FileInstancesTable.Record, FileInstancesTable.Record)>();
-                foreach (var (previous, current, fileId) in connection.Query<ChangesView.Record>(changeQuery))
+                var changes = new LinkedList<(FileInstanceDo, FileInstanceDo)>();
+                foreach (var (previous, current, fileId) in connection.Query<ChangeRecord>(changeQuery))
                 {
                     var fileDo = fileDos[fileId];                    
 
@@ -205,12 +233,12 @@ namespace SyncTool.Sql.Model
         /// </summary>
         /// <param name="fromSnapshot">The start of the range (exclusive)</param>
         /// <param name="toSnapshot">The end of the range of snapshots to return (inclusive)</param>
-        public IEnumerable<FileSystemSnapshotsTable.Record> GetSnapshotRange(FileSystemSnapshotsTable.Record fromSnapshot, FileSystemSnapshotsTable.Record toSnapshot)
+        public IEnumerable<FileSystemSnapshotDo> GetSnapshotRange(FileSystemSnapshotDo fromSnapshot, FileSystemSnapshotDo toSnapshot)
         {
             if (fromSnapshot.HistoryId != toSnapshot.HistoryId)
                 throw new ArgumentException("Cannot get range between snapshots of different histories");            
 
-            return m_Database.Query<FileSystemSnapshotsTable.Record>($@"
+            return m_Database.Query<FileSystemSnapshotDo>($@"
                 SELECT *
                 FROM {FileSystemSnapshotsTable.Name}
                 WHERE {FileSystemSnapshotsTable.Column.Id} > @fromId AND
@@ -225,9 +253,9 @@ namespace SyncTool.Sql.Model
         /// Gets all the snapshots up to the specified snapshot
         /// </summary>        
         /// <param name="toSnapshot">The end of the range of snapshots to return (inclusive)</param>
-        public IEnumerable<FileSystemSnapshotsTable.Record> GetSnapshotRange(FileSystemSnapshotsTable.Record toSnapshot)
+        public IEnumerable<FileSystemSnapshotDo> GetSnapshotRange(FileSystemSnapshotDo toSnapshot)
         {            
-            return m_Database.Query<FileSystemSnapshotsTable.Record>($@"
+            return m_Database.Query<FileSystemSnapshotDo>($@"
                 SELECT *
                 FROM {FileSystemSnapshotsTable.Name}
                 WHERE {FileSystemSnapshotsTable.Column.Id} <= @toId AND

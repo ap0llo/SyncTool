@@ -2,7 +2,6 @@
 using SyncTool.FileSystem.TestHelpers;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Sql.Model;
-using SyncTool.Sql.Model.Tables;
 using SyncTool.Sql.Services;
 using SyncTool.Sql.TestHelpers;
 using System;
@@ -27,7 +26,7 @@ namespace SyncTool.Sql.Test.Services
             var fileSystemRepository = new FileSystemRepository(Database);
             var snapshotRepository = new SnapshotRepository(Database);
 
-            var historyDo = new FileSystemHistoriesTable.Record("History1");
+            var historyDo = new FileSystemHistoryDo("History1");
             historyRepository.AddItem(historyDo);
             
             m_Instance = new SqlFileSystemHistory(

@@ -10,7 +10,7 @@ namespace SyncTool.Sql.Model
         readonly Database m_Database;
 
 
-        public IEnumerable<FileSystemHistoriesTable.Record> Items => m_Database.Query<FileSystemHistoriesTable.Record>($"SELECT * FROM {FileSystemHistoriesTable.Name}");
+        public IEnumerable<FileSystemHistoryDo> Items => m_Database.Query<FileSystemHistoryDo>($"SELECT * FROM {FileSystemHistoriesTable.Name}");
 
 
         public FileSystemHistoryRepository(Database database)
@@ -19,18 +19,18 @@ namespace SyncTool.Sql.Model
         }
 
 
-        public FileSystemHistoriesTable.Record GetItemOrDefault(string name)
+        public FileSystemHistoryDo GetItemOrDefault(string name)
         {
-            return m_Database.QuerySingleOrDefault<FileSystemHistoriesTable.Record>($@"
+            return m_Database.QuerySingleOrDefault<FileSystemHistoryDo>($@"
                         SELECT * FROM {FileSystemHistoriesTable.Name}
                         WHERE lower({FileSystemHistoriesTable.Column.Name}) = lower(@name)",
                         new { name }
                     );
         }
 
-        public FileSystemHistoriesTable.Record AddItem(FileSystemHistoriesTable.Record item)
+        public FileSystemHistoryDo AddItem(FileSystemHistoryDo item)
         {
-            return m_Database.QuerySingle<FileSystemHistoriesTable.Record>($@"
+            return m_Database.QuerySingle<FileSystemHistoryDo>($@"
 
                 INSERT INTO {FileSystemHistoriesTable.Name} 
                 (

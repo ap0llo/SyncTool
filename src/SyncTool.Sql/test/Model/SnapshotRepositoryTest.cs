@@ -4,7 +4,6 @@ using SyncTool.Sql.Model;
 using SyncTool.Sql.TestHelpers;
 using Xunit;
 using System.Linq;
-using SyncTool.Sql.Model.Tables;
 
 namespace SyncTool.Sql.Test.Model
 {
@@ -23,11 +22,11 @@ namespace SyncTool.Sql.Test.Model
             m_FileSystemRepository = new FileSystemRepository(Database);
             m_Instance = new SnapshotRepository(Database);
 
-            var historyDo = new FileSystemHistoriesTable.Record("history1");
+            var historyDo = new FileSystemHistoryDo("history1");
             m_HistoryRepository.AddItem(historyDo);
             m_HistoryId1 = historyDo.Id;
 
-            historyDo = new FileSystemHistoriesTable.Record("history2");
+            historyDo = new FileSystemHistoryDo("history2");
             m_HistoryRepository.AddItem(historyDo);
             m_HistoryId2 = historyDo.Id;
         }
@@ -36,11 +35,11 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void AddSnapshot_assigns_a_sequence_number()
         {
-            var dir = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "root", NormalizedPath = "" });
+            var dir = new DirectoryInstanceDo(new DirectoryDo() { Name = "root", NormalizedPath = "" });
             m_FileSystemRepository.AddRecursively(dir);
 
-            var snapshot1 = new FileSystemSnapshotsTable.Record(m_HistoryId1, DateTime.UtcNow.Ticks, dir.Id, new List<FileInstancesTable.Record>());            
-            var snapshot2 = new FileSystemSnapshotsTable.Record(m_HistoryId2, DateTime.UtcNow.Ticks, dir.Id, new List<FileInstancesTable.Record>());            
+            var snapshot1 = new FileSystemSnapshotDo(m_HistoryId1, DateTime.UtcNow.Ticks, dir.Id, new List<FileInstanceDo>());            
+            var snapshot2 = new FileSystemSnapshotDo(m_HistoryId2, DateTime.UtcNow.Ticks, dir.Id, new List<FileInstanceDo>());            
 
             m_Instance.AddSnapshot(snapshot1);
             m_Instance.AddSnapshot(snapshot2);
@@ -52,12 +51,12 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void AddSnapshot_saves_included_files()
         {
-            var dir = new DirectoryInstancesTable.Record(new DirectoriesTable.Record() { Name = "root", NormalizedPath = "" });
-            var file1 = new FileInstancesTable.Record(new FilesTable.Record() { Name = "file1", NormalizedPath = "/dir1/file1".NormalizeCaseInvariant(), Path = "/dir1/file1" }, DateTime.Now, 42);
+            var dir = new DirectoryInstanceDo(new DirectoryDo() { Name = "root", NormalizedPath = "" });
+            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", NormalizedPath = "/dir1/file1".NormalizeCaseInvariant(), Path = "/dir1/file1" }, DateTime.Now, 42);
             dir.Files.Add(file1);
             m_FileSystemRepository.AddRecursively(dir);
 
-            var snapshot = new FileSystemSnapshotsTable.Record(m_HistoryId1, DateTime.UtcNow.Ticks, dir.Id, new List<FileInstancesTable.Record>() { file1 });
+            var snapshot = new FileSystemSnapshotDo(m_HistoryId1, DateTime.UtcNow.Ticks, dir.Id, new List<FileInstanceDo>() { file1 });
 
             m_Instance.AddSnapshot(snapshot);
             var loadedSnapshot = m_Instance.GetSnapshotOrDefault(m_HistoryId1, snapshot.Id);

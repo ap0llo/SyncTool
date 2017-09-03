@@ -1,18 +1,17 @@
-﻿using SyncTool.Sql.Model.Tables;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SyncTool.Sql.Model
 {
     static class DirectoryInstanceDoExtensions
     {
-        public static List<FileInstancesTable.Record> GetFilesRecursively(this DirectoryInstancesTable.Record directory)
+        public static List<FileInstanceDo> GetFilesRecursively(this DirectoryInstanceDo directory)
         {
-            var fileList = new List<FileInstancesTable.Record>();
+            var fileList = new List<FileInstanceDo>();
             DoGetFilesRecursively(directory, fileList);
             return fileList;
         }
 
-        static void DoGetFilesRecursively(DirectoryInstancesTable.Record directory, List<FileInstancesTable.Record> fileList)
+        static void DoGetFilesRecursively(DirectoryInstanceDo directory, List<FileInstanceDo> fileList)
         {
             fileList.AddRange(directory.Files);
             foreach(var child in directory.Directories)

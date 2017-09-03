@@ -2,7 +2,7 @@
 
 namespace SyncTool.Sql.Model.Tables
 {
-    public static class ChangesView
+    static class ChangesView
     {
         const string Name = "Changes";
 
@@ -17,37 +17,8 @@ namespace SyncTool.Sql.Model.Tables
             PreviousLength
         }
 
-        public class Record
-        {
-            public int FileId { get; set; }
 
-            public int? CurrentId { get; set; }
-
-            public int? PreviousId { get; set; }
-
-            public long? CurrentLastWriteTimeTicks { get; set; }
-
-            public long? PreviousLastWriteTimeTicks { get; set; }
-
-            public long? CurrentLength { get; set; }
-
-            public long? PreviousLength { get; set; }
-
-            public void Deconstruct(out FileInstancesTable.Record previous, out FileInstancesTable.Record current, out int fileId)
-            {
-                previous = PreviousId.HasValue
-                    ? new FileInstancesTable.Record() { Id = PreviousId.Value, LastWriteTimeTicks = PreviousLastWriteTimeTicks.Value, Length = PreviousLength.Value }
-                    : null;
-
-                current = CurrentId.HasValue
-                    ? new FileInstancesTable.Record() { Id = CurrentId.Value, LastWriteTimeTicks = CurrentLastWriteTimeTicks.Value, Length = CurrentLength.Value }
-                    : null;
-
-                fileId = FileId;
-            }
-        }
-
-        public static string CreateTemporary(IDbConnection connection, FileSystemSnapshotsTable.Record snapshot)
+        public static string CreateTemporary(IDbConnection connection, FileSystemSnapshotDo snapshot)
         {            
             const string s_PrecedingSnapshotId = "precedingSnapshotId";
             const string s_FileInstanceIds = "fileInstanceIds";

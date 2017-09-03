@@ -1,6 +1,5 @@
 ﻿using SyncTool.FileSystem;
 using SyncTool.Sql.Model;
-using SyncTool.Sql.Model.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace SyncTool.Sql.Services
     class SqlDirectory : AbstractDirectory
     {        
         readonly FileSystemRepository m_Repository;
-        readonly DirectoryInstancesTable.Record m_DirectoryInstanceDo;
+        readonly DirectoryInstanceDo m_DirectoryInstanceDo;
         readonly Lazy<IDictionary<string, SqlDirectory>> m_Directories;
         readonly Lazy<IDictionary<string, SqlFile>> m_Files;
 
@@ -22,7 +21,7 @@ namespace SyncTool.Sql.Services
         public override string Name => m_DirectoryInstanceDo.Directory.Name;
 
 
-        public SqlDirectory(FileSystemRepository repository, IDirectory parent, DirectoryInstancesTable.Record directoryDo) 
+        public SqlDirectory(FileSystemRepository repository, IDirectory parent, DirectoryInstanceDo directoryDo) 
             : base(parent, "Placeholder")
         {
             m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));

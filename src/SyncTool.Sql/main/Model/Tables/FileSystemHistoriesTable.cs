@@ -1,12 +1,9 @@
-﻿using JetBrains.Annotations;
-using System.Data;
+﻿using System.Data;
 
 namespace SyncTool.Sql.Model.Tables
 {
-    public static class FileSystemHistoriesTable
+    static class FileSystemHistoriesTable
     {
-        public const string Name = "FileSystemHistories";
-
         public enum Column
         {
             Id,
@@ -15,26 +12,8 @@ namespace SyncTool.Sql.Model.Tables
             Version
         }
 
-        public class Record
-        {
-            public int Id { get; set; }
-
-            public string Name { get; set; }
-
-            public string NormalizedName { get; set; }
-
-            public int Version { get; set; }
-
-            [UsedImplicitly]
-            public Record() { }
-
-            public Record(string name)
-            {
-                Name = name;
-                NormalizedName = name.NormalizeCaseInvariant();
-            }
-        }
-
+        public const string Name = "FileSystemHistories";
+        
         public static void Create(IDbConnection connection)
         {
             connection.ExecuteNonQuery($@"                

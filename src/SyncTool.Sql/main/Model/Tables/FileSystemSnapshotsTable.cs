@@ -1,11 +1,8 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 
 namespace SyncTool.Sql.Model.Tables
 {
-    public static class FileSystemSnapshotsTable
+    static class FileSystemSnapshotsTable
     {
         public const string Name = "FileSystemSnapshots";
 
@@ -17,42 +14,6 @@ namespace SyncTool.Sql.Model.Tables
             CreationTimeTicks,
             RootDirectoryInstanceId,
             TmpId
-        }
-
-        public class Record
-        {
-            public int HistoryId { get; set; }
-
-            // assigned automatically on db insert
-            public int Id { get; set; }
-
-            // assigned automatically on db insert
-            public int SequenceNumber { get; set; }
-
-            public long CreationTimeTicks { get; set; }
-
-            public int RootDirectoryInstanceId { get; set; }
-
-            public List<FileInstancesTable.Record> IncludedFiles { get; set; } = new List<FileInstancesTable.Record>();
-
-
-            [UsedImplicitly]
-            public Record() { }
-
-            public Record(
-                int historyId,
-                long creationTimeTicks,
-                int rootDirectoryInstanceId,
-                List<FileInstancesTable.Record> includedFiles)
-            {
-                if (rootDirectoryInstanceId <= 0)
-                    throw new ArgumentOutOfRangeException(nameof(rootDirectoryInstanceId));
-
-                HistoryId = historyId;
-                CreationTimeTicks = creationTimeTicks;
-                RootDirectoryInstanceId = rootDirectoryInstanceId;
-                IncludedFiles = includedFiles;
-            }
         }
 
         public static void Create(IDbConnection connection)
