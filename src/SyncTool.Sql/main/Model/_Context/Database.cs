@@ -8,6 +8,8 @@ namespace SyncTool.Sql.Model
         static readonly object s_Lock = new object();
         bool m_Initialized = false;
 
+        public abstract DatabaseLimits Limits { get; }
+
         public IDbConnection OpenConnection()
         {
             lock(s_Lock)

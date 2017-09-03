@@ -15,13 +15,17 @@ namespace SyncTool.Sql.TestHelpers
             readonly string m_DatabaseName;
             readonly string m_SqlitePath;
 
+            public override DatabaseLimits Limits { get; }
+
             public TestDatabase(string databaseName)
             {
+                Limits = new DatabaseLimits(maxParameterCount: 999);
                 m_DatabaseName = databaseName;
                 m_SqlitePath = Path.Combine(Path.GetTempPath(), m_DatabaseName + ".db");
             }
 
-          
+            
+
             protected override IDbConnection DoOpenConnection()
             {
                 var connectionStringBuilder = new SqliteConnectionStringBuilder()
