@@ -5,8 +5,9 @@ test_script:
 - cmd: .\test.bat
 image: Visual Studio 2017
 
-except:
-  - features/sql-backend-mysql
+branches:
+  except:
+    - features/sql-backend-mysql
 
 
 artifacts:
