@@ -1,5 +1,7 @@
-﻿using System;
+﻿using SyncTool.Utilities;
+using System;
 using System.Data;
+using System.Linq;
 
 namespace SyncTool.Sql.Model.Tables
 {
@@ -12,7 +14,7 @@ namespace SyncTool.Sql.Model.Tables
             Path
         }
 
-        public static string CreateTemporary(IDbConnection connection, string[] pathFilter)
+        public static string CreateTemporary(IDbConnection connection, DatabaseLimits limits, string[] pathFilter)
         {
             if (pathFilter == null)
                 throw new ArgumentNullException(nameof(pathFilter));
@@ -23,14 +25,22 @@ namespace SyncTool.Sql.Model.Tables
                             {Column.Path} TEXT PRIMARY KEY            
                         )
             ");
-
-            //TODO: Add batching of inserts
-            foreach (var path in pathFilter)
+            
+            foreach (var segment in pathFilter.GetSegments(limits.MaxParameterCount))
             {
-                connection.ExecuteNonQuery($@"
-                    INSERT INTO {Name} ({Column.Path}) VALUES (@path);",
-                    ("path", path)
-                );
+
+                var query = $@"
+                    INSERT INTO {Name} ({Column.Path}) 
+                    VALUES 
+                    {
+                        segment
+                            .Select((_, index) => $"(@path{index})")
+                            .JoinToString(",")
+                    };";
+                
+                var parameters = segment.Select((path, index) => ($"path{index}", (object) path));
+                
+                connection.ExecuteNonQuery(query, parameters.ToArray());
             }
 
             return Name;

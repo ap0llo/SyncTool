@@ -12,7 +12,7 @@ namespace SyncTool.Sql.Model.Tables
             ChildId
         }
         
-        public static void Create(IDbConnection connection)
+        public static void Create(IDbConnection connection, DatabaseLimits limits)
         {
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (

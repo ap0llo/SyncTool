@@ -18,7 +18,7 @@ namespace SyncTool.Sql.Model.Tables
         }
 
 
-        public static string CreateTemporary(IDbConnection connection, FileSystemSnapshotDo snapshot)
+        public static string CreateTemporary(IDbConnection connection, DatabaseLimits limits, FileSystemSnapshotDo snapshot)
         {            
             const string s_PrecedingSnapshotId = "precedingSnapshotId";
             const string s_FileInstanceIds = "fileInstanceIds";

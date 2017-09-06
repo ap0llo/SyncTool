@@ -47,7 +47,7 @@ namespace SyncTool.Sql.Model
 
                 SELECT * FROM {SyncFoldersTable.Name} 
                 WHERE {SyncFoldersTable.Column.Name} = @{nameof(item.Name)} AND 
-                        {SyncFoldersTable.Column.Version} = 1;  ", 
+                      {SyncFoldersTable.Column.Version} = 1;  ", 
                 item
             );                                       
         }
@@ -64,10 +64,10 @@ namespace SyncTool.Sql.Model
                     WHERE {SyncFoldersTable.Column.Version} = @oldVersion AND
                           lower({SyncFoldersTable.Column.Name}) = lower(@name)",
 
-                        ("name", item.Name),
-                        ("path", item.Path),
-                        ("oldVersion", item.Version),
-                        ("newVersion", item.Version + 1)
+                    ("name", item.Name),
+                    ("path", item.Path),
+                    ("oldVersion", item.Version),
+                    ("newVersion", item.Version + 1)
                 );
 
                 if (changedRows == 0)

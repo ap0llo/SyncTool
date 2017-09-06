@@ -14,7 +14,7 @@ namespace SyncTool.Sql.Model.Tables
             Version            
         }        
         
-        public static void Create(IDbConnection connection)
+        public static void Create(IDbConnection connection, DatabaseLimits limits)
         {
             // table is supposed to only have a single row
             // for that purpose, the "Name" column will always have 

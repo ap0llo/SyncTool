@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SyncTool.Sql.Model.Tables;
+using SyncTool.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -239,35 +240,55 @@ namespace SyncTool.Sql.Model
                     ("tmpId", tmpId)
                 );
         
-            foreach(var file in directoryInstance.Files)
+
+            foreach(var segment in directoryInstance.Files.ToArray().GetSegments(m_Database.Limits.MaxParameterCount - 1))
             {
-                connection.ExecuteNonQuery($@"
+                var query = $@"
                     INSERT INTO {ContainsFileTable.Name} 
                     (
                         {ContainsFileTable.Column.ParentId}, 
                         {ContainsFileTable.Column.ChildId}
                     ) 
-                    VALUES (@parentId, @childId);",
+                    VALUES  
+                    {
+                        segment
+                            .Select((_, index) => $"(@parentId, @childId{index})")
+                            .JoinToString(",")
+                    };
+                ";
 
-                    ("parentId", directoryInstance.Id),
-                    ("childId", file.Id)
-                );
+                var parameters = segment
+                    .Select((file, index) => ($"childId{index}", (object) file.Id))
+                    .Concat(("parentId", directoryInstance.Id))
+                    .ToArray();
+
+                connection.ExecuteNonQuery(query, parameters);
             }
 
-            foreach (var childDir in directoryInstance.Directories)
+            foreach(var segment in directoryInstance.Directories.ToArray().GetSegments(m_Database.Limits.MaxParameterCount - 1))
             {
-                connection.ExecuteNonQuery($@"
+                var query = $@"
                     INSERT INTO {ContainsDirectoryTable.Name} 
                     (
                         {ContainsDirectoryTable.Column.ParentId}, 
                         {ContainsDirectoryTable.Column.ChildId}
                     ) 
-                    VALUES (@parentId, @childId);",
+                    VALUES 
+                    {
+                        segment
+                            .Select((_, index) => $"(@parentId, @childId{index})")
+                            .JoinToString(",")
+                    };
+                ";
 
-                    ("parentId", directoryInstance.Id),
-                    ("childId", childDir.Id)
-                );
+                var parameters = segment
+                    .Select((childDir, index) => ($"childId{index}", (object)childDir.Id))
+                    .Concat(("parentId", directoryInstance.Id))
+                    .ToArray();
+
+                connection.ExecuteNonQuery(query, parameters);
             }
+
 
             connection.ExecuteNonQuery($@"
                 UPDATE {DirectoryInstancesTable.Name} 

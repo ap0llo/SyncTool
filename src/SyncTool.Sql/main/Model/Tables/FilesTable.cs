@@ -14,7 +14,7 @@ namespace SyncTool.Sql.Model.Tables
             Path
         }
 
-        public static void Create(IDbConnection connection)
+        public static void Create(IDbConnection connection, DatabaseLimits limits)
         {
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (                

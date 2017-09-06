@@ -47,7 +47,7 @@ namespace SyncTool.Sql.Model
 
                 SELECT * FROM {FileSystemHistoriesTable.Name} 
                 WHERE {FileSystemHistoriesTable.Column.Name} = @{nameof(item.Name)} AND 
-                        {FileSystemHistoriesTable.Column.Version} = 1;  ",
+                      {FileSystemHistoriesTable.Column.Version} = 1;  ",
                 item
             );
         }

@@ -34,18 +34,18 @@ namespace SyncTool.Sql.Model
                 // check if version table exists
                 if(!connection.TableExists(SchemaInfoTable.Name))
                 {
-                    SchemaInfoTable.Create(connection);
+                    SchemaInfoTable.Create(connection, Limits);
 
-                    FileSystemHistoriesTable.Create(connection);
-                    FilesTable.Create(connection);
-                    FileInstancesTable.Create(connection);
-                    DirectoriesTable.Create(connection);
-                    DirectoryInstancesTable.Create(connection);
-                    ContainsDirectoryTable.Create(connection);
-                    ContainsFileTable.Create(connection);
-                    FileSystemSnapshotsTable.Create(connection);
-                    IncludesFileInstanceTable.Create(connection);
-                    SyncFoldersTable.Create(connection);
+                    FileSystemHistoriesTable.Create(connection, Limits);
+                    FilesTable.Create(connection, Limits);
+                    FileInstancesTable.Create(connection, Limits);
+                    DirectoriesTable.Create(connection, Limits);
+                    DirectoryInstancesTable.Create(connection, Limits);
+                    ContainsDirectoryTable.Create(connection, Limits);
+                    ContainsFileTable.Create(connection, Limits);
+                    FileSystemSnapshotsTable.Create(connection, Limits);
+                    IncludesFileInstanceTable.Create(connection, Limits);
+                    SyncFoldersTable.Create(connection, Limits);
 
                     transaction.Commit();
                 }

@@ -14,11 +14,11 @@ namespace SyncTool.Sql.Model.Tables
             Path
         }
 
-        public static string CreateTemporary(IDbConnection connection, string[] pathFilter)
+        public static string CreateTemporary(IDbConnection connection, DatabaseLimits limits, string[] pathFilter)
         {
             if (pathFilter != null)
             {
-                var pathFilterTable = PathFilterTable.CreateTemporary(connection, pathFilter);
+                var pathFilterTable = PathFilterTable.CreateTemporary(connection, limits, pathFilter);
 
                 connection.ExecuteNonQuery($@"
                     CREATE TEMPORARY VIEW {Name} AS 

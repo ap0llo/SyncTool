@@ -4,6 +4,7 @@ using System.Linq;
 using Dapper;
 
 using SyncTool.Sql.Model.Tables;
+using SyncTool.Utilities;
 
 namespace SyncTool.Sql.Model
 {
@@ -122,20 +123,30 @@ namespace SyncTool.Sql.Model
                 });
 
 
-                foreach (var fileInstance in snapshot.IncludedFiles)
+
+                foreach(var segment in snapshot.IncludedFiles.ToArray().GetSegments(m_Database.Limits.MaxParameterCount - 1))
                 {
-                    connection.ExecuteNonQuery($@"
+                    var query = $@"
                         
                         INSERT INTO {IncludesFileInstanceTable.Name} 
                         (
                             {IncludesFileInstanceTable.Column.SnapshotId}, 
                             {IncludesFileInstanceTable.Column.FileInstanceId}
                         )
-                        VALUES (@snapshotId, @fileInstanceId)",
+                        VALUES 
+                        {
+                            segment
+                                .Select((_, index) => $"(@snapshotId, @file{index})")
+                                .JoinToString(",")
+                        };
+                    ";
 
-                        ("snapshotId", inserted.Id), 
-                        ("fileInstanceId", fileInstance.Id)
-                    );
+                    var parameters = segment
+                        .Select((file, index) => ($"file{index}", (object)file.Id))
+                        .Concat(("snapshotId", inserted.Id))
+                        .ToArray();
+
+                    connection.ExecuteNonQuery(query, parameters);
                 }
 
                 transaction.Commit();
@@ -178,7 +189,7 @@ namespace SyncTool.Sql.Model
         {
             using (var connection = m_Database.OpenConnection())
             {
-                var changesView = ChangesView.CreateTemporary(connection, snapshot);
+                var changesView = ChangesView.CreateTemporary(connection, m_Database.Limits, snapshot);
                                
                 return connection.Query<string>($@"
                         SELECT {FilesTable.Column.Path} 
@@ -196,8 +207,8 @@ namespace SyncTool.Sql.Model
         {            
             using (var connection = m_Database.OpenConnection())
             {
-                var changesView = ChangesView.CreateTemporary(connection, snapshot);
-                var filesView = FilteredFilesView.CreateTemporary(connection, pathFilter);
+                var changesView = ChangesView.CreateTemporary(connection, m_Database.Limits, snapshot);
+                var filesView = FilteredFilesView.CreateTemporary(connection, m_Database.Limits, pathFilter);
 
                 var fileDos = connection.Query<FileDo>($@"                    
                         SELECT * FROM {filesView}
