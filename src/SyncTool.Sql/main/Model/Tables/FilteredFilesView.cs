@@ -21,7 +21,8 @@ namespace SyncTool.Sql.Model.Tables
                 var pathFilterTable = PathFilterTable.CreateTemporary(connection, limits, pathFilter);
 
                 connection.ExecuteNonQuery($@"
-                    CREATE TEMPORARY VIEW {Name} AS 
+                    DROP VIEW IF EXISTS {Name} ;
+                    CREATE VIEW {Name} AS 
                         SELECT 
                             {FilesTable.Column.Id} AS {Column.Id},         
                             {FilesTable.Column.Name} AS {Column.Name},            
@@ -36,7 +37,8 @@ namespace SyncTool.Sql.Model.Tables
             else
             {
                 connection.ExecuteNonQuery($@"
-                    CREATE TEMPORARY VIEW {Name} AS 
+                    DROP VIEW IF EXISTS {Name};
+                    CREATE VIEW {Name} AS 
                         SELECT 
                             {FilesTable.Column.Id} AS {Column.Id},         
                             {FilesTable.Column.Name} AS {Column.Name},            

@@ -164,7 +164,7 @@ namespace SyncTool.Sql.Model
 
             directory.Id = connection.ExecuteScalar<int>($@"
 
-                    INSERT OR IGNORE INTO {DirectoriesTable.Name} 
+                    INSERT IGNORE INTO {DirectoriesTable.Name} 
                     (
                         {DirectoriesTable.Column.Name},
                         {DirectoriesTable.Column.NormalizedPath} 
@@ -189,7 +189,7 @@ namespace SyncTool.Sql.Model
 
             file.Id = connection.ExecuteScalar<int>($@"
                     
-                    INSERT OR IGNORE INTO {FilesTable.Name} 
+                    INSERT IGNORE INTO {FilesTable.Name} 
                     (
                         {FilesTable.Column.Name},
                         {FilesTable.Column.NormalizedPath},
@@ -308,7 +308,7 @@ namespace SyncTool.Sql.Model
             Insert(connection, fileInstance.File);
 
             fileInstance.Id = connection.ExecuteScalar<int>($@"
-                    INSERT OR IGNORE INTO {FileInstancesTable.Name} 
+                    INSERT IGNORE INTO {FileInstancesTable.Name} 
                     (
                         {FileInstancesTable.Column.FileId},
                         {FileInstancesTable.Column.LastWriteTimeTicks},
@@ -316,7 +316,8 @@ namespace SyncTool.Sql.Model
                     )
                     VALUES (@fileId, @ticks, @length );
 
-                    SELECT * FROM {FileInstancesTable.Name}
+                    SELECT {FileInstancesTable.Column.FileId}
+                    FROM {FileInstancesTable.Name}
                     WHERE {FileInstancesTable.Column.FileId} = @fileId  AND
                           {FileInstancesTable.Column.LastWriteTimeTicks} = @ticks AND 
                           {FileInstancesTable.Column.Length} = @length ;

@@ -17,9 +17,9 @@ namespace SyncTool.Sql.Model.Tables
         {
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (
-                    {Column.Id}          INTEGER PRIMARY KEY,
+                    {Column.Id}          INTEGER PRIMARY KEY AUTO_INCREMENT,
                     {Column.DirectoryId} INTEGER NOT NULL,    
-                    {Column.TmpId}       TEXT UNIQUE,
+                    {Column.TmpId}       varchar(40) UNIQUE,
                     FOREIGN KEY ({Column.DirectoryId}) REFERENCES {DirectoriesTable.Name}({DirectoriesTable.Column.Id}));
             ");
         }

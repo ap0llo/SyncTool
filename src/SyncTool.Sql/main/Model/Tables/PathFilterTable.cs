@@ -21,8 +21,9 @@ namespace SyncTool.Sql.Model.Tables
 
             
             connection.ExecuteNonQuery($@"
-                        CREATE TEMPORARY TABLE {Name} (
-                            {Column.Path} TEXT PRIMARY KEY            
+                        DROP TABLE IF EXISTS {Name};
+                        CREATE TABLE {Name} (
+                            {Column.Path} varchar(700) PRIMARY KEY            
                         )
             ");
             

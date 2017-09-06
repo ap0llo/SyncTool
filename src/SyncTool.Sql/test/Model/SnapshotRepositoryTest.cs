@@ -23,11 +23,11 @@ namespace SyncTool.Sql.Test.Model
             m_Instance = new SnapshotRepository(Database);
 
             var historyDo = new FileSystemHistoryDo("history1");
-            m_HistoryRepository.AddItem(historyDo);
+            historyDo = m_HistoryRepository.AddItem(historyDo);
             m_HistoryId1 = historyDo.Id;
 
             historyDo = new FileSystemHistoryDo("history2");
-            m_HistoryRepository.AddItem(historyDo);
+            historyDo = m_HistoryRepository.AddItem(historyDo);
             m_HistoryId2 = historyDo.Id;
         }
 

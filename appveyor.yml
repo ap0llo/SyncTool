@@ -5,6 +5,10 @@ test_script:
 - cmd: .\test.bat
 image: Visual Studio 2017
 
+except:
+  - features/sql-backend-mysql
+
+
 artifacts:
   - path: .\build\Release\Setup\RELEASES    
   - path: .\build\Release\Setup\Setup.exe

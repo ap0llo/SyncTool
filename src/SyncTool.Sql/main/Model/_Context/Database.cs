@@ -1,4 +1,5 @@
-﻿using SyncTool.Sql.Model.Tables;
+﻿using System;
+using SyncTool.Sql.Model.Tables;
 using System.Data;
 
 namespace SyncTool.Sql.Model
@@ -34,8 +35,6 @@ namespace SyncTool.Sql.Model
                 // check if version table exists
                 if(!connection.TableExists(SchemaInfoTable.Name))
                 {
-                    SchemaInfoTable.Create(connection, Limits);
-
                     FileSystemHistoriesTable.Create(connection, Limits);
                     FilesTable.Create(connection, Limits);
                     FileInstancesTable.Create(connection, Limits);
@@ -47,7 +46,10 @@ namespace SyncTool.Sql.Model
                     IncludesFileInstanceTable.Create(connection, Limits);
                     SyncFoldersTable.Create(connection, Limits);
 
+                    SchemaInfoTable.Create(connection, Limits);
+
                     transaction.Commit();
+                    
                 }
             }            
         }

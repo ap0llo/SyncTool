@@ -88,6 +88,9 @@ namespace SyncTool.Sql.Model
             using (var transaction = connection.BeginTransaction())
             {
                 var tmpId = Guid.NewGuid().ToString();
+
+                var sequenceNumber = connection.ExecuteScalar<int>($"SELECT count(*) FROM {FileSystemSnapshotsTable.Name}");
+
                 var inserted = connection.QuerySingle<FileSystemSnapshotDo>($@"
                         INSERT INTO {FileSystemSnapshotsTable.Name} 
                         (                          
@@ -100,7 +103,7 @@ namespace SyncTool.Sql.Model
                         VALUES 
                         (   
                             @historyId, 
-                            (SELECT count(*) FROM {FileSystemSnapshotsTable.Name}), 
+                            @sequenceNumber, 
                             @ticks, 
                             @directoryId, 
                             @tmpId
@@ -119,7 +122,8 @@ namespace SyncTool.Sql.Model
                     historyId = snapshot.HistoryId,
                     ticks = snapshot.CreationTimeTicks,
                     directoryId = snapshot.RootDirectoryInstanceId,
-                    tmpId = tmpId
+                    tmpId = tmpId,
+                    sequenceNumber = sequenceNumber
                 });
 
 

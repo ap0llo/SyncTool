@@ -18,9 +18,9 @@ namespace SyncTool.Sql.Model.Tables
         {
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (                
-                    {Column.Id}             INTEGER PRIMARY KEY,
+                    {Column.Id}             INTEGER PRIMARY KEY AUTO_INCREMENT,
                     {Column.Name}           TEXT NOT NULL,
-                    {Column.NormalizedPath} TEXT UNIQUE NOT NULL,
+                    {Column.NormalizedPath} varchar(700) UNIQUE NOT NULL,
                     {Column.Path}           TEXT NOT NULL);
             ");
         }

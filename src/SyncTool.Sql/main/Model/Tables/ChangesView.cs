@@ -25,40 +25,38 @@ namespace SyncTool.Sql.Model.Tables
             const string s_PreviousFileInstanceIds = "previousFileInstanceIds";
             const string s_Current = "current";
             const string s_Previous = "previous";
-            string s_FileInstances = $"(SELECT * FROM {FileInstancesTable.Name} WHERE {FileInstancesTable.Column.Id} IN {s_FileInstanceIds})";
-            string s_PreviousFileInstances = $"(SELECT * FROM {FileInstancesTable.Name} WHERE {FileInstancesTable.Column.Id} IN {s_PreviousFileInstanceIds})";
+            string s_FileInstances = $"(SELECT * FROM {FileInstancesTable.Name} WHERE {FileInstancesTable.Column.Id} IN (SELECT * FROM {s_FileInstanceIds}))";
+            string s_PreviousFileInstances = $"(SELECT * FROM {FileInstancesTable.Name} WHERE {FileInstancesTable.Column.Id} IN (SELECT * FROM {s_PreviousFileInstanceIds}))";
             const string s_UnfilteredChanged = Name + "_Unfiltered";
 
             connection.ExecuteNonQuery($@"                    
 
-                CREATE TEMPORARY VIEW {s_UnfilteredChanged} AS 
+                -- query database for preceding snapshot
+                DROP VIEW IF EXISTS {s_PrecedingSnapshotId};
+                CREATE VIEW {s_PrecedingSnapshotId} AS 
+                    SELECT {FileSystemSnapshotsTable.Column.Id} FROM {FileSystemSnapshotsTable.Name}
+                    WHERE {FileSystemSnapshotsTable.Column.HistoryId} = {snapshot.HistoryId} AND
+                            {FileSystemSnapshotsTable.Column.SequenceNumber} < {snapshot.SequenceNumber}
+                    ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
+                    LIMIT 1 ;
 
-                    -- query database for preceding snapshot
-                    WITH {s_PrecedingSnapshotId} AS 
-                    (
-                        SELECT {FileSystemSnapshotsTable.Column.Id} FROM {FileSystemSnapshotsTable.Name}
-                        WHERE {FileSystemSnapshotsTable.Column.HistoryId} = {snapshot.HistoryId} AND
-                                {FileSystemSnapshotsTable.Column.SequenceNumber} < {snapshot.SequenceNumber}
-                        ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
-                        LIMIT 1 
-                    ),
-                    
-                    -- get ids of file instances included in the current snapshot
-                    {s_FileInstanceIds} AS 
-                    (
-                        SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
-                        FROM {IncludesFileInstanceTable.Name}
-                        WHERE {IncludesFileInstanceTable.Column.SnapshotId} = {snapshot.Id} 
-                    ),
-                                        
-                    -- get ids of file instances included in the preceding snapshot
-                    {s_PreviousFileInstanceIds} AS 
-                    (
-                        SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
-                        FROM {IncludesFileInstanceTable.Name}
-                        WHERE {IncludesFileInstanceTable.Column.SnapshotId} IN {s_PrecedingSnapshotId}
-                    )                        
 
+                -- get ids of file instances included in the current snapshot
+                DROP VIEW IF EXISTS {s_FileInstanceIds};
+                CREATE VIEW {s_FileInstanceIds} AS                     
+                    SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
+                    FROM {IncludesFileInstanceTable.Name}
+                    WHERE {IncludesFileInstanceTable.Column.SnapshotId} = {snapshot.Id};
+
+                -- get ids of file instances included in the preceding snapshot
+                DROP VIEW IF EXISTS {s_PreviousFileInstanceIds};
+                CREATE VIEW {s_PreviousFileInstanceIds} AS              
+                    SELECT {IncludesFileInstanceTable.Column.FileInstanceId} 
+                    FROM {IncludesFileInstanceTable.Name}
+                    WHERE {IncludesFileInstanceTable.Column.SnapshotId} IN (SELECT * FROM {s_PrecedingSnapshotId});
+
+                DROP VIEW IF EXISTS {s_UnfilteredChanged};
+                CREATE VIEW {s_UnfilteredChanged} AS                       
                     -- (SQLite does not support a full outer join, so we need to combine two left joins)  
                     SELECT 
                         {s_Current}.{FileInstancesTable.Column.FileId}              AS {Column.FileId},
@@ -89,7 +87,8 @@ namespace SyncTool.Sql.Model.Tables
                 -- CurrentId NULL => file was deleted
                 -- PreviousId NULL => file was added
                 -- CurrentId != PreviousId => file was modified
-                CREATE TEMPORARY VIEW {Name} AS
+                DROP VIEW IF EXISTS {Name};
+                CREATE VIEW {Name} AS
                     SELECT * FROM {s_UnfilteredChanged} 
                     WHERE   
                     (

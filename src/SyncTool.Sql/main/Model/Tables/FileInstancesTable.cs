@@ -18,9 +18,9 @@ namespace SyncTool.Sql.Model.Tables
         {
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (                
-                    {Column.Id}                 INTEGER PRIMARY KEY,
+                    {Column.Id}                 INTEGER PRIMARY KEY AUTO_INCREMENT,
                     {Column.FileId}             INTEGER NOT NULL,
-                    {Column.LastWriteTimeTicks} INTEGER NOT NULL,
+                    {Column.LastWriteTimeTicks} BIGINT NOT NULL,
                     {Column.Length}             INTEGER NOT NULL,
                     FOREIGN KEY ({Column.FileId}) REFERENCES {FilesTable.Name}({FilesTable.Column.Id}),
                     CONSTRAINT FileInstance_Unique UNIQUE (
