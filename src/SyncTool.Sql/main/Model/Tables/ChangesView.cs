@@ -132,11 +132,8 @@ namespace SyncTool.Sql.Model.Tables
             ");
         }
         
-        string GetViewName(string name)
-        {
-            return $"View_{name}_{m_Id.ToString().Replace("-", "")}";
-        }
-        
+        string GetViewName(string name) => $"View_{name}_{m_Id.ToString().Replace("-", "")}";
+
         public static ChangesView CreateTemporary(IDbConnection connection, DatabaseLimits limits, FileSystemSnapshotDo snapshot)
         {
             var view = new ChangesView(connection, limits, snapshot);
