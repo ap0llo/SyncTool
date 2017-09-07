@@ -316,7 +316,7 @@ namespace SyncTool.Sql.Model
                     )
                     VALUES (@fileId, @ticks, @length );
 
-                    SELECT {FileInstancesTable.Column.FileId}
+                    SELECT {FileInstancesTable.Column.Id}
                     FROM {FileInstancesTable.Name}
                     WHERE {FileInstancesTable.Column.FileId} = @fileId  AND
                           {FileInstancesTable.Column.LastWriteTimeTicks} = @ticks AND 
