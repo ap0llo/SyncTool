@@ -2,6 +2,7 @@
 
 namespace SyncTool.Sql.Model.Tables
 {
+    // Refactor to be disposable (like ChangesView)
     static class FilteredFilesView
     {
         const string Name = "FilteredFiles";

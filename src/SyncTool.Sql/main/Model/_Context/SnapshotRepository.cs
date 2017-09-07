@@ -10,7 +10,7 @@ namespace SyncTool.Sql.Model
 {
     public class SnapshotRepository
     {
-        private class ChangeRecord
+        class ChangeRecord
         {
             public int FileId { get; set; }
 
@@ -193,34 +193,35 @@ namespace SyncTool.Sql.Model
         {
             using (var connection = m_Database.OpenConnection())
             {
-                var changesView = ChangesView.CreateTemporary(connection, m_Database.Limits, snapshot);
-                               
-                return connection.Query<string>($@"
+                using (var view = ChangesView.CreateTemporary(connection, m_Database.Limits, snapshot))
+                {                    
+                    return connection.Query<string>($@"
                         SELECT {FilesTable.Column.Path} 
                         FROM {FilesTable.Name}
                         WHERE {FilesTable.Column.Id} IN 
                         (
                             SELECT {ChangesView.Column.FileId} 
-                            FROM {changesView}                                                 
+                            FROM {view.Name}                                                 
                         )")
-                    .ToArray();
+                        .ToArray();
+                }
             }            
         }
 
         public IEnumerable<(FileInstanceDo previous, FileInstanceDo current)> GetChanges(FileSystemSnapshotDo snapshot, string[] pathFilter)
-        {            
+        {
             using (var connection = m_Database.OpenConnection())
-            {
-                var changesView = ChangesView.CreateTemporary(connection, m_Database.Limits, snapshot);
+            using (var changesView = ChangesView.CreateTemporary(connection, m_Database.Limits, snapshot))
+            {                
                 var filesView = FilteredFilesView.CreateTemporary(connection, m_Database.Limits, pathFilter);
 
                 var fileDos = connection.Query<FileDo>($@"                    
                         SELECT * FROM {filesView}
-                        WHERE {FilesTable.Column.Id} IN (SELECT DISTINCT {ChangesView.Column.FileId} FROM {changesView});")
+                        WHERE {FilesTable.Column.Id} IN (SELECT DISTINCT {ChangesView.Column.FileId} FROM {changesView.Name});")
                     .ToDictionary(record => record.Id);
 
                 var changeQuery = $@"
-                    SELECT * FROM {changesView}
+                    SELECT * FROM {changesView.Name}
                     WHERE {ChangesView.Column.FileId} IN (SELECT {FilteredFilesView.Column.Id} FROM {filesView})
                         
                 ;";
@@ -228,12 +229,12 @@ namespace SyncTool.Sql.Model
                 var changes = new LinkedList<(FileInstanceDo, FileInstanceDo)>();
                 foreach (var (previous, current, fileId) in connection.Query<ChangeRecord>(changeQuery))
                 {
-                    var fileDo = fileDos[fileId];                    
+                    var fileDo = fileDos[fileId];
 
-                    if(previous != null)
+                    if (previous != null)
                         previous.File = fileDo;
 
-                    if(current != null)
+                    if (current != null)
                         current.File = fileDo;
 
                     changes.AddLast((previous, current));
