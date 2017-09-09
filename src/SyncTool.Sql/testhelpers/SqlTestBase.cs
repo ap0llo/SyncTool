@@ -6,9 +6,7 @@ namespace SyncTool.Sql.TestHelpers
 {
     public class SqlTestBase : IDisposable
     {
-        readonly string m_DatabaseName = "synctool_test_" + Guid.NewGuid().ToString().Replace("-", "");
-        readonly string m_ConnectionString;
-
+        readonly Uri m_DatabaseUri;
         protected Database Database { get; }
         
 
@@ -16,34 +14,21 @@ namespace SyncTool.Sql.TestHelpers
         {      
             // load database uri from environment variables      
             var mysqlUri = Environment.GetEnvironmentVariable("SYNCTOOL_TEST_MYSQLURI");
-
-            // get connection string without database name
-            var connectionStringBuilder = new Uri(mysqlUri).ToMySqlConnectionStringBuilder();
-            connectionStringBuilder.Database = null;
-            m_ConnectionString = connectionStringBuilder.ConnectionString;            
-
-            // create database to run tests against
-            using (var connection = new MySqlConnection(m_ConnectionString))
+            
+            // set database name 
+            var uriBuilder = new UriBuilder(new Uri(mysqlUri))
             {
-                connection.Open();
-                connection.ExecuteNonQuery($"CREATE DATABASE {m_DatabaseName} ;");
-            }
+                Path = "synctool_test_" + Guid.NewGuid().ToString().Replace("-", "")
+            };
 
-            // create Database instance that will be used by tests
-            // this time inlcude the database name in the connection string
-            connectionStringBuilder.Database = m_DatabaseName;
-            Database = new MySqlDatabase(connectionStringBuilder.ConnectionString);
+            m_DatabaseUri = uriBuilder.Uri;
+
+            // create database
+            MySqlDatabase.Create(m_DatabaseUri);
+            Database = new MySqlDatabase(m_DatabaseUri);
         }
 
                        
-        public void Dispose()
-        {
-            // delete test database
-            using (var connection = new MySqlConnection(m_ConnectionString))
-            {
-                connection.Open();
-                connection.ExecuteNonQuery($"DROP DATABASE {m_DatabaseName} ;");
-            }
-        }
+        public void Dispose() => MySqlDatabase.Drop(m_DatabaseUri);
     }
 }

@@ -48,8 +48,7 @@ namespace SyncTool.Sql.Model
 
                     SchemaInfoTable.Create(connection, Limits);
 
-                    transaction.Commit();
-                    
+                    transaction.Commit();                    
                 }
             }            
         }

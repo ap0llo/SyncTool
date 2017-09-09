@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
-using JetBrains.Annotations;
 using MySql.Data.MySqlClient;
+using SyncTool.Sql._Exceptions;
 
 namespace SyncTool.Sql.Model
 {
@@ -16,11 +16,7 @@ namespace SyncTool.Sql.Model
         {
             ConnectionString = databaseUri.ToMySqlConnectionString();
         }
-
-        public MySqlDatabase(string connectionString)
-        {
-            ConnectionString = connectionString;
-        }
+        
 
         protected override IDbConnection DoOpenConnection()
         {            
@@ -28,6 +24,50 @@ namespace SyncTool.Sql.Model
             connection.Open();
 
             return connection;
-        }        
+        }
+
+        
+        public static void Create(Uri databaseUri)
+        {
+            var connectionStringBuilder = databaseUri.ToMySqlConnectionStringBuilder();
+
+            if (String.IsNullOrEmpty(connectionStringBuilder.Database))
+            {
+                throw new DatabaseNameMissingException($"Database uri '{databaseUri}' does not specify a database name");
+            }
+
+            var databaseName = connectionStringBuilder.Database;
+            connectionStringBuilder.Database = null;
+
+            // create database
+            using(var connection = new MySqlConnection(connectionStringBuilder.ConnectionString))
+            {
+                connection.Open();
+                connection.ExecuteNonQuery($"CREATE DATABASE {databaseName} ;");
+            }
+
+            // create a MySqlDatabase instance and open a connection
+            // this will implicitly create the schema
+            using(new MySqlDatabase(databaseUri).OpenConnection()) { }
+        }
+
+        public static void Drop(Uri databaseUri)
+        {
+            var connectionStringBuilder = databaseUri.ToMySqlConnectionStringBuilder();
+
+            if (String.IsNullOrEmpty(connectionStringBuilder.Database))
+            {
+                throw new DatabaseNameMissingException($"Database uri '{databaseUri}' does not specify a database name");
+            }
+
+            var databaseName = connectionStringBuilder.Database;
+            connectionStringBuilder.Database = null;
+            
+            using (var connection = new MySqlConnection(connectionStringBuilder.ConnectionString))
+            {
+                connection.Open();
+                connection.ExecuteNonQuery($"DROP DATABASE {databaseName} ;");
+            }
+        }
     }
 }
