@@ -4,10 +4,17 @@
 <Project>
 
   <Target Name="Test" Condition="$(IsTestProject)">  
+    <PropertyGroup>
+      <XunitConsolePath>$(NuGetPackageRoot)xunit.runner.console\$(XunitVersion)\tools\xunit.console.exe</XunitConsolePath>
+      <XunitOptions>-html &quot;$(TestResultOutputPath)$(AssemblyName).html&quot; </XunitOptions>
+    </PropertyGroup>
+
     <Message Text="Running Tests in $(TargetName)" Importance="High" />	      
     <Error Text="Cannot run tests, XunitVersion is not set"
-            Condition="'$(XunitVersion)' == ''" />              
-    <Exec Command="$(NuGetPackageRoot)xunit.runner.console\$(XunitVersion)\tools\xunit.console.exe &quot;$(OutputPath)$(AssemblyName).dll&quot;"  
+            Condition="'$(XunitVersion)' == ''" /> 
+
+    <MakeDir Directories="$(TestResultOutputPath)"/>               
+    <Exec Command="$(XunitConsolePath) &quot;$(OutputPath)$(AssemblyName).dll&quot; $(XunitOptions)"  
           StandardOutputImportance="normal" />          
   </Target>
 
