@@ -38,16 +38,23 @@ namespace SyncTool.Sql.Model
             var databaseName = connectionStringBuilder.Database;
             connectionStringBuilder.Database = null;
 
-            // create database
-            using(var connection = new MySqlConnection(connectionStringBuilder.ConnectionString))
+            try
             {
-                connection.Open();
-                connection.ExecuteNonQuery($"CREATE DATABASE {databaseName} ;");
-            }
+                // create database
+                using(var connection = new MySqlConnection(connectionStringBuilder.ConnectionString))
+                {
+                    connection.Open();
+                    connection.ExecuteNonQuery($"CREATE DATABASE {databaseName} ;");
+                }
 
-            // create a MySqlDatabase instance and open a connection
-            // this will implicitly create the schema
-            using(new MySqlDatabase(databaseUri).OpenConnection()) { }
+                // create a MySqlDatabase instance and open a connection
+                // this will implicitly create the schema
+                using(new MySqlDatabase(databaseUri).OpenConnection()) { }
+            }
+            catch (MySqlException e)
+            {                
+                throw new DatabaseException("Unhandled database error", e);
+            }
         }
 
         public static void Drop(Uri databaseUri)
