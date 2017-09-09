@@ -6,5 +6,5 @@ for /f "usebackq tokens=*" %%i in (`tools\vswhere -latest -products * -requires 
 
 set MSBuildPath="%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe"
 
-%MSBuildPath% %*
+%MSBuildPath% /clp:verbosity=minimal %*
 
