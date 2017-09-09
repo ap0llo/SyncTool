@@ -1,6 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 using MySql.Data.MySqlClient;
+using SyncTool.Sql;
 
 namespace SyncTool.Sql
 {
@@ -10,22 +11,22 @@ namespace SyncTool.Sql
 
 
         public static string ToMySqlConnectionString([NotNull] this Uri uri) => uri.ToMySqlConnectionStringBuilder().ConnectionString;        
-
+        
         public static MySqlConnectionStringBuilder ToMySqlConnectionStringBuilder([NotNull] this Uri uri)
         {
             if (uri == null)
                 throw new ArgumentNullException(nameof(uri));
 
             if(uri.Scheme != s_Scheme)
-                throw new ArgumentException($"Unsupported scheme '{uri.Scheme}'", nameof(uri));
+                throw new InvalidDatabaseUriException(uri, $"Unsupported scheme '{uri.Scheme}'");
 
             if (String.IsNullOrEmpty(uri.Host))
-                throw new ArgumentException("Host must not be empty", nameof(uri));
+                throw new InvalidDatabaseUriException(uri, "Host must not be empty");
 
             if(uri.Segments.Length > 2)
-                throw new ArgumentException("Uri must not contain multiple segments", nameof(uri));
+                throw new InvalidDatabaseUriException(uri, "Uri must not contain multiple segments");
 
-            var (user, password) = ParseUserInfo(uri.UserInfo);
+            var (user, password) = GetUserInfo(uri);
 
             var connectionStringBuilder = new MySqlConnectionStringBuilder()            
             {
@@ -42,8 +43,10 @@ namespace SyncTool.Sql
         }
 
 
-        static (string user, string password) ParseUserInfo(string userInfo)
+        static (string user, string password) GetUserInfo(Uri uri)
         {
+            var userInfo = uri.UserInfo;
+
             if (String.IsNullOrEmpty(userInfo))
                 return (null, null);
         
@@ -59,7 +62,7 @@ namespace SyncTool.Sql
                 case 2:
                     return (fragments[0], fragments[1]);
                 default:
-                    throw new ArgumentException($"'{userInfo}' is not a valid user info");
+                    throw new InvalidDatabaseUriException(uri, "UserInfo is not a valid");
             }
         }
     }

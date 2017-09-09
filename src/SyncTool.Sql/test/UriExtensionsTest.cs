@@ -28,30 +28,30 @@ namespace SyncTool.Sql.Test
         [InlineData("http://www.example.com")]
         [InlineData("https://www.example.com")]
         [InlineData("file://www.example.com")]
-        public void ToMySqlConnectionStringBuilder_throws_ArgumentException_if_scheme_if_unknown(string uri)
+        public void ToMySqlConnectionStringBuilder_throws_InvalidDatabaseUriException_if_scheme_if_unknown(string uri)
         {
-            Assert.Throws<ArgumentException>(() => new Uri(uri).ToMySqlConnectionStringBuilder());
+            Assert.Throws<InvalidDatabaseUriException>(() => new Uri(uri).ToMySqlConnectionStringBuilder());
         }
 
         [Theory]
         [InlineData("synctool-mysql://host:123/databasename/anothername")]
-        public void ToMySqlConnectionStringBuilder_throws_ArgumentException_if_path_contains_multiple_segments(string uri)
+        public void ToMySqlConnectionStringBuilder_throws_InvalidDatabaseUriException_if_path_contains_multiple_segments(string uri)
         {
-            Assert.Throws<ArgumentException>(() => new Uri(uri).ToMySqlConnectionStringBuilder());
+            Assert.Throws<InvalidDatabaseUriException>(() => new Uri(uri).ToMySqlConnectionStringBuilder());
         }
 
         [Theory]
         [InlineData("synctool-mysql:///databasename")]
-        public void ToMySqlConnectionStringBuilder_throws_ArgumentException_if_host_is_null(string uri)
+        public void ToMySqlConnectionStringBuilder_throws_InvalidDatabaseUriException_if_host_is_null(string uri)
         {
-            Assert.Throws<ArgumentException>(() => new Uri(uri).ToMySqlConnectionStringBuilder());
+            Assert.Throws<InvalidDatabaseUriException>(() => new Uri(uri).ToMySqlConnectionStringBuilder());
         }
 
         [Theory]
         [InlineData("synctool-mysql://user:password:more@host/databasename")]
-        public void ToMySqlConnectionStringBuilder_throws_ArgumentException_UserInfo_is_in_invalid_format(string uri)
+        public void ToMySqlConnectionStringBuilder_throws_InvalidDatabaseUriException_UserInfo_is_in_invalid_format(string uri)
         {
-            Assert.Throws<ArgumentException>(() => new Uri(uri).ToMySqlConnectionStringBuilder());
+            Assert.Throws<InvalidDatabaseUriException>(() => new Uri(uri).ToMySqlConnectionStringBuilder());
         }
     }
 }

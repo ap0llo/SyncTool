@@ -1,15 +1,12 @@
 ﻿using System;
 
-namespace SyncTool.Sql._Exceptions
+namespace SyncTool.Sql
 {
-    public class DatabaseNameMissingException : ArgumentException
+    public class DatabaseNameMissingException : InvalidDatabaseUriException
     {
-        public DatabaseNameMissingException()
-        {
-        }
-
-        public DatabaseNameMissingException(string message) : base(message)
-        {
+        public DatabaseNameMissingException(Uri databaseUri) 
+            : base(databaseUri, $"Database uri '{databaseUri}' does not specify a database name")
+        {            
         }
     }
 }

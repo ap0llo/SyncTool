@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using MySql.Data.MySqlClient;
-using SyncTool.Sql._Exceptions;
 
 namespace SyncTool.Sql.Model
 {
@@ -33,7 +32,7 @@ namespace SyncTool.Sql.Model
 
             if (String.IsNullOrEmpty(connectionStringBuilder.Database))
             {
-                throw new DatabaseNameMissingException($"Database uri '{databaseUri}' does not specify a database name");
+                throw new DatabaseNameMissingException(databaseUri);
             }
 
             var databaseName = connectionStringBuilder.Database;
@@ -57,7 +56,7 @@ namespace SyncTool.Sql.Model
 
             if (String.IsNullOrEmpty(connectionStringBuilder.Database))
             {
-                throw new DatabaseNameMissingException($"Database uri '{databaseUri}' does not specify a database name");
+                throw new DatabaseNameMissingException(databaseUri);
             }
 
             var databaseName = connectionStringBuilder.Database;
