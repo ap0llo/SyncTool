@@ -4,6 +4,11 @@ build_script:
 test_script:
 - cmd: .\test.bat
 image: Visual Studio 2017
+services:
+  - mysql
+
+environment:
+  SYNCTOOL_TEST_MYSQLURI: synctool-mysql://root:Password12!@localhost:3306
 
 artifacts:
   - path: .\build\Release\Setup\RELEASES    

@@ -17,7 +17,7 @@ namespace SyncTool.Sql.Model.Tables
         {
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (
-                    {Column.Name}    TEXT PRIMARY KEY,
+                    {Column.Name}    varchar(500) PRIMARY KEY,
                     {Column.Path}    TEXT,
                     {Column.Version} INTEGER NOT NULL DEFAULT 0)
             ");

@@ -1,5 +1,9 @@
 <Project>
   
+  <!-- Import tasks -->
+  <Import Project="$(BuildToolsDirectory)EnvironmentVariables.tasks" />
+
+  <!-- Import target -->
 	<Import Project="$(BuildToolsDirectory)Test.targets" Condition="$(IsTestProject)" />
   <Import Project="$(BuildToolsDirectory)InternalsVisibileTo.targets" Condition="!$(IsTestProject)" />
       

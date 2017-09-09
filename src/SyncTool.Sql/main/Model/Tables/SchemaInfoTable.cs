@@ -22,7 +22,7 @@ namespace SyncTool.Sql.Model.Tables
 
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (
-                    {Column.Name} TEXT UNIQUE NOT NULL,                  
+                    {Column.Name} VARCHAR(20) UNIQUE NOT NULL,                  
                     {Column.Version} INTEGER UNIQUE NOT NULL                    
                 );
 

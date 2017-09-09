@@ -10,7 +10,7 @@ namespace SyncTool.Sql.Model
 {
     public class SnapshotRepository
     {
-        private class ChangeRecord
+        class ChangeRecord
         {
             public int FileId { get; set; }
 
@@ -88,6 +88,9 @@ namespace SyncTool.Sql.Model
             using (var transaction = connection.BeginTransaction())
             {
                 var tmpId = Guid.NewGuid().ToString();
+
+                var sequenceNumber = connection.ExecuteScalar<int>($"SELECT count(*) FROM {FileSystemSnapshotsTable.Name}");
+
                 var inserted = connection.QuerySingle<FileSystemSnapshotDo>($@"
                         INSERT INTO {FileSystemSnapshotsTable.Name} 
                         (                          
@@ -100,7 +103,7 @@ namespace SyncTool.Sql.Model
                         VALUES 
                         (   
                             @historyId, 
-                            (SELECT count(*) FROM {FileSystemSnapshotsTable.Name}), 
+                            @sequenceNumber, 
                             @ticks, 
                             @directoryId, 
                             @tmpId
@@ -119,7 +122,8 @@ namespace SyncTool.Sql.Model
                     historyId = snapshot.HistoryId,
                     ticks = snapshot.CreationTimeTicks,
                     directoryId = snapshot.RootDirectoryInstanceId,
-                    tmpId = tmpId
+                    tmpId = tmpId,
+                    sequenceNumber = sequenceNumber
                 });
 
 
@@ -166,8 +170,7 @@ namespace SyncTool.Sql.Model
                     SELECT {IncludesFileInstanceTable.Column.FileInstanceId}
                     FROM {IncludesFileInstanceTable.Name}
                     WHERE {IncludesFileInstanceTable.Column.SnapshotId} = @snapshotId
-                );
-            ",
+                );",
             new { snapshotId = snapshot.Id });
 
             snapshot.IncludedFiles = files.ToList();            
@@ -188,48 +191,45 @@ namespace SyncTool.Sql.Model
         public IEnumerable<string> GetChangedFiles(FileSystemSnapshotDo snapshot)
         {
             using (var connection = m_Database.OpenConnection())
+            using (var view = ChangesView.CreateTemporary(connection, m_Database.Limits, snapshot))
             {
-                var changesView = ChangesView.CreateTemporary(connection, m_Database.Limits, snapshot);
-                               
                 return connection.Query<string>($@"
-                        SELECT {FilesTable.Column.Path} 
-                        FROM {FilesTable.Name}
-                        WHERE {FilesTable.Column.Id} IN 
-                        (
-                            SELECT {ChangesView.Column.FileId} 
-                            FROM {changesView}                                                 
-                        )")
+                    SELECT {FilesTable.Column.Path} 
+                    FROM {FilesTable.Name}
+                    WHERE {FilesTable.Column.Id} IN 
+                    (
+                        SELECT {ChangesView.Column.FileId} 
+                        FROM {view.Name}                                                 
+                    )")
                     .ToArray();
             }            
         }
 
         public IEnumerable<(FileInstanceDo previous, FileInstanceDo current)> GetChanges(FileSystemSnapshotDo snapshot, string[] pathFilter)
-        {            
+        {
             using (var connection = m_Database.OpenConnection())
+            using (var changesView = ChangesView.CreateTemporary(connection, m_Database.Limits, snapshot))
+            using (var filesView = FilteredFilesView.CreateTemporary(connection, m_Database.Limits, pathFilter))
             {
-                var changesView = ChangesView.CreateTemporary(connection, m_Database.Limits, snapshot);
-                var filesView = FilteredFilesView.CreateTemporary(connection, m_Database.Limits, pathFilter);
-
                 var fileDos = connection.Query<FileDo>($@"                    
-                        SELECT * FROM {filesView}
-                        WHERE {FilesTable.Column.Id} IN (SELECT DISTINCT {ChangesView.Column.FileId} FROM {changesView});")
+                    SELECT * FROM {filesView.Name}
+                    WHERE {FilesTable.Column.Id} IN (SELECT DISTINCT {ChangesView.Column.FileId} FROM {changesView.Name});")
                     .ToDictionary(record => record.Id);
 
                 var changeQuery = $@"
-                    SELECT * FROM {changesView}
-                    WHERE {ChangesView.Column.FileId} IN (SELECT {FilteredFilesView.Column.Id} FROM {filesView})
-                        
+                    SELECT * FROM {changesView.Name}
+                    WHERE {ChangesView.Column.FileId} IN (SELECT {FilteredFilesView.Column.Id} FROM {filesView.Name})                        
                 ;";
 
                 var changes = new LinkedList<(FileInstanceDo, FileInstanceDo)>();
                 foreach (var (previous, current, fileId) in connection.Query<ChangeRecord>(changeQuery))
                 {
-                    var fileDo = fileDos[fileId];                    
+                    var fileDo = fileDos[fileId];
 
-                    if(previous != null)
+                    if (previous != null)
                         previous.File = fileDo;
 
-                    if(current != null)
+                    if (current != null)
                         current.File = fileDo;
 
                     changes.AddLast((previous, current));

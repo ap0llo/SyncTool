@@ -1,69 +1,49 @@
-﻿using Microsoft.Data.Sqlite;
-using SyncTool.Sql.Model;
+﻿using SyncTool.Sql.Model;
 using System;
-using System.Data;
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
+using MySql.Data.MySqlClient;
 
 namespace SyncTool.Sql.TestHelpers
 {
-    public class SqlTestBase
+    public class SqlTestBase : IDisposable
     {
-        class TestDatabase : Database
-        {
-            readonly string m_DatabaseName;
-            readonly string m_SqlitePath;
+        readonly string m_DatabaseName = "synctool_test_" + Guid.NewGuid().ToString().Replace("-", "");
+        readonly string m_ConnectionString;
 
-            public override DatabaseLimits Limits { get; }
-
-            public TestDatabase(string databaseName)
-            {
-                Limits = new DatabaseLimits(maxParameterCount: 999);
-                m_DatabaseName = databaseName;
-                m_SqlitePath = Path.Combine(Path.GetTempPath(), m_DatabaseName + ".db");
-            }
-
-            
-
-            protected override IDbConnection DoOpenConnection()
-            {
-                var connectionStringBuilder = new SqliteConnectionStringBuilder()
-                {
-                    DataSource = m_SqlitePath
-                };
-                var connection = new SqliteConnection(connectionStringBuilder.ConnectionString);
-                connection.Open();
-                return connection;
-            }
-        }
-        
-        
         protected Database Database { get; }
-
+        
 
         public SqlTestBase()
-        {                     
-            Database = new TestDatabase(Guid.NewGuid().ToString());            
+        {      
+            // load database uri from environment variables      
+            var mysqlUri = Environment.GetEnvironmentVariable("SYNCTOOL_TEST_MYSQLURI");
+
+            // get connection string without database name
+            var connectionStringBuilder = new Uri(mysqlUri).ToMySqlConnectionStringBuilder();
+            connectionStringBuilder.Database = null;
+            m_ConnectionString = connectionStringBuilder.ConnectionString;            
+
+            // create database to run tests against
+            using (var connection = new MySqlConnection(m_ConnectionString))
+            {
+                connection.Open();
+                connection.ExecuteNonQuery($"CREATE DATABASE {m_DatabaseName} ;");
+            }
+
+            // create Database instance that will be used by tests
+            // this time inlcude the database name in the connection string
+            connectionStringBuilder.Database = m_DatabaseName;
+            Database = new MySqlDatabase(connectionStringBuilder.ConnectionString);
         }
 
-        static SqlTestBase()
+                       
+        public void Dispose()
         {
-            LoadSqlite();
+            // delete test database
+            using (var connection = new MySqlConnection(m_ConnectionString))
+            {
+                connection.Open();
+                connection.ExecuteNonQuery($"DROP DATABASE {m_DatabaseName} ;");
+            }
         }
-
-        static void LoadSqlite()
-        {
-            var relativePath = IntPtr.Size == 8
-                ? "runtimes\\win7-x64\\native"
-                : "runtimes\\win7-x86\\native";
-
-            var path = Path.Combine(Environment.CurrentDirectory, relativePath, "sqlite3.dll");
-
-            _ = LoadLibraryEx(path, IntPtr.Zero, 0);
-        }
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, int dwFlags);
     }
 }

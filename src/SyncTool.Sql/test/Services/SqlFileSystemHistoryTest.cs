@@ -27,7 +27,7 @@ namespace SyncTool.Sql.Test.Services
             var snapshotRepository = new SnapshotRepository(Database);
 
             var historyDo = new FileSystemHistoryDo("History1");
-            historyRepository.AddItem(historyDo);
+            historyDo = historyRepository.AddItem(historyDo);
             
             m_Instance = new SqlFileSystemHistory(
                 snapshotRepository,

@@ -1,0 +1,63 @@
+<Project>
+
+	<UsingTask TaskName="GetEnvironmentVariable" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >                 
+		<ParameterGroup>			
+			<Name ParameterType="System.String" Required="true" />
+            <Value ParameterType="System.String" Output="true" />        
+		</ParameterGroup>        
+		<Task>                                    
+			<Code Type="Fragment" Language="cs">
+			<![CDATA[				
+                Value = System.Environment.GetEnvironmentVariable(Name);
+				Console.WriteLine("foo " + Name + "=" + Value);
+		    ]]>
+			</Code>
+		</Task>
+	</UsingTask> 
+
+	<UsingTask TaskName="SetEnvironmentVariable" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >                 
+		<ParameterGroup>			
+			<Name ParameterType="System.String" Required="true" />
+            <Value ParameterType="System.String" Required="true" />        
+		</ParameterGroup>        
+		<Task>                                    
+			<Code Type="Fragment" Language="cs">
+			<![CDATA[
+                 System.Environment.SetEnvironmentVariable(Name, Value);
+		    ]]>
+			</Code>
+		</Task>
+	</UsingTask> 
+
+	<!-- Task that ensures the specified environment variable has a value -->
+	<UsingTask TaskName="CheckEnvironmentVariables" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >                 
+		<ParameterGroup>			
+			<Names ParameterType="System.String[]" Required="true" />            			
+		</ParameterGroup>        
+		<Task>               
+			<Using Namespace="System" />                     
+			<Code Type="Fragment" Language="cs">
+			<![CDATA[
+				var result = true;			
+				foreach(var name in Names)
+				{
+					var value = Environment.GetEnvironmentVariable(name);
+					if(String.IsNullOrEmpty(value))
+					{
+						Log.LogError("The environment variable '{0}' has no value", name);						
+						result = false;
+					}
+				}
+				return result;
+		    ]]>
+			</Code>
+		</Task>
+	</UsingTask> 
+
+</Project>
