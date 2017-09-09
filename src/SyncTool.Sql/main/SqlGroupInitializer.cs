@@ -19,7 +19,7 @@ namespace SyncTool.Sql
             }
             catch (IncompatibleSchmeaException ex)
             {
-                throw new GroupInitializationException("Cannot initialize group becuase the specified database has an incompatible schema", ex);
+                throw new GroupInitializationException("Cannot initialize group because the specified database has an incompatible schema", ex);
             }
             catch (DatabaseException ex)
             {

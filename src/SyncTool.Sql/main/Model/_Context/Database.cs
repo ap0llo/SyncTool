@@ -1,5 +1,4 @@
-﻿
-using SyncTool.Sql.Model.Tables;
+﻿using SyncTool.Sql.Model.Tables;
 using System.Data;
 using Dapper;
 
@@ -22,7 +21,7 @@ namespace SyncTool.Sql.Model
             {
                 if(!m_Initialized)
                 {
-                    Initialize();
+                    CheckSchema();
                     m_Initialized = true;
                 }
             }
@@ -34,49 +33,43 @@ namespace SyncTool.Sql.Model
         protected abstract IDbConnection DoOpenConnection();
 
 
-        void Initialize()
+        public void CheckSchema()
         {
+            //TODO: Implement upgrade logic here when a new schema version is introduced            
+            //TODO: Should schema upgrades be explicit or implicit?
+
             using (var connection = DoOpenConnection())
             {
-                CreateOrUpgradeSchema(connection, Limits);
+                var schemaInfo = connection.QuerySingle<SchemaInfoDo>($"SELECT * FROM {SchemaInfoTable.Name}");
+
+                if (schemaInfo.Version != SchemaVersion)
+                {
+                    throw new IncompatibleSchmeaException(
+                        supportedVersion: SchemaVersion,
+                        databaseVersion: schemaInfo.Version);
+                }
             }
         }
-
-
-        protected static void CreateOrUpgradeSchema(IDbConnection connection, DatabaseLimits limits)
+        
+        protected static void CreateSchema(IDbConnection connection, DatabaseLimits limits)
         {
             using (var transaction = connection.BeginTransaction())
             {
-                // check if version table exists
-                if (!connection.TableExists(SchemaInfoTable.Name))
-                {
-                    FileSystemHistoriesTable.Create(connection, limits);
-                    FilesTable.Create(connection, limits);
-                    FileInstancesTable.Create(connection, limits);
-                    DirectoriesTable.Create(connection, limits);
-                    DirectoryInstancesTable.Create(connection, limits);
-                    ContainsDirectoryTable.Create(connection, limits);
-                    ContainsFileTable.Create(connection, limits);
-                    FileSystemSnapshotsTable.Create(connection, limits);
-                    IncludesFileInstanceTable.Create(connection, limits);
-                    SyncFoldersTable.Create(connection, limits);
+                // check if version table exists                
+                FileSystemHistoriesTable.Create(connection, limits);
+                FilesTable.Create(connection, limits);
+                FileInstancesTable.Create(connection, limits);
+                DirectoriesTable.Create(connection, limits);
+                DirectoryInstancesTable.Create(connection, limits);
+                ContainsDirectoryTable.Create(connection, limits);
+                ContainsFileTable.Create(connection, limits);
+                FileSystemSnapshotsTable.Create(connection, limits);
+                IncludesFileInstanceTable.Create(connection, limits);
+                SyncFoldersTable.Create(connection, limits);
 
-                    SchemaInfoTable.Create(connection, limits);
+                SchemaInfoTable.Create(connection, limits);
 
-                    transaction.Commit();
-                }
-                else
-                {
-                    //TODO: Implement upgrade logic here when a new schema version is introduced
-                    var schemaInfo = connection.QuerySingle<SchemaInfoDo>($"SELECT * FROM {SchemaInfoTable.Name}");
-
-                    if (schemaInfo.Version != SchemaVersion)
-                    {
-                        throw new IncompatibleSchmeaException(
-                            supportedVersion: SchemaVersion,
-                            databaseVersion: schemaInfo.Version);
-                    }
-                }
+                transaction.Commit();                
             }
         }
     }

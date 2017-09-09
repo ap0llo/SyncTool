@@ -42,12 +42,12 @@ namespace SyncTool.Sql.Model
 
             try
             {
-                // create database
+                // create database and schema
                 using(var connection = new MySqlConnection(connectionStringBuilder.ConnectionString))
                 {
                     connection.Open();
                     connection.ExecuteNonQuery($"CREATE DATABASE {databaseName} ;");
-                    CreateOrUpgradeSchema(connection, s_MySqlDatabaseLimits);
+                    CreateSchema(connection, s_MySqlDatabaseLimits);
                 }                
             }
             catch (MySqlException e)

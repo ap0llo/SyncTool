@@ -11,6 +11,7 @@ namespace SyncTool.Sql.DI
         { 
             builder.RegisterType<SqlConfigurationService>().As<IConfigurationService>().AsSelf();
             builder.RegisterType<SqlGroupInitializer>().As<IGroupInitializer>();
+            builder.RegisterType<SqlGroupValidator>().As<IGroupValidator>();
 
             /*                                             
             builder.RegisterType<GitRepository>().AsSelf().InstancePerMatchingLifetimeScope(Scope.Group);
@@ -20,11 +21,10 @@ namespace SyncTool.Sql.DI
             builder.RegisterType<GitConflictService>().As<IConflictService>().AsSelf();
             builder.RegisterType<GitSyncActionService>().As<ISyncActionService>().AsSelf();
             builder.RegisterType<GitBasedMultiFileSystemHistoryService>().As<IMultiFileSystemHistoryService>().AsSelf();
-            builder.RegisterType<GitGroupValidator>().As<IGroupValidator>();
             builder.RegisterType<GitBasedFileSystemHistoryFactory>().AsSelf().InstancePerMatchingLifetimeScope(Scope.Group);
             builder.RegisterType<WorkingDirectoryFactory>().AsSelf();
-
             */            
+
             base.Load(builder);
         }        
     }
