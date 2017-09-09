@@ -17,7 +17,7 @@
     required variables are set
   -->
   <Target Name="CheckTestEnvironment" BeforeTargets="Test">
-    <Message Text="Checking if the test environment has been set up for tunning test in $(TargetName)" />
+    <Message Text="Checking if the test environment has been set up for running test in $(TargetName)" />
     <CheckEnvironmentVariables Names="SYNCTOOL_TEST_MYSQLURI" />
   </Target>
 
