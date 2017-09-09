@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.Git\main\SyncTool.Git.csproj" />
+    <ProjectReference Include="..\..\SyncTool.Sql\main\SyncTool.Sql.csproj" />
   </ItemGroup>
   
   <ItemGroup>

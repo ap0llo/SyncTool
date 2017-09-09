@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using MySql.Data.MySqlClient;
+using SyncTool.Common.Groups;
 
 namespace SyncTool.Sql.Model
 {
@@ -12,7 +13,12 @@ namespace SyncTool.Sql.Model
 
         public override DatabaseLimits Limits => s_MySqlDatabaseLimits;
 
-       
+
+        public MySqlDatabase(GroupSettings groupSettings) 
+            : this(new Uri(groupSettings?.Address ?? throw new ArgumentNullException(nameof(groupSettings))))
+        {
+        }
+
         public MySqlDatabase(Uri databaseUri)
         {
             m_ConnectionString = databaseUri.ToMySqlConnectionString();

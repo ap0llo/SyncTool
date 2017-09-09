@@ -83,6 +83,7 @@ namespace SyncTool.Common.Test.Groups
             var groupModule = new TestGroupModule(groupValidator, groupInitializer);
             var moduleFactoryMock = new Mock<IGroupModuleFactory>();
             moduleFactoryMock.Setup(m => m.CreateModule()).Returns(groupModule);
+            moduleFactoryMock.Setup(m => m.IsAddressSupported(It.IsAny<string>())).Returns(true);
 
             builder
                 .RegisterInstance(new SingleDirectoryGroupDirectoryPathProvider(m_TempDirectory))

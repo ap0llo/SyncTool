@@ -17,7 +17,7 @@ namespace SyncTool.Sql
             if (uri == null)
                 throw new ArgumentNullException(nameof(uri));
 
-            if(uri.Scheme != s_Scheme)
+            if(!uri.IsSyncToolMySqlUri())
                 throw new InvalidDatabaseUriException(uri, $"Unsupported scheme '{uri.Scheme}'");
 
             if (String.IsNullOrEmpty(uri.Host))
@@ -41,6 +41,8 @@ namespace SyncTool.Sql
 
             return connectionStringBuilder;
         }
+
+        public static bool IsSyncToolMySqlUri(this Uri uri) => uri.Scheme == s_Scheme;
 
 
         static (string user, string password) GetUserInfo(Uri uri)

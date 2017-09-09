@@ -9,6 +9,7 @@ using SyncTool.Common;
 using SyncTool.Common.DI;
 using SyncTool.FileSystem.DI;
 using SyncTool.Git.DI;
+using SyncTool.Sql.DI;
 using SyncTool.Synchronization.DI;
 
 namespace SyncTool.Cli
@@ -29,6 +30,7 @@ namespace SyncTool.Cli
             containerBuilder.RegisterModule<CommonApplicationScopeModule>();
             containerBuilder.RegisterModule<FileSystemModule>();
             containerBuilder.RegisterModule<GitModuleFactoryModule>();
+            containerBuilder.RegisterModule<SqlModuleFactoryModule>();
             containerBuilder.RegisterModule<CliModule>();
             containerBuilder.RegisterModule<SynchronizationModule>();
 
