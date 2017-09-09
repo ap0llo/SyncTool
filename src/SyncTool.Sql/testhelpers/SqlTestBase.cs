@@ -1,6 +1,5 @@
 ﻿using SyncTool.Sql.Model;
 using System;
-using MySql.Data.MySqlClient;
 
 namespace SyncTool.Sql.TestHelpers
 {
@@ -27,8 +26,8 @@ namespace SyncTool.Sql.TestHelpers
             MySqlDatabase.Create(m_DatabaseUri);
             Database = new MySqlDatabase(m_DatabaseUri);
         }
-
-                       
+                
+        
         public void Dispose() => MySqlDatabase.Drop(m_DatabaseUri);
     }
 }

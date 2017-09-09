@@ -17,6 +17,10 @@ namespace SyncTool.Sql
             {
                 throw new GroupInitializationException($"Error initializing group '{groupName}'. Address '{address}' is not valid", ex);
             }
+            catch (IncompatibleSchmeaException ex)
+            {
+                throw new GroupInitializationException("Cannot initialize group becuase the specified database has an incompatible schema", ex);
+            }
             catch (DatabaseException ex)
             {
                 throw new GroupInitializationException($"Error initializing group '{groupName}'", ex);

@@ -4,9 +4,7 @@ namespace SyncTool.Sql.Model.Tables
 {
     static class SchemaInfoTable
     {
-        public const string Name = "SchemaInfo";
-
-        public const int CurrentVersion = 1;
+        public const string Name = "SchemaInfo";        
 
         public enum Column
         {
@@ -27,7 +25,7 @@ namespace SyncTool.Sql.Model.Tables
                 );
 
                 INSERT INTO {Name} ({Column.Name}, {Column.Version}) 
-                VALUES ('SchemaInfo', {CurrentVersion});
+                VALUES ('SchemaInfo', {Database.SchemaVersion});
             ");
         }
     }

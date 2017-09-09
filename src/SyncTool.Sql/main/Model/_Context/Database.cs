@@ -1,15 +1,20 @@
-﻿using System;
+﻿
 using SyncTool.Sql.Model.Tables;
 using System.Data;
+using Dapper;
 
 namespace SyncTool.Sql.Model
 {
     public abstract class Database
     {
+        public const int SchemaVersion = 1;
+
         static readonly object s_Lock = new object();
         bool m_Initialized = false;
 
+
         public abstract DatabaseLimits Limits { get; }
+
 
         public IDbConnection OpenConnection()
         {
@@ -25,32 +30,54 @@ namespace SyncTool.Sql.Model
             return DoOpenConnection();
         }
 
+
         protected abstract IDbConnection DoOpenConnection();
 
+
         void Initialize()
-        {            
+        {
             using (var connection = DoOpenConnection())
+            {
+                CreateOrUpgradeSchema(connection, Limits);
+            }
+        }
+
+
+        protected static void CreateOrUpgradeSchema(IDbConnection connection, DatabaseLimits limits)
+        {
             using (var transaction = connection.BeginTransaction())
             {
                 // check if version table exists
-                if(!connection.TableExists(SchemaInfoTable.Name))
+                if (!connection.TableExists(SchemaInfoTable.Name))
                 {
-                    FileSystemHistoriesTable.Create(connection, Limits);
-                    FilesTable.Create(connection, Limits);
-                    FileInstancesTable.Create(connection, Limits);
-                    DirectoriesTable.Create(connection, Limits);
-                    DirectoryInstancesTable.Create(connection, Limits);
-                    ContainsDirectoryTable.Create(connection, Limits);
-                    ContainsFileTable.Create(connection, Limits);
-                    FileSystemSnapshotsTable.Create(connection, Limits);
-                    IncludesFileInstanceTable.Create(connection, Limits);
-                    SyncFoldersTable.Create(connection, Limits);
+                    FileSystemHistoriesTable.Create(connection, limits);
+                    FilesTable.Create(connection, limits);
+                    FileInstancesTable.Create(connection, limits);
+                    DirectoriesTable.Create(connection, limits);
+                    DirectoryInstancesTable.Create(connection, limits);
+                    ContainsDirectoryTable.Create(connection, limits);
+                    ContainsFileTable.Create(connection, limits);
+                    FileSystemSnapshotsTable.Create(connection, limits);
+                    IncludesFileInstanceTable.Create(connection, limits);
+                    SyncFoldersTable.Create(connection, limits);
 
-                    SchemaInfoTable.Create(connection, Limits);
+                    SchemaInfoTable.Create(connection, limits);
 
-                    transaction.Commit();                    
+                    transaction.Commit();
                 }
-            }            
+                else
+                {
+                    //TODO: Implement upgrade logic here when a new schema version is introduced
+                    var schemaInfo = connection.QuerySingle<SchemaInfoDo>($"SELECT * FROM {SchemaInfoTable.Name}");
+
+                    if (schemaInfo.Version != SchemaVersion)
+                    {
+                        throw new IncompatibleSchmeaException(
+                            supportedVersion: SchemaVersion,
+                            databaseVersion: schemaInfo.Version);
+                    }
+                }
+            }
         }
     }
 }

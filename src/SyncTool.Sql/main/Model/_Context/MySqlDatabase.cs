@@ -6,20 +6,22 @@ namespace SyncTool.Sql.Model
 {
     public class MySqlDatabase : Database
     {        
-        public override DatabaseLimits Limits { get; } = new DatabaseLimits(65535);
+        static readonly DatabaseLimits s_MySqlDatabaseLimits = new DatabaseLimits(65535);
+        readonly string m_ConnectionString;
 
-        internal string ConnectionString { get; }
 
+        public override DatabaseLimits Limits => s_MySqlDatabaseLimits;
 
+       
         public MySqlDatabase(Uri databaseUri)
         {
-            ConnectionString = databaseUri.ToMySqlConnectionString();
+            m_ConnectionString = databaseUri.ToMySqlConnectionString();
         }
         
 
         protected override IDbConnection DoOpenConnection()
         {            
-            var connection = new MySqlConnection(ConnectionString);            
+            var connection = new MySqlConnection(m_ConnectionString);            
             connection.Open();
 
             return connection;
@@ -45,11 +47,8 @@ namespace SyncTool.Sql.Model
                 {
                     connection.Open();
                     connection.ExecuteNonQuery($"CREATE DATABASE {databaseName} ;");
-                }
-
-                // create a MySqlDatabase instance and open a connection
-                // this will implicitly create the schema
-                using(new MySqlDatabase(databaseUri).OpenConnection()) { }
+                    CreateOrUpgradeSchema(connection, s_MySqlDatabaseLimits);
+                }                
             }
             catch (MySqlException e)
             {                
