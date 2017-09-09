@@ -12,18 +12,9 @@ namespace SyncTool.Sql.Model
         internal string ConnectionString { get; }
 
 
-        public MySqlDatabase([NotNull] string server, uint port, [NotNull] string databaseName, [NotNull] string user, [NotNull] string password)
+        public MySqlDatabase(Uri databaseUri)
         {
-            var connectionStringBuilder = new MySqlConnectionStringBuilder()
-            {
-                Server = server ?? throw new ArgumentNullException(nameof(server)),
-                Port = port,
-                Database = databaseName ?? throw new ArgumentNullException(nameof(databaseName)),
-                UserID = user ?? throw new ArgumentNullException(nameof(user)),
-                Password = password ?? throw new ArgumentNullException(nameof(password))
-            };
-            
-            ConnectionString = connectionStringBuilder.ConnectionString;
+            ConnectionString = databaseUri.ToMySqlConnectionString();
         }
 
         protected override IDbConnection DoOpenConnection()
@@ -32,8 +23,6 @@ namespace SyncTool.Sql.Model
             connection.Open();
 
             return connection;
-        }
-
-        
+        }        
     }
 }

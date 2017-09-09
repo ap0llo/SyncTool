@@ -48,17 +48,10 @@ namespace SyncTool.Sql.TestHelpers
             readonly string m_DatabaseName;
             readonly string m_ConnectionString;
 
-            public MySqlTestDatabase(string databaseName) : base("127.0.0.1", 3306, databaseName, "synctool", "synctool")
+            public MySqlTestDatabase(string databaseName) : base(new Uri($"synctool-mysql://synctool:synctool@127.0.0.1:3306/{databaseName}"))
             {
-                m_DatabaseName = databaseName;
-                var connectionStringBuilder = new MySqlConnectionStringBuilder()
-                {
-                    Server = "127.0.0.1",
-                    Port = 3306,
-                    UserID = "synctool",
-                    Password = "synctool",
-                };
-                m_ConnectionString = connectionStringBuilder.ConnectionString;
+                m_DatabaseName = databaseName;                
+                m_ConnectionString = new Uri($"synctool-mysql://synctool:synctool@127.0.0.1:3306").ToMySqlConnectionString();
 
                 using (var connection = new MySqlConnection(m_ConnectionString))
                 {
