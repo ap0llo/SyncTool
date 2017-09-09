@@ -9,17 +9,16 @@
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="sqlite" Version="3.13.0" />
-  </ItemGroup>
-  
-  <Target Name="CopySqliteBinaries" AfterTargets="Build">
-    <ItemGroup>
-      <SqliteBinary Include="$(NugetPackageRoot)sqlite\3.13.0\runtimes\**\sqlite3.dll" />
-    </ItemGroup>
-    <Error Text="Sqlite binaries not found" Condition="'@(SqliteBinary)' == ''" />
-    <Copy SourceFiles="@(SqliteBinary)" DestinationFolder="$(OutputPath)runtimes\%(SqliteBinary.RecursiveDir)" SkipUnchangedFiles="true" />
+    
+  <!-- 
+    Tests in this projects require access to a MySQL server.
+    Connection details are loaded by the tests from environment variables
+    This target runs before the actual Test target and ensures all     
+    required variables are set
+  -->
+  <Target Name="CheckTestEnvironment" BeforeTargets="Test">
+    <Message Text="Checking if the test environment has been set up for tunning test in $(TargetName)" />
+    <CheckEnvironmentVariables Names="SYNCTOOL_TEST_MYSQLURI" />
   </Target>
 
 </Project>

@@ -1,109 +1,43 @@
-﻿using Microsoft.Data.Sqlite;
-using SyncTool.Sql.Model;
+﻿using SyncTool.Sql.Model;
 using System;
-using System.Data;
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 using MySql.Data.MySqlClient;
 
 namespace SyncTool.Sql.TestHelpers
 {
     public class SqlTestBase : IDisposable
     {
-        class TestDatabase : Database
-        {
-            readonly string m_DatabaseName;
-            readonly string m_SqlitePath;
-
-            public override DatabaseLimits Limits { get; }
-
-            public TestDatabase(string databaseName)
-            {
-                Limits = new DatabaseLimits(maxParameterCount: 999);
-                m_DatabaseName = databaseName;
-                m_SqlitePath = Path.Combine(Path.GetTempPath(), m_DatabaseName + ".db");
-            }
-
-            
-
-            protected override IDbConnection DoOpenConnection()
-            {
-                var connectionStringBuilder = new SqliteConnectionStringBuilder()
-                {
-                    DataSource = m_SqlitePath, 
-                    ["foreign keys"] = true
-                };
-                
-                var connection = new SqliteConnection(connectionStringBuilder.ConnectionString);
-                connection.Open();
-                return connection;
-            }            
-        }
-
-
-        class MySqlTestDatabase : MySqlDatabase, IDisposable
-        {
-            readonly string m_DatabaseName;
-            readonly string m_ConnectionString;
-
-            public MySqlTestDatabase(string databaseName) : base(new Uri($"synctool-mysql://synctool:synctool@127.0.0.1:3306/{databaseName}"))
-            {
-                m_DatabaseName = databaseName;                
-                m_ConnectionString = new Uri($"synctool-mysql://synctool:synctool@127.0.0.1:3306").ToMySqlConnectionString();
-
-                using (var connection = new MySqlConnection(m_ConnectionString))
-                {
-                    connection.Open();
-                    connection.ExecuteNonQuery($"CREATE DATABASE {m_DatabaseName} ;");
-                }
-            }
-
-            public void Dispose()
-            {
-                using (var connection = new MySqlConnection(m_ConnectionString))
-                {
-                    connection.Open();
-                    connection.ExecuteNonQuery($"DROP DATABASE {m_DatabaseName} ;");
-                }
-            }
-        }
+        readonly string m_DatabaseName = "synctool_test_" + Guid.NewGuid().ToString().Replace("-", "");
+        readonly string m_ConnectionString;
 
         protected Database Database { get; }
-
-
-
-
+        
 
         public SqlTestBase()
-        {
-            var databaseName = "synctool_test_" + Guid.NewGuid().ToString().Replace("-", "");            
-            Database =new MySqlTestDatabase(databaseName);
+        {            
+            var mysqlUri = Environment.GetEnvironmentVariable("SYNCTOOL_TEST_MYSQLURI");
+
+            m_ConnectionString = new Uri(mysqlUri).ToMySqlConnectionString();
+            using (var connection = new MySqlConnection(m_ConnectionString))
+            {
+                connection.Open();
+                connection.ExecuteNonQuery($"CREATE DATABASE {m_DatabaseName} ;");
+            }
+
+            var connectionStringBuilder = new MySqlConnectionStringBuilder(m_ConnectionString)
+            {
+                Database = m_DatabaseName
+            };            
+            Database = new MySqlDatabase(connectionStringBuilder.ConnectionString);
         }
 
-        static SqlTestBase()
-        {
-            LoadSqlite();
-        }
-
-        static void LoadSqlite()
-        {
-            var relativePath = IntPtr.Size == 8
-                ? "runtimes\\win7-x64\\native"
-                : "runtimes\\win7-x86\\native";
-
-            var path = Path.Combine(Environment.CurrentDirectory, relativePath, "sqlite3.dll");
-
-            _ = LoadLibraryEx(path, IntPtr.Zero, 0);
-        }
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, int dwFlags);
-
+                       
         public void Dispose()
         {
-            (Database as IDisposable)?.Dispose();
+            using (var connection = new MySqlConnection(m_ConnectionString))
+            {
+                connection.Open();
+                connection.ExecuteNonQuery($"DROP DATABASE {m_DatabaseName} ;");
+            }
         }
     }
 }

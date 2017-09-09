@@ -17,6 +17,11 @@ namespace SyncTool.Sql.Model
             ConnectionString = databaseUri.ToMySqlConnectionString();
         }
 
+        public MySqlDatabase(string connectionString)
+        {
+            ConnectionString = connectionString;
+        }
+
         protected override IDbConnection DoOpenConnection()
         {            
             var connection = new MySqlConnection(ConnectionString);            
