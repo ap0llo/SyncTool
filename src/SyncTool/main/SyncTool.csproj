@@ -2,6 +2,7 @@
 
   <PropertyGroup>
      <OutputType>Exe</OutputType>          
+     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <!-- Nuget package properties -->

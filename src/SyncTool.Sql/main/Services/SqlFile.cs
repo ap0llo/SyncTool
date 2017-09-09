@@ -5,14 +5,12 @@ using System;
 namespace SyncTool.Sql.Services
 {
     class SqlFile : FileSystemItem, IFile
-    {
-        readonly FileSystemRepository m_Repository;
-        readonly Database m_Database;
+    {           
         readonly FileInstanceDo m_FileInstance;
 
         //TODO: Special-casing DateTime.MinValue seems wrong, needs to be investigated
         public DateTime LastWriteTime => m_FileInstance.LastWriteTimeTicks == 0 ? DateTime.MinValue : new DateTime(m_FileInstance.LastWriteTimeTicks, DateTimeKind.Utc);
-
+        
         public long Length => m_FileInstance.Length;
 
         public override string Name => m_FileInstance.File.Name;
@@ -20,10 +18,10 @@ namespace SyncTool.Sql.Services
 
         public SqlFile(FileSystemRepository repository, IDirectory parent, FileInstanceDo fileInstance) : base(parent, "Placeholder")
         {
-            m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            repository = repository ?? throw new ArgumentNullException(nameof(repository));
             m_FileInstance = fileInstance ?? throw new ArgumentNullException(nameof(fileInstance));
 
-            m_Repository.LoadFile(m_FileInstance);
+            repository.LoadFile(m_FileInstance);
         }
 
 

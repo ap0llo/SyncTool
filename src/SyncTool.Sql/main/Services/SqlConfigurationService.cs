@@ -7,8 +7,7 @@ using System.Linq;
 namespace SyncTool.Sql.Services
 {
     class SqlConfigurationService : AbstractConfigurationService
-    {
-        readonly Database m_Database;
+    {        
         readonly SyncFolderRepository m_Repository;
 
         public override IEnumerable<SyncFolder> Items => m_Repository.Items.Select(x => x.ToSyncFolder()).ToArray();
