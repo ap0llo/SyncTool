@@ -21,8 +21,8 @@ namespace SyncTool.Sql.Model
         {
             return m_Database.QuerySingleOrDefault<SyncFolderDo>($@"
                         SELECT * FROM {SyncFoldersTable.Name}
-                        WHERE lower({SyncFoldersTable.Column.Name}) = lower(@name)", 
-                        new { name }
+                        WHERE {SyncFoldersTable.Column.Name} = @name", 
+                        new { name = name }
                     );
         }
 
@@ -60,7 +60,7 @@ namespace SyncTool.Sql.Model
                     SET {SyncFoldersTable.Column.Path} = @path,
                         {SyncFoldersTable.Column.Version} = @newVersion
                     WHERE {SyncFoldersTable.Column.Version} = @oldVersion AND
-                          lower({SyncFoldersTable.Column.Name}) = lower(@name)",
+                          {SyncFoldersTable.Column.Name} = @name",
 
                     ("name", item.Name),
                     ("path", item.Path),

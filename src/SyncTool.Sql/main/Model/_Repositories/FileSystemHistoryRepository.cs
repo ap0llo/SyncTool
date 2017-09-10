@@ -21,7 +21,7 @@ namespace SyncTool.Sql.Model
         {
             return m_Database.QuerySingleOrDefault<FileSystemHistoryDo>($@"
                         SELECT * FROM {FileSystemHistoriesTable.Name}
-                        WHERE lower({FileSystemHistoriesTable.Column.Name}) = lower(@name)",
+                        WHERE {FileSystemHistoriesTable.Column.Name} = @name",
                         new { name }
                     );
         }
@@ -33,13 +33,11 @@ namespace SyncTool.Sql.Model
                 INSERT INTO {FileSystemHistoriesTable.Name} 
                 (
                     {FileSystemHistoriesTable.Column.Name}, 
-                    {FileSystemHistoriesTable.Column.NormalizedName}, 
                     {FileSystemHistoriesTable.Column.Version}
                 ) 
                 VALUES 
                 (
                     @{nameof(item.Name)}, 
-                    @{nameof(item.NormalizedName)}, 
                     1
                 );
 

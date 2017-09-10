@@ -179,8 +179,8 @@ namespace SyncTool.Sql.Model
 
         void Insert(IDbConnection connection, FileDo file)
         {
-            if (String.IsNullOrWhiteSpace(file.NormalizedPath))
-                throw new ArgumentException($"{nameof(FileDo.NormalizedPath)} must not be empty");
+            if (String.IsNullOrWhiteSpace(file.Path))
+                throw new ArgumentException($"{nameof(FileDo.Path)} must not be empty ot whitespace");
 
             if (file.Id != 0)
                 return;
@@ -189,18 +189,16 @@ namespace SyncTool.Sql.Model
                     
                     INSERT IGNORE INTO {FilesTable.Name} 
                     (
-                        {FilesTable.Column.Name},
-                        {FilesTable.Column.NormalizedPath},
+                        {FilesTable.Column.Name},                        
                         {FilesTable.Column.Path} 
                     )
-                    VALUES (@name, @normalizedPath, @path) ;
+                    VALUES (@name, @path) ;
                     
                     SELECT {FilesTable.Column.Id} FROM {FilesTable.Name}
-                    WHERE {FilesTable.Column.NormalizedPath} = @normalizedPath;",
+                    WHERE {FilesTable.Column.Path} = @path;",
 
                     ("name", file.Name),          
-                    ("path", file.Path),
-                    ("normalizedPath", file.NormalizedPath)
+                    ("path", file.Path)
                 );
         }
 

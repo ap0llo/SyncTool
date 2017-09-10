@@ -8,8 +8,6 @@ namespace SyncTool.Sql.Model
         
         public string Name { get; set; }
 
-        public string NormalizedName { get; set; }
-        
         public int Version { get; set; }
 
 
@@ -20,7 +18,6 @@ namespace SyncTool.Sql.Model
         public FileSystemHistoryDo(string name)
         {
             Name = name;
-            NormalizedName = name.NormalizeCaseInvariant();
         }
     }
 }

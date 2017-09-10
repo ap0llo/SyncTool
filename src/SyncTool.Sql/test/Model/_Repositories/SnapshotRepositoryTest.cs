@@ -52,7 +52,7 @@ namespace SyncTool.Sql.Test.Model
         public void AddSnapshot_saves_included_files()
         {
             var dir = new DirectoryInstanceDo(new DirectoryDo() { Name = "root", Path = "" });
-            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", NormalizedPath = "/dir1/file1".NormalizeCaseInvariant(), Path = "/dir1/file1" }, DateTime.Now, 42);
+            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", Path = "/dir1/file1" }, DateTime.Now, 42);
             dir.Files.Add(file1);
             m_FileSystemRepository.AddRecursively(dir);
 

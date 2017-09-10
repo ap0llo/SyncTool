@@ -15,9 +15,10 @@ namespace SyncTool.Sql.Model
 
         public static void Create(IDbConnection connection, DatabaseLimits limits)
         {
+            // Name should be treated as case-insensitive and is the primary key
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (
-                    {Column.Name}    varchar(500) PRIMARY KEY,
+                    {Column.Name}    VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci PRIMARY KEY,
                     {Column.Path}    TEXT,
                     {Column.Version} INTEGER NOT NULL DEFAULT 0)
             ");

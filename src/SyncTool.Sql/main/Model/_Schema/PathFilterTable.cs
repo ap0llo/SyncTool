@@ -36,7 +36,12 @@ namespace SyncTool.Sql.Model
 
         void Create()
         {
-            m_Connection.ExecuteNonQuery($"CREATE TABLE {Name} ({Column.Path} varchar(700) PRIMARY KEY);");
+            m_Connection.ExecuteNonQuery($@"
+                CREATE TABLE {Name} 
+                (
+                    {Column.Path} VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_general_ci PRIMARY KEY
+                );
+            ");
             
             foreach (var segment in m_PathFilter.GetSegments(m_Limits.MaxParameterCount))
             {

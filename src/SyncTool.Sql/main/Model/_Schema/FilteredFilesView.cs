@@ -48,9 +48,9 @@ namespace SyncTool.Sql.Model
             {
                 m_PathFilterTable = PathFilterTable.CreateTemporary(m_Connection, m_Limits, m_PathFilter);                
                 whereClause = $@"
-                    WHERE lower({FilesTable.Column.Path}) IN 
+                    WHERE {FilesTable.Column.Path} IN 
                     (
-                        SELECT lower({PathFilterTable.Column.Path}) FROM {m_PathFilterTable.Name}
+                        SELECT {PathFilterTable.Column.Path} FROM {m_PathFilterTable.Name}
                     );
                 ";
             }

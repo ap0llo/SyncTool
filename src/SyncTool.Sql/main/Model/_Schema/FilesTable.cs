@@ -10,7 +10,6 @@ namespace SyncTool.Sql.Model
         {
             Id,
             Name,
-            NormalizedPath,
             Path
         }
 
@@ -19,9 +18,8 @@ namespace SyncTool.Sql.Model
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (                
                     {Column.Id}             INTEGER PRIMARY KEY AUTO_INCREMENT,
-                    {Column.Name}           TEXT NOT NULL,
-                    {Column.NormalizedPath} varchar(700) UNIQUE NOT NULL,
-                    {Column.Path}           TEXT NOT NULL);
+                    {Column.Name}           VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+                    {Column.Path}           VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_general_ci UNIQUE NOT NULL );
             ");
         }
     }
