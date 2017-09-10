@@ -1,10 +1,5 @@
 ﻿using SyncTool.Sql.Model;
 using SyncTool.Sql.TestHelpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace SyncTool.Sql.Test.Model
@@ -32,7 +27,5 @@ namespace SyncTool.Sql.Test.Model
             Assert.Equal(version2.Path, instance.GetItemOrDefault("folder1").Path);
             Assert.Equal(2, version2.Version);
         }
-
-
     }
 }

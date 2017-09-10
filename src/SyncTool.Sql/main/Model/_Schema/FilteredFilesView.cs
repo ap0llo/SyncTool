@@ -2,7 +2,7 @@
 using System.Data;
 using JetBrains.Annotations;
 
-namespace SyncTool.Sql.Model.Tables
+namespace SyncTool.Sql.Model
 {
     sealed class FilteredFilesView : IDisposable
     {

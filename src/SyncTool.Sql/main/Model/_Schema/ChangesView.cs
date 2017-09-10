@@ -2,7 +2,7 @@
 using System.Data;
 using JetBrains.Annotations;
 
-namespace SyncTool.Sql.Model.Tables
+namespace SyncTool.Sql.Model
 {
     class ChangesView : IDisposable
     {
@@ -91,8 +91,8 @@ namespace SyncTool.Sql.Model.Tables
                     );
 
                 -- create view containing both the previous and the current snapshot's file instances
-                CREATE VIEW {GetViewName(s_UnfilteredChanged)} AS                       
-                    -- (SQLite does not support a full outer join, so we need to combine two left joins)  
+                -- (MySQL does not support a full outer join, so we need to emulate it using two left joins)  
+                CREATE VIEW {GetViewName(s_UnfilteredChanged)} AS                                           
                     SELECT 
                         {s_Current}.{FileInstancesTable.Column.FileId}              AS {Column.FileId},
                         {s_Current}.{FileInstancesTable.Column.Id}                  AS {Column.CurrentId},

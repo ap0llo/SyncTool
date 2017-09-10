@@ -1,10 +1,10 @@
 ﻿using System.Data;
 
-namespace SyncTool.Sql.Model.Tables
+namespace SyncTool.Sql.Model
 {
-    static class ContainsFileTable
+    static class ContainsDirectoryTable
     {
-        public const string Name = "ContainsFile";
+        public const string Name = "ContainsDirectory";
 
         public enum Column
         {
@@ -19,7 +19,7 @@ namespace SyncTool.Sql.Model.Tables
                     {Column.ParentId} INTEGER NOT NULL,
                     {Column.ChildId}  INTEGER NOT NULL,
                     FOREIGN KEY ({Column.ParentId}) REFERENCES {DirectoryInstancesTable.Name}({DirectoryInstancesTable.Column.Id}),
-                    FOREIGN KEY ({Column.ChildId})  REFERENCES {FileInstancesTable.Name}({FileInstancesTable.Column.Id}),
+                    FOREIGN KEY ({Column.ChildId})  REFERENCES {DirectoryInstancesTable.Name}({DirectoryInstancesTable.Column.Id}),
                     CONSTRAINT {Name}_Unique UNIQUE({Column.ParentId},{Column.ChildId}) );
             ");
         }

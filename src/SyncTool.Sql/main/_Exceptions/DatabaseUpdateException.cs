@@ -1,8 +1,11 @@
 ﻿using System;
 
-namespace SyncTool.Sql.Model
+namespace SyncTool.Sql
 {
-    public class DatabaseUpdateException : Exception
+    /// <summary>
+    /// Exception that is thrown when a item in the database could not be updated
+    /// </summary>
+    public class DatabaseUpdateException : DatabaseException
     {
         public DatabaseUpdateException()
         {

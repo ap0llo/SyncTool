@@ -1,10 +1,10 @@
-﻿using SyncTool.Utilities;
-using System;
+﻿using System;
 using System.Data;
 using System.Linq;
 using JetBrains.Annotations;
+using SyncTool.Utilities;
 
-namespace SyncTool.Sql.Model.Tables
+namespace SyncTool.Sql.Model
 {
     sealed class PathFilterTable : IDisposable
     {

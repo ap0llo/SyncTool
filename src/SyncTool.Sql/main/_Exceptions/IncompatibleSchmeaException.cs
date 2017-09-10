@@ -1,5 +1,9 @@
 ﻿namespace SyncTool.Sql
 {
+    /// <summary>
+    /// Exception that is thrown when the database being access has a schema incompatible with
+    /// the current application version
+    /// </summary>
     public class IncompatibleSchmeaException : DatabaseException
     {
         /// <summary>

@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace SyncTool.Sql.Model.Tables
+namespace SyncTool.Sql.Model
 {
     static class FilesTable
     {

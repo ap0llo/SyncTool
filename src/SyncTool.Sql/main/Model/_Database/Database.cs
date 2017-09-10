@@ -1,5 +1,4 @@
-﻿using SyncTool.Sql.Model.Tables;
-using System.Data;
+﻿using System.Data;
 using Dapper;
 
 namespace SyncTool.Sql.Model

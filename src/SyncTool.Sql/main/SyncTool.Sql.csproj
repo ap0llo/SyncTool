@@ -1,6 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
 
   <ItemGroup>
+    <None Remove="SyncTool.Sql.csproj.DotSettings" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.Synchronization\main\SyncTool.Synchronization.csproj" />    
   </ItemGroup>
 

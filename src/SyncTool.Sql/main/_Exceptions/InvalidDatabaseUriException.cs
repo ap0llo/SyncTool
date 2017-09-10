@@ -2,7 +2,7 @@
 
 namespace SyncTool.Sql
 {
-    public class InvalidDatabaseUriException : ArgumentException
+    public class InvalidDatabaseUriException : DatabaseException
     {
         public Uri DatabaseUri { get; }
 

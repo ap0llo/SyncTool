@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using System.Collections.Generic;
-using System.Data;
 
 namespace SyncTool.Sql.Model
 {

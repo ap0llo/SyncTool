@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SyncTool.Sql.Model.Tables;
 using SyncTool.Utilities;
 using System;
 using System.Collections.Generic;

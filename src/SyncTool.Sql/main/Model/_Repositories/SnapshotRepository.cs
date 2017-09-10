@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dapper;
-
-using SyncTool.Sql.Model.Tables;
 using SyncTool.Utilities;
 
 namespace SyncTool.Sql.Model
