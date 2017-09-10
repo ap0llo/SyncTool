@@ -8,36 +8,6 @@ namespace SyncTool.Sql.Model
 {
     public class SnapshotRepository
     {
-        class ChangeRecord
-        {
-            public int FileId { get; set; }
-
-            public int? CurrentId { get; set; }
-
-            public int? PreviousId { get; set; }
-
-            public long? CurrentLastWriteTimeTicks { get; set; }
-
-            public long? PreviousLastWriteTimeTicks { get; set; }
-
-            public long? CurrentLength { get; set; }
-            
-            public long? PreviousLength { get; set; }
-
-            public void Deconstruct(out FileInstanceDo previous, out FileInstanceDo current, out int fileId)
-            {
-                previous = PreviousId.HasValue
-                    ? new FileInstanceDo() { Id = PreviousId.Value, LastWriteTimeTicks = PreviousLastWriteTimeTicks.Value, Length = PreviousLength.Value }
-                    : null;
-
-                current = CurrentId.HasValue
-                    ? new FileInstanceDo() { Id = CurrentId.Value, LastWriteTimeTicks = CurrentLastWriteTimeTicks.Value, Length = CurrentLength.Value }
-                    : null;
-
-                fileId = FileId;
-            }
-        }
-                                
         readonly Database m_Database;
 
 
@@ -220,7 +190,7 @@ namespace SyncTool.Sql.Model
                 ;";
 
                 var changes = new LinkedList<(FileInstanceDo, FileInstanceDo)>();
-                foreach (var (previous, current, fileId) in connection.Query<ChangeRecord>(changeQuery))
+                foreach (var (previous, current, fileId) in connection.Query<ChangeDo>(changeQuery))
                 {
                     var fileDo = fileDos[fileId];
 

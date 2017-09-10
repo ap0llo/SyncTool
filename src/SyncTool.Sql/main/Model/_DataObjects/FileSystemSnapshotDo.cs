@@ -23,8 +23,7 @@ namespace SyncTool.Sql.Model
 
         [UsedImplicitly]
         public FileSystemSnapshotDo()
-        {
-        }
+        { }
 
         public FileSystemSnapshotDo(
             int historyId, 

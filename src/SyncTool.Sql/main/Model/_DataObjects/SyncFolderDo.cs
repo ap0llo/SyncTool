@@ -13,13 +13,11 @@ namespace SyncTool.Sql.Model
 
         public SyncFolder ToSyncFolder() => new SyncFolder(Name) { Path = Path };
 
-        public static SyncFolderDo FromSyncFolder(SyncFolder folder)
-        {
-            return new SyncFolderDo()
+        public static SyncFolderDo FromSyncFolder(SyncFolder folder) 
+            => new SyncFolderDo()
             {
                 Name = folder.Name,
                 Path = folder.Path
             };
-        }
     }
 }

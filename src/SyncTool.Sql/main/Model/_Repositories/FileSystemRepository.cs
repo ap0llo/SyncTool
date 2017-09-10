@@ -1,5 +1,4 @@
-﻿using Dapper;
-using SyncTool.Utilities;
+﻿using SyncTool.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;

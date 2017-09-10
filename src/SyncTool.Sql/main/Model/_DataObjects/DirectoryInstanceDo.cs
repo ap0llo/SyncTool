@@ -17,8 +17,7 @@ namespace SyncTool.Sql.Model
 
         [UsedImplicitly]
         public DirectoryInstanceDo()
-        {
-        }
+        { }
 
         public DirectoryInstanceDo(DirectoryDo directoryDo)
         {

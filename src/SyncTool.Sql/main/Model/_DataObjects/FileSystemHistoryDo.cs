@@ -15,8 +15,7 @@ namespace SyncTool.Sql.Model
 
         [UsedImplicitly]
         public FileSystemHistoryDo()
-        {
-        }
+        { }
 
         public FileSystemHistoryDo(string name)
         {

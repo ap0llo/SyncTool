@@ -16,8 +16,7 @@ namespace SyncTool.Sql.Model
 
         [UsedImplicitly]
         public FileInstanceDo()
-        {
-        }
+        { }
 
         public FileInstanceDo(FileDo file, DateTime lastWriteTime, long length)
         {

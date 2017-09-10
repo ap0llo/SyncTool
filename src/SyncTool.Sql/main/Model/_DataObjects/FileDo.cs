@@ -8,6 +8,7 @@ namespace SyncTool.Sql.Model
     {
         public int Id { get; set; }
 
+        //TODO: Remove NormalizedPath
         public string NormalizedPath { get; set; }
 
         public string Path { get; set; }
@@ -18,18 +19,15 @@ namespace SyncTool.Sql.Model
 
         [UsedImplicitly]
         public FileDo()
-        {
-        }
+        { }
 
-        public static FileDo FromFile(IFile file)
-        {
-            return new FileDo()
+        public static FileDo FromFile(IFile file) 
+            => new FileDo()
             {
                 Name = file.Name,
                 Path = file.Path,
                 NormalizedPath = file.Path.NormalizeCaseInvariant(),
                 Instances = new List<FileInstanceDo>()
             };
-        }
     }
 }

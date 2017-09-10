@@ -6,9 +6,9 @@ namespace SyncTool.Sql.Model
 {
     public class DirectoryDo
     {
-        
         public int Id { get; set; }
 
+        //TODO: Remove NormalizedPath
         public string NormalizedPath { get; set; }
 
         public string Name { get; set; }
@@ -18,16 +18,13 @@ namespace SyncTool.Sql.Model
         
         [UsedImplicitly]
         public DirectoryDo()
-        {
-        }
+        { }
         
-        public static DirectoryDo FromDirectory(IDirectory directory)
-        {
-            return new DirectoryDo()
+        public static DirectoryDo FromDirectory(IDirectory directory) 
+            => new DirectoryDo()
             {
                 Name = directory.Name,
                 NormalizedPath = directory.Path.NormalizeCaseInvariant(),
             };
-        }
     }
 }
