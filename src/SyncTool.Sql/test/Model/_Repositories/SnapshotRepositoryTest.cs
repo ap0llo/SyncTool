@@ -35,7 +35,7 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void AddSnapshot_assigns_a_sequence_number()
         {
-            var dir = new DirectoryInstanceDo(new DirectoryDo() { Name = "root", NormalizedPath = "" });
+            var dir = new DirectoryInstanceDo(new DirectoryDo() { Name = "root", Path = "" });
             m_FileSystemRepository.AddRecursively(dir);
 
             var snapshot1 = new FileSystemSnapshotDo(m_HistoryId1, DateTime.UtcNow.Ticks, dir.Id, new List<FileInstanceDo>());            
@@ -51,7 +51,7 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void AddSnapshot_saves_included_files()
         {
-            var dir = new DirectoryInstanceDo(new DirectoryDo() { Name = "root", NormalizedPath = "" });
+            var dir = new DirectoryInstanceDo(new DirectoryDo() { Name = "root", Path = "" });
             var file1 = new FileInstanceDo(new FileDo() { Name = "file1", NormalizedPath = "/dir1/file1".NormalizeCaseInvariant(), Path = "/dir1/file1" }, DateTime.Now, 42);
             dir.Files.Add(file1);
             m_FileSystemRepository.AddRecursively(dir);

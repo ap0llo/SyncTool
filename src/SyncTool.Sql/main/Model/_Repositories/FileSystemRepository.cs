@@ -48,8 +48,8 @@ namespace SyncTool.Sql.Model
             if (directory.Id != 0)
                 throw new ArgumentException("Cannot add directory with id != 0", nameof(directory));
 
-            if (String.IsNullOrWhiteSpace(directory.NormalizedPath))
-                throw new ArgumentException($"{nameof(directory.NormalizedPath)} must not be empty");
+            if (String.IsNullOrWhiteSpace(directory.Path))
+                throw new ArgumentException($"{nameof(directory.Path)} must not be empty");
 
             using (var connection = m_Database.OpenConnection())
             {
@@ -165,15 +165,15 @@ namespace SyncTool.Sql.Model
                     INSERT IGNORE INTO {DirectoriesTable.Name} 
                     (
                         {DirectoriesTable.Column.Name},
-                        {DirectoriesTable.Column.NormalizedPath} 
+                        {DirectoriesTable.Column.Path} 
                     )
                     VALUES (@name, @path);
 
                     SELECT {DirectoriesTable.Column.Id} FROM {DirectoriesTable.Name}
-                    WHERE {DirectoriesTable.Column.NormalizedPath} = @path;
+                    WHERE {DirectoriesTable.Column.Path} = @path;
                 ",
                 ("name", directory.Name),
-                ("path", directory.NormalizedPath)
+                ("path", directory.Path)
             );
         }
 
