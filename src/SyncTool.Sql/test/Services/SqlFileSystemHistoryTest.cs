@@ -6,6 +6,7 @@ using SyncTool.Sql.Services;
 using SyncTool.Sql.TestHelpers;
 using System;
 using System.Linq;
+using Moq;
 using Xunit;
 
 namespace SyncTool.Sql.Test.Services
@@ -26,13 +27,23 @@ namespace SyncTool.Sql.Test.Services
             var fileSystemRepository = new FileSystemRepository(Database);
             var snapshotRepository = new SnapshotRepository(Database);
 
+
+            var sqlFileSystemFactory = new Mock<ISqlFileSystemFactory>();
+            sqlFileSystemFactory
+                .Setup(m => m.CreateSqlDirectory(It.IsAny<IDirectory>(), It.IsAny<DirectoryInstanceDo>()))
+                .Returns((IDirectory parent, DirectoryInstanceDo directoryInstance) => new SqlDirectory(fileSystemRepository, sqlFileSystemFactory.Object, parent, directoryInstance));
+            sqlFileSystemFactory
+                .Setup(m => m.CreateSqlFile(It.IsAny<IDirectory>(), It.IsAny<FileInstanceDo>()))
+                .Returns((IDirectory parent, FileInstanceDo fileInstance) => new SqlFile(fileSystemRepository, parent, fileInstance));
+
+
             var historyDo = new FileSystemHistoryDo("History1");
             historyDo = historyRepository.AddItem(historyDo);
             
             m_Instance = new SqlFileSystemHistory(
                 snapshotRepository,
                 fileSystemRepository,                                
-                (history, snapshotDo) => new SqlFileSystemSnapshot(fileSystemRepository, history, snapshotDo),
+                (history, snapshotDo) => new SqlFileSystemSnapshot(fileSystemRepository, sqlFileSystemFactory.Object, history, snapshotDo),
                 historyDo);
         }
 

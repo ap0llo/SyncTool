@@ -3,11 +3,13 @@ using SyncTool.Sql.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace SyncTool.Sql.Services
 {
     class SqlDirectory : AbstractDirectory
-    {        
+    {
+        readonly ISqlFileSystemFactory m_FileSystemFactory;
         readonly FileSystemRepository m_Repository;
         readonly DirectoryInstanceDo m_DirectoryInstanceDo;
         readonly Lazy<IDictionary<string, SqlDirectory>> m_Directories;
@@ -21,9 +23,10 @@ namespace SyncTool.Sql.Services
         public override string Name => m_DirectoryInstanceDo.Directory.Name;
 
 
-        public SqlDirectory(FileSystemRepository repository, IDirectory parent, DirectoryInstanceDo directoryDo) 
+        public SqlDirectory([NotNull] FileSystemRepository repository, [NotNull] ISqlFileSystemFactory fileSystemFactory, IDirectory parent, [NotNull] DirectoryInstanceDo directoryDo) 
             : base(parent, "Placeholder")
         {
+            m_FileSystemFactory = fileSystemFactory ?? throw new ArgumentNullException(nameof(fileSystemFactory));
             m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
             m_DirectoryInstanceDo = directoryDo ?? throw new ArgumentNullException(nameof(directoryDo));            
 
@@ -46,10 +49,9 @@ namespace SyncTool.Sql.Services
         IDictionary<string, SqlDirectory> LoadDirectories()
         {
             m_Repository.LoadDirectories(m_DirectoryInstanceDo);
-
-            //TODO: Encapsulate creation of SqlDirectory instances
+            
             return m_DirectoryInstanceDo.Directories
-                        .Select(directoryDo => new SqlDirectory(m_Repository, this, directoryDo))
+                        .Select(directoryDo => m_FileSystemFactory.CreateSqlDirectory(this, directoryDo))
                         .ToDictionary(d => d.Name, StringComparer.InvariantCultureIgnoreCase);
         }
 
@@ -57,9 +59,8 @@ namespace SyncTool.Sql.Services
         {
             m_Repository.LoadFiles(m_DirectoryInstanceDo);
 
-            //TODO: Encapsulate creation of SqlFile instances
             return m_DirectoryInstanceDo.Files
-                    .Select(fileDo => new SqlFile(m_Repository, this, fileDo))  
+                    .Select(fileDo => m_FileSystemFactory.CreateSqlFile(this, fileDo))  
                     .ToDictionary(f => f.Name, StringComparer.InvariantCultureIgnoreCase);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using SyncTool.Common;
 using SyncTool.Common.Groups;
 using SyncTool.Configuration;
 using SyncTool.FileSystem.Versioning;
@@ -23,6 +24,10 @@ namespace SyncTool.Sql.DI
             builder.RegisterType<SnapshotRepository>().AsSelf();
             builder.RegisterType<FileSystemRepository>().AsSelf();
             builder.RegisterType<SqlFileSystemSnapshot>().AsSelf();
+
+            builder.RegisterType<CachingSqlFileSystemFactory>().As<ISqlFileSystemFactory>().InstancePerMatchingLifetimeScope(Scope.Group);
+            builder.RegisterType<SqlDirectory>().AsSelf();
+            builder.RegisterType<SqlFile>().AsSelf();
 
             /*                                             
             builder.RegisterType<GitSyncPointService>().As<ISyncPointService>().AsSelf();
