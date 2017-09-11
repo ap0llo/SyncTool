@@ -88,8 +88,8 @@ namespace SyncTool.Sql.Services
             var fromSnapshot = GetSnapshotDo(ParseId(fromId));
             var toSnapshot = GetSnapshotDo(ParseId(toId));
 
-            if (fromSnapshot.SequenceNumber >= toSnapshot.SequenceNumber)
-                throw new InvalidRangeException($"Snapshot {toId} is not an descendant of {fromId}");
+            if (fromSnapshot.Id >= toSnapshot.Id)
+                throw new InvalidRangeException($"Snapshot {toId} is not a descendant of {fromId}");
 
             foreach (var snapshot in m_SnapshotRepository.GetSnapshotRange(fromSnapshot, toSnapshot))
             {
@@ -127,8 +127,8 @@ namespace SyncTool.Sql.Services
             var fromSnapshot = GetSnapshotDo(fromDbId);
             var toSnapshot = GetSnapshotDo(toDbId);
 
-            if (fromSnapshot.SequenceNumber >= toSnapshot.SequenceNumber)
-                throw new InvalidRangeException($"Snapshot {toId} is not an descendant of {fromId}");
+            if (fromSnapshot.Id >= toSnapshot.Id)
+                throw new InvalidRangeException($"Snapshot {toId} is not a descendant of {fromId}");
 
             // iterate over all snapshots and get the changed files for every item
             var changeLists = new Dictionary<string, LinkedList<IChange>>(StringComparer.InvariantCultureIgnoreCase);

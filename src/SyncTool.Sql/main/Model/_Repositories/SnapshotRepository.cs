@@ -34,7 +34,7 @@ namespace SyncTool.Sql.Model
                 SELECT *
                 FROM {FileSystemSnapshotsTable.Name}
                 WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId
-                ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
+                ORDER BY {FileSystemSnapshotsTable.Column.Id} DESC
                 LIMIT 2",
                 new { historyId = historyId });
         }
@@ -50,28 +50,21 @@ namespace SyncTool.Sql.Model
 
         public void AddSnapshot(FileSystemSnapshotDo snapshot)
         {
-            //TODO: make sure no other snapshots were added for the history ?? Is this a Problem?            
-
             using (var connection = m_Database.OpenConnection())
             using (var transaction = connection.BeginTransaction())
             {
-                var tmpId = Guid.NewGuid().ToString();
-
-                var sequenceNumber = connection.ExecuteScalar<int>($"SELECT count(*) FROM {FileSystemSnapshotsTable.Name}");
-
+                var tmpId = Guid.NewGuid().ToString();                
                 var inserted = connection.QuerySingle<FileSystemSnapshotDo>($@"
                         INSERT INTO {FileSystemSnapshotsTable.Name} 
                         (                          
-                            {FileSystemSnapshotsTable.Column.HistoryId} ,
-                            {FileSystemSnapshotsTable.Column.SequenceNumber},
-                            {FileSystemSnapshotsTable.Column.CreationTimeTicks} ,
+                            {FileSystemSnapshotsTable.Column.HistoryId},
+                            {FileSystemSnapshotsTable.Column.CreationTimeTicks},
                             {FileSystemSnapshotsTable.Column.RootDirectoryInstanceId},
                             {FileSystemSnapshotsTable.Column.TmpId}
                         )
                         VALUES 
                         (   
                             @historyId, 
-                            @sequenceNumber, 
                             @ticks, 
                             @directoryId, 
                             @tmpId
@@ -90,8 +83,7 @@ namespace SyncTool.Sql.Model
                     historyId = snapshot.HistoryId,
                     ticks = snapshot.CreationTimeTicks,
                     directoryId = snapshot.RootDirectoryInstanceId,
-                    tmpId = tmpId,
-                    sequenceNumber = sequenceNumber
+                    tmpId = tmpId
                 });
 
 
@@ -124,7 +116,6 @@ namespace SyncTool.Sql.Model
                 transaction.Commit();
 
                 snapshot.Id = inserted.Id;
-                snapshot.SequenceNumber = inserted.SequenceNumber;
             }
         }
 
@@ -150,10 +141,10 @@ namespace SyncTool.Sql.Model
                 SELECT *
                 FROM {FileSystemSnapshotsTable.Name}
                 WHERE {FileSystemSnapshotsTable.Column.HistoryId} = @historyId AND
-                        {FileSystemSnapshotsTable.Column.SequenceNumber} < @sequenceNumber
-                ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
+                        {FileSystemSnapshotsTable.Column.Id} < @id
+                ORDER BY {FileSystemSnapshotsTable.Column.Id} DESC
                 LIMIT 2",
-                new { historyId = snapshot.HistoryId, sequenceNumber = snapshot.SequenceNumber });
+                new { historyId = snapshot.HistoryId, id = snapshot.Id });
         }
 
         public IEnumerable<string> GetChangedFiles(FileSystemSnapshotDo snapshot)
@@ -223,7 +214,7 @@ namespace SyncTool.Sql.Model
                 WHERE {FileSystemSnapshotsTable.Column.Id} > @fromId AND
                       {FileSystemSnapshotsTable.Column.Id} <= @toId AND
                       {FileSystemSnapshotsTable.Column.HistoryId} = @historyId
-                ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} ASC;
+                ORDER BY {FileSystemSnapshotsTable.Column.Id} ASC;
                 ",
                 new { fromId = fromSnapshot.Id, toId = toSnapshot.Id, historyId = fromSnapshot.HistoryId });
         }
@@ -239,7 +230,7 @@ namespace SyncTool.Sql.Model
                 FROM {FileSystemSnapshotsTable.Name}
                 WHERE {FileSystemSnapshotsTable.Column.Id} <= @toId AND
                       {FileSystemSnapshotsTable.Column.HistoryId} = @historyId
-                ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} ASC;
+                ORDER BY {FileSystemSnapshotsTable.Column.Id} ASC;
                 ",
                 new { toId = toSnapshot.Id, historyId = toSnapshot.HistoryId });
         }

@@ -12,31 +12,38 @@ namespace SyncTool.Sql.DI
     {
         protected override void Load(ContainerBuilder builder)
         { 
-            builder.RegisterType<SqlConfigurationService>().As<IConfigurationService>().AsSelf();
-            builder.RegisterType<SyncFolderRepository>().AsSelf();
+            //
+            // Types required by group manager
+            //
             builder.RegisterType<SqlGroupInitializer>().As<IGroupInitializer>();
             builder.RegisterType<SqlGroupValidator>().As<IGroupValidator>();
-
-            builder.RegisterType<MySqlDatabase>().As<Database>();
+            
+            //
+            // Service implementations
+            //
+            // Configuration service
+            builder.RegisterType<SqlConfigurationService>().As<IConfigurationService>().AsSelf();            
+            // History service
             builder.RegisterType<SqlHistoryService>().As<IHistoryService>().AsSelf();
-            builder.RegisterType<FileSystemHistoryRepository>().AsSelf();
             builder.RegisterType<SqlFileSystemHistory>().AsSelf();
-            builder.RegisterType<SnapshotRepository>().AsSelf();
-            builder.RegisterType<FileSystemRepository>().AsSelf();
             builder.RegisterType<SqlFileSystemSnapshot>().AsSelf();
-
             builder.RegisterType<CachingSqlFileSystemFactory>().As<ISqlFileSystemFactory>().InstancePerMatchingLifetimeScope(Scope.Group);
             builder.RegisterType<SqlDirectory>().AsSelf();
             builder.RegisterType<SqlFile>().AsSelf();
 
-            /*                                             
-            builder.RegisterType<GitSyncPointService>().As<ISyncPointService>().AsSelf();
-            builder.RegisterType<GitConflictService>().As<IConflictService>().AsSelf();
-            builder.RegisterType<GitSyncActionService>().As<ISyncActionService>().AsSelf();
-            builder.RegisterType<GitBasedMultiFileSystemHistoryService>().As<IMultiFileSystemHistoryService>().AsSelf();
-            builder.RegisterType<GitBasedFileSystemHistoryFactory>().AsSelf().InstancePerMatchingLifetimeScope(Scope.Group);
-            builder.RegisterType<WorkingDirectoryFactory>().AsSelf();
-            */
+            //TODO: Implement ISyncPointService
+            //TODO: Implement IConflictService
+            //TODO: Implement ISyncActionService
+            //TODO: Implement IMultiFileSystemHistoryService
+
+            //
+            // Database access and repository implementations
+            //
+            builder.RegisterType<MySqlDatabase>().As<Database>();
+            builder.RegisterType<SyncFolderRepository>().AsSelf();
+            builder.RegisterType<FileSystemHistoryRepository>().AsSelf();
+            builder.RegisterType<SnapshotRepository>().AsSelf();
+            builder.RegisterType<FileSystemRepository>().AsSelf();
 
             base.Load(builder);
         }        

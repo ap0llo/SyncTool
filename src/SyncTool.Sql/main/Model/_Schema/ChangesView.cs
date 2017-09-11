@@ -64,8 +64,8 @@ namespace SyncTool.Sql.Model
                     SELECT {FileSystemSnapshotsTable.Column.Id} 
                     FROM {FileSystemSnapshotsTable.Name}
                     WHERE  {FileSystemSnapshotsTable.Column.HistoryId} = {m_Snapshot.HistoryId} AND
-                           {FileSystemSnapshotsTable.Column.SequenceNumber} < {m_Snapshot.SequenceNumber}
-                    ORDER BY {FileSystemSnapshotsTable.Column.SequenceNumber} DESC
+                           {FileSystemSnapshotsTable.Column.Id} < {m_Snapshot.Id}
+                    ORDER BY {FileSystemSnapshotsTable.Column.Id} DESC
                     LIMIT 1 ;
                 ")
                 // get the file instances included in the current snapshot

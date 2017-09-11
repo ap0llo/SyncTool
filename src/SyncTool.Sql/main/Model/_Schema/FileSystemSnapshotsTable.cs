@@ -9,8 +9,7 @@ namespace SyncTool.Sql.Model
         public enum Column
         {
             Id,
-            HistoryId,
-            SequenceNumber,
+            HistoryId,            
             CreationTimeTicks,
             RootDirectoryInstanceId,
             TmpId
@@ -21,8 +20,7 @@ namespace SyncTool.Sql.Model
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name}(
                     {Column.Id}                      INTEGER PRIMARY KEY AUTO_INCREMENT,
-                    {Column.HistoryId}               INTEGER NOT NULL,
-                    {Column.SequenceNumber}          INTEGER UNIQUE NOT NULL,
+                    {Column.HistoryId}               INTEGER NOT NULL,                    
                     {Column.CreationTimeTicks}       BIGINT NOT NULL,
                     {Column.RootDirectoryInstanceId} INTEGER NOT NULL,
                     {Column.TmpId}                   varchar(40) UNIQUE,

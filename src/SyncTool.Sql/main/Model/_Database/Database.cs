@@ -34,9 +34,7 @@ namespace SyncTool.Sql.Model
 
         public void CheckSchema()
         {
-            //TODO: Implement upgrade logic here when a new schema version is introduced            
-            //TODO: Should schema upgrades be explicit or implicit?
-
+            //TODO: Implement upgrade logic here when a new schema version is introduced. Should schema upgrades be explicit or implicit?
             using (var connection = DoOpenConnection())
             {
                 var schemaInfo = connection.QuerySingle<SchemaInfoDo>($"SELECT * FROM {SchemaInfoTable.Name}");

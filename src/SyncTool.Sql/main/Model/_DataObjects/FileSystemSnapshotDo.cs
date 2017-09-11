@@ -10,10 +10,7 @@ namespace SyncTool.Sql.Model
         
         // assigned automatically on db insert
         public int Id { get; set; }
-        
-        // assigned automatically on db insert
-        public int SequenceNumber { get; set; }
-        
+                
         public long CreationTimeTicks { get; set; }
 
         public int RootDirectoryInstanceId { get; set; }

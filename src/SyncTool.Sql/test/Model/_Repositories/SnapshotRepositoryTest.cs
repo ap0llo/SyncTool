@@ -33,7 +33,7 @@ namespace SyncTool.Sql.Test.Model
 
 
         [Fact]
-        public void AddSnapshot_assigns_a_sequence_number()
+        public void AddSnapshot_assigns_a_incrementing_id()
         {
             var dir = new DirectoryInstanceDo(new DirectoryDo() { Name = "root", Path = "" });
             m_FileSystemRepository.AddRecursively(dir);
@@ -44,8 +44,8 @@ namespace SyncTool.Sql.Test.Model
             m_Instance.AddSnapshot(snapshot1);
             m_Instance.AddSnapshot(snapshot2);
             
-            Assert.Equal(0, snapshot1.SequenceNumber);
-            Assert.Equal(1, snapshot2.SequenceNumber);            
+            Assert.Equal(1, snapshot1.Id);
+            Assert.Equal(2, snapshot2.Id);            
         }
 
         [Fact]
