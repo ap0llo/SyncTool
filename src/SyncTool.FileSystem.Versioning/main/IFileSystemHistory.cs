@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SyncTool.FileSystem.Versioning
 {
@@ -12,6 +13,7 @@ namespace SyncTool.FileSystem.Versioning
         /// <summary>
         /// The Id uniquely identifying this history within a group of histories
         /// </summary>
+        [Obsolete]
         string Id { get; }
 
         /// <summary>

@@ -42,8 +42,9 @@ namespace SyncTool.Git.Test.FileSystem.Versioning
         [Fact]
         public void CreateSnapshot_does_not_create_a_snapshot_if_no_histories_exist()
         {
-            m_Instance.CreateSnapshot();
-            
+            var snapshot = m_Instance.CreateSnapshot();
+
+            Assert.Null(snapshot);
             Assert.Empty(m_Instance.Snapshots);
         }
 
