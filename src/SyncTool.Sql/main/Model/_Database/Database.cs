@@ -8,7 +8,7 @@ namespace SyncTool.Sql.Model
         public const int SchemaVersion = 1;
 
         static readonly object s_Lock = new object();
-        bool m_Initialized = false;
+        bool m_Initialized;
 
 
         public abstract DatabaseLimits Limits { get; }
@@ -63,6 +63,8 @@ namespace SyncTool.Sql.Model
                 FileSystemSnapshotsTable.Create(connection, limits);
                 IncludesFileInstanceTable.Create(connection, limits);
                 SyncFoldersTable.Create(connection, limits);
+                MultiFileSystemSnapshotsTable.Create(connection, limits);
+                ContainsSnapshotTable.Create(connection, limits);
 
                 SchemaInfoTable.Create(connection, limits);
 

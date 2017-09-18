@@ -23,7 +23,7 @@ namespace SyncTool.Sql.Model
                     {Column.HistoryId}               INTEGER NOT NULL,                    
                     {Column.CreationTimeTicks}       BIGINT NOT NULL,
                     {Column.RootDirectoryInstanceId} INTEGER NOT NULL,
-                    {Column.TmpId}                   varchar(40) UNIQUE,
+                    {Column.TmpId}                   VARCHAR(40) UNIQUE,
                     FOREIGN KEY ({Column.HistoryId})               REFERENCES {FileSystemHistoriesTable.Name}({FileSystemHistoriesTable.Column.Id}),
                     FOREIGN KEY ({Column.RootDirectoryInstanceId}) REFERENCES {DirectoryInstancesTable.Name}({DirectoryInstancesTable.Column.Id}) );
             ");

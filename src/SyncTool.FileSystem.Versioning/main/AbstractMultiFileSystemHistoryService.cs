@@ -66,14 +66,21 @@ namespace SyncTool.FileSystem.Versioning
             {
                 var history = m_HistoryService[histoyName];
 
-                string[] changedFiles;
-                // if the history already existed at the time of fromSnapshot, 
+                string[] changedFiles = Array.Empty<string>();
+                // if the history already existed at the time of fromSnapshot,                 
                 // only get the changes between the snapshots                
                 if (fromSnapshot.HistoryNames.Contains(histoyName))
                 {
-                    changedFiles = history.GetChangedFiles(
-                        fromSnapshot.GetSnapshotId(histoyName),
-                        toSnapshot.GetSnapshotId(histoyName));
+                    var fromId = fromSnapshot.GetSnapshotId(histoyName);
+                    var toId = toSnapshot.GetSnapshotId(histoyName);
+
+                    // fromId == toId 
+                    //  => no snapshot was added for this history
+                    //  => no changes to add
+                    if (fromId != toId)
+                    {
+                        changedFiles = history.GetChangedFiles(fromId, toId);
+                    }                    
                 }
                 // if the current history did not exist at the time of fromSnapshot, 
                 // get all changes for the current history
@@ -132,23 +139,27 @@ namespace SyncTool.FileSystem.Versioning
             {
                 var history = m_HistoryService[histoyName];
 
-                IFileSystemDiff diff;
                 // if the history already existed at the time of fromSnapshot, 
                 // only get the changes between the snapshots                
                 if (fromSnapshot.HistoryNames.Contains(histoyName))
                 {
-                    diff = history.GetChanges(
-                        fromSnapshot.GetSnapshotId(histoyName),
-                        toSnapshot.GetSnapshotId(histoyName));
+                    var currentHistoryFromId = fromSnapshot.GetSnapshotId(histoyName);
+                    var currentHistoryToId = toSnapshot.GetSnapshotId(histoyName);
+
+                    // fromId == toId 
+                    //  => no snapshot was added for this history
+                    //  => no changes to add
+                    if (currentHistoryFromId != currentHistoryToId)
+                    {
+                        diffs.Add(history.GetChanges(currentHistoryFromId, currentHistoryToId));
+                    }
                 }
                 // if the current history did not exist at the time of fromSnapshot, 
                 // get all changes for the current history
                 else
                 {
-                    diff = history.GetChanges(toSnapshot.GetSnapshotId(histoyName));
+                    diffs.Add(history.GetChanges(toSnapshot.GetSnapshotId(histoyName)));
                 }
-
-                diffs.Add(diff);
             }
 
             var fileChanges = CombineChangeLists(
@@ -173,6 +184,14 @@ namespace SyncTool.FileSystem.Versioning
         
         protected abstract IMultiFileSystemSnapshot GetSnapshot(string id);
 
+        /// <summary>
+        /// Checks if the snapshot with id <paramref name="ancestorId"/> is an ancestor of
+        /// <paramref name="descandantId"/>.
+        /// </summary>
+        /// <remarks>
+        /// Implementations can assume both snapshots exist
+        /// </remarks>
+        /// <exception cref="InvalidRangeException">Thrown if the descandant snapshot is not a descandent of the specified ancestor</exception>
         protected abstract void AssertIsAncestor(string ancestorId, string descandantId);
 
 

@@ -29,6 +29,14 @@ namespace SyncTool.Sql.Model
             }
         }
 
+        public static IEnumerable<dynamic> Query(this Database database, string sql, object param = null)
+        {
+            using (var connection = database.OpenConnection())
+            {
+                return connection.Query(sql, param);
+            }
+        }
+
         public static T QuerySingleOrDefault<T>(this Database database, string sql, object param = null)
         {
             using (var connection = database.OpenConnection())

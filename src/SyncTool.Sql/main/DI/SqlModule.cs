@@ -30,11 +30,13 @@ namespace SyncTool.Sql.DI
             builder.RegisterType<CachingSqlFileSystemFactory>().As<ISqlFileSystemFactory>().InstancePerMatchingLifetimeScope(Scope.Group);
             builder.RegisterType<SqlDirectory>().AsSelf();
             builder.RegisterType<SqlFile>().AsSelf();
+            // multi-filesystem history service
+            builder.RegisterType<SqlMultiFileSystemHistoryService>().As<IMultiFileSystemHistoryService>();
+            builder.RegisterType<SqlMultiFileSystemSnapshot>().AsSelf();
 
             //TODO: Implement ISyncPointService
             //TODO: Implement IConflictService
             //TODO: Implement ISyncActionService
-            //TODO: Implement IMultiFileSystemHistoryService
 
             //
             // Database access and repository implementations
@@ -44,6 +46,7 @@ namespace SyncTool.Sql.DI
             builder.RegisterType<FileSystemHistoryRepository>().AsSelf();
             builder.RegisterType<SnapshotRepository>().AsSelf();
             builder.RegisterType<FileSystemRepository>().AsSelf();
+            builder.RegisterType<MultiFileSystemSnapshotRepository>().AsSelf();
 
             base.Load(builder);
         }        
