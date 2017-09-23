@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using SyncTool.Common.Options;
 
 namespace SyncTool.Common.Groups
 {
@@ -15,39 +16,26 @@ namespace SyncTool.Common.Groups
 
         string SettingsPath => Path.Combine(m_Directory, s_SettingsFileName);
 
-        public JsonGroupSettingsProvider() : this(Environment.CurrentDirectory)
-        {
 
+        public JsonGroupSettingsProvider(ApplicationDataOptions options) : this(options.RootPath)
+        {
         }
 
         public JsonGroupSettingsProvider(string directory)
         {
-            if (directory == null)
-                throw new ArgumentNullException(nameof(directory));
-
-            if (!Directory.Exists(directory))
-                throw new DirectoryNotFoundException($"Directory '{directory}' does not exist");
-
-            m_Directory = directory;
+            m_Directory = directory ?? throw new ArgumentNullException(nameof(directory));
         }
 
-        
 
-        public IEnumerable<GroupSettings> GetGroupSettings()
-        {            
-            if (!File.Exists(SettingsPath))
-            {
-                return Enumerable.Empty<GroupSettings>();
-            }
+        public IEnumerable<GroupSettings> GetGroupSettings() => 
+            File.Exists(SettingsPath)
+                ? JsonConvert.DeserializeObject<GroupSettings[]>(File.ReadAllText(SettingsPath))
+                : Enumerable.Empty<GroupSettings>();
 
-            return JsonConvert.DeserializeObject<GroupSettings[]>(File.ReadAllText(SettingsPath));
-        }
-        
         public void SaveGroupSettings(IEnumerable<GroupSettings> settings)
         {
-            var json = JsonConvert.SerializeObject(settings.ToArray(), Formatting.Indented);
-            File.WriteAllText(SettingsPath, json);
-        }
-        
+            Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath));
+            File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(settings.ToArray(), Formatting.Indented));
+        }        
     }
 }

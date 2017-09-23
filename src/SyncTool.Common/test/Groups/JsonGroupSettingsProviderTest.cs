@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Xunit;
-using SyncTool.Common;
 using SyncTool.Common.Groups;
 
 namespace SyncTool.Common.Test.Groups
@@ -12,11 +11,9 @@ namespace SyncTool.Common.Test.Groups
     /// </summary>
     public sealed class JsonGroupSettingsProviderTest : IDisposable
     {        
-        readonly JsonGroupSettingsProvider m_Instance = new JsonGroupSettingsProvider();
+        readonly JsonGroupSettingsProvider m_Instance = new JsonGroupSettingsProvider(Environment.CurrentDirectory);
         readonly string m_SettingsFilePath = Path.Combine(Environment.CurrentDirectory, "SyncTool.Groups.json");
-
-
-
+        
         [Fact]
         public void GetGroupSettings_successfully_reads_valid_json_file()
         {
