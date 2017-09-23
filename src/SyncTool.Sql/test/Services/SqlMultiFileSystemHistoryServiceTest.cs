@@ -93,8 +93,8 @@ namespace SyncTool.Sql.Test.Services
             Assert.Single(m_Instance.Snapshots);
 
             Assert.Equal(2, m_Instance.LatestSnapshot.HistoryNames.Count());
-            Assert.True(m_Instance.LatestSnapshot.HistoryNames.Contains("history2"));
-            Assert.True(m_Instance.LatestSnapshot.HistoryNames.Contains("history2"));
+            Assert.Contains("history2", m_Instance.LatestSnapshot.HistoryNames);
+            Assert.Contains("history2", m_Instance.LatestSnapshot.HistoryNames);
         }
 
         [Fact]

@@ -24,7 +24,7 @@ namespace SyncTool.FileSystem.Test.Local
                 var localDirectory = new LocalDirectory(null, temporaryDirectory.Directory.Location);
 
                 Assert.Equal(3, localDirectory.Files.Count());
-                Assert.Equal(0, localDirectory.Directories.Count());
+                Assert.Empty(localDirectory.Directories);
 
                 foreach (var fileName in fileNames)
                 {
@@ -44,7 +44,7 @@ namespace SyncTool.FileSystem.Test.Local
             {
                 var localDirectory = new LocalDirectory(null, temporaryDirectory.Directory.Location);
 
-                Assert.Equal(0, localDirectory.Files.Count());
+                Assert.Empty(localDirectory.Files);
                 Assert.Equal(dirNames.Length, localDirectory.Directories.Count());
 
                 foreach (var dirName in dirNames)
@@ -83,7 +83,7 @@ namespace SyncTool.FileSystem.Test.Local
                 var localDirectory = new LocalDirectory(null, temporaryDirectory.Directory.Location);
 
                 Assert.Equal(fileNames.Length, localDirectory.Files.Count());
-                Assert.Equal(0, localDirectory.Directories.Count());
+                Assert.Empty(localDirectory.Directories);
                 
                 NativeFile.Delete(Path.Combine(temporaryDirectory.Directory.Location, fileNames.First()));
 
@@ -102,16 +102,14 @@ namespace SyncTool.FileSystem.Test.Local
             {
                 var localDirectory = new LocalDirectory(null, temporaryDirectory.Directory.Location);
 
-                Assert.Equal(0, localDirectory.Files.Count());
+                Assert.Empty(localDirectory.Files);
                 Assert.Equal(dirNames.Length, localDirectory.Directories.Count());
 
                 
                 NativeDirectory.Delete(Path.Combine(temporaryDirectory.Directory.Location, dirNames.First()));
 
-                Assert.Equal(0, localDirectory.Files.Count());
+                Assert.Empty(localDirectory.Files);
                 Assert.Equal(dirNames.Length - 1, localDirectory.Directories.Count());
-
-
             }
         }
     }

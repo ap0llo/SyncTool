@@ -27,7 +27,7 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
 
             var metaFileSystem = m_Instance.CreateMetaDirectory(directory);
 
-            Assert.Equal(0, metaFileSystem.Directories.Count());
+            Assert.Empty(metaFileSystem.Directories);
             Assert.Equal(2, metaFileSystem.Files.Count());
 
             Assert.True(metaFileSystem.FileExists(s_File1 + FilePropertiesFile.FileNameSuffix));
@@ -60,8 +60,8 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
 
             var metaFileSystem = m_Instance.CreateMetaDirectory(directory);
 
-            Assert.Equal(1, metaFileSystem.Directories.Count());
-            Assert.Equal(1 + 1, metaFileSystem.Files.Count());
+            Assert.Single(metaFileSystem.Directories);
+            Assert.Equal(2, metaFileSystem.Files.Count());
 
             Assert.True(metaFileSystem.FileExists(fileMock1.Object.Name + FilePropertiesFile.FileNameSuffix));
             Assert.True(metaFileSystem.FileExists(DirectoryPropertiesFile.FileName));

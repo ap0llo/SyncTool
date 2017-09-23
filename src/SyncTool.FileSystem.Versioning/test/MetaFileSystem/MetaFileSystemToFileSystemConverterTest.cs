@@ -90,7 +90,7 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
             var convertedFileSystem = m_Instance.Convert(metaFileSystem);
             Assert.Empty(convertedFileSystem.Files);
             Assert.Equal(s_Dir1, convertedFileSystem.Name);
-            Assert.Equal(1, convertedFileSystem.Directories.Count());
+            Assert.Single(convertedFileSystem.Directories);
             Assert.Equal(s_Dir2, convertedFileSystem.Directories.Single().Name);
         }
     }

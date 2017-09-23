@@ -297,7 +297,7 @@ namespace SyncTool.Sql.Test.Model
             Assert.Null(loadedInstance.Directories);
             Assert.NotNull(loadedInstance.Files);
 
-            Assert.Equal(1, loadedInstance.Files.Count);
+            Assert.Single(loadedInstance.Files);
             Assert.Single(loadedInstance.Files.Where(x => x.Id == file1.Id));
         }
 
