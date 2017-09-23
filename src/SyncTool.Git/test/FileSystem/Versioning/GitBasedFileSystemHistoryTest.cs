@@ -7,10 +7,10 @@ using SyncTool.FileSystem.TestHelpers;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.FileSystem.Versioning;
 using SyncTool.Git.RepositoryAccess;
+using SyncTool.Git.Options;
 using Xunit;
 using Directory = SyncTool.FileSystem.Directory;
 using NativeFile = System.IO.File;
-
 
 namespace SyncTool.Git.Test.FileSystem.Versioning
 {

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 using System;
-using SyncTool.Cli.Configuration;
+using SyncTool.Cli.Options;
 
 namespace SyncTool.Cli.Installation
 {

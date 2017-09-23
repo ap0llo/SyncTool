@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace SyncTool.Git
+namespace SyncTool.Git.Options
 {
     public sealed class GitOptions
     {

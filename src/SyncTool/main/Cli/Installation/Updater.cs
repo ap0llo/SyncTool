@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Squirrel;
-using SyncTool.Cli.Configuration;
+using SyncTool.Cli.Options;
 
 namespace SyncTool.Cli.Installation
 {

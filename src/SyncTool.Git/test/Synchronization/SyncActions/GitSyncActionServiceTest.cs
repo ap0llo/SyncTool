@@ -5,6 +5,7 @@ using SyncTool.FileSystem;
 using SyncTool.Git.RepositoryAccess;
 using SyncTool.Git.Synchronization.SyncActions;
 using SyncTool.Git.TestHelpers;
+using SyncTool.Git.Options;
 using SyncTool.Synchronization;
 using SyncTool.Synchronization.SyncActions;
 using Xunit;
@@ -16,7 +17,6 @@ namespace SyncTool.Git.Test.Synchronization.SyncActions
     /// </summary>
     public class GitSyncActionServiceTest : GitGroupBasedTest
     {
-
         readonly IGroup m_Group;
         readonly GitSyncActionService m_Service;
         readonly GitRepository m_Repository;

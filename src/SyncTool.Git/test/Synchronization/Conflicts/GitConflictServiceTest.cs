@@ -5,6 +5,7 @@ using SyncTool.Common.Services;
 using SyncTool.Git.RepositoryAccess;
 using SyncTool.Git.Synchronization.Conflicts;
 using SyncTool.Git.TestHelpers;
+using SyncTool.Git.Options;
 using SyncTool.Synchronization.Conflicts;
 using Xunit;
 

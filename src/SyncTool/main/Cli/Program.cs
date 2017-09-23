@@ -1,7 +1,7 @@
 ﻿using System;
 using Autofac;
 using JetBrains.Annotations;
-using SyncTool.Cli.Configuration;
+using SyncTool.Cli.Options;
 using SyncTool.Cli.DI;
 using SyncTool.Cli.Framework;
 using SyncTool.Cli.Installation;

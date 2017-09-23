@@ -7,6 +7,7 @@ using SyncTool.Git.Configuration;
 using SyncTool.Git.RepositoryAccess;
 using SyncTool.Git.TestHelpers;
 using Xunit;
+using SyncTool.Git.Options;
 
 namespace SyncTool.Git.Test.Configuration
 {

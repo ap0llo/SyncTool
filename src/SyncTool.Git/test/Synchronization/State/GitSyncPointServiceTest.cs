@@ -4,6 +4,7 @@ using SyncTool.Common.Groups;
 using SyncTool.Git.RepositoryAccess;
 using SyncTool.Git.Synchronization.State;
 using SyncTool.Git.TestHelpers;
+using SyncTool.Git.Options;
 using SyncTool.Synchronization.State;
 using SyncTool.Synchronization.TestHelpers;
 using Xunit;

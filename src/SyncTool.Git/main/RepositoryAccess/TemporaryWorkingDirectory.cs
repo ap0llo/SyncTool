@@ -1,6 +1,7 @@
 ﻿using System;
 using LibGit2Sharp;
 using SyncTool.Utilities;
+using SyncTool.Git.Options;
 
 namespace SyncTool.Git.RepositoryAccess
 {

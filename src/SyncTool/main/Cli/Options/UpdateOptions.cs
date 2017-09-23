@@ -1,7 +1,14 @@
 ﻿using System;
 
-namespace SyncTool.Cli.Configuration
+namespace SyncTool.Cli.Options
 {
+    enum UpdateSource
+    {
+        NotConfigured = 0,
+        GitHub = 1,
+        FileSystem = 2
+    }
+
     sealed class UpdateOptions
     {
         public bool Enable { get; set; } = false;

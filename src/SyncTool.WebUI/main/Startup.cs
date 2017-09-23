@@ -3,31 +3,33 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SyncTool.Git.DI;
-using SyncTool.Common;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using SyncTool.Common;
+using SyncTool.Common.Options;
 using SyncTool.Common.DI;
 using SyncTool.FileSystem.DI;
-using SyncTool.Git;
+using SyncTool.Git.DI;
+using SyncTool.Git.Options;
 using SyncTool.Sql.DI;
 
 namespace SyncTool.WebUI
 {
     public class Startup
     {
-
         public IContainer ApplicationContainer { get; private set; }
 
         public ILifetimeScope ApplicationLifetimeScope { get; private set; }
-		
+
+        public IConfiguration Configuration { get; }
+
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -41,9 +43,9 @@ namespace SyncTool.WebUI
             builder.RegisterModule<FileSystemModule>();
             builder.RegisterModule<GitModuleFactoryModule>();
             builder.RegisterModule<SqlModuleFactoryModule>();
-            builder.RegisterInstance(new GitOptions()).AsSelf();
+            builder.RegisterOptions<GitOptions>(Configuration);
             builder.Populate(services);
-
+            
             ApplicationContainer = builder.Build();
             ApplicationLifetimeScope = ApplicationContainer.BeginLifetimeScope(Scope.Application);
 

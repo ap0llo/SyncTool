@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using SyncTool.Common.TestHelpers;
 using SyncTool.Git.DI;
+using SyncTool.Git.Options;
 using SyncTool.Git.RepositoryAccess;
 
 namespace SyncTool.Git.TestHelpers
