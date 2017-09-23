@@ -15,7 +15,7 @@ namespace SyncTool.Common.DI
                 .As<IGroup>()                
                 .ExternallyOwned();
 
-            builder.RegisterType<CurrentDirectoryGroupDirectoryPathProvider>().As<IGroupDirectoryPathProvider>();
+            builder.RegisterType<GroupDirectoryPathProvider>().As<IGroupDirectoryPathProvider>();
             builder.RegisterType<JsonGroupSettingsProvider>().As<IGroupSettingsProvider>();
             builder.RegisterType<GroupManager>().As<IGroupManager>().InstancePerMatchingLifetimeScope(Scope.Application);
 

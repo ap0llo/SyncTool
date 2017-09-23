@@ -4,6 +4,7 @@ using Autofac;
 using SyncTool.Common.DI;
 using SyncTool.Common.Groups;
 using SyncTool.Utilities;
+using SyncTool.Common.Options;
 
 using Directory = System.IO.Directory;
 
@@ -36,7 +37,9 @@ namespace SyncTool.Common.TestHelpers
             containerBuilder.RegisterModule<CommonApplicationScopeModule>();            
             
             containerBuilder.RegisterInstance(new JsonGroupSettingsProvider(groupSettingsDirectoy)).As<IGroupSettingsProvider>();
-            containerBuilder.RegisterInstance(new SingleDirectoryGroupDirectoryPathProvider(groupStorageRoot)).As<IGroupDirectoryPathProvider>();            
+            containerBuilder
+                .RegisterInstance(new GroupDirectoryPathProvider(new ApplicationDataOptions() { RootPath = groupStorageRoot }))
+                .As<IGroupDirectoryPathProvider>();            
 
 
             RegisterServices(containerBuilder);

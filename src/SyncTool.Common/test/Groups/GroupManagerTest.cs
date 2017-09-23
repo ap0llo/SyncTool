@@ -12,6 +12,7 @@ using SyncTool.Utilities;
 using SyncTool.Common.Groups;
 
 using static SyncTool.Common.TestHelpers.GroupSettingsProviderMockingHelper;
+using SyncTool.Common.Options;
 
 namespace SyncTool.Common.Test.Groups
 {
@@ -86,7 +87,7 @@ namespace SyncTool.Common.Test.Groups
             moduleFactoryMock.Setup(m => m.IsAddressSupported(It.IsAny<string>())).Returns(true);
 
             builder
-                .RegisterInstance(new SingleDirectoryGroupDirectoryPathProvider(m_TempDirectory))
+                .RegisterInstance(new GroupDirectoryPathProvider(new ApplicationDataOptions() { RootPath = m_TempDirectory }))
                 .As<IGroupDirectoryPathProvider>();
 
             builder.RegisterType<GroupManager>().AsSelf();

@@ -6,7 +6,7 @@ using SyncTool.Common.Groups;
 namespace SyncTool.Common.Test.Groups
 {
     /// <summary>
-    /// Tests for <see cref="SingleDirectoryGroupDirectoryPathProvider"/>
+    /// Tests for <see cref="GroupDirectoryPathProvider"/>
     /// </summary>
     public class SingleDirectoryGroupDirectoryPathProviderTest
     {
@@ -14,7 +14,7 @@ namespace SyncTool.Common.Test.Groups
         public void Constructor_throws_DirectoryNotFoundException_if_root_directory_does_not_exist()
         {
             var nonExistingDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Assert.Throws<DirectoryNotFoundException>(() => new SingleDirectoryGroupDirectoryPathProvider(nonExistingDirectory));
+            Assert.Throws<DirectoryNotFoundException>(() => new GroupDirectoryPathProvider(nonExistingDirectory));
         }
     }
 }
