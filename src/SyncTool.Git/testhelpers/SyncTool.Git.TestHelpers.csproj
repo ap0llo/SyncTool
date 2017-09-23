@@ -1,6 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.Common\testhelpers\SyncTool.Common.TestHelpers.csproj" />
     <ProjectReference Include="..\..\SyncTool.Synchronization\testhelpers\SyncTool.Synchronization.TestHelpers.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+	  <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+	  <PackageReference Include="xunit" Version="2.3.0-beta5-build3769" />    
+    <PackageReference Include="Moq" Version="4.7.99" />
+  </ItemGroup>
+    
 </Project>

@@ -135,7 +135,7 @@ namespace SyncTool.Git.Test.FileSystem.Versioning
             var snapshot1 = m_Instance.CreateSnapshot(state);
             var snapshot2 = m_Instance.CreateSnapshot(state);
 
-            Assert.Equal(1, m_Instance.Snapshots.Count());
+            Assert.Single(m_Instance.Snapshots);
             Assert.Equal(snapshot1.Id, snapshot2.Id);
         }
 
@@ -620,7 +620,7 @@ namespace SyncTool.Git.Test.FileSystem.Versioning
             var snapshot = m_Instance.CreateSnapshot(state);
             
             Assert.Single(m_Instance.GetChanges(snapshot.Id).ChangeLists);
-            Assert.True(m_Instance.GetChanges(snapshot.Id).ChangeLists.Single().Path.StartsWith("/"));
+            Assert.StartsWith("/", m_Instance.GetChanges(snapshot.Id).ChangeLists.Single().Path);
         }
 
         [Fact]
@@ -929,7 +929,7 @@ namespace SyncTool.Git.Test.FileSystem.Versioning
             var changedFiles = m_Instance.GetChangedFiles(snapshot.Id);
 
             Assert.Single(changedFiles);
-            Assert.True(changedFiles.Single().StartsWith("/"));
+            Assert.StartsWith("/", changedFiles.Single());
         }
 
 

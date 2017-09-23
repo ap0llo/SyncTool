@@ -56,9 +56,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
 
         [Theory]
         [InlineData("name", "", "name")]
-        [InlineData("prefix/name", "prefix", "name")]        
-        [InlineData("prefix/name", "prefix", "name")]
-        [InlineData("name", "", "name")]        
+        [InlineData("prefix/name", "prefix", "name")]                        
         [InlineData("prefix/morePrefix/name", "prefix/morePrefix", "name")]
         public void ToString_returns_expected_result(string expectedResult, string prefix, string name)
         {
@@ -72,8 +70,7 @@ namespace SyncTool.Git.Test.RepositoryAccess
         [InlineData("name1", "nAMe1", true)]        
         [InlineData("prefix/name1", "prefix/name1", true)]
         [InlineData("prefix/name1", "PREFIX/name1", true)]        
-        [InlineData("name1", "PREFIX/name1",false)]
-        [InlineData("name1", "PREFIX/name1",false)]
+        [InlineData("name1", "PREFIX/name1",false)]        
         [InlineData("name2", "name1",false)]
         [InlineData("name2", "prefix/name2",false)]
         [InlineData("prefix/name2", "prefix2/name2",false)]

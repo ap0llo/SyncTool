@@ -16,10 +16,5 @@
 	  <ProjectReference Include="$(SrcRootDirectory)\SyncTool.Utilities\main\SyncTool.Utilities.csproj" />
   </ItemGroup>
   
-  <!-- Always include JetBrains Annotations package for Resharper and System.ValueTuple-->
-  <ItemGroup>
-	<PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.3.1" />
-  </ItemGroup>
   
 </Project>

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Autofac;
 using SyncTool.Common.DI;
 using SyncTool.Common.Groups;
@@ -6,13 +7,12 @@ using SyncTool.Utilities;
 
 using Directory = System.IO.Directory;
 
-
 namespace SyncTool.Common.TestHelpers
 {
     /// <summary>
     /// Test base class for tests that require a <see cref="Group"/>
     /// </summary>
-    public abstract class GroupBasedTest
+    public abstract class GroupBasedTest : IDisposable
     {
         protected readonly string m_RemotePath;
         readonly TemporaryDirectory m_TempDirectory;        

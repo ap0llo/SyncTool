@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
 
+  <PropertyGroup>
+	  <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  
   <ItemGroup>
     <None Remove="SyncTool.Sql.csproj.DotSettings" />
   </ItemGroup>
@@ -9,8 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>    
-    <PackageReference Include="MySqlConnector" Version="0.24.2" />
+    <PackageReference Include="MySqlConnector" Version="0.26.5" />
     <PackageReference Include="Dapper" Version="1.50.2" />
+	  <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />  
   </ItemGroup>
   
 </Project>

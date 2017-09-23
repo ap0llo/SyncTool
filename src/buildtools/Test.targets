@@ -3,19 +3,23 @@
 -->
 <Project>
 
-  <Target Name="Test" Condition="$(IsTestProject)">  
-    <PropertyGroup>
-      <XunitConsolePath>$(NuGetPackageRoot)xunit.runner.console\$(XunitVersion)\tools\xunit.console.exe</XunitConsolePath>
-      <XunitOptions>-html &quot;$(TestResultOutputPath)$(AssemblyName).html&quot; </XunitOptions>
-    </PropertyGroup>
-
-    <Message Text="Running Tests in $(TargetName)" Importance="High" />	      
-    <Error Text="Cannot run tests, XunitVersion is not set"
-            Condition="'$(XunitVersion)' == ''" /> 
-
-    <MakeDir Directories="$(TestResultOutputPath)"/>               
+  <Target Name="Test" Condition="$(IsTestProject) AND '$(TargetFramework)' == 'net461' ">    
+    <Message Text="Running Tests in $(TargetName)" Importance="High" />	          
     <Exec Command="$(XunitConsolePath) &quot;$(OutputPath)$(AssemblyName).dll&quot; $(XunitOptions)"  
           StandardOutputImportance="normal" />          
   </Target>
 
+  <Target Name="Test" Condition="$(IsTestProject) AND '$(TargetFramework)' == 'netcoreapp2.0' ">  
+    <PropertyGroup>
+      <XunitOptions>$(XunitOptions) -configuration $(Configuration) </XunitOptions>
+      <XunitOptions>$(XunitOptions) -framework $(TargetFramework) </XunitOptions>
+    </PropertyGroup>
+
+    <Message Text="Running Tests in $(TargetName)" Importance="High" />	      
+    
+    <Exec Command="dotnet xunit $(XunitOptions)"  
+          StandardOutputImportance="normal"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />          
+  </Target>
+  
 </Project>

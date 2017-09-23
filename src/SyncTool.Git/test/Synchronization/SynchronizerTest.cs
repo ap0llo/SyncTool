@@ -317,7 +317,7 @@ namespace SyncTool.Git.Test.Synchronization
             right.CreateSnapshot();
 
             m_Instance.Synchronize(m_Group);
-            Assert.Equal(1, m_Group.GetSyncActionService().AllItems.Count());
+            Assert.Single(m_Group.GetSyncActionService().AllItems);
 
             // left: add file 2
             left.AddFiles("file2");

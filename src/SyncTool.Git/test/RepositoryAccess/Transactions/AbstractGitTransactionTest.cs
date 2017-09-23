@@ -328,7 +328,7 @@ namespace SyncTool.Git.Test.RepositoryAccess.Transactions
             
             transaction.Commit();
 
-            Assert.True(m_RemoteRepository.Branches.Any(x => x.FriendlyName == branchName));
+            Assert.Contains(m_RemoteRepository.Branches, x => x.FriendlyName == branchName);
             Assert.Equal(2, m_RemoteRepository.GetAllCommits().Count());
         }
         
@@ -386,7 +386,7 @@ namespace SyncTool.Git.Test.RepositoryAccess.Transactions
             transaction1.Commit();
             transaction2.Commit();
 
-            Assert.True(m_RemoteRepository.Branches.Any(x => x.FriendlyName == branchName));
+            Assert.Contains(m_RemoteRepository.Branches, x => x.FriendlyName == branchName);
         }
 
         [Fact]

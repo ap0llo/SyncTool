@@ -1,8 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+  	<TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.Common\main\SyncTool.Common.csproj" />
     <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj" />
   </ItemGroup>    
-  
+
+  <ItemGroup>
+	  <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+  </ItemGroup>
+    
 </Project>
