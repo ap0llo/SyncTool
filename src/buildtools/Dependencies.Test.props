@@ -1,13 +1,5 @@
 <Project>
 
-  <ItemGroup>    
-    <PackageReference Include="Moq" Version="$(MoqVersion)" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="xunit" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.runner.console" Version="$(XunitVersion)" />
-  </ItemGroup>
-
   <!-- if project is a test, determine the path of the associated "main" and "testhelpers" project -->
   <PropertyGroup>
     <MainProjectPath>$(MSBuildProjectDirectory)\..\main\$(MSBuildProjectName.Replace('.Test', '')).csproj</MainProjectPath>        

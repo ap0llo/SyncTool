@@ -1,8 +1,0 @@
-<Project>
-    
-    <PropertyGroup>
-        <XunitVersion>2.2.0</XunitVersion>
-        <MoqVersion>4.7.25</MoqVersion>
-    </PropertyGroup>  
-  
-</Project>

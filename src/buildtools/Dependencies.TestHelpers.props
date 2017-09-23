@@ -1,10 +1,5 @@
 <Project>
   
-  <ItemGroup>    
-    <PackageReference Include="xunit" Version="$(XunitVersion)" />    
-    <PackageReference Include="Moq" Version="$(MoqVersion)" />
-  </ItemGroup>
-
   <!-- if project is a test helper project, determine the path of the associated "main" project -->
   <PropertyGroup>
     <MainProjectPath>$(MSBuildProjectDirectory)\..\main\$(MSBuildProjectName.Replace('.TestHelpers', '')).csproj</MainProjectPath>    
