@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  
+  <ItemGroup>
+    <None Remove="SyncTool.Sql.Test.csproj.DotSettings" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\SyncTool.Common\testhelpers\SyncTool.Common.TestHelpers.csproj" />
+    <ProjectReference Include="..\..\SyncTool.FileSystem\testhelpers\SyncTool.FileSystem.TestHelpers.csproj" />
+    <ProjectReference Include="..\..\SyncTool.Synchronization\testhelpers\SyncTool.Synchronization.TestHelpers.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+    
+  <!-- 
+    Tests in this projects require access to a MySQL server.
+    Connection details are loaded by the tests from environment variables
+    This target runs before the actual Test target and ensures all     
+    required variables are set
+  -->
+  <Target Name="CheckTestEnvironment" BeforeTargets="Test">
+    <Message Text="Checking if the test environment has been set up for running test in $(TargetName)" />
+    <CheckEnvironmentVariables Names="SYNCTOOL_TEST_MYSQLURI" />
+  </Target>
+
+</Project>

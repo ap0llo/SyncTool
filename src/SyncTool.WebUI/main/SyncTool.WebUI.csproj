@@ -2,8 +2,9 @@
   
   <PropertyGroup>
     <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
+    <PlatformTarget>AnyCPU</PlatformTarget>    
   </PropertyGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="2.4.337" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.1" />
@@ -20,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.Git\main\SyncTool.Git.csproj" />
+    <ProjectReference Include="..\..\SyncTool.Sql\main\SyncTool.Sql.csproj" />
   </ItemGroup>
   
   <ItemGroup>

@@ -27,6 +27,12 @@ namespace SyncTool.FileSystem.Versioning
         /// <summary>
         /// Saves the latest snapshots of the underlying file system histories
         /// </summary>
+        /// <remarks>
+        /// If no file system historie exist, no snapshot is created
+        /// </remarks>
+        /// <returns>
+        /// Returns the snapshot object if a snapshot was created, otherwise null
+        /// </returns>
         IMultiFileSystemSnapshot CreateSnapshot();
 
         /// <summary>

@@ -9,6 +9,7 @@
 	
 	<Target Name="Test">
 		<MSBuild Projects="@(TestProject)" Targets="Test" BuildInParallel="false" Properties="Configuration=$(Configuration)" />          
+		<Message Text="Test run completed" Importance="High" />
 	</Target>
 	
 </Project>

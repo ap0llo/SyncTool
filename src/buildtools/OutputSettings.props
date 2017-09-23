@@ -10,7 +10,7 @@
     <BaseIntermediateOutputPath>$(BaseOutputPath)intermediate\$(MSBuildProjectName)\</BaseIntermediateOutputPath>	
     <OutputPath>$(BaseOutputPath)$(Configuration)\$(MSBuildProjectName)\</OutputPath>      
     <SetupOutputPath>$(BaseOutputPath)$(Configuration)\Setup\</SetupOutputPath>
-
+    <TestResultOutputPath>$(BaseOutputPath)</TestResultOutputPath>
     <!-- 
       Determine version and buildnumber 
       When building on AppVeyor, use the AppVeyor build number, otherwise default to 0,

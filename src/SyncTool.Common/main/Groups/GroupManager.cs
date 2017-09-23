@@ -8,15 +8,14 @@ using System.IO;
 
 
 namespace SyncTool.Common.Groups
-{
-    //TODO: Reuse instances/lifetimes in OpenRead()
+{    
     sealed class GroupManager : IGroupManager
     {
         readonly IDictionary<string, GroupSettings> m_GroupSettings;  
         readonly IGroupDirectoryPathProvider m_PathProvider;
         readonly IGroupSettingsProvider m_SettingsProvider;
         readonly ILifetimeScope m_ApplicationScope;
-        readonly IGroupModuleFactory m_ModuleFactory;
+        readonly IGroupModuleFactory[] m_ModuleFactories;
 
         readonly IDictionary<string, OpenedState> m_OpenedStates = new Dictionary<string, OpenedState>(StringComparer.InvariantCultureIgnoreCase);
         readonly IDictionary<string, ILifetimeScope> m_OpenGroupScopes = new Dictionary<string, ILifetimeScope>(StringComparer.InvariantCultureIgnoreCase);
@@ -28,12 +27,12 @@ namespace SyncTool.Common.Groups
             IGroupDirectoryPathProvider pathProvider, 
             IGroupSettingsProvider settingsProvider,
             ILifetimeScope applicationScope,
-            IGroupModuleFactory moduleFactory)
+            IEnumerable<IGroupModuleFactory> moduleFactories)
         {
             m_ApplicationScope = applicationScope ?? throw new ArgumentNullException(nameof(applicationScope));
             m_PathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
             m_SettingsProvider = settingsProvider ?? throw new ArgumentNullException(nameof(settingsProvider));
-            m_ModuleFactory = moduleFactory ?? throw new ArgumentNullException(nameof(moduleFactory));
+            m_ModuleFactories = (moduleFactories ?? throw new ArgumentNullException(nameof(moduleFactories))).ToArray();
 
             m_GroupSettings = m_SettingsProvider.GetGroupSettings().ToDictionary(g => g.Name, StringComparer.InvariantCultureIgnoreCase);
         }
@@ -47,7 +46,7 @@ namespace SyncTool.Common.Groups
             var currentState = m_OpenedStates.GetOrAdd(name, () => new OpenedState());
             if (!currentState.CanOpenShared)
             {
-                throw new GroupOpenedException("Group is already opened and cannot be opened for reading");
+                throw new GroupOpenedException("Group is already opened exclusively and cannot be opened for reading");
             }        
             currentState.NotifyOpenedShared();
 
@@ -88,7 +87,7 @@ namespace SyncTool.Common.Groups
             EnsureGroupDoesNotExist(name);
             EnsureAddressDoesNotExist(address);
 
-            using (var groupScope = GetGroupScope(GetGroupStorage(name)))
+            using (var groupScope = GetGroupScope(GetGroupStorage(name), new GroupSettings(name, address)))
             {
                 var validator = groupScope.Resolve<IGroupValidator>();
                 try
@@ -109,7 +108,7 @@ namespace SyncTool.Common.Groups
             EnsureGroupDoesNotExist(name);
             EnsureAddressDoesNotExist(address);
 
-            using (var scope = GetGroupScope(GetGroupStorage(name)))
+            using (var scope = GetGroupScope(GetGroupStorage(name), new GroupSettings(name, address)))
             {
                 var initializer = scope.Resolve<IGroupInitializer>();
 
@@ -170,15 +169,29 @@ namespace SyncTool.Common.Groups
             }
         }
        
-        ILifetimeScope GetGroupScope(GroupStorage groupStorage, GroupSettings groupSettings = null)
+        ILifetimeScope GetGroupScope(GroupStorage groupStorage, GroupSettings groupSettings)
         {            
             return m_ApplicationScope.BeginLifetimeScope(Scope.Group, builder =>
             {
+                var moduleFactory = GetGroupModuleFactory(groupSettings.Address);
+
                 builder.RegisterModule(new CommonGroupScopeModule(groupStorage, groupSettings));
-                builder.RegisterModule(m_ModuleFactory.CreateModule());
+                builder.RegisterModule(moduleFactory.CreateModule());
             });
         }
-        
+
+        IGroupModuleFactory GetGroupModuleFactory(string address)
+        {
+            var moduleFactory = m_ModuleFactories.SingleOrDefault(f => f.IsAddressSupported(address));
+
+            if (moduleFactory == null)
+            {
+                throw new AddressNotSupportedException($"The address '{address}' is not supported by any module", address);
+            }
+
+            return moduleFactory;
+        }
+
         GroupStorage GetGroupStorage(string groupName)
         {
             var path = m_PathProvider.GetGroupDirectoryPath(groupName);

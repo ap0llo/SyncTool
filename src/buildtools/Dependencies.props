@@ -8,18 +8,17 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   
   <!-- SyncTool.Utilities can be used by all projects (but prevent self-reference) -->
-  <ItemGroup Condition=" '$(MSBuildProjectName)' != 'SyncTool.Utilities'">
+  <ItemGroup Condition=" '$(MSBuildProjectName)' != 'SyncTool.Utilities' AND '$(MSBuildProjectName)' != 'SyncTool.Utilities.Test'">
 	  <ProjectReference Include="$(SrcRootDirectory)\SyncTool.Utilities\main\SyncTool.Utilities.csproj" />
   </ItemGroup>
   
   <!-- Always include JetBrains Annotations package for Resharper and System.ValueTuple-->
   <ItemGroup>
-	  <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
+	<PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="System.ValueTuple" Version="4.3.1" />
   </ItemGroup>
   
