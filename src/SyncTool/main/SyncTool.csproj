@@ -1,12 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFramework>net461</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup>     
-     <OutputType>Exe</OutputType>          
-     <PlatformTarget>AnyCPU</PlatformTarget>
+	  <TargetFramework>net461</TargetFramework>  
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputType>Exe</OutputType>          
   </PropertyGroup>
 
   <!-- Nuget package properties -->
@@ -33,7 +30,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.0.0" />
     <PackageReference Include="Grynwald.Utilities.Squirrel.Build" Version="1.0.20" />
-	<PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
+	  <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
   
