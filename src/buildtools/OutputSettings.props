@@ -1,9 +1,8 @@
 <!-- Defines output paths and version information -->
 <Project>
   <PropertyGroup>
-  
-    <!-- Target Framework(s)-->
-    <TargetFramework>net461</TargetFramework>
+      
+    
     
     <!-- Output paths -->
     <BaseOutputPath>$(MSBuildThisFileDirectory)..\..\build\</BaseOutputPath>

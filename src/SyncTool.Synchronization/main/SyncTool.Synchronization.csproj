@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+	<TargetFramework>net461</TargetFramework>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\main\SyncTool.FileSystem.Versioning.csproj" />
     <ProjectReference Include="..\..\SyncTool.Configuration\main\SyncTool.Configuration.csproj" />

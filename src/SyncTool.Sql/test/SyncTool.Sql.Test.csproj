@@ -1,4 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+
+  <PropertyGroup>
+	<TargetFramework>net461</TargetFramework>
+  </PropertyGroup>
   
   <ItemGroup>
     <None Remove="SyncTool.Sql.Test.csproj.DotSettings" />
