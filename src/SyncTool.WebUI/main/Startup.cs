@@ -44,6 +44,7 @@ namespace SyncTool.WebUI
             builder.RegisterModule<GitModuleFactoryModule>();
             builder.RegisterModule<SqlModuleFactoryModule>();
             builder.RegisterOptions<GitOptions>(Configuration);
+            builder.RegisterOptions<ApplicationDataOptions>(Configuration);
             builder.Populate(services);
             
             ApplicationContainer = builder.Build();

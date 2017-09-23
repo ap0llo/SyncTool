@@ -13,5 +13,9 @@
 
   "Git": {
     // "TempPath" : "C:\Some Path"
+  },
+  "ApplicationData": {
+    // The path used to store application data, default is %APPDATA%\SyncTool
+    // "RootPath" :  ""
   }
 }

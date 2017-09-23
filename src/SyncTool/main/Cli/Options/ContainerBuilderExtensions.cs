@@ -18,7 +18,8 @@ namespace SyncTool.Cli.Options
             var root = GetConfigurationRoot();
 
             containerBuilder.RegisterOptions<UpdateOptions>(root);
-            containerBuilder.RegisterOptions<GitOptions>(root);                   
+            containerBuilder.RegisterOptions<GitOptions>(root);
+            containerBuilder.RegisterOptions<ApplicationDataOptions>(root);                   
         }
 
         static IConfigurationRoot GetConfigurationRoot()
