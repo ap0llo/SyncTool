@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Autofac;
 using SyncTool.Cli.Installation;
 using SyncTool.Common.Options;
+using SyncTool.Git.Options;
 
 namespace SyncTool.Cli.Options
 {
@@ -17,7 +18,7 @@ namespace SyncTool.Cli.Options
             var root = GetConfigurationRoot();
 
             containerBuilder.RegisterOptions<UpdateOptions>(root);
-            containerBuilder.RegisterOptions<UpdateOptions>(root);            
+            containerBuilder.RegisterOptions<GitOptions>(root);                   
         }
 
         static IConfigurationRoot GetConfigurationRoot()
