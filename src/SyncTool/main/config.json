@@ -2,6 +2,8 @@
   "Update": {
     "Enable": true,
     "Source": "GitHub",
+    // the path to load updates from (needs to be compatible with the selected source)
+    // in the value, environment variables can be used
     "Path": "https://www.github.com/ap0llo/synctool",
     "InstallPreReleaseVersions": true,
 
@@ -12,10 +14,14 @@
   },
 
   "Git": {
-    // "TempPath" : "C:\Some Path"
+    // The path used by the git implementation to store temporary data
+    // default is %TEMP%
+    // Usage of environment variables in the value is supported, e.g.
+    // "TempPath" : "%SystemDrive%\Some Path"
   },
   "ApplicationData": {
     // The path used to store application data, default is %APPDATA%\SyncTool
+    // Usage of environment variables in the value is supported, e.g.  "%APPDATA%\SyncTool"
     // "RootPath" :  ""
   }
 }
