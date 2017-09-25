@@ -10,8 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="LibGit2Sharp" Version="0.25.0-preview-0033" />    
-    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />    
   </ItemGroup>
   
 </Project>
