@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LibGit2Sharp;
 using SyncTool.FileSystem;
+using NodaTime;
 
 namespace SyncTool.Git.FileSystem
 {
@@ -12,17 +13,17 @@ namespace SyncTool.Git.FileSystem
     public class GitDirectory : InMemoryDirectory
     {
         readonly string m_Name;
-        readonly DateTime m_CommitTime;
+        readonly Instant m_CommitTime;
         readonly Tree m_Tree;
 
         bool m_Loaded = false;
 
         
-        public GitDirectory(IDirectory parent, string name, Commit commit) : this(parent, name, commit.Author.When.DateTime, commit.Tree)
+        public GitDirectory(IDirectory parent, string name, Commit commit) : this(parent, name, Instant.FromDateTimeOffset(commit.Author.When), commit.Tree)
         {            
         }
 
-        public GitDirectory(IDirectory parent, string name, DateTime commitTime, Tree tree) : base(parent, name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
+        public GitDirectory(IDirectory parent, string name, Instant commitTime, Tree tree) : base(parent, name, Enumerable.Empty<IDirectory>(), Enumerable.Empty<IFile>())
         {
             m_Name = name;
             m_CommitTime = commitTime;

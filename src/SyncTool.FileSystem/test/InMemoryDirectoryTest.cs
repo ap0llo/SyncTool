@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NodaTime;
 using Xunit;
 
 namespace SyncTool.FileSystem.Test
@@ -120,7 +121,7 @@ namespace SyncTool.FileSystem.Test
         [Fact]
         public void GetFile_using_reference_throws_FileNotFoundException_if_the_LastWriteTime_from_the_reference_does_not_match()
         {
-            var reference = new FileReference(m_File1.Path, m_File1.LastWriteTime.AddMinutes(1), m_File1.Length);
+            var reference = new FileReference(m_File1.Path, m_File1.LastWriteTime + Duration.FromMinutes(1), m_File1.Length);
             Assert.Throws<FileNotFoundException>(() => m_Root.GetFile(reference));
         }
 
@@ -189,18 +190,18 @@ namespace SyncTool.FileSystem.Test
         public void FileExists_using_reference_returns_expected_result()
         {
             Assert.False(m_Root.FileExists(new FileReference("/someFileName")));
-            Assert.False(m_Root.FileExists(new FileReference("/someFileName", DateTime.Now)));
-            Assert.False(m_Root.FileExists(new FileReference("/someFileName", DateTime.Now, 23)));
+            Assert.False(m_Root.FileExists(new FileReference("/someFileName", SystemClock.Instance.GetCurrentInstant())));
+            Assert.False(m_Root.FileExists(new FileReference("/someFileName", SystemClock.Instance.GetCurrentInstant(), 23)));
             Assert.False(m_Root.FileExists(new FileReference("/someFileName", null, 42)));
 
             Assert.False(m_Root.FileExists(new FileReference("/file1")));
-            Assert.False(m_Root.FileExists(new FileReference("/file1", DateTime.Now)));
-            Assert.False(m_Root.FileExists(new FileReference("/file1", DateTime.Now, 23)));
+            Assert.False(m_Root.FileExists(new FileReference("/file1", SystemClock.Instance.GetCurrentInstant())));
+            Assert.False(m_Root.FileExists(new FileReference("/file1", SystemClock.Instance.GetCurrentInstant(), 23)));
             Assert.False(m_Root.FileExists(new FileReference("/file1", null, 23)));
 
             Assert.False(m_Root.FileExists(new FileReference("/someDir/someFile")));
-            Assert.False(m_Root.FileExists(new FileReference("/someDir/someFile", DateTime.Now)));
-            Assert.False(m_Root.FileExists(new FileReference("/someDir/someFile", DateTime.Now, 42)));
+            Assert.False(m_Root.FileExists(new FileReference("/someDir/someFile", SystemClock.Instance.GetCurrentInstant())));
+            Assert.False(m_Root.FileExists(new FileReference("/someDir/someFile", SystemClock.Instance.GetCurrentInstant(), 42)));
             Assert.False(m_Root.FileExists(new FileReference("/someDir/someFile", null, 23)));
 
             Assert.True(m_Root.FileExists(new FileReference("/dir1/file1")));
@@ -209,7 +210,7 @@ namespace SyncTool.FileSystem.Test
             Assert.True(m_Root.FileExists(new FileReference("/dir1/file1", null, m_File1.Length)));
                                                              
 
-            Assert.False(m_Root.FileExists(new FileReference("/dir1/file1", m_File1.LastWriteTime.AddHours(5))));
+            Assert.False(m_Root.FileExists(new FileReference("/dir1/file1", m_File1.LastWriteTime + Duration.FromHours(5))));
             Assert.False(m_Root.FileExists(new FileReference("/dir1/file1", m_File1.LastWriteTime, m_File1.Length + 23)));
             Assert.False(m_Root.FileExists(new FileReference("/dir1/file1", null, m_File1.Length + 42)));
         }

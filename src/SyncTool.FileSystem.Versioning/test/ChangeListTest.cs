@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NodaTime;
+using System;
 using System.Linq;
 using Xunit;
 
@@ -25,8 +26,8 @@ namespace SyncTool.FileSystem.Versioning.Test
         [Fact]
         public void Construtor_throws_ArgumentNullException_if_changes_have_different_paths()
         {
-            var file1 = new FileReference("/path1", DateTime.MinValue, 23);
-            var file2 = new FileReference("/path2", DateTime.MinValue, 23);
+            var file1 = new FileReference("/path1", Instant.MinValue, 23);
+            var file2 = new FileReference("/path2", Instant.MinValue, 23);
 
             var change1 = new Change(ChangeType.Added, null, file1);
             var change2 = new Change(ChangeType.Deleted, file2,  null);

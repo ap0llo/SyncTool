@@ -97,25 +97,25 @@ namespace SyncTool.Sql.Model
                 .Append($@"
                 CREATE VIEW {GetViewName(s_UnfilteredChanged)} AS                                           
                     SELECT 
-                        {s_Current}.{FileInstancesTable.Column.FileId}              AS {Column.FileId},
-                        {s_Current}.{FileInstancesTable.Column.Id}                  AS {Column.CurrentId},
-                        {s_Current}.{FileInstancesTable.Column.LastWriteTimeTicks}  AS {Column.CurrentLastWriteTimeTicks},
-                        {s_Current}.{FileInstancesTable.Column.Length}              AS {Column.CurrentLength},
-                        {s_Previous}.{FileInstancesTable.Column.Id}                 AS {Column.PreviousId},
-                        {s_Previous}.{FileInstancesTable.Column.LastWriteTimeTicks} AS {Column.PreviousLastWriteTimeTicks},
-                        {s_Previous}.{FileInstancesTable.Column.Length}             AS {Column.PreviousLength}
+                        {s_Current}.{FileInstancesTable.Column.FileId}                  AS {Column.FileId},
+                        {s_Current}.{FileInstancesTable.Column.Id}                      AS {Column.CurrentId},
+                        {s_Current}.{FileInstancesTable.Column.LastWriteUnixTimeTicks}  AS {Column.CurrentLastWriteTimeTicks},
+                        {s_Current}.{FileInstancesTable.Column.Length}                  AS {Column.CurrentLength},
+                        {s_Previous}.{FileInstancesTable.Column.Id}                     AS {Column.PreviousId},
+                        {s_Previous}.{FileInstancesTable.Column.LastWriteUnixTimeTicks} AS {Column.PreviousLastWriteTimeTicks},
+                        {s_Previous}.{FileInstancesTable.Column.Length}                 AS {Column.PreviousLength}
                     FROM {GetViewName(s_IncludedFileInstances)} AS {s_Current} 
                     LEFT OUTER JOIN {GetViewName(s_PreviousIncludedFileInstances)} AS {s_Previous}
                     ON {s_Current}.{FileInstancesTable.Column.FileId} = {s_Previous}.{FileInstancesTable.Column.FileId}                        
                     UNION
                         SELECT 
-                            {s_Previous}.{FileInstancesTable.Column.FileId}             AS {Column.FileId},
-                            {s_Current}.{FileInstancesTable.Column.Id}                  AS {Column.CurrentId},
-                            {s_Current}.{FileInstancesTable.Column.LastWriteTimeTicks}  AS {Column.CurrentLastWriteTimeTicks},
-                            {s_Current}.{FileInstancesTable.Column.Length}              AS {Column.CurrentLength},
-                            {s_Previous}.{FileInstancesTable.Column.Id}                 AS {Column.PreviousId},
-                            {s_Previous}.{FileInstancesTable.Column.LastWriteTimeTicks} AS {Column.PreviousLastWriteTimeTicks},
-                            {s_Previous}.{FileInstancesTable.Column.Length}             AS {Column.PreviousLength}
+                            {s_Previous}.{FileInstancesTable.Column.FileId}                 AS {Column.FileId},
+                            {s_Current}.{FileInstancesTable.Column.Id}                      AS {Column.CurrentId},
+                            {s_Current}.{FileInstancesTable.Column.LastWriteUnixTimeTicks}  AS {Column.CurrentLastWriteTimeTicks},
+                            {s_Current}.{FileInstancesTable.Column.Length}                  AS {Column.CurrentLength},
+                            {s_Previous}.{FileInstancesTable.Column.Id}                     AS {Column.PreviousId},
+                            {s_Previous}.{FileInstancesTable.Column.LastWriteUnixTimeTicks} AS {Column.PreviousLastWriteTimeTicks},
+                            {s_Previous}.{FileInstancesTable.Column.Length}                 AS {Column.PreviousLength}
                         FROM {GetViewName(s_PreviousIncludedFileInstances)} AS {s_Previous}
                         LEFT OUTER JOIN {GetViewName(s_IncludedFileInstances)} AS {s_Current}                                 
                         ON {s_Current}.{FileInstancesTable.Column.FileId} = {s_Previous}.{FileInstancesTable.Column.FileId};                                                                

@@ -3,15 +3,23 @@ using System.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
+using NodaTime;
+using NodaTime.Serialization.JsonNet;
 
 namespace SyncTool.Synchronization.SyncActions
 {
     public class SyncActionSerializer 
     {
-        static readonly JsonSerializerSettings s_SerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Include};
+        static readonly JsonSerializerSettings s_SerializerSettings;
+
+        static SyncActionSerializer()
+        {
+            s_SerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Include };
+            s_SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+        }
+
 
 
         public string Serialize(SyncAction action)
@@ -59,7 +67,7 @@ namespace SyncTool.Synchronization.SyncActions
 
             try
             {
-                var syncActionDto = JsonConvert.DeserializeObject<SyncActionDto>(jsonString);
+                var syncActionDto = JsonConvert.DeserializeObject<SyncActionDto>(jsonString, s_SerializerSettings);
 
                 return new SyncAction(
                     type: syncActionDto.Type,
@@ -126,14 +134,13 @@ namespace SyncTool.Synchronization.SyncActions
         {
             public string Path { get; set; }
 
-            public DateTime? LastWriteTime { get; set; }
+            public Instant? LastWriteTime { get; set; }
 
             public long? Length { get; set; }
 
 
             public FileReferenceDto()
-            {
-                
+            {                
             }
 
             public FileReferenceDto(IFileReference reference)
@@ -142,8 +149,6 @@ namespace SyncTool.Synchronization.SyncActions
                 LastWriteTime = reference.LastWriteTime;
                 Length = reference.Length;
             }
-        }
-        
-               
+        }                      
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using SyncTool.FileSystem;
-using SyncTool.Git.Common;
+using NodaTime;
 
 namespace SyncTool.Git.RepositoryAccess
 {
@@ -8,20 +8,18 @@ namespace SyncTool.Git.RepositoryAccess
     {
         public const string RepositoryInfoFileName = "SyncToolRepositoryInfo.json";
         
-        
 
         public RepositoryInfoFile(IDirectory parent) : this(parent, new RepositoryInfo())
         {
-         
         }
 
         public RepositoryInfoFile(IDirectory parent, RepositoryInfo repositoryInfo) : base(parent, RepositoryInfoFileName, repositoryInfo)
         {            
         }
 
-        public RepositoryInfoFile(IDirectory parent, RepositoryInfo repositoryInfo, DateTime lastWriteTime) : base(parent, RepositoryInfoFileName, repositoryInfo)
+        public RepositoryInfoFile(IDirectory parent, RepositoryInfo repositoryInfo, Instant lastWriteTime) : base(parent, RepositoryInfoFileName, repositoryInfo)
         {
-            this.LastWriteTime = lastWriteTime;
+            LastWriteTime = lastWriteTime;
         }
 
 

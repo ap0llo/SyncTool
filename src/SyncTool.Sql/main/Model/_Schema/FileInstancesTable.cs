@@ -10,7 +10,7 @@ namespace SyncTool.Sql.Model
         {
             Id,
             FileId,
-            LastWriteTimeTicks,
+            LastWriteUnixTimeTicks,
             Length
         }
 
@@ -18,14 +18,14 @@ namespace SyncTool.Sql.Model
         {
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (                
-                    {Column.Id}                 INTEGER PRIMARY KEY AUTO_INCREMENT,
-                    {Column.FileId}             INTEGER NOT NULL,
-                    {Column.LastWriteTimeTicks} BIGINT NOT NULL,
-                    {Column.Length}             INTEGER NOT NULL,
+                    {Column.Id}                     INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    {Column.FileId}                 INTEGER NOT NULL,
+                    {Column.LastWriteUnixTimeTicks} BIGINT NOT NULL,
+                    {Column.Length}                 INTEGER NOT NULL,
                     FOREIGN KEY ({Column.FileId}) REFERENCES {FilesTable.Name}({FilesTable.Column.Id}),
                     CONSTRAINT FileInstance_Unique UNIQUE (
                         {Column.FileId}, 
-                        {Column.LastWriteTimeTicks}, 
+                        {Column.LastWriteUnixTimeTicks}, 
                         {Column.Length}
                     )); 
             ");

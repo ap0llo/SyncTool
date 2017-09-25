@@ -1,4 +1,5 @@
 ﻿using System;
+using NodaTime;
 
 namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {
@@ -14,8 +15,8 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 
         /// <summary>
         /// The time the file was last modified
-        /// </summary>
-        public DateTime LastWriteTime { get; set; }
+        /// </summary>        
+        public Instant LastWriteTime { get; set; }
 
         /// <summary>
         /// The size of the file in bytes

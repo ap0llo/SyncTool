@@ -1,4 +1,5 @@
 ﻿using System;
+using NodaTime;
 
 namespace SyncTool.FileSystem
 {
@@ -6,12 +7,12 @@ namespace SyncTool.FileSystem
     {
         public string Path { get; }
 
-        public DateTime? LastWriteTime { get; }
+        public Instant? LastWriteTime { get; }
 
         public long? Length { get; }
 
 
-        public FileReference(string path, DateTime? lastWriteTime = null, long? length = null)
+        public FileReference(string path, Instant? lastWriteTime = null, long? length = null)
         {
             PathValidator.EnsureIsValidFilePath(path);
             PathValidator.EnsureIsRootedPath(path);

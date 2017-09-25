@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using Newtonsoft.Json;
+using NodaTime;
+using NodaTime.Serialization.JsonNet;
 
 namespace SyncTool.FileSystem
 {
@@ -23,7 +25,7 @@ namespace SyncTool.FileSystem
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            var serializer = new JsonSerializer();
+            var serializer = new JsonSerializer().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb); 
             var streamWriter = new StreamWriter(stream);
             var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
 
@@ -40,7 +42,7 @@ namespace SyncTool.FileSystem
         {
             var streamReader = new StreamReader(stream);
             var jsonReader = new JsonTextReader(streamReader);
-            var serializer = new JsonSerializer();
+            var serializer = new JsonSerializer().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb); 
 
             return serializer.Deserialize<T>(jsonReader);
         }

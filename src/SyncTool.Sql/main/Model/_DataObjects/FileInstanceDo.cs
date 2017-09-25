@@ -1,5 +1,6 @@
 ﻿using System;
 using JetBrains.Annotations;
+using NodaTime;
 
 namespace SyncTool.Sql.Model
 {
@@ -9,7 +10,7 @@ namespace SyncTool.Sql.Model
         
         public FileDo File { get; set; }
                 
-        public long LastWriteTimeTicks { get; set; }
+        public long LastWriteUnixTimeTicks { get; set; }
 
         public long Length { get; set; }
 
@@ -18,10 +19,10 @@ namespace SyncTool.Sql.Model
         public FileInstanceDo()
         { }
 
-        public FileInstanceDo(FileDo file, DateTime lastWriteTime, long length)
+        public FileInstanceDo(FileDo file, Instant lastWriteTime, long length)
         {
             File = file;                        
-            LastWriteTimeTicks = lastWriteTime.Ticks;
+            LastWriteUnixTimeTicks = lastWriteTime.ToUnixTimeTicks();
             Length = length;
         }
     }

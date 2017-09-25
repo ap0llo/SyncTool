@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using NodaTime;
 
 namespace SyncTool.FileSystem
 {
@@ -12,7 +13,7 @@ namespace SyncTool.FileSystem
     {
         public T Content { get; }
 
-        public DateTime LastWriteTime { get; protected set; }
+        public Instant LastWriteTime { get; protected set; }
 
         public long Length => throw new NotSupportedException();
 
@@ -20,7 +21,7 @@ namespace SyncTool.FileSystem
         protected DataFile(IDirectory parent, string name, T content) : base(parent, name)
         {
             Content = content ?? throw new ArgumentNullException(nameof(content));
-            LastWriteTime = DateTime.Now;
+            LastWriteTime = SystemClock.Instance.GetCurrentInstant();
         }
 
 

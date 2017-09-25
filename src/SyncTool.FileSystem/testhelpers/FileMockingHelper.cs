@@ -1,5 +1,5 @@
-﻿using System;
-using Moq;
+﻿using Moq;
+using NodaTime;
 
 namespace SyncTool.FileSystem.TestHelpers
 {
@@ -9,9 +9,9 @@ namespace SyncTool.FileSystem.TestHelpers
 
         public static IFile GetMockedFile(string path) => GetFileMock(path).Object;
 
-        public static IFile GetMockedFile(string path, DateTime lastWriteTime) => GetFileMock(path, lastWriteTime).Object;
+        public static IFile GetMockedFile(string path, Instant lastWriteTime) => GetFileMock(path, lastWriteTime).Object;
 
-        public static IFile GetMockedFile(string path, DateTime lastWriteTime, long length) => GetFileMock(path, lastWriteTime, length).Object;
+        public static IFile GetMockedFile(string path, Instant lastWriteTime, long length) => GetFileMock(path, lastWriteTime, length).Object;
 
         public static Mock<IFile> GetFileMock()
         {
@@ -27,14 +27,14 @@ namespace SyncTool.FileSystem.TestHelpers
             return mock;
         }
 
-        public static Mock<IFile> GetFileMock(string path, DateTime lastWriteTime)
+        public static Mock<IFile> GetFileMock(string path, Instant lastWriteTime)
         {
             var mock = GetFileMock(path);            
             mock.Setup(m => m.LastWriteTime).Returns(lastWriteTime);
             return mock;
         }
 
-        public static Mock<IFile> GetFileMock(string path, DateTime lastWriteTime, long length)
+        public static Mock<IFile> GetFileMock(string path, Instant lastWriteTime, long length)
         {
             var mock = GetFileMock(path, lastWriteTime);
             mock.Setup(m => m.Length).Returns(length);
@@ -53,7 +53,7 @@ namespace SyncTool.FileSystem.TestHelpers
             return mock;
         }
 
-        public static Mock<IFile> WithLastWriteTime(this Mock<IFile> mock, DateTime lastWriteTime)
+        public static Mock<IFile> WithLastWriteTime(this Mock<IFile> mock, Instant lastWriteTime)
         {
             mock.Setup(m => m.LastWriteTime).Returns(lastWriteTime);
             return mock;

@@ -19,11 +19,11 @@ namespace SyncTool.Sql.Model
         public void Deconstruct(out FileInstanceDo previous, out FileInstanceDo current, out int fileId)
         {
             previous = PreviousId.HasValue
-                ? new FileInstanceDo() { Id = PreviousId.Value, LastWriteTimeTicks = PreviousLastWriteTimeTicks.Value, Length = PreviousLength.Value }
+                ? new FileInstanceDo() { Id = PreviousId.Value, LastWriteUnixTimeTicks = PreviousLastWriteTimeTicks.Value, Length = PreviousLength.Value }
                 : null;
 
             current = CurrentId.HasValue
-                ? new FileInstanceDo() { Id = CurrentId.Value, LastWriteTimeTicks = CurrentLastWriteTimeTicks.Value, Length = CurrentLength.Value }
+                ? new FileInstanceDo() { Id = CurrentId.Value, LastWriteUnixTimeTicks = CurrentLastWriteTimeTicks.Value, Length = CurrentLength.Value }
                 : null;
 
             fileId = FileId;

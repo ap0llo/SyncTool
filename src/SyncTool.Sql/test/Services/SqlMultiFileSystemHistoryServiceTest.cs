@@ -11,6 +11,7 @@ using SyncTool.Sql.Services;
 using SyncTool.Sql.TestHelpers;
 using SyncTool.Synchronization.TestHelpers;
 using Xunit;
+using NodaTime;
 
 namespace SyncTool.Sql.Test.Services
 {
@@ -523,7 +524,7 @@ namespace SyncTool.Sql.Test.Services
         public void GetChanges_combines_identical_changes_from_different_histories()
         {  
             // ARRANGE
-            var lastWriteTime = DateTime.Now;
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
             {
                 var historyBuilder = new HistoryBuilder(m_Group, "history1");
                 historyBuilder.AddFile("file1", lastWriteTime);                

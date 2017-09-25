@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using NodaTime;
 
 namespace SyncTool.FileSystem.Local
 {
@@ -8,12 +9,12 @@ namespace SyncTool.FileSystem.Local
         readonly FileInfo m_FileInfo;
 
                    
-        public DateTime LastWriteTime
+        public Instant LastWriteTime
         {
             get
             {
                 m_FileInfo.Refresh();
-                return m_FileInfo.LastWriteTime;
+                return Instant.FromDateTimeUtc(m_FileInfo.LastWriteTimeUtc);
             }
         }
 

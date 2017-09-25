@@ -4,6 +4,7 @@ using SyncTool.Common.Groups;
 using SyncTool.Configuration;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
+using NodaTime;
 
 namespace SyncTool.Synchronization.TestHelpers
 {
@@ -29,7 +30,7 @@ namespace SyncTool.Synchronization.TestHelpers
             m_Group.GetConfigurationService().AddItem(SyncFolder);
         }
 
-        public void AddFile(string fileName, DateTime lastWriteTime)
+        public void AddFile(string fileName, Instant lastWriteTime)
         {
             if (!m_Files.ContainsKey(fileName))
             {
@@ -46,7 +47,7 @@ namespace SyncTool.Synchronization.TestHelpers
             {
                 if (!m_Files.ContainsKey(fileName))
                 {
-                    m_Files.Add(fileName, new File(null, fileName) { LastWriteTime = DateTime.Now });
+                    m_Files.Add(fileName, new File(null, fileName) { LastWriteTime = SystemClock.Instance.GetCurrentInstant() });
                 }
             }
             UpdateCurrentState();

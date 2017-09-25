@@ -1,4 +1,5 @@
 ﻿using System;
+using NodaTime;
 
 namespace SyncTool.FileSystem
 {
@@ -7,7 +8,7 @@ namespace SyncTool.FileSystem
         /// <summary>
         /// The time the file was last modified
         /// </summary>
-        DateTime LastWriteTime { get; }
+        Instant LastWriteTime { get; }
 
         /// <summary>
         /// The size of the file in bytes

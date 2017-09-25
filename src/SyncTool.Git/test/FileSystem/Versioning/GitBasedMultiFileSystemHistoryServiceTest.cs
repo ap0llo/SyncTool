@@ -8,6 +8,7 @@ using SyncTool.Git.FileSystem.Versioning;
 using SyncTool.Git.TestHelpers;
 using SyncTool.Synchronization.TestHelpers;
 using Xunit;
+using NodaTime;
 
 namespace SyncTool.Git.Test.FileSystem.Versioning
 {
@@ -493,7 +494,7 @@ namespace SyncTool.Git.Test.FileSystem.Versioning
         public void GetChanges_combines_identical_changes_from_different_histories()
         {  
             // ARRANGE
-            var lastWriteTime = DateTime.Now;
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
             {
                 var historyBuilder = new HistoryBuilder(m_Group, "history1");
                 historyBuilder.AddFile("file1", lastWriteTime);                

@@ -1,6 +1,7 @@
 ﻿using SyncTool.FileSystem;
 using SyncTool.Sql.Model;
 using System;
+using NodaTime;
 
 namespace SyncTool.Sql.Services
 {
@@ -8,8 +9,7 @@ namespace SyncTool.Sql.Services
     {           
         readonly FileInstanceDo m_FileInstance;
 
-        //TODO: Special-casing DateTime.MinValue seems wrong, needs to be investigated
-        public DateTime LastWriteTime => m_FileInstance.LastWriteTimeTicks == 0 ? DateTime.MinValue : new DateTime(m_FileInstance.LastWriteTimeTicks, DateTimeKind.Utc);
+        public Instant LastWriteTime => Instant.FromUnixTimeTicks(m_FileInstance.LastWriteUnixTimeTicks);
         
         public long Length => m_FileInstance.Length;
 
