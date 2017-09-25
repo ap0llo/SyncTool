@@ -5,6 +5,7 @@ using System.Linq;
 using SyncTool.FileSystem;
 using SyncTool.Sql.Model;
 using SyncTool.Utilities;
+using NodaTime;
 
 namespace SyncTool.Sql.Services
 {    
@@ -64,7 +65,7 @@ namespace SyncTool.Sql.Services
             var directoryInstance = fileSystemState.ToDirectoryInstanceDo();            
             m_FileSystemRepository.AddRecursively(directoryInstance);
 
-            var snapshotDo = new FileSystemSnapshotDo(m_HistoryDo.Id, DateTime.UtcNow.Ticks, directoryInstance.Id, directoryInstance.GetFilesRecursively());            
+            var snapshotDo = new FileSystemSnapshotDo(m_HistoryDo.Id, SystemClock.Instance.GetCurrentInstant().ToUnixTimeTicks(), directoryInstance.Id, directoryInstance.GetFilesRecursively());            
             m_SnapshotRepository.AddSnapshot(snapshotDo);
 
             return m_SnapshotFactory.Invoke(this, snapshotDo);           
@@ -167,10 +168,10 @@ namespace SyncTool.Sql.Services
         FileSystemSnapshotDo GetSnapshotDo(int id) => 
             m_SnapshotRepository.GetSnapshotOrDefault(m_HistoryDo.Id, id) ?? throw new SnapshotNotFoundException(id.ToString());
 
-        static IFileReference GetFileReference(FileInstanceDo instanceDo) 
+        static IFileReference GetFileReference(FileInstanceDo instanceDo)
             => new FileReference(
                 path: instanceDo.File.Path,
-                lastWriteTime: instanceDo.LastWriteTimeTicks == 0 ? DateTime.MinValue : new DateTime(instanceDo.LastWriteTimeTicks, DateTimeKind.Utc),
+                lastWriteTime: Instant.FromUnixTimeTicks(instanceDo.LastWriteUnixTimeTicks),
                 length: instanceDo.Length);
         
         void AppendChanges(FileSystemSnapshotDo currentSnapshot, Dictionary<string, LinkedList<IChange>> changeLists, string[] pathFilter)

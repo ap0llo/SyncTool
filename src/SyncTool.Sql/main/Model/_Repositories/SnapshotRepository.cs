@@ -58,7 +58,7 @@ namespace SyncTool.Sql.Model
                         INSERT INTO {FileSystemSnapshotsTable.Name} 
                         (                          
                             {FileSystemSnapshotsTable.Column.HistoryId},
-                            {FileSystemSnapshotsTable.Column.CreationTimeTicks},
+                            {FileSystemSnapshotsTable.Column.CreationUnixTimeTicks},
                             {FileSystemSnapshotsTable.Column.RootDirectoryInstanceId},
                             {FileSystemSnapshotsTable.Column.TmpId}
                         )
@@ -81,7 +81,7 @@ namespace SyncTool.Sql.Model
                 new
                 {
                     historyId = snapshot.HistoryId,
-                    ticks = snapshot.CreationTimeTicks,
+                    ticks = snapshot.CreationUnixTimeTicks,
                     directoryId = snapshot.RootDirectoryInstanceId,
                     tmpId = tmpId
                 });

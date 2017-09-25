@@ -1,6 +1,7 @@
 ﻿using System;
 using SyncTool.FileSystem.TestHelpers;
 using Xunit;
+using NodaTime;
 
 namespace SyncTool.FileSystem.Test
 {
@@ -9,12 +10,12 @@ namespace SyncTool.FileSystem.Test
         readonly IFile m_File1;
         readonly IFile m_File2;
         readonly IFile m_File3;
-        readonly DateTime m_LastWriteTime2;
+        readonly Instant m_LastWriteTime2;
         const long s_Length = 42;
 
         public FileReferenceExtensionsTest()
         {
-            m_LastWriteTime2 = DateTime.Now.AddHours(1);
+            m_LastWriteTime2 = SystemClock.Instance.GetCurrentInstant() + Duration.FromHours(1);
 
             m_File1 = FileMockingHelper.GetFileMock()
                 .Named("file1")
@@ -59,7 +60,7 @@ namespace SyncTool.FileSystem.Test
         public void Matches_checks_LastWriteTime_if_specified_in_reference()
         {
             var reference1 = new FileReference("/dir1/file1", m_LastWriteTime2);
-            var reference2 = new FileReference("/dir1/file1", m_LastWriteTime2.AddMinutes(1));
+            var reference2 = new FileReference("/dir1/file1", m_LastWriteTime2 + Duration.FromMinutes(1));
             Assert.True(reference1.Matches(m_File2));
             Assert.False(reference2.Matches(m_File2));
         }

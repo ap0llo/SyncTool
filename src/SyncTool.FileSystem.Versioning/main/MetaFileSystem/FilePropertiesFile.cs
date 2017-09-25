@@ -1,4 +1,5 @@
 ﻿using System;
+using NodaTime;
 
 namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {
@@ -17,7 +18,7 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
         {                        
         }
 
-        private FilePropertiesFile(IDirectory parent, string name, DateTime lastWriteTime, FileProperties content)
+        private FilePropertiesFile(IDirectory parent, string name, Instant lastWriteTime, FileProperties content)
             : base(parent, name, content)
         {            
             LastWriteTime = lastWriteTime;
@@ -26,7 +27,7 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 
         public override IFile WithParent(IDirectory newParent)
         {
-            return new FilePropertiesFile(newParent, this.Name, this.LastWriteTime, this.Content);
+            return new FilePropertiesFile(newParent, Name, LastWriteTime, Content);
         }     
 
 

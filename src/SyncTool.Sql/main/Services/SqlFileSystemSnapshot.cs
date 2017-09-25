@@ -3,6 +3,7 @@ using System;
 using JetBrains.Annotations;
 using SyncTool.FileSystem;
 using SyncTool.Sql.Model;
+using NodaTime;
 
 namespace SyncTool.Sql.Services
 {
@@ -18,7 +19,7 @@ namespace SyncTool.Sql.Services
 
         public string Id => m_SnapshotDo.Id.ToString();
 
-        public DateTime CreationTime => new DateTime(m_SnapshotDo.CreationTimeTicks, DateTimeKind.Utc);
+        public Instant CreationTime => Instant.FromUnixTimeTicks(m_SnapshotDo.CreationUnixTimeTicks);
 
         public IDirectory RootDirectory => m_RootDirectory.Value;
 

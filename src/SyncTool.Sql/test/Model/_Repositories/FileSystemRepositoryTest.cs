@@ -1,4 +1,5 @@
-﻿using SyncTool.Sql.Model;
+﻿using NodaTime;
+using SyncTool.Sql.Model;
 using SyncTool.Sql.TestHelpers;
 using System;
 using System.Linq;
@@ -117,7 +118,7 @@ namespace SyncTool.Sql.Test.Model
         public void AddFileInstance_throws_ArgumentException_if_id_is_not_0()
         {
             var file = new FileDo() { Id = 0, Name = "file1", Path = "/file1" };
-            var fileInstance = new FileInstanceDo(file, DateTime.UtcNow, 23);
+            var fileInstance = new FileInstanceDo(file, SystemClock.Instance.GetCurrentInstant(), 23);
             fileInstance.Id = 1;
             Assert.Throws<ArgumentException>(() => CreateRepository().AddFileInstance(fileInstance));
         }
@@ -126,7 +127,7 @@ namespace SyncTool.Sql.Test.Model
         public void AddFileInstance_implicitly_add_a_file_if_it_does_not_exist()
         {
             var file = new FileDo() { Id = 0, Name = "file1", Path = "/file1" };
-            var fileInstance = new FileInstanceDo(file, DateTime.UtcNow, 23);
+            var fileInstance = new FileInstanceDo(file, SystemClock.Instance.GetCurrentInstant(), 23);
             
             var instance = CreateRepository();
             Assert.Empty(instance.Files);
@@ -138,7 +139,7 @@ namespace SyncTool.Sql.Test.Model
         public void AddFileInstance_assigns_file_id_of_existing_file_if_it_exists()
         {
             var file = new FileDo() { Id = 0, Name = "file1", Path = "/file1" };
-            var fileInstance = new FileInstanceDo(file, DateTime.UtcNow, 23);
+            var fileInstance = new FileInstanceDo(file, SystemClock.Instance.GetCurrentInstant(), 23);
 
             var instance = CreateRepository();
 
@@ -152,7 +153,7 @@ namespace SyncTool.Sql.Test.Model
         [Fact]
         public void AddFileInstance_does_not_insert_duplicate_entries()
         {
-            var time = DateTime.UtcNow;
+            var time = SystemClock.Instance.GetCurrentInstant();
             var instance = CreateRepository();
 
             var file = new FileDo() { Id = 0, Name = "file1", Path = "/file1" };
@@ -176,7 +177,7 @@ namespace SyncTool.Sql.Test.Model
             dir1.Directories.Add(dir11);
             root.Directories.Add(dir1);
             root.Directories.Add(dir2);
-            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", Path = "/dir1/file1" }, DateTime.Now, 42);
+            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", Path = "/dir1/file1" }, SystemClock.Instance.GetCurrentInstant(), 42);
             dir1.Files.Add(file1);
 
 
@@ -206,7 +207,7 @@ namespace SyncTool.Sql.Test.Model
         public void LoadFile_loads_a_file_instances_file()
         {
             var file = new FileDo() { Id = 0, Name = "file1", Path = "/file1" };
-            var fileInstance = new FileInstanceDo(file, DateTime.UtcNow, 23);
+            var fileInstance = new FileInstanceDo(file, SystemClock.Instance.GetCurrentInstant(), 23);
 
             var repo = CreateRepository();
             repo.AddFileInstance(fileInstance);
@@ -253,7 +254,7 @@ namespace SyncTool.Sql.Test.Model
             dir1.Directories.Add(dir11);
             root.Directories.Add(dir1);
             root.Directories.Add(dir2);
-            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", Path = "/dir1/file1" }, DateTime.Now, 42);
+            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", Path = "/dir1/file1" }, SystemClock.Instance.GetCurrentInstant(), 42);
             dir1.Files.Add(file1);
 
             var repo = CreateRepository();
@@ -283,7 +284,7 @@ namespace SyncTool.Sql.Test.Model
             dir1.Directories.Add(dir11);
             root.Directories.Add(dir1);
             root.Directories.Add(dir2);
-            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", Path = "/dir1/file1" }, DateTime.Now, 42);
+            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", Path = "/dir1/file1" }, SystemClock.Instance.GetCurrentInstant(), 42);
             dir1.Files.Add(file1);
 
             var repo = CreateRepository();

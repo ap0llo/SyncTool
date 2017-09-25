@@ -1,6 +1,7 @@
 ﻿using System;
 using Xunit;
 using SyncTool.FileSystem.Versioning.MetaFileSystem;
+using NodaTime;
 
 namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
 {
@@ -17,7 +18,7 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
         public FilePropertiesTest()
         {
             var name = "file";
-            var lastWriteTime = DateTime.Now;
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
             var length = 1234;
 
             m_Instance1 = new FileProperties() { Name = name, LastWriteTime = lastWriteTime, Length = length };
@@ -41,8 +42,8 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
         [Fact]
         public void GetHashCode_returns_the_same_value_is_name_is_equal()
         {
-            var file1 = new FileProperties() {Name = "file", LastWriteTime = DateTime.Now, Length = 1234};
-            var file2 = new FileProperties() { Name = "fILe", LastWriteTime = DateTime.MinValue, Length = 5678 };
+            var file1 = new FileProperties() {Name = "file", LastWriteTime = SystemClock.Instance.GetCurrentInstant(), Length = 1234};
+            var file2 = new FileProperties() { Name = "fILe", LastWriteTime = Instant.MinValue, Length = 5678 };
             Assert.Equal(file1.GetHashCode(), file2.GetHashCode());
         }
     }

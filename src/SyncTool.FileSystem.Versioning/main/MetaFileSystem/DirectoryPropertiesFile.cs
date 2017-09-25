@@ -1,4 +1,5 @@
 ﻿using System;
+using NodaTime;
 
 namespace SyncTool.FileSystem.Versioning.MetaFileSystem
 {
@@ -18,7 +19,7 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
         }
 
         // constructor needs to be internal because it is used by tests
-        internal DirectoryPropertiesFile(IDirectory parentDirectory, DateTime lastWriteTime, DirectoryProperties content) : base(parentDirectory, FileName, content)
+        internal DirectoryPropertiesFile(IDirectory parentDirectory, Instant lastWriteTime, DirectoryProperties content) : base(parentDirectory, FileName, content)
         {            
             LastWriteTime = lastWriteTime;
         }
@@ -26,7 +27,7 @@ namespace SyncTool.FileSystem.Versioning.MetaFileSystem
         
         public override IFile WithParent(IDirectory newParent)
         {
-            return new DirectoryPropertiesFile(newParent, this.LastWriteTime, this.Content);
+            return new DirectoryPropertiesFile(newParent, LastWriteTime, Content);
         }
       
 

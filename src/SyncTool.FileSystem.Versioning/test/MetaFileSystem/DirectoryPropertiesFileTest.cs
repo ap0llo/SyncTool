@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using SyncTool.FileSystem.Versioning.MetaFileSystem;
 using Xunit;
+using NodaTime;
+using NodaTime.Serialization.JsonNet;
 
 namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
 {
@@ -11,7 +13,7 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
     public class DirectoryPropertiesFileTest
     {
         const string s_Dir1 = "dir1";
-        readonly JsonSerializer m_Serializer = new JsonSerializer();
+        readonly JsonSerializer m_Serializer = new JsonSerializer().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 
 
         [Fact]

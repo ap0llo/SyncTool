@@ -1,8 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Newtonsoft.Json;
 using Xunit;
 using SyncTool.FileSystem.Versioning.MetaFileSystem;
+using NodaTime;
+using NodaTime.Serialization.JsonNet;
 
 namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
 {
@@ -11,12 +12,12 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
     /// </summary>
     public class FilePropertiesFileTest
     {
-        readonly JsonSerializer m_Serializer = new JsonSerializer();
+        readonly JsonSerializer m_Serializer = new JsonSerializer().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 
         [Fact]
         public void Open_returns_json_readable_stream()
         {
-            var file = new EmptyFile("file1") { LastWriteTime = DateTime.Now, Length = 42};
+            var file = new EmptyFile("file1") { LastWriteTime = SystemClock.Instance.GetCurrentInstant(), Length = 42};
             var filePropertiesFile = FilePropertiesFile.ForFile(null, file);
 
             FileProperties properties;

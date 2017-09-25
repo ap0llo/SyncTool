@@ -4,6 +4,7 @@ using SyncTool.Sql.Model;
 using SyncTool.Sql.TestHelpers;
 using Xunit;
 using System.Linq;
+using NodaTime;
 
 namespace SyncTool.Sql.Test.Model
 {
@@ -38,8 +39,8 @@ namespace SyncTool.Sql.Test.Model
             var dir = new DirectoryInstanceDo(new DirectoryDo() { Name = "root", Path = "" });
             m_FileSystemRepository.AddRecursively(dir);
 
-            var snapshot1 = new FileSystemSnapshotDo(m_HistoryId1, DateTime.UtcNow.Ticks, dir.Id, new List<FileInstanceDo>());            
-            var snapshot2 = new FileSystemSnapshotDo(m_HistoryId2, DateTime.UtcNow.Ticks, dir.Id, new List<FileInstanceDo>());            
+            var snapshot1 = new FileSystemSnapshotDo(m_HistoryId1, SystemClock.Instance.GetCurrentInstant().ToUnixTimeTicks(), dir.Id, new List<FileInstanceDo>());            
+            var snapshot2 = new FileSystemSnapshotDo(m_HistoryId2, SystemClock.Instance.GetCurrentInstant().ToUnixTimeTicks(), dir.Id, new List<FileInstanceDo>());            
 
             m_Instance.AddSnapshot(snapshot1);
             m_Instance.AddSnapshot(snapshot2);
@@ -52,11 +53,11 @@ namespace SyncTool.Sql.Test.Model
         public void AddSnapshot_saves_included_files()
         {
             var dir = new DirectoryInstanceDo(new DirectoryDo() { Name = "root", Path = "" });
-            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", Path = "/dir1/file1" }, DateTime.Now, 42);
+            var file1 = new FileInstanceDo(new FileDo() { Name = "file1", Path = "/dir1/file1" }, SystemClock.Instance.GetCurrentInstant(), 42);
             dir.Files.Add(file1);
             m_FileSystemRepository.AddRecursively(dir);
 
-            var snapshot = new FileSystemSnapshotDo(m_HistoryId1, DateTime.UtcNow.Ticks, dir.Id, new List<FileInstanceDo>() { file1 });
+            var snapshot = new FileSystemSnapshotDo(m_HistoryId1, SystemClock.Instance.GetCurrentInstant().ToUnixTimeTicks(), dir.Id, new List<FileInstanceDo>() { file1 });
 
             m_Instance.AddSnapshot(snapshot);
             var loadedSnapshot = m_Instance.GetSnapshotOrDefault(m_HistoryId1, snapshot.Id);

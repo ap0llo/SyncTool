@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using Moq;
 using Xunit;
+using NodaTime;
 
 namespace SyncTool.Sql.Test.Services
 {
@@ -143,12 +144,12 @@ namespace SyncTool.Sql.Test.Services
 
             var state1 = new Directory(s_Dir1)
             {
-                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
+                d => new EmptyFile(d, s_File1) { LastWriteTime = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(2) }
             };
 
             var state2 = new Directory(s_Dir1)
             {
-                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-1) }
+                d => new EmptyFile(d, s_File1) { LastWriteTime = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(1) }
             };
 
             var snapshot1 = m_Instance.CreateSnapshot(state1);
@@ -179,7 +180,7 @@ namespace SyncTool.Sql.Test.Services
         {
             //ARRANGE
 
-            var writeTime1 = DateTime.Now.AddDays(-2);
+            var writeTime1 = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(2);
 
             var state1 = new Directory(s_Dir1)
             {
@@ -188,7 +189,7 @@ namespace SyncTool.Sql.Test.Services
             var state2 = new Directory(s_Dir1)
             {
                 d => new EmptyFile(d, s_File1) {LastWriteTime = writeTime1 },
-                d => new EmptyFile(d, s_File2) {LastWriteTime = DateTime.Now }
+                d => new EmptyFile(d, s_File2) {LastWriteTime = SystemClock.Instance.GetCurrentInstant() }
             };
 
             var snapshot1 = m_Instance.CreateSnapshot(state1);
@@ -221,7 +222,7 @@ namespace SyncTool.Sql.Test.Services
 
             var state1 = new Directory(s_Dir1)
             {
-                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
+                d => new EmptyFile(d, s_File1) { LastWriteTime = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(2) }
             };
             var state2 = new Directory(s_Dir1);
 
@@ -328,14 +329,14 @@ namespace SyncTool.Sql.Test.Services
         {
             //ARRANGE
 
-            var lastWriteTime = DateTime.Now;
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
             var state1 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(1)}
             };
             var state2 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(2)}
             };
 
             var snapshot1 = m_Instance.CreateSnapshot(state1);
@@ -372,14 +373,14 @@ namespace SyncTool.Sql.Test.Services
         {
             //ARRANGE
 
-            var lastWriteTime = DateTime.Now;
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
             var state1 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(1)}
             };
             var state2 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(2)}
             };
             var state3 = new Directory(s_Dir1); // file1 deleted
 
@@ -427,15 +428,15 @@ namespace SyncTool.Sql.Test.Services
         {
             //ARRANGE
 
-            var lastWriteTime = DateTime.Now;
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
             var state0 = new Directory(s_Dir1);
             var state1 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(1)}
             };
             var state2 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(2)}
             };
             var state3 = new Directory(s_Dir1); // file1 deleted
 
@@ -481,7 +482,7 @@ namespace SyncTool.Sql.Test.Services
         public void GetChages_returns_empty_result_if_empty_path_filter_is_supplied()
         {
             //ARRANGE            
-            var state = new Directory(s_Dir1) { dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = DateTime.Now } };
+            var state = new Directory(s_Dir1) { dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = SystemClock.Instance.GetCurrentInstant() } };
             var snapshot = m_Instance.CreateSnapshot(state);
 
             //ACT
@@ -599,11 +600,11 @@ namespace SyncTool.Sql.Test.Services
             //ARRANGE
             var state1 = new Directory(s_Dir1)
             {
-                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
+                d => new EmptyFile(d, s_File1) { LastWriteTime = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(2) }
             };
             var state2 = new Directory(s_Dir1)
             {
-                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-1) }
+                d => new EmptyFile(d, s_File1) { LastWriteTime = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(1) }
             };
 
             var snapshot1 = m_Instance.CreateSnapshot(state1);
@@ -623,7 +624,7 @@ namespace SyncTool.Sql.Test.Services
         public void GetChangedFiles_detects_additions_of_files()
         {
             //ARRANGE
-            var writeTime1 = DateTime.Now.AddDays(-2);
+            var writeTime1 = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(2);
             var state1 = new Directory(s_Dir1)
             {
                 d => new EmptyFile(d, s_File1) { LastWriteTime = writeTime1 }
@@ -631,7 +632,7 @@ namespace SyncTool.Sql.Test.Services
             var state2 = new Directory(s_Dir1)
             {
                 d => new EmptyFile(d, s_File1) {LastWriteTime = writeTime1 },
-                d => new EmptyFile(d, s_File2) {LastWriteTime = DateTime.Now }
+                d => new EmptyFile(d, s_File2) {LastWriteTime = SystemClock.Instance.GetCurrentInstant() }
             };
 
             var snapshot1 = m_Instance.CreateSnapshot(state1);
@@ -654,7 +655,7 @@ namespace SyncTool.Sql.Test.Services
             //ARRANGE
             var state1 = new Directory(s_Dir1)
             {
-                d => new EmptyFile(d, s_File1) { LastWriteTime = DateTime.Now.AddDays(-2) }
+                d => new EmptyFile(d, s_File1) { LastWriteTime = SystemClock.Instance.GetCurrentInstant() - Duration.FromDays(2) }
             };
             var state2 = new Directory(s_Dir1);
 
@@ -734,14 +735,14 @@ namespace SyncTool.Sql.Test.Services
         public void GetChangedFiles_Multiple_changes_to_the_same_file()
         {
             //ARRANGE
-            var lastWriteTime = DateTime.Now;
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
             var state1 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(1)}
             };
             var state2 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(2)}
             };
 
             var snapshot1 = m_Instance.CreateSnapshot(state1);
@@ -758,14 +759,14 @@ namespace SyncTool.Sql.Test.Services
         public void GetChangedFiles_A_file_gets_added_modified_and_deleted()
         {
             //ARRANGE
-            var lastWriteTime = DateTime.Now;
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
             var state1 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(1)}
             };
             var state2 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(2)}
             };
             var state3 = new Directory(s_Dir1); // file1 deleted
 
@@ -788,15 +789,15 @@ namespace SyncTool.Sql.Test.Services
         {
             //ARRANGE
 
-            var lastWriteTime = DateTime.Now;
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
             var state0 = new Directory(s_Dir1);
             var state1 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(1)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(1)}
             };
             var state2 = new Directory(s_Dir1)
             {
-                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime.AddHours(2)}
+                dir1 => new EmptyFile(dir1, "file1") { LastWriteTime = lastWriteTime + Duration.FromHours(2)}
             };
             var state3 = new Directory(s_Dir1); // file1 deleted
 

@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using LibGit2Sharp;
 using SyncTool.FileSystem;
+using NodaTime;
 
 namespace SyncTool.Git.FileSystem
 {
@@ -10,12 +10,12 @@ namespace SyncTool.Git.FileSystem
         readonly Blob m_Blob;
         
 
-        public DateTime LastWriteTime { get; }
+        public Instant LastWriteTime { get; }
 
         public long Length => m_Blob.Size;
 
 
-        public GitFile(IDirectory parent, string name, DateTime commitTime, Blob blob) : base(parent, name)
+        public GitFile(IDirectory parent, string name, Instant commitTime, Blob blob) : base(parent, name)
         {
             m_Blob = blob;            
             LastWriteTime = commitTime;

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using NodaTime;
 
 namespace SyncTool.FileSystem
 {
     public class File : FileSystemItem, IFile
     {
-        public DateTime LastWriteTime { get; set; }
+        public Instant LastWriteTime { get; set; } = Instant.MinValue;
 
         public long Length { get; set; }
 
@@ -13,11 +13,12 @@ namespace SyncTool.FileSystem
         {
         }
 
+
         public virtual IFile WithParent(IDirectory newParent) 
             => new File(newParent, Name)
                {
                    LastWriteTime = LastWriteTime,
-                   Length = this.Length
+                   Length = Length
                };
     }
 }

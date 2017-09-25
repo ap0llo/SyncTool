@@ -3,6 +3,7 @@ using System.Linq;
 using SyncTool.FileSystem.TestHelpers;
 using SyncTool.FileSystem.Versioning.MetaFileSystem;
 using Xunit;
+using NodaTime;
 
 namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
 {
@@ -32,12 +33,12 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
                 {
                     dir1 =>
                     {
-                        file2 = new EmptyFile(dir1, "file2") {LastWriteTime = DateTime.Now, Length = 23456};
+                        file2 = new EmptyFile(dir1, "file2") {LastWriteTime = SystemClock.Instance.GetCurrentInstant(), Length = 23456};
                         return file2;
                     },
                     dir1 =>
                     {
-                        file3 = new EmptyFile(dir1, "file3") {LastWriteTime = DateTime.Now, Length = 789};
+                        file3 = new EmptyFile(dir1, "file3") {LastWriteTime = SystemClock.Instance.GetCurrentInstant(), Length = 789};
                         return file3;
                     }
                 },
@@ -45,13 +46,13 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
                 {
                     dir2 =>
                     {
-                        file4 = new EmptyFile(dir2, "file4") {LastWriteTime = DateTime.Now, Length = 1011};
+                        file4 = new EmptyFile(dir2, "file4") {LastWriteTime = SystemClock.Instance.GetCurrentInstant(), Length = 1011};
                         return file4;
                     }
                 },
                 root =>
                 {
-                    file1 = new EmptyFile(root, "file1") {LastWriteTime = DateTime.Now, Length = 1234};
+                    file1 = new EmptyFile(root, "file1") {LastWriteTime = SystemClock.Instance.GetCurrentInstant(), Length = 1234};
                     return file1;
                 }                
             };
@@ -82,9 +83,9 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
             {
                 root => new Directory(root, System.IO.Path.GetRandomFileName())
                 {
-                    d => new DirectoryPropertiesFile(d, DateTime.Now, new DirectoryProperties() { Name = s_Dir2})
+                    d => new DirectoryPropertiesFile(d, SystemClock.Instance.GetCurrentInstant(), new DirectoryProperties() { Name = s_Dir2})
                 },
-                root => new DirectoryPropertiesFile(root, DateTime.Now, new DirectoryProperties() { Name = s_Dir1})
+                root => new DirectoryPropertiesFile(root, SystemClock.Instance.GetCurrentInstant(), new DirectoryProperties() { Name = s_Dir1})
             };
 
             var convertedFileSystem = m_Instance.Convert(metaFileSystem);

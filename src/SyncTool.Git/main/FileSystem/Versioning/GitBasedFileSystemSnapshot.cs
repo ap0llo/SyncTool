@@ -6,6 +6,7 @@ using SyncTool.FileSystem.Local;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.FileSystem.Versioning.MetaFileSystem;
 using SyncTool.Git.RepositoryAccess;
+using NodaTime;
 
 namespace SyncTool.Git.FileSystem.Versioning
 {
@@ -23,7 +24,7 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         public string Id => m_Commit.Sha;
 
-        public DateTime CreationTime => m_Commit.Author.When.DateTime;
+        public Instant CreationTime => Instant.FromDateTimeOffset(m_Commit.Author.When);
 
         public IDirectory RootDirectory => m_RootDirectory.Value;
 

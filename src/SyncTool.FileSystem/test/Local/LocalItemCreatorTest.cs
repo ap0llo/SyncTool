@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using SyncTool.FileSystem.Local;
 using Xunit;
+using NodaTime;
 
 using NativeDirectory = System.IO.Directory;
 using NativeFile = System.IO.File;
@@ -118,36 +119,20 @@ namespace SyncTool.FileSystem.Test.Local
             readonly string m_Content;
 
 
-            public DateTime LastWriteTime
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public Instant LastWriteTime => throw new NotImplementedException();
 
-            public long Length
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public long Length => throw new NotImplementedException();
 
 
             public TestReadableFile(IDirectory parent, string name, string content) : base(parent, name)
             {
-                if (content == null)
-                {
-                    throw new ArgumentNullException(nameof(content));
-                }
-                m_Content = content;                
+                m_Content = content ?? throw new ArgumentNullException(nameof(content));                
             }
 
 
-            public Stream OpenRead()
-            {
-                return new MemoryStream(Encoding.UTF8.GetBytes(m_Content));
-            }
-        
-            public IFile WithParent(IDirectory newParent)
-            {
-                throw new NotImplementedException();
-            }
+            public Stream OpenRead() => new MemoryStream(Encoding.UTF8.GetBytes(m_Content));
+
+            public IFile WithParent(IDirectory newParent) => throw new NotImplementedException();
         }
     }
 }

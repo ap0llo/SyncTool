@@ -307,7 +307,7 @@ namespace SyncTool.Sql.Model
                     INSERT IGNORE INTO {FileInstancesTable.Name} 
                     (
                         {FileInstancesTable.Column.FileId},
-                        {FileInstancesTable.Column.LastWriteTimeTicks},
+                        {FileInstancesTable.Column.LastWriteUnixTimeTicks},
                         {FileInstancesTable.Column.Length} 
                     )
                     VALUES (@fileId, @ticks, @length );
@@ -315,11 +315,11 @@ namespace SyncTool.Sql.Model
                     SELECT {FileInstancesTable.Column.Id}
                     FROM {FileInstancesTable.Name}
                     WHERE {FileInstancesTable.Column.FileId} = @fileId  AND
-                          {FileInstancesTable.Column.LastWriteTimeTicks} = @ticks AND 
+                          {FileInstancesTable.Column.LastWriteUnixTimeTicks} = @ticks AND 
                           {FileInstancesTable.Column.Length} = @length ;
                 ",
                 ("fileId", fileInstance.File.Id),
-                ("ticks", fileInstance.LastWriteTimeTicks),
+                ("ticks", fileInstance.LastWriteUnixTimeTicks),
                 ("length", fileInstance.Length)
             );
         }

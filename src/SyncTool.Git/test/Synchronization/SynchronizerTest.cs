@@ -13,6 +13,7 @@ using SyncTool.Synchronization.State;
 using SyncTool.Synchronization.SyncActions;
 using SyncTool.Synchronization.TestHelpers;
 using Xunit;
+using NodaTime;
 
 namespace SyncTool.Git.Test.Synchronization
 {
@@ -228,11 +229,11 @@ namespace SyncTool.Git.Test.Synchronization
             // Left: A -> B -> C -> A
             // Right: B -> D
 
-            var lastWriteTime = DateTime.Now;
-            var a =  new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(1) } };
-            var b =  new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(2) } };
-            var c =  new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(3) } };
-            var d =  new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(4) } };
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
+            var a =  new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(1) } };
+            var b =  new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(2) } };
+            var c =  new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(3) } };
+            var d =  new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(4) } };
 
             var configurationService = m_Group.GetConfigurationService();
             configurationService.AddItem(new SyncFolder("left"));
@@ -270,10 +271,10 @@ namespace SyncTool.Git.Test.Synchronization
             // Left: A -> B -> A
             // Right: C -> A
 
-            var lastWriteTime = DateTime.Now;
-            var a = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(1) } };
-            var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(2) } };
-            var c = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(3) } };
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
+            var a = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(1) } };
+            var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(2) } };
+            var c = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(3) } };
 
             var configurationService = m_Group.GetConfigurationService();
             configurationService.AddItem(new SyncFolder("left"));
@@ -338,9 +339,9 @@ namespace SyncTool.Git.Test.Synchronization
             //ARRANGE
             // Left: A -> Sync ------> Sync -> Conflict
             // Right:     Sync -> B -> Sync -> Conflict
-            var lastWriteTime = DateTime.Now;
-            var a = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(1) } };
-            var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(2) } };
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
+            var a = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(1) } };
+            var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(2) } };
 
             var configurationService = m_Group.GetConfigurationService();
             configurationService.AddItem(new SyncFolder("left" ));
@@ -392,10 +393,10 @@ namespace SyncTool.Git.Test.Synchronization
             // 1: A -> Sync -> B -> Sync
             // 2: A -> Sync -> C -> Sync
             // 3: * -> Sync -> ---> Sync
-            var lastWriteTime = DateTime.Now;
-            var a = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(1) } };
-            var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(2) } };
-            var c = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime.AddHours(3) } };
+            var lastWriteTime = SystemClock.Instance.GetCurrentInstant();
+            var a = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(1) } };
+            var b = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(2) } };
+            var c = new Directory(null, "root") { dir => new File(dir, "file") { LastWriteTime = lastWriteTime + Duration.FromHours(3) } };
 
             var configurationService = m_Group.GetConfigurationService();
             configurationService.AddItem(new SyncFolder("1"));
@@ -560,9 +561,9 @@ namespace SyncTool.Git.Test.Synchronization
             // 3: A
 
             // ARRANGE
-            var writeTimeA = DateTime.Now;
-            var writeTimeB = writeTimeA.AddHours(1);
-            var writeTimeC = writeTimeA.AddHours(2);
+            var writeTimeA = SystemClock.Instance.GetCurrentInstant();
+            var writeTimeB = writeTimeA + Duration.FromHours(1);
+            var writeTimeC = writeTimeA + Duration.FromHours(2);
 
             var historyBuilder1 = new HistoryBuilder(m_Group, "history1");
             historyBuilder1.AddFile("file1", writeTimeA);

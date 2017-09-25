@@ -9,6 +9,7 @@ using SyncTool.Git.FileSystem.Versioning;
 using SyncTool.Git.RepositoryAccess;
 using Xunit;
 using SyncTool.Git.Options;
+using NodaTime;
 
 namespace SyncTool.Git.Test.FileSystem.Versioning
 {
@@ -36,10 +37,10 @@ namespace SyncTool.Git.Test.FileSystem.Versioning
         {
             var directory = new Directory(null, "root")
             {
-                root => new EmptyFile(root, "file1") { LastWriteTime = DateTime.Now},
+                root => new EmptyFile(root, "file1") { LastWriteTime = SystemClock.Instance.GetCurrentInstant()},
                 root => new Directory(root, "dir1")
                 {
-                    dir1 => new EmptyFile(dir1, "file2") { LastWriteTime = DateTime.Now },
+                    dir1 => new EmptyFile(dir1, "file2") { LastWriteTime = SystemClock.Instance.GetCurrentInstant() },
                     dir1 => new Directory(dir1, "dir2")
                 }
             };

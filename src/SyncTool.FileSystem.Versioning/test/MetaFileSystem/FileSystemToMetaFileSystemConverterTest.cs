@@ -3,6 +3,7 @@ using System.Linq;
 using SyncTool.FileSystem.Versioning.MetaFileSystem;
 using Moq;
 using Xunit;
+using NodaTime;
 
 namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
 {
@@ -20,7 +21,7 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
         [Fact]
         public void CreateMetaDirectory_with_a_single_file()
         {
-            var fileMock = CreateFileMock(s_File1, DateTime.Now, 1234);            
+            var fileMock = CreateFileMock(s_File1, SystemClock.Instance.GetCurrentInstant(), 1234);            
 
             var directory = new Directory(null, "root") { root => fileMock.Object };
             fileMock.Setup(f => f.Parent).Returns(directory);
@@ -37,8 +38,8 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
         [Fact]
         public void CreateMetaDirectory_with_directories_and_files()
         {
-            var fileMock1 = CreateFileMock(s_File1, DateTime.Now, 1234);
-            var fileMock2 = CreateFileMock(s_File1, DateTime.Now, 5678);
+            var fileMock1 = CreateFileMock(s_File1, SystemClock.Instance.GetCurrentInstant(), 1234);
+            var fileMock2 = CreateFileMock(s_File1, SystemClock.Instance.GetCurrentInstant(), 5678);
 
             var directory = new Directory("root")
             {
@@ -77,7 +78,7 @@ namespace SyncTool.FileSystem.Versioning.Test.MetaFileSystem
         }
 
 
-        Mock<IFile> CreateFileMock(string name, DateTime lastWriteTime, long length)
+        Mock<IFile> CreateFileMock(string name, Instant lastWriteTime, long length)
         {
             var fileMock = new Mock<IFile>();
             fileMock.Setup(m => m.Name).Returns(name);

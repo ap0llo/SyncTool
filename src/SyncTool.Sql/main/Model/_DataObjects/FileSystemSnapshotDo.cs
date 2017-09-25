@@ -11,7 +11,7 @@ namespace SyncTool.Sql.Model
         // assigned automatically on db insert
         public int Id { get; set; }
                 
-        public long CreationTimeTicks { get; set; }
+        public long CreationUnixTimeTicks { get; set; }
 
         public int RootDirectoryInstanceId { get; set; }
 
@@ -32,7 +32,7 @@ namespace SyncTool.Sql.Model
                 throw new ArgumentOutOfRangeException(nameof(rootDirectoryInstanceId));
 
             HistoryId = historyId;
-            CreationTimeTicks = creationTimeTicks;
+            CreationUnixTimeTicks = creationTimeTicks;
             RootDirectoryInstanceId = rootDirectoryInstanceId;
             IncludedFiles = includedFiles;            
         }
