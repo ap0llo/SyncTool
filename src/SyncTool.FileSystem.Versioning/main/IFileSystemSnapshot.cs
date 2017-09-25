@@ -1,4 +1,4 @@
-﻿using System;
+﻿using NodaTime;
 
 namespace SyncTool.FileSystem.Versioning
 {
@@ -17,7 +17,7 @@ namespace SyncTool.FileSystem.Versioning
         /// <summary>
         /// The time the snapshot was created
         /// </summary>
-        DateTime CreationTime { get; } 
+        Instant CreationTime { get; } 
 
         /// <summary>
         /// The state of the file system stored in the snapshot

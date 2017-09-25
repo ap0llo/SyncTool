@@ -65,7 +65,7 @@ namespace SyncTool.Sql.Services
             var directoryInstance = fileSystemState.ToDirectoryInstanceDo();            
             m_FileSystemRepository.AddRecursively(directoryInstance);
 
-            var snapshotDo = new FileSystemSnapshotDo(m_HistoryDo.Id, DateTime.UtcNow.Ticks, directoryInstance.Id, directoryInstance.GetFilesRecursively());            
+            var snapshotDo = new FileSystemSnapshotDo(m_HistoryDo.Id, SystemClock.Instance.GetCurrentInstant().ToUnixTimeTicks(), directoryInstance.Id, directoryInstance.GetFilesRecursively());            
             m_SnapshotRepository.AddSnapshot(snapshotDo);
 
             return m_SnapshotFactory.Invoke(this, snapshotDo);           
