@@ -7,10 +7,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\SyncTool.Common\main\SyncTool.Common.csproj" />
     <ProjectReference Include="..\..\SyncTool.FileSystem\main\SyncTool.FileSystem.csproj" />
-  </ItemGroup>    
-
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
   </ItemGroup>
-    
+
 </Project>

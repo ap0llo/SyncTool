@@ -3,13 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Autofac" Version="4.6.1" />
-    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
     <PackageReference Include="NodaTime" Version="2.2.0" />
     <PackageReference Include="NodaTime.Serialization.JsonNet" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SyncTool.Utilities\main\SyncTool.Utilities.csproj" />
   </ItemGroup>  
   
 </Project>

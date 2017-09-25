@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
-    <PackageReference Include="xunit" Version="2.3.0-beta5-build3769" />    
-    <PackageReference Include="Moq" Version="4.7.99" />
+    <ProjectReference Include="..\..\SyncTool.Configuration\testhelpers\SyncTool.Configuration.TestHelpers.csproj" />
+    <ProjectReference Include="..\..\SyncTool.FileSystem.Versioning\testhelpers\SyncTool.FileSystem.Versioning.TestHelpers.csproj" />
+    <ProjectReference Include="..\main\SyncTool.Synchronization.csproj" />
   </ItemGroup>
   
 </Project>

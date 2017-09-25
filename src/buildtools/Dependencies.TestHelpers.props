@@ -5,9 +5,4 @@
     <MainProjectPath>$(MSBuildProjectDirectory)\..\main\$(MSBuildProjectName.Replace('.TestHelpers', '')).csproj</MainProjectPath>    
   </PropertyGroup>
 		
-  <!-- Automatically include a reference to the corresponding main project -->	
-  <ItemGroup>
-    <ProjectReference Include="$(MainProjectPath)" Condition="Exists('$(MainProjectPath)')" />
-  </ItemGroup>
-
 </Project>

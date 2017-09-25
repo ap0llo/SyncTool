@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\SyncTool.Common\testhelpers\SyncTool.Common.TestHelpers.csproj" />
+    <ProjectReference Include="..\..\SyncTool.FileSystem\testhelpers\SyncTool.FileSystem.TestHelpers.csproj" />
+    <ProjectReference Include="..\main\SyncTool.FileSystem.Versioning.csproj" />
+  </ItemGroup>
+  
+  
+</Project>

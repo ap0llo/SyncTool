@@ -1,15 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>  
+    <TargetFramework>net461</TargetFramework>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <OutputType>Exe</OutputType>          
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <!-- Nuget package properties -->
   <PropertyGroup>
     <Authors>Andreas Gruenwald</Authors>
-    <Description>SyncTool Command Line</Description>        
+    <Description>SyncTool Command Line</Description>
   </PropertyGroup>
   
   <ItemGroup>
@@ -25,11 +25,9 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.0.275-beta" />
     <PackageReference Include="Squirrel.Windows" Version="1.7.7" /> 
-    <PackageReference Include="Nuget.Commandline" Version="4.3.0" /> 
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />    
+    <PackageReference Include="Nuget.Commandline" Version="4.3.0" />     
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Grynwald.Utilities.Squirrel.Build" Version="1.0.20" />
-    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
   </ItemGroup>
   
   <ItemGroup>

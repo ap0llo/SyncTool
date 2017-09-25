@@ -10,11 +10,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  
-  <!-- SyncTool.Utilities can be used by all projects (but prevent self-reference) -->
-  <ItemGroup Condition=" '$(MSBuildProjectName)' != 'SyncTool.Utilities' AND '$(MSBuildProjectName)' != 'SyncTool.Utilities.Test'">
-	  <ProjectReference Include="$(SrcRootDirectory)\SyncTool.Utilities\main\SyncTool.Utilities.csproj" />
-  </ItemGroup>
-  
+
   
 </Project>

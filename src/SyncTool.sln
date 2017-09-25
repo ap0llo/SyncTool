@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26906.1
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyncTool.Common", "SyncTool.Common", "{291D93BB-2DCB-47D3-9367-0D69749D41F7}"
 EndProject
@@ -56,6 +56,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.Utilities", "SyncT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.Utilities.Test", "SyncTool.Utilities\test\SyncTool.Utilities.Test.csproj", "{FE3AC065-0003-41D3-B0BF-CDBE81D4B9DE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.Utilities.TestHelpers", "SyncTool.Utilities\testhelpers\SyncTool.Utilities.TestHelpers.csproj", "{721B1990-A37D-4E53-B9DF-ABA4846E51B4}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.Common.TestHelpers", "SyncTool.Common\testhelpers\SyncTool.Common.TestHelpers.csproj", "{30644F0C-8F51-4B75-910F-DBE8930D3A9C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.FileSystem.TestHelpers", "SyncTool.FileSystem\testhelpers\SyncTool.FileSystem.TestHelpers.csproj", "{390A1D48-3CBC-4958-B04B-84A4808ECDB8}"
@@ -71,6 +73,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.Sql.Test", "SyncTool.Sql\test\SyncTool.Sql.Test.csproj", "{490CD22B-A128-41A6-90B4-D5350D0E2A04}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.Sql.TestHelpers", "SyncTool.Sql\testhelpers\SyncTool.Sql.TestHelpers.csproj", "{439D8493-4AA7-4CE2-8C14-98B46949B4AA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.Configuration.TestHelpers", "SyncTool.Configuration\testhelpers\SyncTool.Configuration.TestHelpers.csproj", "{E752EC37-5D48-4A9B-8ADC-2B75A89582E1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncTool.FileSystem.Versioning.TestHelpers", "SyncTool.FileSystem.Versioning\testhelpers\SyncTool.FileSystem.Versioning.TestHelpers.csproj", "{473E65E9-8AFD-420D-9BF1-22E7AD796B04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -150,6 +156,10 @@ Global
 		{FE3AC065-0003-41D3-B0BF-CDBE81D4B9DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE3AC065-0003-41D3-B0BF-CDBE81D4B9DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE3AC065-0003-41D3-B0BF-CDBE81D4B9DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{721B1990-A37D-4E53-B9DF-ABA4846E51B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{721B1990-A37D-4E53-B9DF-ABA4846E51B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{721B1990-A37D-4E53-B9DF-ABA4846E51B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{721B1990-A37D-4E53-B9DF-ABA4846E51B4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{30644F0C-8F51-4B75-910F-DBE8930D3A9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{30644F0C-8F51-4B75-910F-DBE8930D3A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30644F0C-8F51-4B75-910F-DBE8930D3A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -178,6 +188,14 @@ Global
 		{439D8493-4AA7-4CE2-8C14-98B46949B4AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{439D8493-4AA7-4CE2-8C14-98B46949B4AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{439D8493-4AA7-4CE2-8C14-98B46949B4AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E752EC37-5D48-4A9B-8ADC-2B75A89582E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E752EC37-5D48-4A9B-8ADC-2B75A89582E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E752EC37-5D48-4A9B-8ADC-2B75A89582E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E752EC37-5D48-4A9B-8ADC-2B75A89582E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{473E65E9-8AFD-420D-9BF1-22E7AD796B04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{473E65E9-8AFD-420D-9BF1-22E7AD796B04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{473E65E9-8AFD-420D-9BF1-22E7AD796B04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{473E65E9-8AFD-420D-9BF1-22E7AD796B04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -201,6 +219,7 @@ Global
 		{374276AC-618C-44DC-88FB-46BEC08BE8E0} = {E3862DC8-B9B4-45F3-8BA9-176DABCB1F83}
 		{09E4EF94-85D9-49DE-91D0-161A825B6607} = {A521AEFE-5574-4CF9-BF0B-3A664B12032F}
 		{FE3AC065-0003-41D3-B0BF-CDBE81D4B9DE} = {A521AEFE-5574-4CF9-BF0B-3A664B12032F}
+		{721B1990-A37D-4E53-B9DF-ABA4846E51B4} = {A521AEFE-5574-4CF9-BF0B-3A664B12032F}
 		{30644F0C-8F51-4B75-910F-DBE8930D3A9C} = {291D93BB-2DCB-47D3-9367-0D69749D41F7}
 		{390A1D48-3CBC-4958-B04B-84A4808ECDB8} = {0F3F3513-DD3C-41F5-91D3-55593DDDF29E}
 		{C173A443-EBBF-42A4-B505-9FAE595BAA54} = {1220A391-43DA-4E0F-A6E8-DCA94668AD28}
@@ -208,6 +227,8 @@ Global
 		{A30C4221-A0B8-4715-BFC4-910F97D085EE} = {F4BD75C9-2B6D-46FB-8676-E4F322D20CA9}
 		{490CD22B-A128-41A6-90B4-D5350D0E2A04} = {F4BD75C9-2B6D-46FB-8676-E4F322D20CA9}
 		{439D8493-4AA7-4CE2-8C14-98B46949B4AA} = {F4BD75C9-2B6D-46FB-8676-E4F322D20CA9}
+		{E752EC37-5D48-4A9B-8ADC-2B75A89582E1} = {AF962515-21D2-459B-8B0C-D5E21994461D}
+		{473E65E9-8AFD-420D-9BF1-22E7AD796B04} = {DA1668AA-35E1-489B-AB2C-572455001EB6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6F4F907A-8684-4A22-9AB2-D10B49403213}

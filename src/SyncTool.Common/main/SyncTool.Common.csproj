@@ -7,9 +7,12 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.6.1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.0.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\SyncTool.Utilities\main\SyncTool.Utilities.csproj" />
   </ItemGroup>
   
 

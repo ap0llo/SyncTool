@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
-    <PackageReference Include="xunit" Version="2.3.0-beta5-build3769" />    
-    <PackageReference Include="Moq" Version="4.7.99" />
+    <ProjectReference Include="..\..\SyncTool.Utilities\testhelpers\SyncTool.Utilities.TestHelpers.csproj" />
+    <ProjectReference Include="..\main\SyncTool.Common.csproj" />
   </ItemGroup>
   
 </Project>
