@@ -8,10 +8,12 @@ namespace SyncTool.Sql
     public class SqlGroupValidator : IGroupValidator
     {
         readonly ILogger<SqlGroupValidator> m_Logger;
+        readonly Func<Uri, MySqlDatabase> m_DatabaseFactory;
 
-        public SqlGroupValidator(ILogger<SqlGroupValidator> logger)
+        public SqlGroupValidator(ILogger<SqlGroupValidator> logger, Func<Uri, MySqlDatabase> databaseFactory)
         {
             m_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            m_DatabaseFactory = databaseFactory ?? throw new ArgumentNullException(nameof(databaseFactory));
         }
 
         public void EnsureGroupIsValid(string groupName, string address)
@@ -21,7 +23,7 @@ namespace SyncTool.Sql
             // this will make sure the address is valid and the database has a compatible schmea
             try
             {
-                var database = new MySqlDatabase(new Uri(address));
+                var database = m_DatabaseFactory.Invoke(new Uri(address));
                 database.CheckSchema();
             }
             catch (InvalidDatabaseUriException ex)

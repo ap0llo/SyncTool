@@ -41,6 +41,7 @@ namespace SyncTool.Sql.DI
             //
             // Database access and repository implementations
             //
+            builder.RegisterType<MySqlDatabase>().As<MySqlDatabase>();
             builder.RegisterType<MySqlDatabase>().As<Database>();
             builder.RegisterType<SyncFolderRepository>().AsSelf();
             builder.RegisterType<FileSystemHistoryRepository>().AsSelf();

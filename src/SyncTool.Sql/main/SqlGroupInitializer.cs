@@ -8,10 +8,12 @@ namespace SyncTool.Sql
     public class SqlGroupInitializer : IGroupInitializer
     {
         readonly ILogger<SqlGroupInitializer> m_Logger;
+        readonly Func<Uri, MySqlDatabase> m_DatabaseFactory;
 
-        public SqlGroupInitializer(ILogger<SqlGroupInitializer> logger)
+        public SqlGroupInitializer(ILogger<SqlGroupInitializer> logger, Func<Uri, MySqlDatabase> databaseFacotry)
         {
             m_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            m_DatabaseFactory = databaseFacotry ?? throw new ArgumentNullException(nameof(databaseFacotry));
         }
 
         public void Initialize(string groupName, string address)
@@ -20,7 +22,8 @@ namespace SyncTool.Sql
             try
             {
                 var databaseUri = new Uri(address);
-                MySqlDatabase.Create(databaseUri);
+                var database = m_DatabaseFactory.Invoke(databaseUri);
+                database.Create();
             }
             catch (InvalidDatabaseUriException ex)
             {
