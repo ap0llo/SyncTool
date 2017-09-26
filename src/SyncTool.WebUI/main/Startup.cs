@@ -36,6 +36,7 @@ namespace SyncTool.WebUI
         {
             // Add framework services.
             services.AddMvc();
+            services.AddLogging();
             
             // Create the container builder.
             var builder = new ContainerBuilder();

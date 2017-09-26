@@ -23,5 +23,9 @@
     // The path used to store application data, default is %APPDATA%\SyncTool
     // Usage of environment variables in the value is supported, e.g.  "%APPDATA%\SyncTool"
     // "RootPath" :  ""
+  },
+  "Logging": {
+    // enable/disable logging, default valus is true
+    "Enable": true
   }
 }

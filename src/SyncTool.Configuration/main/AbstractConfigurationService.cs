@@ -18,13 +18,8 @@ namespace SyncTool.Configuration
             {
                 if (String.IsNullOrWhiteSpace(name))
                     throw new ArgumentNullException(nameof(name));
-
-                var item = GetItemOrDefault(name);
-                if (item == null)
-                {
-                    throw new ItemNotFoundException($"An item named '{name}' was not found");
-                }
-                return item;
+                
+                return GetItemOrDefault(name) ?? throw new ItemNotFoundException($"An item named '{name}' was not found");
             }
         }
 
@@ -32,14 +27,10 @@ namespace SyncTool.Configuration
         public void AddItem(SyncFolder folder)
         {
             if (folder == null)
-            {
                 throw new ArgumentNullException(nameof(folder));
-            }
 
             if (ItemExists(folder.Name))
-            {
                 throw new DuplicateSyncFolderException(folder.Name);
-            }
 
             DoAddItem(folder);
         }

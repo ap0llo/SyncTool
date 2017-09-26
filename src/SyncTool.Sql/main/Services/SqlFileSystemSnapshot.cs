@@ -1,9 +1,9 @@
-﻿using SyncTool.FileSystem.Versioning;
-using System;
+﻿using System;
 using JetBrains.Annotations;
-using SyncTool.FileSystem;
-using SyncTool.Sql.Model;
 using NodaTime;
+using SyncTool.FileSystem;
+using SyncTool.FileSystem.Versioning;
+using SyncTool.Sql.Model;
 
 namespace SyncTool.Sql.Services
 {
@@ -25,9 +25,9 @@ namespace SyncTool.Sql.Services
 
 
         public SqlFileSystemSnapshot(
-            [NotNull] FileSystemRepository fileSystemRepository, 
-            [NotNull] ISqlFileSystemFactory fileSystemFactory, 
-            [NotNull] SqlFileSystemHistory history, 
+            [NotNull] FileSystemRepository fileSystemRepository,
+            [NotNull] ISqlFileSystemFactory fileSystemFactory,
+            [NotNull] SqlFileSystemHistory history,            
             [NotNull] FileSystemSnapshotDo snapshotDo)
         {
             m_FileSystemFactory = fileSystemFactory ?? throw new ArgumentNullException(nameof(fileSystemFactory));

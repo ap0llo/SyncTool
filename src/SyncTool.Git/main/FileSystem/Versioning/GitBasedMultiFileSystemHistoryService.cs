@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using LibGit2Sharp;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.RepositoryAccess;
+using Microsoft.Extensions.Logging;
 
 namespace SyncTool.Git.FileSystem.Versioning
 {
@@ -47,9 +48,10 @@ namespace SyncTool.Git.FileSystem.Versioning
 
 
         public GitBasedMultiFileSystemHistoryService(
+            [NotNull] ILogger<GitBasedMultiFileSystemHistoryService> logger,
             [NotNull] GitRepository repository, 
             [NotNull] WorkingDirectoryFactory workingDirectoryFactory, 
-            [NotNull] IHistoryService historyService) : base(historyService)
+            [NotNull] IHistoryService historyService) : base(logger, historyService)
         {
             m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
             m_WorkingDirectoryFactory = workingDirectoryFactory ?? throw new ArgumentNullException(nameof(workingDirectoryFactory));

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace SyncTool.FileSystem.Versioning
 {
     public abstract class AbstractMultiFileSystemHistoryService : IMultiFileSystemHistoryService
     {
+        readonly ILogger<AbstractMultiFileSystemHistoryService> m_Logger;
         readonly IHistoryService m_HistoryService;
 
 
@@ -17,8 +19,11 @@ namespace SyncTool.FileSystem.Versioning
         public IMultiFileSystemSnapshot this[string id] => String.IsNullOrWhiteSpace(id) ? throw new ArgumentNullException(nameof(id)) : GetSnapshot(id);
 
 
-        protected AbstractMultiFileSystemHistoryService([NotNull] IHistoryService historyService)
+        protected AbstractMultiFileSystemHistoryService(
+            [NotNull] ILogger<AbstractMultiFileSystemHistoryService> logger,
+            [NotNull] IHistoryService historyService)
         {
+            m_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             m_HistoryService = historyService ?? throw new ArgumentNullException(nameof(historyService));
         }
 
@@ -27,9 +32,11 @@ namespace SyncTool.FileSystem.Versioning
 
         public string[] GetChangedFiles(string toId)
         {
+            m_Logger.LogDebug($"Getting changed files up to snapshot {toId}");
+
             if (String.IsNullOrWhiteSpace(toId))
                 throw new ArgumentNullException(nameof(toId));
-
+        
             var result = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
             var snapshot = GetSnapshot(toId);
@@ -49,12 +56,14 @@ namespace SyncTool.FileSystem.Versioning
 
         public string[] GetChangedFiles(string from, string to)
         {
+            m_Logger.LogDebug($"Getting changed files between snapshot {from} and {to}");
+
             if (String.IsNullOrWhiteSpace(from))
                 throw new ArgumentNullException(nameof(from));
 
             if (String.IsNullOrWhiteSpace(to))
                 throw new ArgumentNullException(nameof(to));
-
+            
             var fromSnapshot = GetSnapshot(from);
             var toSnapshot = GetSnapshot(to);
 
@@ -100,6 +109,8 @@ namespace SyncTool.FileSystem.Versioning
 
         public IMultiFileSystemDiff GetChanges(string toId, string[] pathFilter = null)
         {
+            m_Logger.LogDebug($"Getting changes up to snapshot {toId}");
+
             if (String.IsNullOrWhiteSpace(toId))
                 throw new ArgumentNullException(nameof(toId));
 
@@ -121,11 +132,14 @@ namespace SyncTool.FileSystem.Versioning
 
         public IMultiFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null)
         {
+            m_Logger.LogDebug($"Getting changes up between snapshot {fromId} and {toId}");
+
             if (String.IsNullOrWhiteSpace(fromId))
                 throw new ArgumentNullException(nameof(fromId));
 
             if (String.IsNullOrWhiteSpace(toId))
                 throw new ArgumentNullException(nameof(toId));
+
 
             var fromSnapshot = GetSnapshot(fromId);
             var toSnapshot = GetSnapshot(toId);

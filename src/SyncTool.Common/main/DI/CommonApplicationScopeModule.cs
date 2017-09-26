@@ -18,7 +18,7 @@ namespace SyncTool.Common.DI
             builder.RegisterType<GroupDirectoryPathProvider>().As<IGroupDirectoryPathProvider>();
             builder.RegisterType<JsonGroupSettingsProvider>().As<IGroupSettingsProvider>();
             builder.RegisterType<GroupManager>().As<IGroupManager>().InstancePerMatchingLifetimeScope(Scope.Application);
-
+                        
             base.Load(builder);
         }
     }
