@@ -1,19 +1,23 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using CommandLine;
-using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+using SyncTool.Utilities;
 
 namespace SyncTool.Cli.Framework
 {
     public class Application
     {
+        readonly ILogger<Application> m_Logger;
         readonly ICommandFactory m_CommandFactory;
         readonly ICommandLoader m_CommandLoader;
 
 
-        public Application(ICommandFactory commandFactory, ICommandLoader commandLoader)
+        public Application(ILogger<Application> logger, ICommandFactory commandFactory, ICommandLoader commandLoader)
         {
+            m_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             m_CommandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
             m_CommandLoader = commandLoader ?? throw new ArgumentNullException(nameof(commandLoader));
         }
@@ -22,6 +26,7 @@ namespace SyncTool.Cli.Framework
         public int Run(string[] args)
         {
             // get available commands
+            m_Logger.LogDebug("Loading available commands");
             var commands = m_CommandLoader.GetCommands();
             
             // parse args
@@ -30,12 +35,12 @@ namespace SyncTool.Cli.Framework
                 opts.CaseSensitive = false;
                 opts.HelpWriter = Parser.Default.Settings.HelpWriter;
             });
-
             
             // select command
             CommandDescription? selectedCommand = null;
             OptionsBase optionInstance = null;
 
+            m_Logger.LogInformation("Parsing arguments");
             parser.ParseArguments(args, commands.Select(c => c.OptionType).ToArray())
                 .WithParsed(obj =>
                 {
@@ -43,30 +48,37 @@ namespace SyncTool.Cli.Framework
                     selectedCommand = commands.Single(c => c.OptionType == obj.GetType());
                 });
 
-           
             if (optionInstance?.LaunchDebugger == true)
             {
+                m_Logger.LogInformation("Launching debugger");
+
                 if (Debugger.IsAttached)
-                {
                     Debugger.Break();
-                }
                 else
-                {
                     Debugger.Launch();
-                }            
             }
 
 
             // execute command
             if (selectedCommand.HasValue)
             {
-                return ExecuteCommand(selectedCommand.Value, optionInstance);
+                try
+                {
+                    return ExecuteCommand(selectedCommand.Value, optionInstance);
+                }
+                catch (Exception ex)
+                {
+                    m_Logger.LogCritical(ex, $"Unhandled exception during execution of command '{selectedCommand.Value.ImplementationType.Name}'");
+                    Console.Error.WriteLine(ex.Message);
+
+                    return 2;
+                }
             }
             else
             {
+                m_Logger.LogError($"No command for arguments '{args.JoinToString(" ")}' found");
                 return 1;                
-            }
-            
+            }            
         }
 
 
