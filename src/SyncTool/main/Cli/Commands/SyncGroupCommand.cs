@@ -1,14 +1,9 @@
-﻿using System;
-using System.Linq;
+using System;
 using CommandLine;
 using SyncTool.Cli.Framework;
 using SyncTool.Cli.Output;
 using SyncTool.Common.Groups;
-using SyncTool.FileSystem;
-using SyncTool.FileSystem.Versioning;
 using SyncTool.Synchronization;
-using SyncTool.Synchronization.SyncActions;
-using SyncTool.Synchronization.State;
 
 namespace SyncTool.Cli.Commands
 {    

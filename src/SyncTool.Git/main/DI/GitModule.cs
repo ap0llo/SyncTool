@@ -1,4 +1,4 @@
-﻿using Autofac;
+using Autofac;
 using SyncTool.Common;
 using SyncTool.Common.Groups;
 using SyncTool.Configuration;
@@ -7,12 +7,6 @@ using SyncTool.Git.Common.Groups;
 using SyncTool.Git.Configuration;
 using SyncTool.Git.FileSystem.Versioning;
 using SyncTool.Git.RepositoryAccess;
-using SyncTool.Git.Synchronization.Conflicts;
-using SyncTool.Git.Synchronization.State;
-using SyncTool.Git.Synchronization.SyncActions;
-using SyncTool.Synchronization.Conflicts;
-using SyncTool.Synchronization.State;
-using SyncTool.Synchronization.SyncActions;
 
 namespace SyncTool.Git.DI
 {
@@ -24,9 +18,6 @@ namespace SyncTool.Git.DI
 
             builder.RegisterType<GitBasedConfigurationService>().As<IConfigurationService>().AsSelf();
             builder.RegisterType<GitBasedHistoryService>().As<IHistoryService>().AsSelf();
-            builder.RegisterType<GitSyncPointService>().As<ISyncPointService>().AsSelf();
-            builder.RegisterType<GitConflictService>().As<IConflictService>().AsSelf();
-            builder.RegisterType<GitSyncActionService>().As<ISyncActionService>().AsSelf();
             builder.RegisterType<GitBasedMultiFileSystemHistoryService>().As<IMultiFileSystemHistoryService>().AsSelf();
             builder.RegisterType<GitGroupValidator>().As<IGroupValidator>();
             builder.RegisterType<GitGroupInitializer>().As<IGroupInitializer>();

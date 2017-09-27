@@ -1,4 +1,4 @@
-﻿using Autofac;
+using Autofac;
 using SyncTool.Common;
 using SyncTool.Common.Groups;
 using SyncTool.Configuration;
@@ -33,10 +33,7 @@ namespace SyncTool.Sql.DI
             // multi-filesystem history service
             builder.RegisterType<SqlMultiFileSystemHistoryService>().As<IMultiFileSystemHistoryService>();
             builder.RegisterType<SqlMultiFileSystemSnapshot>().AsSelf();
-
-            //TODO: Implement ISyncPointService
-            //TODO: Implement IConflictService
-            //TODO: Implement ISyncActionService
+            
 
             //
             // Database access and repository implementations

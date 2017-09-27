@@ -1,4 +1,4 @@
-﻿using Autofac;
+using Autofac;
 
 namespace SyncTool.Synchronization.DI
 {
@@ -7,7 +7,6 @@ namespace SyncTool.Synchronization.DI
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<Synchronizer>().As<ISynchronizer>();
-
             base.Load(builder);
         }        
     }

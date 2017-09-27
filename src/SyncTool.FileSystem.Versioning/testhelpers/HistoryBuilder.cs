@@ -1,22 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SyncTool.Common.Groups;
-using SyncTool.Configuration;
-using SyncTool.FileSystem;
-using SyncTool.FileSystem.Versioning;
 using NodaTime;
 
-namespace SyncTool.Synchronization.TestHelpers
+namespace SyncTool.FileSystem.Versioning.TestHelpers
 {
     public class HistoryBuilder
     {
         readonly IGroup m_Group;
         readonly string m_Name;
         readonly IDictionary<string, File> m_Files = new Dictionary<string, File>(StringComparer.InvariantCultureIgnoreCase);
-
-
-        public SyncFolder SyncFolder { get; }
-
+        
         public IDirectory CurrentState { get; private set; }
 
         public HistoryBuilder(IGroup group, string name)
@@ -24,10 +18,7 @@ namespace SyncTool.Synchronization.TestHelpers
             m_Group = @group;
             m_Name = name;
             m_Group.GetHistoryService().CreateHistory(m_Name);
-
-            SyncFolder = new SyncFolder(m_Name) { Path = "Irrelevant" };
-
-            m_Group.GetConfigurationService().AddItem(SyncFolder);
+            
         }
 
         public void AddFile(string fileName, Instant lastWriteTime)

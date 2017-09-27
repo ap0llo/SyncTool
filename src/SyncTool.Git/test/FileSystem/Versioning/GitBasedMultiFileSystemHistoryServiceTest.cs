@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Linq;
+using NodaTime;
+using Xunit;
 using SyncTool.Common.Groups;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.TestHelpers;
 using SyncTool.FileSystem.Versioning;
+using SyncTool.FileSystem.Versioning.TestHelpers;
 using SyncTool.Git.FileSystem.Versioning;
 using SyncTool.Git.TestHelpers;
-using SyncTool.Synchronization.TestHelpers;
-using Xunit;
-using NodaTime;
 
 namespace SyncTool.Git.Test.FileSystem.Versioning
 {

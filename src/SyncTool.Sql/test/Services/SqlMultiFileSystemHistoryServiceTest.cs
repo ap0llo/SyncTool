@@ -1,6 +1,9 @@
-﻿using System;
+using System;
 using System.Linq;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Xunit;
+using NodaTime;
 using SyncTool.Common.Groups;
 using SyncTool.Configuration;
 using SyncTool.FileSystem;
@@ -9,10 +12,7 @@ using SyncTool.FileSystem.Versioning;
 using SyncTool.Sql.Model;
 using SyncTool.Sql.Services;
 using SyncTool.Sql.TestHelpers;
-using SyncTool.Synchronization.TestHelpers;
-using Xunit;
-using NodaTime;
-using Microsoft.Extensions.Logging.Abstractions;
+using SyncTool.FileSystem.Versioning.TestHelpers;
 
 namespace SyncTool.Sql.Test.Services
 {
