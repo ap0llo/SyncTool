@@ -68,6 +68,10 @@ namespace SyncTool.Cli.Framework
                 }
                 catch (Exception ex)
                 {
+                    // unwrap command execution exceptions
+                    if (ex is CommandExecutionException _ex)
+                        ex = _ex.InnerException;
+
                     m_Logger.LogCritical(ex, $"Unhandled exception during execution of command '{selectedCommand.Value.ImplementationType.Name}'");
                     Console.Error.WriteLine(ex.Message);
 
@@ -101,7 +105,7 @@ namespace SyncTool.Cli.Framework
             }
             catch (TargetInvocationException e) when (e.InnerException != null)
             {
-                throw e.InnerException;
+                throw new CommandExecutionException(e.InnerException);
             }
         }
 
