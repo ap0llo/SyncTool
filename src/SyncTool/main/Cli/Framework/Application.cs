@@ -78,12 +78,19 @@ namespace SyncTool.Cli.Framework
             // create command and execute it
             var commandInstance = m_CommandFactory.CreateCommandInstance(command.ImplementationType);
 
-            var result = (int)runMethod.Invoke(commandInstance, new[] { optionInstance });
+            try
+            {
+                var result = (int)runMethod.Invoke(commandInstance, new[] { optionInstance });
 
-            // call dispose if command implements IDisposable
-            (commandInstance as IDisposable)?.Dispose();
+                // call dispose if command implements IDisposable
+                (commandInstance as IDisposable)?.Dispose();
 
-            return result;
+                return result;
+            }
+            catch (TargetInvocationException e) when (e.InnerException != null)
+            {
+                throw e.InnerException;
+            }
         }
 
         MethodInfo GetRunMethod(CommandDescription command)
@@ -100,9 +107,5 @@ namespace SyncTool.Cli.Framework
 
             throw new ArgumentException($"Could not find Run() method for CommandDescription [{command}]. Make sure the implementation class implements {typeof(ICommand<>).Name}");
         }
-
-
-
-
     }
 }
