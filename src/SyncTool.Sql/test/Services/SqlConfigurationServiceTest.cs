@@ -1,13 +1,11 @@
-﻿using SyncTool.Common.Services;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using SyncTool.Common.Services;
 using SyncTool.Configuration;
 using SyncTool.Sql.Model;
 using SyncTool.Sql.Services;
 using SyncTool.Sql.TestHelpers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace SyncTool.Sql.Test.Services
@@ -15,7 +13,7 @@ namespace SyncTool.Sql.Test.Services
     public class SqlConfigurationServiceTest : SqlTestBase
     {
 
-        SqlConfigurationService CreateInstance() => new SqlConfigurationService(new SyncFolderRepository(Database));
+        SqlConfigurationService CreateInstance() => new SqlConfigurationService(new SyncFolderRepository(Database), NullLogger<SqlConfigurationService>.Instance);
 
         #region Items
 

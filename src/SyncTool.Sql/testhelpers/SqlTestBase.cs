@@ -1,5 +1,6 @@
-﻿using SyncTool.Sql.Model;
-using System;
+﻿using System;
+using Microsoft.Extensions.Logging.Abstractions;
+using SyncTool.Sql.Model;
 
 namespace SyncTool.Sql.TestHelpers
 {
@@ -23,11 +24,11 @@ namespace SyncTool.Sql.TestHelpers
             m_DatabaseUri = uriBuilder.Uri;
 
             // create database
-            MySqlDatabase.Create(m_DatabaseUri);
-            Database = new MySqlDatabase(m_DatabaseUri);
+            Database = new MySqlDatabase(NullLogger<MySqlDatabase>.Instance, m_DatabaseUri);
+            Database.Create();            
         }
                 
         
-        public void Dispose() => MySqlDatabase.Drop(m_DatabaseUri);
+        public void Dispose() => Database.Drop();
     }
 }

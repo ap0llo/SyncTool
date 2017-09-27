@@ -9,6 +9,7 @@ using System.Linq;
 using Moq;
 using Xunit;
 using NodaTime;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace SyncTool.Sql.Test.Services
 {
@@ -45,6 +46,7 @@ namespace SyncTool.Sql.Test.Services
                 snapshotRepository,
                 fileSystemRepository,                                
                 (history, snapshotDo) => new SqlFileSystemSnapshot(fileSystemRepository, sqlFileSystemFactory.Object, history, snapshotDo),
+                NullLogger<SqlFileSystemHistory>.Instance,
                 historyDo);
         }
 

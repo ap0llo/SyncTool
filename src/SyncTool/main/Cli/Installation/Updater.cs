@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Squirrel;
 using SyncTool.Cli.Options;
+using Microsoft.Extensions.Logging;
+
+using static System.FormattableString;
 
 namespace SyncTool.Cli.Installation
 {
@@ -12,6 +15,7 @@ namespace SyncTool.Cli.Installation
     {
         const string s_LastUpdateTimeStampFileName = "lastUpdate.timestamp";
 
+        readonly ILogger<Updater> m_Logger;
         readonly UpdateOptions m_Options;
         Task m_UpdateTask;
 
@@ -21,13 +25,15 @@ namespace SyncTool.Cli.Installation
         public string Error { get; private set; }
 
 
-        public Updater([NotNull] UpdateOptions options)
+        public Updater([NotNull] ILogger<Updater> logger, [NotNull] UpdateOptions options)
         {
+            m_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             m_Options = options ?? throw new ArgumentNullException(nameof(options));            
         }
 
         public void Start()
         {
+            m_Logger.LogDebug("Starting updater");
             Status = UpdaterStatus.Running;
 
             if (CanUpdate())
@@ -36,6 +42,7 @@ namespace SyncTool.Cli.Installation
             }
             else
             {
+                m_Logger.LogDebug("Skipping update");
                 m_UpdateTask = Task.CompletedTask;
             }
 
@@ -43,6 +50,8 @@ namespace SyncTool.Cli.Installation
             {
                 if (!t.IsFaulted)
                     Status = UpdaterStatus.Completed;
+
+                m_Logger.LogDebug($"Updater completed, Status: {Status} ");
             });
         }
         
@@ -68,10 +77,31 @@ namespace SyncTool.Cli.Installation
         
         bool CanUpdate()
         {
-            return ApplicationInfo.IsInstalled &&
-                   m_Options.Enable &&
-                   m_Options.Source != UpdateSource.NotConfigured &&
-                   !String.IsNullOrEmpty(m_Options.Path);
+            if (!ApplicationInfo.IsInstalled)
+            {
+                m_Logger.LogDebug("Cannot update, application is not in an installation environment");
+                return false;
+            }
+
+            if (!m_Options.Enable)
+            {
+                m_Logger.LogDebug("Cannot update, updates are disabled");
+                return false;
+            }
+
+            if (m_Options.Source == UpdateSource.NotConfigured)
+            {
+                m_Logger.LogDebug("Cannot update, update source is not configured");
+                return false;
+            }
+
+            if (String.IsNullOrEmpty(m_Options.Path))
+            {
+                m_Logger.LogDebug("Cannot update, update path is not set");
+                return false;
+            }
+
+            return true;
         }
         
         async Task StartUpdateTask()
@@ -79,6 +109,7 @@ namespace SyncTool.Cli.Installation
             var lastUpdateTime = GetLastUpdateTime();
             if (lastUpdateTime.HasValue && (DateTime.UtcNow - lastUpdateTime.Value) < m_Options.Interval)
             {
+                m_Logger.LogDebug(Invariant($"Skipping update, last update check at {lastUpdateTime}"));
                 return;
             }
             
@@ -105,7 +136,8 @@ namespace SyncTool.Cli.Installation
         }
 
         async Task StartFileSystemUpdateTask()
-        {        
+        {
+            m_Logger.LogDebug($"Updating from file system ({m_Options.Path})");
             using (var updateManager = new UpdateManager(m_Options.Path))
             {                
                 await updateManager.UpdateApp();                
@@ -114,6 +146,7 @@ namespace SyncTool.Cli.Installation
         
         async Task StartGitHubUpdateTask()
         {
+            m_Logger.LogDebug($"Updating from github ({m_Options.Path})");
             using (var updateManager = await UpdateManager.GitHubUpdateManager(
                 repoUrl: m_Options.Path, 
                 prerelease:m_Options.InstallPreReleaseVersions))

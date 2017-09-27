@@ -1,19 +1,22 @@
-﻿using SyncTool.FileSystem.Versioning;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
+using NodaTime;
 using SyncTool.FileSystem;
+using SyncTool.FileSystem.Versioning;
 using SyncTool.Sql.Model;
 using SyncTool.Utilities;
-using NodaTime;
 
 namespace SyncTool.Sql.Services
-{    
+{
     class SqlFileSystemHistory : IFileSystemHistory
     {
         readonly SnapshotRepository m_SnapshotRepository;
         readonly FileSystemRepository m_FileSystemRepository;        
         readonly Func<SqlFileSystemHistory, FileSystemSnapshotDo, SqlFileSystemSnapshot> m_SnapshotFactory;
+        readonly ILogger<SqlFileSystemHistory> m_Logger;
         readonly FileSystemHistoryDo m_HistoryDo;
 
 
@@ -47,32 +50,47 @@ namespace SyncTool.Sql.Services
 
 
         public SqlFileSystemHistory(            
-            SnapshotRepository snapshotRepository,
-            FileSystemRepository fileSystemRepository,           
-            Func<SqlFileSystemHistory, FileSystemSnapshotDo,SqlFileSystemSnapshot> snapshotFactory, 
-            FileSystemHistoryDo historyDo)
+            [NotNull] SnapshotRepository snapshotRepository,
+            [NotNull] FileSystemRepository fileSystemRepository,           
+            [NotNull] Func<SqlFileSystemHistory, FileSystemSnapshotDo,SqlFileSystemSnapshot> snapshotFactory, 
+            [NotNull] ILogger<SqlFileSystemHistory> logger,
+            [NotNull] FileSystemHistoryDo historyDo)
         {            
             m_SnapshotRepository = snapshotRepository ?? throw new ArgumentNullException(nameof(snapshotRepository));
             m_FileSystemRepository = fileSystemRepository ?? throw new ArgumentNullException(nameof(fileSystemRepository));            
 
             m_SnapshotFactory = snapshotFactory ?? throw new ArgumentNullException(nameof(snapshotFactory));
+            m_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             m_HistoryDo = historyDo ?? throw new ArgumentNullException(nameof(historyDo));
         }
 
 
         public IFileSystemSnapshot CreateSnapshot(IDirectory fileSystemState)
-        {            
-            var directoryInstance = fileSystemState.ToDirectoryInstanceDo();            
-            m_FileSystemRepository.AddRecursively(directoryInstance);
+        {
+            using (m_Logger.BeginScope($"Creating snapshot for history {Name}"))
+            {
+                m_Logger.LogDebug("Adding directory to database");
+                var directoryInstance = fileSystemState.ToDirectoryInstanceDo();            
+                m_FileSystemRepository.AddRecursively(directoryInstance);
 
-            var snapshotDo = new FileSystemSnapshotDo(m_HistoryDo.Id, SystemClock.Instance.GetCurrentInstant().ToUnixTimeTicks(), directoryInstance.Id, directoryInstance.GetFilesRecursively());            
-            m_SnapshotRepository.AddSnapshot(snapshotDo);
+                m_Logger.LogDebug("Saving snapshot to database");
+                var snapshotDo = new FileSystemSnapshotDo(
+                    m_HistoryDo.Id, 
+                    SystemClock.Instance.GetCurrentInstant().ToUnixTimeTicks(), 
+                    directoryInstance.Id, 
+                    directoryInstance.GetFilesRecursively()
+                );            
+                m_SnapshotRepository.AddSnapshot(snapshotDo);
+                m_Logger.LogDebug($"Snapshot {snapshotDo.Id} successfully saved to database");
 
-            return m_SnapshotFactory.Invoke(this, snapshotDo);           
+                return m_SnapshotFactory.Invoke(this, snapshotDo);           
+            }                
         }
 
         public string[] GetChangedFiles(string toId)
         {
+            m_Logger.LogDebug($"Getting changed files up to snapshot {toId}");
+
             var changedFiles = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
             var toSnapshot = GetSnapshotDo(ParseId(toId));
 
@@ -85,6 +103,8 @@ namespace SyncTool.Sql.Services
 
         public string[] GetChangedFiles(string fromId, string toId)
         {
+            m_Logger.LogDebug($"Getting changed files between snapshot {fromId} and {toId}");
+
             var changedFiles = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
             var fromSnapshot = GetSnapshotDo(ParseId(fromId));
             var toSnapshot = GetSnapshotDo(ParseId(toId));
@@ -101,6 +121,8 @@ namespace SyncTool.Sql.Services
 
         public IFileSystemDiff GetChanges(string toId, string[] pathFilter = null)
         {
+            m_Logger.LogDebug($"Getting changes files up to snapshot {toId}");
+
             var toDbId = ParseId(toId);
             AssertIsValidPathFilter(pathFilter);
 
@@ -121,6 +143,8 @@ namespace SyncTool.Sql.Services
         
         public IFileSystemDiff GetChanges(string fromId, string toId, string[] pathFilter = null)
         {
+            m_Logger.LogDebug($"Getting changes files between snapshot {fromId} and {toId}");
+
             var fromDbId = ParseId(fromId);
             var toDbId = ParseId(toId);
             AssertIsValidPathFilter(pathFilter);

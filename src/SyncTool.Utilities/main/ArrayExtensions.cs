@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,6 +23,11 @@ namespace SyncTool.Utilities
                 return Enumerable.Empty<ArraySegment<T>>();
             
             return DoGetSegments();
+        }
+
+        public static string JoinToString(this IEnumerable<string> strings, string separator = ",")
+        {
+            return String.Join(separator, strings.ToArray());
         }
     }
 }

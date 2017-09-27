@@ -1,4 +1,5 @@
-﻿using SyncTool.Common.Services;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using SyncTool.Common.Services;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Sql.Model;
 using SyncTool.Sql.Services;
@@ -22,8 +23,9 @@ namespace SyncTool.Sql.Test.Services
             var snapshotRepository = new SnapshotRepository(Database);
 
             return new SqlHistoryService(
+                NullLogger<SqlHistoryService>.Instance,
                 historyRepository,
-                historyDo => new SqlFileSystemHistory(snapshotRepository, fileSystemRepository, (_, __) => null, historyDo));
+                historyDo => new SqlFileSystemHistory(snapshotRepository, fileSystemRepository, (_, __) => null, NullLogger<SqlFileSystemHistory>.Instance, historyDo));
         }
 
         [Fact]

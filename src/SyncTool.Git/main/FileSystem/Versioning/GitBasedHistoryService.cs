@@ -6,7 +6,7 @@ using LibGit2Sharp;
 using SyncTool.Common.Services;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Git.RepositoryAccess;
-
+using Microsoft.Extensions.Logging;
 
 namespace SyncTool.Git.FileSystem.Versioning
 {
@@ -28,7 +28,11 @@ namespace SyncTool.Git.FileSystem.Versioning
         }
 
 
-        public GitBasedHistoryService(GitRepository repository, WorkingDirectoryFactory workingDirectoryFactory, [NotNull] GitBasedFileSystemHistoryFactory historyFactory)         
+        public GitBasedHistoryService(
+            [NotNull] ILogger<GitBasedHistoryService> logger,
+            [NotNull] GitRepository repository,
+            [NotNull] WorkingDirectoryFactory workingDirectoryFactory, 
+            [NotNull] GitBasedFileSystemHistoryFactory historyFactory) : base(logger)     
         {
             m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
             m_WorkingDirectoryFactory = workingDirectoryFactory ?? throw new ArgumentNullException(nameof(workingDirectoryFactory));

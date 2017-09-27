@@ -7,6 +7,8 @@ using SyncTool.Utilities;
 using SyncTool.Common.Options;
 
 using Directory = System.IO.Directory;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace SyncTool.Common.TestHelpers
 {
@@ -34,8 +36,10 @@ namespace SyncTool.Common.TestHelpers
             Directory.CreateDirectory(groupSettingsDirectoy);
 
             var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule<CommonApplicationScopeModule>();            
-            
+            containerBuilder.RegisterModule<CommonApplicationScopeModule>();
+            containerBuilder.RegisterGeneric(typeof(NullLogggerProxy<>)).As(typeof(ILogger<>));
+            containerBuilder.RegisterInstance(NullLogger.Instance).As<ILogger>();
+
             containerBuilder.RegisterInstance(new JsonGroupSettingsProvider(groupSettingsDirectoy)).As<IGroupSettingsProvider>();
             containerBuilder
                 .RegisterInstance(new GroupDirectoryPathProvider(new ApplicationDataOptions() { RootPath = groupStorageRoot }))

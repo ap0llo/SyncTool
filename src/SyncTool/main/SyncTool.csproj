@@ -14,7 +14,11 @@
   
   <ItemGroup>
     <None Remove="config.json" />
+    <None Remove="nlog.config" />
     <EmbeddedResource Include="config.json" />
+    <EmbeddedResource Include="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +28,8 @@
   
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.0.275-beta" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta5" />
     <PackageReference Include="Squirrel.Windows" Version="1.7.7" /> 
     <PackageReference Include="Nuget.Commandline" Version="4.3.0" />     
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />

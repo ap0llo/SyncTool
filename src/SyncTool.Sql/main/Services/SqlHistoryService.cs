@@ -1,8 +1,10 @@
-﻿using SyncTool.FileSystem.Versioning;
-using SyncTool.Sql.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
+using SyncTool.FileSystem.Versioning;
+using SyncTool.Sql.Model;
 
 namespace SyncTool.Sql.Services
 {
@@ -15,7 +17,10 @@ namespace SyncTool.Sql.Services
         public override IEnumerable<IFileSystemHistory> Items => m_Repository.Items.Select(m_HistoryFactory);
 
 
-        public SqlHistoryService(FileSystemHistoryRepository repository, Func<FileSystemHistoryDo, SqlFileSystemHistory> historyFactory)
+        public SqlHistoryService(
+            [NotNull] ILogger<SqlHistoryService> logger,
+            [NotNull] FileSystemHistoryRepository repository,
+            [NotNull] Func<FileSystemHistoryDo, SqlFileSystemHistory> historyFactory) : base(logger)
         {
             m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
             m_HistoryFactory = historyFactory ?? throw new ArgumentNullException(nameof(historyFactory));

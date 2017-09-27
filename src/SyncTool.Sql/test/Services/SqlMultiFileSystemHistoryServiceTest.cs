@@ -12,6 +12,7 @@ using SyncTool.Sql.TestHelpers;
 using SyncTool.Synchronization.TestHelpers;
 using Xunit;
 using NodaTime;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace SyncTool.Sql.Test.Services
 {
@@ -40,14 +41,14 @@ namespace SyncTool.Sql.Test.Services
                 (history, snapshotDo) => new SqlFileSystemSnapshot(fileSystemRepository, sqlFileSystemFactory.Object, history, snapshotDo);
             
             Func<FileSystemHistoryDo, SqlFileSystemHistory> historyFactory =
-                historyDo => new SqlFileSystemHistory(snapshotRepository, fileSystemRepository, snapshotFactory, historyDo);
+                historyDo => new SqlFileSystemHistory(snapshotRepository, fileSystemRepository, snapshotFactory, NullLogger<SqlFileSystemHistory>.Instance, historyDo);
 
-            m_HistoryService = new SqlHistoryService(historyRepository, historyFactory);
+            m_HistoryService = new SqlHistoryService(NullLogger<SqlHistoryService>.Instance, historyRepository, historyFactory);
 
             Func<MultiFileSystemSnapshotDo, SqlMultiFileSystemSnapshot> multiFileSystemSnapshotFactory = 
                 snapshotDo => new SqlMultiFileSystemSnapshot(m_HistoryService, multiFileSystemSnapshotRepository, snapshotDo);
 
-            m_Instance = new SqlMultiFileSystemHistoryService(m_HistoryService, multiFileSystemSnapshotRepository, multiFileSystemSnapshotFactory);
+            m_Instance = new SqlMultiFileSystemHistoryService(NullLogger<SqlMultiFileSystemHistoryService>.Instance, m_HistoryService, multiFileSystemSnapshotRepository, multiFileSystemSnapshotFactory);
 
             var groupMock = new Mock<IGroup>(MockBehavior.Strict);
             groupMock.Setup(g => g.GetService<IHistoryService>()).Returns(m_HistoryService);

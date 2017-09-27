@@ -4,11 +4,13 @@ using System.Linq;
 using JetBrains.Annotations;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Sql.Model;
+using Microsoft.Extensions.Logging;
 
 namespace SyncTool.Sql.Services
 {
     class SqlMultiFileSystemHistoryService : AbstractMultiFileSystemHistoryService
     {
+        readonly ILogger<SqlMultiFileSystemHistoryService> m_Logger;
         readonly IHistoryService m_HistoryService;
         readonly Func<MultiFileSystemSnapshotDo, SqlMultiFileSystemSnapshot> m_SnapshotFactory;
         readonly MultiFileSystemSnapshotRepository m_Repository;
@@ -27,10 +29,12 @@ namespace SyncTool.Sql.Services
         
 
         public SqlMultiFileSystemHistoryService(
+            [NotNull] ILogger<SqlMultiFileSystemHistoryService> logger,
             [NotNull] IHistoryService historyService,
             [NotNull] MultiFileSystemSnapshotRepository repository, 
-            [NotNull] Func<MultiFileSystemSnapshotDo, SqlMultiFileSystemSnapshot> snapshotFactory) : base(historyService)
+            [NotNull] Func<MultiFileSystemSnapshotDo, SqlMultiFileSystemSnapshot> snapshotFactory) : base(logger, historyService)
         {
+            m_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             m_HistoryService = historyService ?? throw new ArgumentNullException(nameof(historyService));
             m_SnapshotFactory = snapshotFactory ?? throw new ArgumentNullException(nameof(snapshotFactory));
             m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
@@ -39,6 +43,8 @@ namespace SyncTool.Sql.Services
 
         public override IMultiFileSystemSnapshot CreateSnapshot()
         {
+            m_Logger.LogDebug("Creating MultiFileSystemSnapshot");
+
             var snapshotDo = new MultiFileSystemSnapshotDo()
             {
                 SnapshotIds = m_HistoryService
@@ -48,9 +54,14 @@ namespace SyncTool.Sql.Services
             };
 
             if (!snapshotDo.SnapshotIds.Any())
+            {
+                m_Logger.LogWarning("No snpashots in any history found, skipping aborting creation of snapshot");
                 return null;
+            }
 
             m_Repository.AddSnapshot(snapshotDo);
+            m_Logger.LogDebug($"MultiFileSystemSnapshot {snapshotDo.Id} added to database");
+
             return m_SnapshotFactory.Invoke(snapshotDo);
         }
 
