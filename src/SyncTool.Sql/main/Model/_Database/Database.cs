@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using JetBrains.Annotations;
@@ -48,8 +48,9 @@ namespace SyncTool.Sql.Model
             //TODO: Implement upgrade logic here when a new schema version is introduced. Should schema upgrades be explicit or implicit?
             using (var connection = DoOpenConnection())
             {
-                using (m_Logger.BeginScope("Checking schema of database"))
+                using (m_Logger.BeginScope("SchemaCheck"))
                 {
+                    m_Logger.LogInformation("Checking schema of database");
                     var schemaInfo = connection.QuerySingle<SchemaInfoDo>($"SELECT * FROM {SchemaInfoTable.Name}");
 
                     m_Logger.LogInformation($"Schema version of database is {schemaInfo.Version}, current version is {SchemaVersion}");

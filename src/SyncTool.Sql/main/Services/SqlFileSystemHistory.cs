@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -67,8 +67,9 @@ namespace SyncTool.Sql.Services
 
         public IFileSystemSnapshot CreateSnapshot(IDirectory fileSystemState)
         {
-            using (m_Logger.BeginScope($"Creating snapshot for history {Name}"))
+            using (m_Logger.BeginScope("CreateSnapshot"))
             {
+                m_Logger.LogInformation($"Creating snapshot for history {Name}");
                 m_Logger.LogDebug("Adding directory to database");
                 var directoryInstance = fileSystemState.ToDirectoryInstanceDo();            
                 m_FileSystemRepository.AddRecursively(directoryInstance);
