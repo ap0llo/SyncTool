@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,5 +24,10 @@ namespace SyncTool.Utilities
         {
             return enumerable.Concat(newItem.Yield());
         }
+
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> enumerable) => new HashSet<T>(enumerable);
+
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> enumerable, IEqualityComparer<T> comparer) =>
+            new HashSet<T>(enumerable, comparer);
     }
 }
