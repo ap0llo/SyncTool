@@ -1,4 +1,5 @@
 using Autofac;
+using SyncTool.Common;
 
 namespace SyncTool.Synchronization.DI
 {
@@ -6,7 +7,7 @@ namespace SyncTool.Synchronization.DI
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<Synchronizer>().As<ISynchronizer>();
+            builder.RegisterType<Synchronizer>().As<ISynchronizer>().InstancePerMatchingLifetimeScope(Scope.Group);
             base.Load(builder);
         }        
     }

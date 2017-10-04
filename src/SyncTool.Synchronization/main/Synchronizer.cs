@@ -1,31 +1,12 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
-using SyncTool.Common.Groups;
-using SyncTool.FileSystem;
-
 
 namespace SyncTool.Synchronization
 {
     public class Synchronizer : ISynchronizer
-    {        
-        readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
-               
-        
-        public Synchronizer(IEqualityComparer<IFileReference> fileReferenceComparer)
+    {
+        public void Run()
         {
-            m_FileReferenceComparer = fileReferenceComparer ?? throw new ArgumentNullException(nameof(fileReferenceComparer));            
+            throw new NotImplementedException();
         }
-        
-
-        public void Synchronize(IGroup group)
-        {
-                        
-        }
-        
-
-        
-        
-
     }
 }

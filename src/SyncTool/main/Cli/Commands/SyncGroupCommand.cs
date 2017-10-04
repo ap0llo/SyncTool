@@ -17,29 +17,22 @@ namespace SyncTool.Cli.Commands
     }
 
     public class SyncGroupCommand : CommandBase, ICommand<SyncGroupOptions>
-    {
-        
+    {        
         readonly IGroupManager m_GroupManager;
-        readonly ISynchronizer m_Synchronizer;
-
-        public SyncGroupCommand(IOutputWriter outputWriter, IGroupManager groupManager, ISynchronizer synchronizer) : base(outputWriter)
+        
+        public SyncGroupCommand(IOutputWriter outputWriter, IGroupManager groupManager) : base(outputWriter)
         {
             m_GroupManager = groupManager ?? throw new ArgumentNullException(nameof(groupManager));
-            m_Synchronizer = synchronizer ?? throw new ArgumentNullException(nameof(synchronizer));
         }
-
 
         public int Run(SyncGroupOptions opts)
         {
             using (var group = m_GroupManager.OpenExclusively(opts.Group))
-            {            
-                m_Synchronizer.Synchronize(group);
+            {
+                group.GetSynchronizer().Run();                
             }
 
             return 0;
         }
-
-     
-
     }
 }
