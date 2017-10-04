@@ -26,6 +26,10 @@ namespace SyncTool.Utilities
         {
         }
 
+        public Graph(IEqualityComparer<TNode> nodeComparer) : this(nodeComparer, EqualityComparer<TEdge>.Default)
+        {
+        }
+
         public Graph(IEqualityComparer<TNode> nodeComparer, IEqualityComparer<TEdge> edgeComparer)
         {
             m_NodeComparer = nodeComparer ?? throw new ArgumentNullException(nameof(nodeComparer));
