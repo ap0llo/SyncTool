@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
@@ -23,7 +23,7 @@ namespace SyncTool.Sql.Model
         {
         }
 
-        public MySqlDatabase(ILogger<MySqlDatabase> logger, Uri databaseUri) : base(logger)
+        internal MySqlDatabase(ILogger<MySqlDatabase> logger, Uri databaseUri) : base(logger)
         {
             m_DatabaseUri = databaseUri ?? throw new ArgumentNullException(nameof(databaseUri));
             m_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
