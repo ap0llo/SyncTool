@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LibGit2Sharp;
+using NodaTime;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Local;
 using SyncTool.FileSystem.Versioning;
-using SyncTool.Git.Common;
 using SyncTool.Git.RepositoryAccess;
-using NativeDirectory = System.IO.Directory;
+
 using Path = System.IO.Path;
 
 namespace SyncTool.Git.FileSystem.Versioning
@@ -23,6 +23,8 @@ namespace SyncTool.Git.FileSystem.Versioning
 
 
         public string Id => m_Commit.Sha;
+
+        public Instant CreationTime => Instant.FromDateTimeOffset(m_Commit.Author.When);
 
         public IEnumerable<string> HistoryNames => m_SnapshotIds.Value.Keys;
         

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -76,14 +76,19 @@ namespace SyncTool.Sql.Model
             {
                 var tmpId = Guid.NewGuid().ToString();
                 id = connection.ExecuteScalar<int>($@"
-                    INSERT INTO {MultiFileSystemSnapshotsTable.Name} ({MultiFileSystemSnapshotsTable.Column.TmpId})
-                    VALUES (@tmpId);
+                    INSERT INTO {MultiFileSystemSnapshotsTable.Name}
+                    (
+                        {MultiFileSystemSnapshotsTable.Column.CreationUnixTimeTicks},
+                        {MultiFileSystemSnapshotsTable.Column.TmpId}
+                    )
+                    VALUES (@ticks, @tmpId);
 
                     SELECT {MultiFileSystemSnapshotsTable.Column.Id}
                     FROM {MultiFileSystemSnapshotsTable.Name}
                     WHERE  {MultiFileSystemSnapshotsTable.Column.TmpId} = @tmpId",
 
-                    ("tmpId", tmpId));
+                    ("tmpId", tmpId),
+                    ("ticks", snapshotDo.CreationUnixTimeTicks));
 
 
                 foreach (var segment in snapshotDo.SnapshotIds.ToArray().GetSegments((m_Database.Limits.MaxParameterCount / 2) - 1))

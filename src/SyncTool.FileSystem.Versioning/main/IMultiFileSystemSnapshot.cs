@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
+using NodaTime;
 
 namespace SyncTool.FileSystem.Versioning
 {
     public interface IMultiFileSystemSnapshot
     {
         string Id { get; }
+
+        /// <summary>
+        /// The time the snapshot was created
+        /// </summary>
+        Instant CreationTime { get; }
 
         IEnumerable<string> HistoryNames { get; }
 

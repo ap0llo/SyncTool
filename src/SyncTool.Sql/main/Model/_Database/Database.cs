@@ -7,7 +7,7 @@ namespace SyncTool.Sql.Model
 {
     public abstract class Database
     {
-        public const int SchemaVersion = 2;
+        public const int SchemaVersion = 3;
 
         static readonly object s_Lock = new object();
         bool m_Initialized;

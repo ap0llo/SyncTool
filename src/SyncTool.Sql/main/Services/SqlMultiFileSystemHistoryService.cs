@@ -1,15 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Sql.Model;
 using Microsoft.Extensions.Logging;
+using NodaTime;
 
 namespace SyncTool.Sql.Services
 {
     class SqlMultiFileSystemHistoryService : AbstractMultiFileSystemHistoryService
     {
+        private readonly IClock m_Clock;
         readonly ILogger<SqlMultiFileSystemHistoryService> m_Logger;
         readonly IHistoryService m_HistoryService;
         readonly Func<MultiFileSystemSnapshotDo, SqlMultiFileSystemSnapshot> m_SnapshotFactory;
@@ -29,11 +31,13 @@ namespace SyncTool.Sql.Services
         
 
         public SqlMultiFileSystemHistoryService(
+            [NotNull] IClock clock, 
             [NotNull] ILogger<SqlMultiFileSystemHistoryService> logger,
             [NotNull] IHistoryService historyService,
             [NotNull] MultiFileSystemSnapshotRepository repository, 
             [NotNull] Func<MultiFileSystemSnapshotDo, SqlMultiFileSystemSnapshot> snapshotFactory) : base(logger, historyService)
         {
+            m_Clock = clock ?? throw new ArgumentNullException(nameof(clock));
             m_Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             m_HistoryService = historyService ?? throw new ArgumentNullException(nameof(historyService));
             m_SnapshotFactory = snapshotFactory ?? throw new ArgumentNullException(nameof(snapshotFactory));
@@ -50,7 +54,8 @@ namespace SyncTool.Sql.Services
                 SnapshotIds = m_HistoryService
                                 .Items
                                 .Select(history => (history.Name, history.LatestFileSystemSnapshot?.Id))
-                                .ToList()
+                                .ToList(),
+                CreationUnixTimeTicks = m_Clock.GetCurrentInstant().ToUnixTimeTicks()
             };
 
             if (!snapshotDo.SnapshotIds.Any())

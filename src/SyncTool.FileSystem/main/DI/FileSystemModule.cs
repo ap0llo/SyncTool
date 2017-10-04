@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Autofac;
+using NodaTime;
 
 namespace SyncTool.FileSystem.DI
 {
@@ -7,6 +8,8 @@ namespace SyncTool.FileSystem.DI
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterInstance(SystemClock.Instance).As<IClock>();
+
             builder.RegisterType<FilePropertiesComparer>().As<IEqualityComparer<IFile>>();
             builder.RegisterInstance(EqualityComparer<IFileReference>.Default).As<IEqualityComparer<IFileReference>>();
 

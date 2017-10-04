@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Sql.Model;
+using NodaTime;
 
 namespace SyncTool.Sql.Services
 {
@@ -17,6 +18,8 @@ namespace SyncTool.Sql.Services
 
 
         public string Id => m_SnapshotDo.Id.ToString();
+
+        public Instant CreationTime => Instant.FromUnixTimeTicks(m_SnapshotDo.CreationUnixTimeTicks);
 
         public IEnumerable<string> HistoryNames => m_SnapshotIds.Value.Keys;
 

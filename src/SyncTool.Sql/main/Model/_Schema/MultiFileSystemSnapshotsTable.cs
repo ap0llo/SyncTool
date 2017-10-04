@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 
 namespace SyncTool.Sql.Model
 {
@@ -9,6 +9,7 @@ namespace SyncTool.Sql.Model
         public enum Column
         {
             Id,
+            CreationUnixTimeTicks,
             TmpId
         }
 
@@ -16,8 +17,9 @@ namespace SyncTool.Sql.Model
         {
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name}(
-                    {Column.Id}     INTEGER PRIMARY KEY AUTO_INCREMENT,
-                    {Column.TmpId}  VARCHAR(40) UNIQUE );
+                    {Column.Id}                     INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    {Column.CreationUnixTimeTicks}  BIGINT NOT NULL,
+                    {Column.TmpId}                  VARCHAR(40) UNIQUE );
             ");
         }
     }

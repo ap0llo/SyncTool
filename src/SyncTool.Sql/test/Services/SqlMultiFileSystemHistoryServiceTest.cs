@@ -21,9 +21,13 @@ namespace SyncTool.Sql.Test.Services
         readonly IGroup m_Group;
         readonly IHistoryService m_HistoryService;
         readonly SqlMultiFileSystemHistoryService m_Instance;
+        readonly Mock<IClock> m_Clock;
 
         public SqlMultiFileSystemHistoryServiceTest()
         {
+            m_Clock = new Mock<IClock>(MockBehavior.Strict);
+            m_Clock.Setup(c => c.GetCurrentInstant()).Returns(SystemClock.Instance.GetCurrentInstant);
+
             var fileSystemRepository = new FileSystemRepository(Database);
             var snapshotRepository = new SnapshotRepository(Database);
             var historyRepository = new FileSystemHistoryRepository(Database);
@@ -48,7 +52,7 @@ namespace SyncTool.Sql.Test.Services
             Func<MultiFileSystemSnapshotDo, SqlMultiFileSystemSnapshot> multiFileSystemSnapshotFactory = 
                 snapshotDo => new SqlMultiFileSystemSnapshot(m_HistoryService, multiFileSystemSnapshotRepository, snapshotDo);
 
-            m_Instance = new SqlMultiFileSystemHistoryService(NullLogger<SqlMultiFileSystemHistoryService>.Instance, m_HistoryService, multiFileSystemSnapshotRepository, multiFileSystemSnapshotFactory);
+            m_Instance = new SqlMultiFileSystemHistoryService(m_Clock.Object, NullLogger<SqlMultiFileSystemHistoryService>.Instance, m_HistoryService, multiFileSystemSnapshotRepository, multiFileSystemSnapshotFactory);
 
             var groupMock = new Mock<IGroup>(MockBehavior.Strict);
             groupMock.Setup(g => g.GetService<IHistoryService>()).Returns(m_HistoryService);
@@ -100,6 +104,24 @@ namespace SyncTool.Sql.Test.Services
         }
 
         [Fact]
+        public void CreateSnapshot_sets_a_snapshots_creation_time()
+        {
+            // ARRANGE
+            var creationTime = Instant.FromUnixTimeSeconds(123);
+            m_Clock.Setup(c => c.GetCurrentInstant()).Returns(creationTime);
+
+            m_HistoryService.CreateHistory("history1");
+            m_HistoryService.CreateHistory("history2");            
+
+            // ACT
+            m_Instance.CreateSnapshot();
+
+            //ASSERT
+            var snapshot = m_Instance.Snapshots.Single();
+            Assert.Equal(creationTime, snapshot.CreationTime);
+        }
+
+        [Fact]
         public void Getting_a_filesystem_snapshot_from_a_snapshot_created_for_an_empty_history_returns_null()
         {
             //ARRANGE
@@ -133,7 +155,6 @@ namespace SyncTool.Sql.Test.Services
             Assert.Equal(createdSnapshot.CreationTime, fileSystemSnapshot.CreationTime);
             FileSystemAssert.DirectoryEqual(createdSnapshot.RootDirectory, fileSystemSnapshot.RootDirectory);
         }
-
 
         [Fact]
         public void Indexer_throws_ArgumentNullException_if_snapshot_id_is_null_or_empty()
@@ -180,7 +201,6 @@ namespace SyncTool.Sql.Test.Services
             Assert.Throws<ArgumentNullException>(() => m_Instance.GetChangedFiles("Irrelevant", invalidId));
             Assert.Throws<ArgumentNullException>(() => m_Instance.GetChangedFiles(invalidId, "Irrelevant"));
         }
-
 
         [Fact]
         public void GetChangedFiles_throws_SnapshotNotFoundException()
@@ -521,6 +541,7 @@ namespace SyncTool.Sql.Test.Services
             Assert.Single(diff.HistoryChanges);
             Assert.Single(diff.HistoryChanges.Where(c => c.Equals(new HistoryChange("history2", ChangeType.Added))));
         }
+
         [Fact]
         public void GetChanges_combines_identical_changes_from_different_histories()
         {  
@@ -550,7 +571,6 @@ namespace SyncTool.Sql.Test.Services
             Assert.Single(diff.FileChanges.Single(cl => cl.Path == "/file1").GetChanges("history1"));
             Assert.Single(diff.FileChanges.Single(cl => cl.Path == "/file1").GetChanges("history2"));
         }
-
 
         [Fact]
         public void GetChanges_throws_InvalidRangeException()
