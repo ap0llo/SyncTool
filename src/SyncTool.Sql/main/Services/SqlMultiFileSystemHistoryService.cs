@@ -9,7 +9,7 @@ using NodaTime;
 
 namespace SyncTool.Sql.Services
 {
-    class SqlMultiFileSystemHistoryService : AbstractMultiFileSystemHistoryService
+    public class SqlMultiFileSystemHistoryService : AbstractMultiFileSystemHistoryService
     {
         private readonly IClock m_Clock;
         readonly ILogger<SqlMultiFileSystemHistoryService> m_Logger;

@@ -5,6 +5,7 @@ using SyncTool.Configuration;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Sql.Model;
 using SyncTool.Sql.Services;
+using SyncTool.Synchronization.State;
 
 namespace SyncTool.Sql.DI
 {
@@ -33,7 +34,9 @@ namespace SyncTool.Sql.DI
             // multi-filesystem history service
             builder.RegisterType<SqlMultiFileSystemHistoryService>().As<IMultiFileSystemHistoryService>();
             builder.RegisterType<SqlMultiFileSystemSnapshot>().AsSelf();
-            
+            // sync state service
+            builder.RegisterType<SqlSyncStateService>().As<ISyncStateService>();
+            builder.RegisterType<SqlSyncStateUpdater>().AsSelf();
 
             //
             // Database access and repository implementations
