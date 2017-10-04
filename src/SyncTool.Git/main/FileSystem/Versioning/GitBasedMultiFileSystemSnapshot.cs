@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using LibGit2Sharp;
@@ -52,13 +52,13 @@ namespace SyncTool.Git.FileSystem.Versioning
 
         public string GetSnapshotId(string historyName) => m_SnapshotIds.Value[historyName];
 
-        public IEnumerable<Tuple<string, IFile>> GetFiles(string path)
+        public IEnumerable<(string historyName, IFile file)> GetFiles(string path)
         {
             foreach (var historyName in HistoryNames)
             {
                 var rootDirectory = GetSnapshot(historyName).RootDirectory;
                 var file = rootDirectory.GetFileOrDefault(path);
-                yield return new Tuple<string, IFile>(historyName, file);
+                yield return (historyName, file);
             }           
         }
 

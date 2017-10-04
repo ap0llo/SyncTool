@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SyncTool.FileSystem.Versioning
@@ -20,6 +20,6 @@ namespace SyncTool.FileSystem.Versioning
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        IEnumerable<Tuple<string, IFile>> GetFiles(string path);
+        IEnumerable<(string historyName, IFile file)> GetFiles(string path);
     }
 }
