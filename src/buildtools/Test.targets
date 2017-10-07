@@ -11,6 +11,7 @@
 
   <Target Name="Test" Condition="$(IsTestProject) AND '$(TargetFramework)' == 'netcoreapp2.0' ">  
     <PropertyGroup>
+      <UseDotnetXunit Condition=" '$(UseDotnetXunit)' == ''">true</UseDotnetXunit>
       <XunitOptions>$(XunitOptions) -configuration $(Configuration) </XunitOptions>
       <XunitOptions>$(XunitOptions) -framework $(TargetFramework) </XunitOptions>
     </PropertyGroup>
@@ -18,8 +19,14 @@
     <Message Text="Running Tests in $(TargetName)" Importance="High" />	      
     
     <Exec Command="dotnet xunit $(XunitOptions)"  
+          Condition="$(UseDotnetXunit)"
           StandardOutputImportance="normal"
-          WorkingDirectory="$(MSBuildProjectDirectory)" />          
+          WorkingDirectory="$(MSBuildProjectDirectory)" />      
+
+    <Exec Command="dotnet test --configuration $(Configuration) --framework $(TargetFramework)"  
+          Condition="!$(UseDotnetXunit)"
+          StandardOutputImportance="normal"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />                  
   </Target>
   
 </Project>
