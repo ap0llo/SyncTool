@@ -7,7 +7,7 @@ namespace SyncTool.Sql.Model
 {
     public abstract class Database
     {
-        public const int SchemaVersion = 3;
+        public const int SchemaVersion = 4;
 
         static readonly object s_Lock = new object();
         bool m_Initialized;
@@ -81,7 +81,10 @@ namespace SyncTool.Sql.Model
             using (var connection = DoOpenConnection())
             using (var transaction = connection.BeginTransaction())
             {
-                // check if version table exists                
+                // sync folders
+                SyncFoldersTable.Create(connection, Limits);
+
+                // file system snapshots
                 FileSystemHistoriesTable.Create(connection, Limits);
                 FilesTable.Create(connection, Limits);
                 FileInstancesTable.Create(connection, Limits);
@@ -91,10 +94,19 @@ namespace SyncTool.Sql.Model
                 ContainsFileTable.Create(connection, Limits);
                 FileSystemSnapshotsTable.Create(connection, Limits);
                 IncludesFileInstanceTable.Create(connection, Limits);
-                SyncFoldersTable.Create(connection, Limits);
+
+                // multi-filesystem snapshots
                 MultiFileSystemSnapshotsTable.Create(connection, Limits);
                 ContainsSnapshotTable.Create(connection, Limits);
 
+                // sync state
+                SyncStateTable.Create(connection, Limits);
+                FileReferencesTable.Create(connection, Limits);
+                SyncActionsTable.Create(connection, Limits);
+                SyncConflictsTable.Create(connection, Limits);
+                ContainsConflictingVersionsTable.Create(connection, Limits);
+
+                // schema info
                 SchemaInfoTable.Create(connection, Limits);
 
                 transaction.Commit();

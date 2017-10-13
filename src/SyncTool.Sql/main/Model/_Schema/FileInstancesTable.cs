@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 
 namespace SyncTool.Sql.Model
 {
@@ -21,7 +21,7 @@ namespace SyncTool.Sql.Model
                     {Column.Id}                     INTEGER PRIMARY KEY AUTO_INCREMENT,
                     {Column.FileId}                 INTEGER NOT NULL,
                     {Column.LastWriteUnixTimeTicks} BIGINT NOT NULL,
-                    {Column.Length}                 INTEGER NOT NULL,
+                    {Column.Length}                 BIGINT NOT NULL,
                     FOREIGN KEY ({Column.FileId}) REFERENCES {FilesTable.Name}({FilesTable.Column.Id}),
                     CONSTRAINT FileInstance_Unique UNIQUE (
                         {Column.FileId}, 
