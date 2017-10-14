@@ -13,7 +13,6 @@ namespace SyncTool.Sql.Services
         readonly SyncStateRepository m_SyncStateRepository;
         readonly Func<string, SqlSyncStateUpdater> m_UpdaterFactory;
         readonly Func<SyncActionDo, SqlSyncAction> m_SyncActionFactory;
-        readonly Func<SyncConflictDo, SqlSyncConflict> m_SyncConflictFactory;
 
 
         public string LastSyncSnapshotId => m_SyncStateRepository.GetSyncState().SnapshotId;
@@ -28,13 +27,13 @@ namespace SyncTool.Sql.Services
             }
         }
 
-        public IReadOnlyCollection<ISyncConflict> Conflicts
+        public IReadOnlyCollection<SyncConflict> Conflicts
         {
             get
             {
                 var syncState = m_SyncStateRepository.GetSyncState();
                 m_SyncStateRepository.LoadConflicts(syncState);
-                return syncState.Conflicts.Select(m_SyncConflictFactory).ToArray();
+                return syncState.Conflicts.Select(c => c.ToSyncConflict(m_SyncStateRepository)).ToArray();
             }
         }
 
@@ -42,13 +41,11 @@ namespace SyncTool.Sql.Services
         public SqlSyncStateService(
             [NotNull] SyncStateRepository syncStateRepository,
             [NotNull] Func<string, SqlSyncStateUpdater> updaterFactory,
-            [NotNull] Func<SyncActionDo, SqlSyncAction> syncActionFactory,
-            [NotNull] Func<SyncConflictDo, SqlSyncConflict> syncConflictFactory)
+            [NotNull] Func<SyncActionDo, SqlSyncAction> syncActionFactory)
         {
             m_SyncStateRepository = syncStateRepository ?? throw new ArgumentNullException(nameof(syncStateRepository));
             m_UpdaterFactory = updaterFactory ?? throw new ArgumentNullException(nameof(updaterFactory));
-            m_SyncActionFactory = syncActionFactory ?? throw new ArgumentNullException(nameof(syncActionFactory));
-            m_SyncConflictFactory = syncConflictFactory ?? throw new ArgumentNullException(nameof(syncConflictFactory));
+            m_SyncActionFactory = syncActionFactory ?? throw new ArgumentNullException(nameof(syncActionFactory));            
         }
 
 

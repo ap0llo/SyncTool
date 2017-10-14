@@ -38,7 +38,6 @@ namespace SyncTool.Sql.DI
             builder.RegisterType<SqlSyncStateService>().As<ISyncStateService>();
             builder.RegisterType<SqlSyncStateUpdater>().AsSelf();
             builder.RegisterType<SqlSyncAction>().AsSelf();
-            builder.RegisterType<SqlSyncConflict>().AsSelf();
 
             //
             // Database access and repository implementations

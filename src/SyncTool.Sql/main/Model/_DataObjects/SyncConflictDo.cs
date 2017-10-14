@@ -14,12 +14,20 @@ namespace SyncTool.Sql.Model
         public List<FileReferenceDo> ConflictingVersions { get; set; }
 
 
-        public static SyncConflictDo FromSyncConflict(ISyncConflict conflict) =>
+        public SyncConflict ToSyncConflict(SyncStateRepository repository)
+        {
+            repository.LoadConflictingVersions(this);
+            return new SyncConflict(SnapshotId, ConflictingVersions.Select(x => x?.ToFileReference()));
+        }
+
+
+        public static SyncConflictDo FromSyncConflict(SyncConflict conflict) =>
             new SyncConflictDo()
             {
                 SnapshotId = conflict.SnapshotId,
                 ConflictingVersions = conflict.ConflictingVersions.Select(FileReferenceDo.FromFileReference).ToList()
             };
+
 
     }
 }

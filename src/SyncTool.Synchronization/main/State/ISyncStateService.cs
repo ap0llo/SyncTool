@@ -10,7 +10,7 @@ namespace SyncTool.Synchronization.State
 
         IReadOnlyCollection<ISyncAction> Actions { get; }
 
-        IReadOnlyCollection<ISyncConflict> Conflicts { get; }
+        IReadOnlyCollection<SyncConflict> Conflicts { get; }
         
 
         ISyncStateUpdater BeginUpdate(string newLastSynapshotId);

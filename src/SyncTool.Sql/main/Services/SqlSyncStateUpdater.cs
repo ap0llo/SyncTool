@@ -13,15 +13,14 @@ namespace SyncTool.Sql.Services
     {
         readonly string m_NewSnapshotId;
         readonly SyncStateRepository m_Repository;
-        readonly Func<SyncActionDo, SqlSyncAction> m_SyncActionFactory;
-        readonly Func<SyncConflictDo, SqlSyncConflict> m_SyncConflictFactory;
+        readonly Func<SyncActionDo, SqlSyncAction> m_SyncActionFactory;        
         readonly SyncStateDo m_InitialState;
 
         readonly HashSet<ISyncAction> m_InitalSyncActions = new HashSet<ISyncAction>();
         readonly HashSet<ISyncAction> m_CurrentActions = new HashSet<ISyncAction>();
 
-        readonly HashSet<ISyncConflict> m_InitialConflicts = new HashSet<ISyncConflict>();
-        readonly HashSet<ISyncConflict> m_CurrentConflicts = new HashSet<ISyncConflict>();
+        readonly HashSet<SyncConflict> m_InitialConflicts = new HashSet<SyncConflict>();
+        readonly HashSet<SyncConflict> m_CurrentConflicts = new HashSet<SyncConflict>();
 
 
         public string LastSyncSnapshotId => m_InitialState.SnapshotId;
@@ -30,23 +29,21 @@ namespace SyncTool.Sql.Services
         public SqlSyncStateUpdater(
             [NotNull] string newSnapshotId,
             [NotNull] SyncStateRepository repository,
-            [NotNull] Func<SyncActionDo, SqlSyncAction> syncActionFactory,
-            [NotNull] Func<SyncConflictDo, SqlSyncConflict> syncConflictFactory)
+            [NotNull] Func<SyncActionDo, SqlSyncAction> syncActionFactory)
         {
             if (String.IsNullOrWhiteSpace(newSnapshotId))
                 throw new ArgumentException("Value must not be empty", nameof(newSnapshotId));
 
             m_NewSnapshotId = newSnapshotId;
             m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            m_SyncActionFactory = syncActionFactory ?? throw new ArgumentNullException(nameof(syncActionFactory));
-            m_SyncConflictFactory = syncConflictFactory ?? throw new ArgumentNullException(nameof(syncConflictFactory));
+            m_SyncActionFactory = syncActionFactory ?? throw new ArgumentNullException(nameof(syncActionFactory));            
 
             m_InitialState = m_Repository.GetSyncState();
             m_Repository.LoadActions(m_InitialState);
             m_Repository.LoadConflicts(m_InitialState);
 
             m_InitalSyncActions = m_InitialState.Actions.Select(syncActionFactory).Cast<ISyncAction>().ToHashSet();
-            m_InitialConflicts = m_InitialState.Conflicts.Select(syncConflictFactory).Cast<ISyncConflict>().ToHashSet();
+            m_InitialConflicts = m_InitialState.Conflicts.Select(c => c.ToSyncConflict(repository)).ToHashSet();
 
             m_CurrentActions = m_InitalSyncActions.ToHashSet();
             m_CurrentConflicts = m_InitialConflicts.ToHashSet();
@@ -66,7 +63,7 @@ namespace SyncTool.Sql.Services
         }
 
 
-        public ISyncConflict GetConflictOrDefault(string path) =>
+        public SyncConflict GetConflictOrDefault(string path) =>
             m_CurrentConflicts.SingleOrDefault(c => StringComparer.OrdinalIgnoreCase.Equals(path, c.Path));
 
         public IReadOnlyCollection<ISyncAction> GetActions(string path) =>
@@ -74,7 +71,7 @@ namespace SyncTool.Sql.Services
 
         public void Remove(ISyncAction syncAction) => m_CurrentActions.Remove(syncAction);
 
-        public void Remove(ISyncConflict conflict) => m_CurrentConflicts.Remove(conflict);
+        public void Remove(SyncConflict conflict) => m_CurrentConflicts.Remove(conflict);
 
         public bool TryApply()
         {

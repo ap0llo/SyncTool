@@ -16,11 +16,11 @@ namespace SyncTool.Synchronization.State
         IReadOnlyCollection<ISyncAction> GetActions(string path);
 
         [CanBeNull]
-        ISyncConflict GetConflictOrDefault(string path);
+        SyncConflict GetConflictOrDefault(string path);
 
         void Remove(ISyncAction syncAction);
 
-        void Remove(ISyncConflict conflict);
+        void Remove(SyncConflict conflict);
 
         void AddSyncAction(string historyName, FileReference fileReference, FileReference selectedVersion);
 

@@ -6,7 +6,7 @@ using SyncTool.Utilities;
 
 namespace SyncTool.Synchronization.State
 {
-    public sealed class SyncConflict : ISyncConflict
+    public sealed class SyncConflict : IEquatable<SyncConflict>
     {
 
         public string SnapshotId { get; }
@@ -29,12 +29,11 @@ namespace SyncTool.Synchronization.State
         }
 
 
-
         public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Path);
 
-        public override bool Equals(object obj) => Equals(obj as ISyncConflict);
+        public override bool Equals(object obj) => Equals(obj as SyncConflict);
 
-        public bool Equals(ISyncConflict other)
+        public bool Equals(SyncConflict other)
         {
             if (other == null)
                 return false;
