@@ -1,4 +1,4 @@
-﻿using SyncTool.FileSystem.Versioning;
+using SyncTool.FileSystem.Versioning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace SyncTool.WebUI.Model.Snapshots
 
         public string SnapshotId { get; set; }
 
-        public IEnumerable<IChangeList> ChangeLists { get; set; }
+        public IEnumerable<ChangeList> ChangeLists { get; set; }
 
     }
 }
