@@ -17,9 +17,9 @@ namespace SyncTool.Sql.Services
         // either FromVersion or ToVersion is != null
         public string Path => m_SyncActionDo.FromVersion?.Path ?? m_SyncActionDo.ToVersion.Path;
 
-        public IFileReference FromVersion { get; }
+        public FileReference FromVersion { get; }
 
-        public IFileReference ToVersion { get; }
+        public FileReference ToVersion { get; }
         
 
         public SqlSyncAction(SyncStateRepository repository, SyncActionDo syncActionDo)
@@ -30,8 +30,8 @@ namespace SyncTool.Sql.Services
             // fully load data for this sync action
             repository.LoadVersions(syncActionDo);
 
-            FromVersion = m_SyncActionDo.FromVersion?.ToSqlFileReference();
-            ToVersion = m_SyncActionDo.ToVersion?.ToSqlFileReference();
+            FromVersion = m_SyncActionDo.FromVersion?.ToFileReference();
+            ToVersion = m_SyncActionDo.ToVersion?.ToFileReference();
         }
 
         public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Path);
@@ -47,8 +47,8 @@ namespace SyncTool.Sql.Services
                 return true;
 
             return StringComparer.Ordinal.Equals(SnapshotId, other.SnapshotId) &&
-                EqualityComparer<IFileReference>.Default.Equals(FromVersion, other.FromVersion) &&
-                EqualityComparer<IFileReference>.Default.Equals(ToVersion, other.ToVersion);
+                EqualityComparer<FileReference>.Default.Equals(FromVersion, other.FromVersion) &&
+                EqualityComparer<FileReference>.Default.Equals(ToVersion, other.ToVersion);
         }
     }
 }

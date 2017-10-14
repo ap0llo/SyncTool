@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,7 +44,7 @@ namespace SyncTool.FileSystem
             return GetFileSystemItem(path, GetFileByName, (dir, relativePath) => dir.GetFile(relativePath));
         }
 
-        public IFile GetFile(IFileReference reference)
+        public IFile GetFile(FileReference reference)
         {
             if (reference == null)
             {
@@ -71,7 +71,7 @@ namespace SyncTool.FileSystem
             return FileSystemItemExists<IFile>(path, FileExistsByName, (dir, relativePath) => dir.FileExists(relativePath));
         }
 
-        public bool FileExists(IFileReference reference)
+        public bool FileExists(FileReference reference)
         {
             if (reference == null)
             {

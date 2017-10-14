@@ -13,13 +13,13 @@ namespace SyncTool.Synchronization
     public class Synchronizer : ISynchronizer
     {
         readonly ILogger<Synchronizer> m_Logger;
-        readonly IEqualityComparer<IFileReference> m_FileReferenceComparer;
+        readonly IEqualityComparer<FileReference> m_FileReferenceComparer;
         readonly ISyncStateService m_SyncStateService;
         readonly IMultiFileSystemHistoryService m_MultiFileSystemHistoryService;
 
         public Synchronizer(
             [NotNull] ILogger<Synchronizer> logger,
-            [NotNull] IEqualityComparer<IFileReference> fileReferenceComparer,
+            [NotNull] IEqualityComparer<FileReference> fileReferenceComparer,
             [NotNull] ISyncStateService syncStateService,
             [NotNull] IMultiFileSystemHistoryService multiFileSystemHistoryService)
         {
@@ -197,10 +197,10 @@ namespace SyncTool.Synchronization
             }
         }
 
-        Graph<IFileReference, object> GetChangeGraph(IMultiFileSystemChangeList changeList, ISyncStateUpdater updater)
+        Graph<FileReference, object> GetChangeGraph(IMultiFileSystemChangeList changeList, ISyncStateUpdater updater)
         {
             m_Logger.LogDebug("Building change graph");
-            var graph = new Graph<IFileReference, object>(m_FileReferenceComparer);
+            var graph = new Graph<FileReference, object>(m_FileReferenceComparer);
 
             // add all changes to the graph
             foreach (var change in changeList.AllChanges)

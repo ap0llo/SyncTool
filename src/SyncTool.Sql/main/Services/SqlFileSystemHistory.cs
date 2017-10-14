@@ -193,7 +193,7 @@ namespace SyncTool.Sql.Services
         FileSystemSnapshotDo GetSnapshotDo(int id) => 
             m_SnapshotRepository.GetSnapshotOrDefault(m_HistoryDo.Id, id) ?? throw new SnapshotNotFoundException(id.ToString());
 
-        static IFileReference GetFileReference(FileInstanceDo instanceDo)
+        static FileReference GetFileReference(FileInstanceDo instanceDo)
             => new FileReference(
                 path: instanceDo.File.Path,
                 lastWriteTime: Instant.FromUnixTimeTicks(instanceDo.LastWriteUnixTimeTicks),

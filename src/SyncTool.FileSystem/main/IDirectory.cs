@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SyncTool.FileSystem
 {
@@ -15,11 +15,11 @@ namespace SyncTool.FileSystem
 
         IFile GetFile(string path);
 
-        IFile GetFile(IFileReference reference);
+        IFile GetFile(FileReference reference);
 
         bool FileExists(string path);
 
-        bool FileExists(IFileReference reference);
+        bool FileExists(FileReference reference);
 
         bool DirectoryExists(string path);
     }

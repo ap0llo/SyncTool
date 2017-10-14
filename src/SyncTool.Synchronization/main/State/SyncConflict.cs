@@ -13,10 +13,10 @@ namespace SyncTool.Synchronization.State
 
         public string Path => ConflictingVersions.First(x => x != null).Path;
 
-        public IReadOnlyList<IFileReference> ConflictingVersions { get; }
+        public IReadOnlyList<FileReference> ConflictingVersions { get; }
 
 
-        public SyncConflict(string snapshotId, IEnumerable<IFileReference> conflictingVersions)
+        public SyncConflict(string snapshotId, IEnumerable<FileReference> conflictingVersions)
         {
             if (String.IsNullOrWhiteSpace(snapshotId))
                 throw new ArgumentException("Value must not be empty or whitespace", nameof(snapshotId));

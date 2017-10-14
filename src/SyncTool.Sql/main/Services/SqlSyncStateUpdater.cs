@@ -54,10 +54,10 @@ namespace SyncTool.Sql.Services
 
 
 
-        public void AddConflict(string path, IEnumerable<IFileReference> currentFileReferences) =>
+        public void AddConflict(string path, IEnumerable<FileReference> currentFileReferences) =>
             m_CurrentConflicts.Add(new SyncConflict(m_NewSnapshotId, currentFileReferences));
 
-        public void AddSyncAction(string historyName, IFileReference fileReference, IFileReference selectedVersion)
+        public void AddSyncAction(string historyName, FileReference fileReference, FileReference selectedVersion)
         {
             // either fileReference or selectedVersion is != null
             var path = fileReference?.Path ?? selectedVersion.Path;

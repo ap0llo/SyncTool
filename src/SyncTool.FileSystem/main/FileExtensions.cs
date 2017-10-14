@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace SyncTool.FileSystem
@@ -18,6 +18,6 @@ namespace SyncTool.FileSystem
             return file.GetExtension().TrimStart(s_TrimChars).Equals(extension.TrimStart(s_TrimChars), StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static IFileReference ToReference(this IFile file) => new FileReference(file.Path, file.LastWriteTime, file.Length);
+        public static FileReference ToReference(this IFile file) => new FileReference(file.Path, file.LastWriteTime, file.Length);
     }
 }

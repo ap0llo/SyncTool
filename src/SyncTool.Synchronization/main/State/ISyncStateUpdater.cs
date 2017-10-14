@@ -22,8 +22,8 @@ namespace SyncTool.Synchronization.State
 
         void Remove(ISyncConflict conflict);
 
-        void AddSyncAction(string historyName, IFileReference fileReference, IFileReference selectedVersion);
+        void AddSyncAction(string historyName, FileReference fileReference, FileReference selectedVersion);
 
-        void AddConflict(string path, IEnumerable<IFileReference> currentFileReferences);
+        void AddConflict(string path, IEnumerable<FileReference> currentFileReferences);
     }
 }

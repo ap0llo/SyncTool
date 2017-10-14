@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Xunit;
 
 namespace SyncTool.FileSystem.TestHelpers
@@ -36,7 +36,7 @@ namespace SyncTool.FileSystem.TestHelpers
             Assert.Equal(expected.LastWriteTime, actual.LastWriteTime);
         }
 
-        public static void FileReferenceMatches(IFile file, IFileReference reference)
+        public static void FileReferenceMatches(IFile file, FileReference reference)
         {
             Assert.True(reference.Matches(file));            
         }

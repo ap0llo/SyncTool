@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Annotations;
 using SyncTool.FileSystem;
+using NodaTime;
 
 namespace SyncTool.Sql.Model
 {
@@ -31,7 +32,18 @@ namespace SyncTool.Sql.Model
         }
 
 
-        public static FileReferenceDo FromFileReference(IFileReference fileReference)
+        public FileReference ToFileReference()
+        {
+            Instant? lastWriteTime = default;
+            if(LastWriteUnixTimeTicks.HasValue)
+            {
+                lastWriteTime = Instant.FromUnixTimeTicks(LastWriteUnixTimeTicks.Value);
+            }
+
+            return new FileReference(Path, lastWriteTime, Length);
+        }
+
+        public static FileReferenceDo FromFileReference(FileReference fileReference)
         {
             if (fileReference == null)
                 throw new ArgumentNullException(nameof(fileReference));

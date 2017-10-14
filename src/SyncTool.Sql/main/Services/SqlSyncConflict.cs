@@ -18,7 +18,7 @@ namespace SyncTool.Sql.Services
 
         public string Path => m_SyncConflictDo.ConflictingVersions.First(x => x != null).Path;
         
-        public IReadOnlyList<IFileReference> ConflictingVersions { get; }
+        public IReadOnlyList<FileReference> ConflictingVersions { get; }
 
 
         public SqlSyncConflict(SyncStateRepository repository, SyncConflictDo syncConflictDo)
@@ -28,7 +28,7 @@ namespace SyncTool.Sql.Services
 
             m_Repository.LoadConflictingVersions(syncConflictDo);
 
-            ConflictingVersions = m_SyncConflictDo.ConflictingVersions.Select(x => x?.ToSqlFileReference()).ToList();
+            ConflictingVersions = m_SyncConflictDo.ConflictingVersions.Select(x => x?.ToFileReference()).ToList();
         }
 
 

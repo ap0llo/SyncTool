@@ -11,7 +11,7 @@ namespace SyncTool.FileSystem.DI
             builder.RegisterInstance(SystemClock.Instance).As<IClock>();
 
             builder.RegisterType<FilePropertiesComparer>().As<IEqualityComparer<IFile>>();
-            builder.RegisterInstance(EqualityComparer<IFileReference>.Default).As<IEqualityComparer<IFileReference>>();
+            builder.RegisterInstance(EqualityComparer<FileReference>.Default).As<IEqualityComparer<FileReference>>();
 
             base.Load(builder);
         }

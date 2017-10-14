@@ -13,6 +13,6 @@ namespace SyncTool.Synchronization.State
 
         string Path { get; }
 
-        IReadOnlyList<IFileReference> ConflictingVersions { get; }
+        IReadOnlyList<FileReference> ConflictingVersions { get; }
     }
 }

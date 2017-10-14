@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 
 namespace SyncTool.FileSystem
 {
     public static class FileReferenceExtensions
     {
-        public static bool Matches(this IFileReference reference, IFile file)
+        public static bool Matches(this FileReference reference, IFile file)
         {
             if (reference == null)
                 throw new ArgumentNullException(nameof(reference));

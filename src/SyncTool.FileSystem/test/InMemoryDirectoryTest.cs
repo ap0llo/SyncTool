@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -49,7 +49,7 @@ namespace SyncTool.FileSystem.Test
         [Fact]
         public void GetFile_throws_ArgumentNullException_if_reference_is_null()
         {
-            Assert.Throws<ArgumentNullException>(() => m_Root.GetFile((IFileReference) null));
+            Assert.Throws<ArgumentNullException>(() => m_Root.GetFile((FileReference) null));
         }
 
         [Fact]

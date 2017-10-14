@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using NodaTime;
 
 namespace SyncTool.FileSystem
 {
-    public sealed class FileReference : IFileReference
+    public sealed class FileReference : IEquatable<FileReference>
     {
         public string Path { get; }
 
@@ -25,9 +25,9 @@ namespace SyncTool.FileSystem
 
         public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(Path);
 
-        public override bool Equals(object obj) => Equals(obj as IFileReference);
+        public override bool Equals(object obj) => Equals(obj as FileReference);
 
-        public bool Equals(IFileReference other)
+        public bool Equals(FileReference other)
         {
             if (other == null)
                 return false;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SyncTool.FileSystem.Versioning
 {
@@ -17,11 +17,11 @@ namespace SyncTool.FileSystem.Versioning
         /// <summary>
         /// A reference to the file before the modification
         /// </summary>
-        IFileReference FromVersion { get; }
+        FileReference FromVersion { get; }
 
         /// <summary>
         /// A reference to the file after the modification
         /// </summary>
-        IFileReference ToVersion { get; }
+        FileReference ToVersion { get; }
     }
 }

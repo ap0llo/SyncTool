@@ -10,12 +10,12 @@ namespace SyncTool.Synchronization.State
 
         public string Path { get; }
 
-        public IFileReference FromVersion { get; }
+        public FileReference FromVersion { get; }
 
-        public IFileReference ToVersion { get; }
+        public FileReference ToVersion { get; }
 
 
-        public SyncAction(string snapshotId, string path, IFileReference fromVersion, IFileReference toVersion)
+        public SyncAction(string snapshotId, string path, FileReference fromVersion, FileReference toVersion)
         {
             if (String.IsNullOrWhiteSpace(snapshotId))
                 throw new ArgumentException("Value must not be empty", nameof(snapshotId));
@@ -54,8 +54,8 @@ namespace SyncTool.Synchronization.State
 
             return StringComparer.Ordinal.Equals(SnapshotId, other.SnapshotId) &&
                 StringComparer.OrdinalIgnoreCase.Equals(Path, other.Path) &&
-                EqualityComparer<IFileReference>.Default.Equals(FromVersion, other.FromVersion) &&
-                EqualityComparer<IFileReference>.Default.Equals(ToVersion, other.ToVersion);
+                EqualityComparer<FileReference>.Default.Equals(FromVersion, other.FromVersion) &&
+                EqualityComparer<FileReference>.Default.Equals(ToVersion, other.ToVersion);
         }
     }
 }
