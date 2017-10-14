@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SyncTool.FileSystem.Versioning
 {
-    public class MultiFileSystemChangeList : IMultiFileSystemChangeList
+    public sealed class MultiFileSystemChangeList 
     {
         readonly IDictionary<string, IEnumerable<Change>> m_Changes;
 
@@ -32,7 +32,7 @@ namespace SyncTool.FileSystem.Versioning
         
         public IEnumerable<Change> GetChanges(string historyName) => m_Changes[historyName];
 
-        public void SetChanges(string historyName, IEnumerable<Change> changes)
+        internal void SetChanges(string historyName, IEnumerable<Change> changes)
         {
             m_Changes[historyName] = changes.ToArray();
         }

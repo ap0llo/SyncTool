@@ -98,7 +98,7 @@ namespace SyncTool.Synchronization
                 : m_MultiFileSystemHistoryService.GetChanges(fromId, toId, pathFilter); // get the changes between the newly created snapshot and the last sync            
         }
 
-        void Synchronize(IMultiFileSystemDiff diff, IMultiFileSystemChangeList changeList, ISyncStateUpdater updater)
+        void Synchronize(IMultiFileSystemDiff diff, MultiFileSystemChangeList changeList, ISyncStateUpdater updater)
         {
             using (m_Logger.BeginScope("Synchronize File"))
             {
@@ -197,7 +197,7 @@ namespace SyncTool.Synchronization
             }
         }
 
-        Graph<FileReference, object> GetChangeGraph(IMultiFileSystemChangeList changeList, ISyncStateUpdater updater)
+        Graph<FileReference, object> GetChangeGraph(MultiFileSystemChangeList changeList, ISyncStateUpdater updater)
         {
             m_Logger.LogDebug("Building change graph");
             var graph = new Graph<FileReference, object>(m_FileReferenceComparer);

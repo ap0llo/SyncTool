@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -209,7 +209,7 @@ namespace SyncTool.FileSystem.Versioning
         protected abstract void AssertIsAncestor(string ancestorId, string descandantId);
 
 
-        IEnumerable<IMultiFileSystemChangeList> CombineChangeLists(string[] allHistoryNames, IEnumerable<(string historyName, IFileSystemDiff diff)> historyDiffs)
+        IEnumerable<MultiFileSystemChangeList> CombineChangeLists(string[] allHistoryNames, IEnumerable<(string historyName, IFileSystemDiff diff)> historyDiffs)
         {
             // changes need to be combned per path
             var results = new Dictionary<string, MultiFileSystemChangeList>(StringComparer.InvariantCultureIgnoreCase);

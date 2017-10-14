@@ -11,7 +11,7 @@ namespace SyncTool.FileSystem.Versioning
         /// <summary>
         /// Gets a combined list of all file changes between the two snapshots
         /// </summary>
-        IEnumerable<IMultiFileSystemChangeList> FileChanges { get; }
+        IEnumerable<MultiFileSystemChangeList> FileChanges { get; }
 
         /// <summary>
         /// Gets a list of changes of individual histories
