@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace SyncTool.FileSystem.Versioning
 {
@@ -15,17 +16,24 @@ namespace SyncTool.FileSystem.Versioning
 
         public IFileSystemSnapshot ToSnapshot { get; }        
 
-        public IEnumerable<IChangeList> ChangeLists { get; } 
+        public IEnumerable<ChangeList> ChangeLists { get; } 
 
 
-        public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot toSnapshot, IEnumerable<IChangeList> changeLists )
+        public FileSystemDiff(
+            [NotNull] IFileSystemHistory history,
+            [NotNull] IFileSystemSnapshot toSnapshot,
+            [NotNull] IEnumerable<ChangeList> changeLists )
         {
             History = history ?? throw new ArgumentNullException(nameof(history));
             ToSnapshot = toSnapshot ?? throw new ArgumentNullException(nameof(toSnapshot));
             ChangeLists = (changeLists ?? throw new ArgumentNullException(nameof(changeLists))).ToList();
         }
 
-        public FileSystemDiff(IFileSystemHistory history, IFileSystemSnapshot fromSnapshot, IFileSystemSnapshot toSnapshot, IEnumerable<IChangeList> changeLists)
+        public FileSystemDiff(
+            [NotNull] IFileSystemHistory history,
+            [NotNull] IFileSystemSnapshot fromSnapshot,
+            [NotNull] IFileSystemSnapshot toSnapshot,
+            [NotNull] IEnumerable<ChangeList> changeLists)
         {
             History = history ?? throw new ArgumentNullException(nameof(history));
             FromSnapshot = fromSnapshot ?? throw new ArgumentNullException(nameof(fromSnapshot));

@@ -5,9 +5,9 @@ using System.Linq;
 namespace SyncTool.FileSystem.Versioning
 {
     /// <summary>
-    /// Default, immutable implementation of <see cref="IChangeList"/>
+    /// Groups all changes for a file
     /// </summary>
-    public class ChangeList : IChangeList
+    public sealed class ChangeList
     {
         public string Path { get; }
 

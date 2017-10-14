@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SyncTool.FileSystem.Versioning
 {
@@ -23,6 +23,6 @@ namespace SyncTool.FileSystem.Versioning
         /// <summary>
         /// Gets a change list for every file that changed between the two snapshots
         /// </summary>
-        IEnumerable<IChangeList> ChangeLists { get; } 
+        IEnumerable<ChangeList> ChangeLists { get; } 
     }
 }
