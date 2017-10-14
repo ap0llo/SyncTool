@@ -1,15 +1,18 @@
 using JetBrains.Annotations;
+using SyncTool.FileSystem;
 using System;
+using System.Collections.Generic;
 
 namespace SyncTool.Synchronization.State
 {
     //TODO: Replace by sealed class?
     //TODO: Implementors should override ToString()
-    public interface IConflict : IEquatable<IConflict>
+    public interface ISyncConflict : IEquatable<ISyncConflict>
     {
-        [NotNull]
         string SnapshotId { get; }
 
-        string ToString();
+        string Path { get; }
+
+        IReadOnlyList<IFileReference> ConflictingVersions { get; }
     }
 }

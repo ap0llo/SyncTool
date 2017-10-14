@@ -1,4 +1,4 @@
-﻿using SyncTool.FileSystem;
+using SyncTool.FileSystem;
 using SyncTool.Sql.Model;
 using System;
 using NodaTime;

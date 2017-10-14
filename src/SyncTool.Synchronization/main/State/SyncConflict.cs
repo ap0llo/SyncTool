@@ -1,0 +1,49 @@
+using System;
+using System.Collections.Generic;
+using SyncTool.FileSystem;
+using System.Linq;
+using SyncTool.Utilities;
+
+namespace SyncTool.Synchronization.State
+{
+    public sealed class SyncConflict : ISyncConflict
+    {
+
+        public string SnapshotId { get; }
+
+        public string Path => ConflictingVersions.First(x => x != null).Path;
+
+        public IReadOnlyList<IFileReference> ConflictingVersions { get; }
+
+
+        public SyncConflict(string snapshotId, IEnumerable<IFileReference> conflictingVersions)
+        {
+            if (String.IsNullOrWhiteSpace(snapshotId))
+                throw new ArgumentException("Value must not be empty or whitespace", nameof(snapshotId));
+         
+            if (conflictingVersions == null)
+                throw new ArgumentNullException(nameof(conflictingVersions));
+
+            SnapshotId = snapshotId;            
+            ConflictingVersions = conflictingVersions.ToArray();
+        }
+
+
+
+        public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Path);
+
+        public override bool Equals(object obj) => Equals(obj as ISyncConflict);
+
+        public bool Equals(ISyncConflict other)
+        {
+            if (other == null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
+            return StringComparer.Ordinal.Equals(SnapshotId, other.SnapshotId) &&
+                   ConflictingVersions.SetEqual(other.ConflictingVersions);
+        }
+    }
+}

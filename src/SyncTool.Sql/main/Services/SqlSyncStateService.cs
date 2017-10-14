@@ -2,25 +2,56 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using SyncTool.Synchronization.State;
+using SyncTool.Sql.Model;
+using JetBrains.Annotations;
+using System.Linq;
 
 namespace SyncTool.Sql.Services
 {
-    public class SqlSyncStateService : ISyncStateService
+    class SqlSyncStateService : ISyncStateService
     {
-        readonly Func<SqlSyncStateUpdater> m_UpdaterFactory;
+        readonly SyncStateRepository m_SyncStateRepository;
+        readonly Func<string, SqlSyncStateUpdater> m_UpdaterFactory;
+        readonly Func<SyncActionDo, SqlSyncAction> m_SyncActionFactory;
+        readonly Func<SyncConflictDo, SqlSyncConflict> m_SyncConflictFactory;
 
-        public string LastSyncSnapshotId => throw new NotImplementedException();
 
+        public string LastSyncSnapshotId => m_SyncStateRepository.GetSyncState().SnapshotId;
 
-        public SqlSyncStateService(Func<SqlSyncStateUpdater> updaterFactory)
+        public IReadOnlyCollection<ISyncAction> Actions
         {
-            m_UpdaterFactory = updaterFactory ?? throw new ArgumentNullException(nameof(updaterFactory));
+            get
+            {
+                var syncState = m_SyncStateRepository.GetSyncState();
+                m_SyncStateRepository.LoadActions(syncState);
+                return syncState.Actions.Select(m_SyncActionFactory).Cast<ISyncAction>().ToArray();
+            }
         }
 
-        public IEnumerable<ISyncAction> SyncActions => throw new NotImplementedException();
+        public IReadOnlyCollection<ISyncConflict> Conflicts
+        {
+            get
+            {
+                var syncState = m_SyncStateRepository.GetSyncState();
+                m_SyncStateRepository.LoadConflicts(syncState);
+                return syncState.Conflicts.Select(m_SyncConflictFactory).ToArray();
+            }
+        }
 
-        public IEnumerable<IConflict> Conflicts => throw new NotImplementedException();
+        
+        public SqlSyncStateService(
+            [NotNull] SyncStateRepository syncStateRepository,
+            [NotNull] Func<string, SqlSyncStateUpdater> updaterFactory,
+            [NotNull] Func<SyncActionDo, SqlSyncAction> syncActionFactory,
+            [NotNull] Func<SyncConflictDo, SqlSyncConflict> syncConflictFactory)
+        {
+            m_SyncStateRepository = syncStateRepository ?? throw new ArgumentNullException(nameof(syncStateRepository));
+            m_UpdaterFactory = updaterFactory ?? throw new ArgumentNullException(nameof(updaterFactory));
+            m_SyncActionFactory = syncActionFactory ?? throw new ArgumentNullException(nameof(syncActionFactory));
+            m_SyncConflictFactory = syncConflictFactory ?? throw new ArgumentNullException(nameof(syncConflictFactory));
+        }
 
-        public ISyncStateUpdater BeginUpdate() => m_UpdaterFactory.Invoke();
+
+        public ISyncStateUpdater BeginUpdate(string newSnapshotId) => m_UpdaterFactory.Invoke(newSnapshotId);
     }
 }

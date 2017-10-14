@@ -8,11 +8,11 @@ namespace SyncTool.Synchronization.State
     {
         string LastSyncSnapshotId { get; }    
 
-        IEnumerable<ISyncAction> SyncActions { get; }
+        IReadOnlyCollection<ISyncAction> Actions { get; }
 
-        IEnumerable<IConflict> Conflicts { get; }
+        IReadOnlyCollection<ISyncConflict> Conflicts { get; }
         
 
-        ISyncStateUpdater BeginUpdate();
+        ISyncStateUpdater BeginUpdate(string newLastSynapshotId);
     }
 }

@@ -33,12 +33,11 @@ namespace SyncTool.Synchronization
         public void Run()
         {
             using (m_Logger.BeginScope("Synchronize"))
-            using (var updater = m_SyncStateService.BeginUpdate())
             {
                 m_Logger.LogInformation("Running sychronization");
 
                 // get changes since last sync
-                var diff = GetDiff(updater);
+                var diff = GetDiff();
 
                 // removing histories is currently not supported
                 if (diff.HistoryChanges.Any(c => c.Type == ChangeType.Deleted))
@@ -53,38 +52,40 @@ namespace SyncTool.Synchronization
                     return;
                 }
 
-                // run synchronization for all changed files
-                foreach (var changeList in diff.FileChanges)
+                using (var updater = m_SyncStateService.BeginUpdate(diff.ToSnapshot.Id))
                 {
-                    Synchronize(diff, changeList, updater);
+                    if (updater.LastSyncSnapshotId != diff.ToSnapshot.Id)
+                        throw new InvalidOperationException("The sync state was updated between getting the changes and initalizing the updater");
+
+                    // run synchronization for all changed files
+                    foreach (var changeList in diff.FileChanges)
+                    {
+                        Synchronize(diff, changeList, updater);
+                    }
+
+                    // apply update
+                    var success = updater.TryApply();
+
+                    // log result
+                    if (success)
+                        m_Logger.LogInformation($"Synchronization completed successfully");
+                    else
+                        m_Logger.LogInformation("Could not apply update to sync state, synchronization was rolled back.");
                 }
-
-                // apply update
-                var success = updater.TryApply();
-
-                // log result
-                if (success)
-                    m_Logger.LogInformation($"Synchronization complete, " +
-                                            $"{updater.AddedSyncActions} actions added," +
-                                            $"{updater.RemovedSyncActions} actions removed, " +
-                                            $"{updater.AddedConflicts} conflicts added, " +
-                                            $"{updater.RemovedConflicts} conflicts removed");
-                else
-                    m_Logger.LogInformation("Could not apply update to sync state, synchronization was rolled back.");
             }
         }
 
 
-        IMultiFileSystemDiff GetDiff(ISyncStateUpdater updater)
+        IMultiFileSystemDiff GetDiff()
         {
             // load the id of the snapshot used the for the last sync
-            var lastSnapshotId = updater.LastSyncSnapshotId;
+            var lastSnapshotId = m_SyncStateService.LastSyncSnapshotId;
             m_Logger.LogInformation($"Last sync at multi-filesystem snapshot {lastSnapshotId}");
 
             // create new snapshot 
             var newSnapshot = m_MultiFileSystemHistoryService.CreateSnapshot();
 
-            return GetDiff(updater.LastSyncSnapshotId, newSnapshot.Id);
+            return GetDiff(lastSnapshotId, newSnapshot.Id);
         }
 
         IMultiFileSystemDiff GetDiff([CanBeNull] string fromId, [NotNull] string toId, string[] pathFilter = null)
@@ -104,7 +105,7 @@ namespace SyncTool.Synchronization
                 m_Logger.LogDebug($"Synchronizing {changeList.Path}");
 
                 var conflict = updater.GetConflictOrDefault(changeList.Path);
-                var actions = updater.GetUncompletedActions(changeList.Path);
+                var actions = updater.GetActions(changeList.Path);
                 
                 // if there are conflicts or uncompleted actions for the file
                 // do not just look at the changes since the last sync
@@ -144,7 +145,7 @@ namespace SyncTool.Synchronization
 
                 // remove uncompleted sync actions that are no longer applicable
                 m_Logger.LogDebug("Removing uncompleted sync actions that are no longer applicable");
-                foreach (var action in updater.GetUncompletedActions(changeList.Path))
+                foreach (var action in updater.GetActions(changeList.Path))
                 {
                     if(!currentFileReferences.Contains(action.FromVersion) || !currentFileReferences.Contains(action.ToVersion))
                     {
@@ -173,7 +174,7 @@ namespace SyncTool.Synchronization
 
                     // remove sync old actions
                     m_Logger.LogDebug("Removing sync actions not resulting in selected version");
-                    foreach (var action in updater.GetUncompletedActions(changeList.Path))
+                    foreach (var action in updater.GetActions(changeList.Path))
                     {
                         if(!m_FileReferenceComparer.Equals(selectedVersion, action.ToVersion))
                         {
@@ -211,7 +212,7 @@ namespace SyncTool.Synchronization
 
             // if there are uncompleted sync actions for the file, add them as well
             m_Logger.LogDebug("Processing pending actions");
-            foreach (var action in updater.GetUncompletedActions(changeList.Path))
+            foreach (var action in updater.GetActions(changeList.Path))
             {
                 graph.AddNode(action.FromVersion);
                 graph.AddNode(action.ToVersion);

@@ -10,22 +10,17 @@ namespace SyncTool.Synchronization.State
     {
         string LastSyncSnapshotId { get; }
 
-
-        IEnumerable<ISyncAction> AddedSyncActions { get; }
-        IEnumerable<ISyncAction> RemovedSyncActions { get; }
-        IEnumerable<IConflict> AddedConflicts { get; }
-        IEnumerable<IConflict> RemovedConflicts { get; }
-
+        
         bool TryApply();
         
-        IReadOnlyCollection<ISyncAction> GetUncompletedActions(string path);
+        IReadOnlyCollection<ISyncAction> GetActions(string path);
 
         [CanBeNull]
-        IConflict GetConflictOrDefault(string path);
+        ISyncConflict GetConflictOrDefault(string path);
 
         void Remove(ISyncAction syncAction);
 
-        void Remove(IConflict conflict);
+        void Remove(ISyncConflict conflict);
 
         void AddSyncAction(string historyName, IFileReference fileReference, IFileReference selectedVersion);
 

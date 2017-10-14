@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SyncTool.Synchronization.State;
 
 namespace SyncTool.Sql.Model
@@ -13,10 +14,12 @@ namespace SyncTool.Sql.Model
         public List<FileReferenceDo> ConflictingVersions { get; set; }
 
 
-        public static SyncConflictDo FromSyncConflict(IConflict conflict)
-        {
-            throw new NotImplementedException();
-        }
+        public static SyncConflictDo FromSyncConflict(ISyncConflict conflict) =>
+            new SyncConflictDo()
+            {
+                SnapshotId = conflict.SnapshotId,
+                ConflictingVersions = conflict.ConflictingVersions.Select(FileReferenceDo.FromFileReference).ToList()
+            };
 
     }
 }

@@ -16,9 +16,12 @@ namespace SyncTool.Sql.Model
         public FileReferenceDo ToVersion { get; set; }
 
 
-        public static SyncActionDo FromSyncAction(ISyncAction syncAction)
-        {
-            throw new NotImplementedException();
-        }
+        public static SyncActionDo FromSyncAction(ISyncAction syncAction) =>
+            new SyncActionDo()
+            {
+                SnapshotId = syncAction.SnapshotId,
+                FromVersion = FileReferenceDo.FromFileReference(syncAction.FromVersion),
+                ToVersion = FileReferenceDo.FromFileReference(syncAction.ToVersion)
+            };
     }
 }

@@ -29,5 +29,8 @@ namespace SyncTool.Utilities
 
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> enumerable, IEqualityComparer<T> comparer) =>
             new HashSet<T>(enumerable, comparer);
+
+        public static bool SetEqual<T>(this IEnumerable<T> enumerable, IEnumerable<T> other) =>
+            enumerable.ToHashSet().SetEquals(other);
     }
 }
