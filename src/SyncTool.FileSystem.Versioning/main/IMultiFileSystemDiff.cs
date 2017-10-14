@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SyncTool.FileSystem.Versioning
 {
@@ -16,6 +16,6 @@ namespace SyncTool.FileSystem.Versioning
         /// <summary>
         /// Gets a list of changes of individual histories
         /// </summary>
-        IEnumerable<IHistoryChange> HistoryChanges { get; }
+        IEnumerable<HistoryChange> HistoryChanges { get; }
     }
 }

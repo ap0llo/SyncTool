@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
 namespace SyncTool.FileSystem.Versioning
 {
-    public class HistoryChange : IHistoryChange
+    public sealed class HistoryChange : IEquatable<HistoryChange>
     {        
         public string HistoryName { get; }
 
@@ -21,9 +21,9 @@ namespace SyncTool.FileSystem.Versioning
 
         public override int GetHashCode() => StringComparer.InvariantCultureIgnoreCase.GetHashCode(HistoryName) | Type.GetHashCode();
 
-        public override bool Equals(object obj) => Equals(obj as IHistoryChange);
+        public override bool Equals(object obj) => Equals(obj as HistoryChange);
 
-        public bool Equals(IHistoryChange other)
+        public bool Equals(HistoryChange other)
         {
             if(other == null)
                 return false;
