@@ -19,7 +19,7 @@ namespace SyncTool.Sql.Model
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (
                     {Column.Id}                     INTEGER PRIMARY KEY AUTO_INCREMENT,
-                    {Column.Path}                   VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_general_ci UNIQUE NOT NULL,
+                    {Column.Path}                   VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_general_ci,
                     {Column.LastWriteUnixTimeTicks} BIGINT,
                     {Column.Length}                 BIGINT,
                     CONSTRAINT {Name}_Unique UNIQUE (

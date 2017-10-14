@@ -18,6 +18,19 @@ namespace SyncTool.Sql.Model
         public long? Length { get; set; }
 
 
+        [UsedImplicitly]
+        public FileReferenceDo()
+        {
+        }
+
+        public FileReferenceDo(string path, long? lastWriteTimeUnixTicks, long? length)
+        {
+            Path = path;
+            LastWriteUnixTimeTicks = lastWriteTimeUnixTicks;
+            Length = length;
+        }
+
+
         public static FileReferenceDo FromFileReference(IFileReference fileReference)
         {
             if (fileReference == null)
@@ -31,5 +44,6 @@ namespace SyncTool.Sql.Model
                 Length = fileReference.Length
             };
         }
+        
     }
 }

@@ -20,7 +20,7 @@ namespace SyncTool.Sql.Model
             connection.ExecuteNonQuery($@"
                 CREATE TABLE {Name} (
                     {Column.SyncConflictId}  INTEGER NOT NULL,
-                    {Column.FileReferenceId} INTEGER NOT NULL,
+                    {Column.FileReferenceId} INTEGER,
                     FOREIGN KEY ({Column.SyncConflictId})  REFERENCES {SyncConflictsTable.Name}({SyncConflictsTable.Column.Id}),
                     FOREIGN KEY ({Column.FileReferenceId}) REFERENCES {FileReferencesTable.Name}({FileReferencesTable.Column.Id}),
                     CONSTRAINT {Name}_Unique UNIQUE({Column.SyncConflictId},{Column.FileReferenceId}) 
