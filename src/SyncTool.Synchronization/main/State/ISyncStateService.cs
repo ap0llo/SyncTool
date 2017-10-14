@@ -8,7 +8,7 @@ namespace SyncTool.Synchronization.State
     {
         string LastSyncSnapshotId { get; }    
 
-        IReadOnlyCollection<ISyncAction> Actions { get; }
+        IReadOnlyCollection<SyncAction> Actions { get; }
 
         IReadOnlyCollection<SyncConflict> Conflicts { get; }
         

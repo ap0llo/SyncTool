@@ -13,12 +13,12 @@ namespace SyncTool.Synchronization.State
         
         bool TryApply();
         
-        IReadOnlyCollection<ISyncAction> GetActions(string path);
+        IReadOnlyCollection<SyncAction> GetActions(string path);
 
         [CanBeNull]
         SyncConflict GetConflictOrDefault(string path);
 
-        void Remove(ISyncAction syncAction);
+        void Remove(SyncAction syncAction);
 
         void Remove(SyncConflict conflict);
 

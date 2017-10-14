@@ -12,12 +12,11 @@ namespace SyncTool.Sql.Services
     class SqlSyncStateUpdater : ISyncStateUpdater
     {
         readonly string m_NewSnapshotId;
-        readonly SyncStateRepository m_Repository;
-        readonly Func<SyncActionDo, SqlSyncAction> m_SyncActionFactory;        
+        readonly SyncStateRepository m_Repository;        
         readonly SyncStateDo m_InitialState;
 
-        readonly HashSet<ISyncAction> m_InitalSyncActions = new HashSet<ISyncAction>();
-        readonly HashSet<ISyncAction> m_CurrentActions = new HashSet<ISyncAction>();
+        readonly HashSet<SyncAction> m_InitalSyncActions = new HashSet<SyncAction>();
+        readonly HashSet<SyncAction> m_CurrentActions = new HashSet<SyncAction>();
 
         readonly HashSet<SyncConflict> m_InitialConflicts = new HashSet<SyncConflict>();
         readonly HashSet<SyncConflict> m_CurrentConflicts = new HashSet<SyncConflict>();
@@ -26,23 +25,19 @@ namespace SyncTool.Sql.Services
         public string LastSyncSnapshotId => m_InitialState.SnapshotId;
         
 
-        public SqlSyncStateUpdater(
-            [NotNull] string newSnapshotId,
-            [NotNull] SyncStateRepository repository,
-            [NotNull] Func<SyncActionDo, SqlSyncAction> syncActionFactory)
+        public SqlSyncStateUpdater([NotNull] string newSnapshotId, [NotNull] SyncStateRepository repository)
         {
             if (String.IsNullOrWhiteSpace(newSnapshotId))
                 throw new ArgumentException("Value must not be empty", nameof(newSnapshotId));
 
             m_NewSnapshotId = newSnapshotId;
-            m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            m_SyncActionFactory = syncActionFactory ?? throw new ArgumentNullException(nameof(syncActionFactory));            
+            m_Repository = repository ?? throw new ArgumentNullException(nameof(repository));            
 
             m_InitialState = m_Repository.GetSyncState();
             m_Repository.LoadActions(m_InitialState);
             m_Repository.LoadConflicts(m_InitialState);
 
-            m_InitalSyncActions = m_InitialState.Actions.Select(syncActionFactory).Cast<ISyncAction>().ToHashSet();
+            m_InitalSyncActions = m_InitialState.Actions.Select(a => a.ToSyncAction(repository)).ToHashSet();
             m_InitialConflicts = m_InitialState.Conflicts.Select(c => c.ToSyncConflict(repository)).ToHashSet();
 
             m_CurrentActions = m_InitalSyncActions.ToHashSet();
@@ -58,7 +53,7 @@ namespace SyncTool.Sql.Services
         {
             // either fileReference or selectedVersion is != null
             var path = fileReference?.Path ?? selectedVersion.Path;
-            var action = new SyncAction(m_NewSnapshotId, path, fileReference, selectedVersion);
+            var action = new SyncAction(m_NewSnapshotId, fileReference, selectedVersion);
             m_CurrentActions.Add(action);
         }
 
@@ -66,10 +61,10 @@ namespace SyncTool.Sql.Services
         public SyncConflict GetConflictOrDefault(string path) =>
             m_CurrentConflicts.SingleOrDefault(c => StringComparer.OrdinalIgnoreCase.Equals(path, c.Path));
 
-        public IReadOnlyCollection<ISyncAction> GetActions(string path) =>
+        public IReadOnlyCollection<SyncAction> GetActions(string path) =>
             m_CurrentActions.Where(a => StringComparer.OrdinalIgnoreCase.Equals(path, a.Path)).ToArray();
 
-        public void Remove(ISyncAction syncAction) => m_CurrentActions.Remove(syncAction);
+        public void Remove(SyncAction syncAction) => m_CurrentActions.Remove(syncAction);
 
         public void Remove(SyncConflict conflict) => m_CurrentConflicts.Remove(conflict);
 

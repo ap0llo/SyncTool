@@ -12,18 +12,17 @@ namespace SyncTool.Sql.Services
     {
         readonly SyncStateRepository m_SyncStateRepository;
         readonly Func<string, SqlSyncStateUpdater> m_UpdaterFactory;
-        readonly Func<SyncActionDo, SqlSyncAction> m_SyncActionFactory;
-
-
+        
+        
         public string LastSyncSnapshotId => m_SyncStateRepository.GetSyncState().SnapshotId;
 
-        public IReadOnlyCollection<ISyncAction> Actions
+        public IReadOnlyCollection<SyncAction> Actions
         {
             get
             {
                 var syncState = m_SyncStateRepository.GetSyncState();
                 m_SyncStateRepository.LoadActions(syncState);
-                return syncState.Actions.Select(m_SyncActionFactory).Cast<ISyncAction>().ToArray();
+                return syncState.Actions.Select(a => a.ToSyncAction(m_SyncStateRepository)).ToArray();
             }
         }
 
@@ -40,12 +39,10 @@ namespace SyncTool.Sql.Services
         
         public SqlSyncStateService(
             [NotNull] SyncStateRepository syncStateRepository,
-            [NotNull] Func<string, SqlSyncStateUpdater> updaterFactory,
-            [NotNull] Func<SyncActionDo, SqlSyncAction> syncActionFactory)
+            [NotNull] Func<string, SqlSyncStateUpdater> updaterFactory)
         {
             m_SyncStateRepository = syncStateRepository ?? throw new ArgumentNullException(nameof(syncStateRepository));
-            m_UpdaterFactory = updaterFactory ?? throw new ArgumentNullException(nameof(updaterFactory));
-            m_SyncActionFactory = syncActionFactory ?? throw new ArgumentNullException(nameof(syncActionFactory));            
+            m_UpdaterFactory = updaterFactory ?? throw new ArgumentNullException(nameof(updaterFactory));            
         }
 
 

@@ -1,30 +1,30 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using SyncTool.FileSystem;
 
 namespace SyncTool.Synchronization.State
-{
-    public sealed class SyncAction : ISyncAction
+{    
+    //TODO: Implementors should override ToString()
+    //TODO: Add change type similar to "Change"
+    public sealed class SyncAction : IEquatable<SyncAction>
     {
+        [NotNull]
         public string SnapshotId { get; }
 
-        public string Path { get; }
-
+        public string Path => FromVersion?.Path ?? ToVersion.Path;
+        
         public FileReference FromVersion { get; }
 
         public FileReference ToVersion { get; }
 
 
-        public SyncAction(string snapshotId, string path, FileReference fromVersion, FileReference toVersion)
+        public SyncAction(string snapshotId, FileReference fromVersion, FileReference toVersion)
         {
             if (String.IsNullOrWhiteSpace(snapshotId))
                 throw new ArgumentException("Value must not be empty", nameof(snapshotId));
-
-            if (String.IsNullOrWhiteSpace(path))
-                throw new ArgumentException("Value must not be empty", nameof(path));
-
-            SnapshotId = snapshotId;
-            Path = path;
+            
+            SnapshotId = snapshotId;            
             FromVersion = fromVersion;
             ToVersion = toVersion;
         }
@@ -42,9 +42,9 @@ namespace SyncTool.Synchronization.State
             }
         }
 
-        public override bool Equals(object obj) => Equals(obj as ISyncAction);
+        public override bool Equals(object obj) => Equals(obj as SyncAction);
 
-        public bool Equals(ISyncAction other)
+        public bool Equals(SyncAction other)
         {
             if (other == null)
                 return false;

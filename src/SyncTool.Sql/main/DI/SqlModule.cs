@@ -36,8 +36,7 @@ namespace SyncTool.Sql.DI
             builder.RegisterType<SqlMultiFileSystemSnapshot>().AsSelf();
             // sync state service
             builder.RegisterType<SqlSyncStateService>().As<ISyncStateService>();
-            builder.RegisterType<SqlSyncStateUpdater>().AsSelf();
-            builder.RegisterType<SqlSyncAction>().AsSelf();
+            builder.RegisterType<SqlSyncStateUpdater>().AsSelf();            
 
             //
             // Database access and repository implementations

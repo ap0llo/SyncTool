@@ -16,7 +16,13 @@ namespace SyncTool.Sql.Model
         public FileReferenceDo ToVersion { get; set; }
 
 
-        public static SyncActionDo FromSyncAction(ISyncAction syncAction) =>
+        public SyncAction ToSyncAction(SyncStateRepository repository)
+        {
+            repository.LoadVersions(this);
+            return new SyncAction(SnapshotId, FromVersion.ToFileReference(), ToVersion.ToFileReference());
+        }
+
+        public static SyncActionDo FromSyncAction(SyncAction syncAction) =>
             new SyncActionDo()
             {
                 SnapshotId = syncAction.SnapshotId,
