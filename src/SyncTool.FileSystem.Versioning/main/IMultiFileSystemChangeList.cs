@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SyncTool.FileSystem.Versioning
 {
@@ -8,8 +8,8 @@ namespace SyncTool.FileSystem.Versioning
 
         IEnumerable<string> HistoryNames { get; }
 
-        IEnumerable<IChange> AllChanges { get; }
+        IEnumerable<Change> AllChanges { get; }
 
-        IEnumerable<IChange> GetChanges(string historyName);
+        IEnumerable<Change> GetChanges(string historyName);
     }
 }

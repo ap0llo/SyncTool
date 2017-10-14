@@ -2,11 +2,8 @@ using System;
 using System.Collections.Generic;
 
 namespace SyncTool.FileSystem.Versioning
-{
-    /// <summary>
-    /// Default, immutable implementation of <see cref="IChange"/>
-    /// </summary>
-    public class Change : IChange
+{    
+    public sealed class Change : IEquatable<Change>
     {         
         public string Path => FromVersion?.Path ?? ToVersion.Path;
 
@@ -28,7 +25,7 @@ namespace SyncTool.FileSystem.Versioning
         }
 
 
-        public bool Equals(IChange other)
+        public bool Equals(Change other)
         {
             if (other == null)
                 return false;
@@ -42,7 +39,7 @@ namespace SyncTool.FileSystem.Versioning
                    EqualityComparer<FileReference>.Default.Equals(ToVersion, other.ToVersion);
         }
 
-        public override bool Equals(object obj) => Equals(obj as IChange);
+        public override bool Equals(object obj) => Equals(obj as Change);
 
         public override int GetHashCode()
         {

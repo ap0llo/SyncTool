@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using System;
 using System.Linq;
 using Xunit;
@@ -20,7 +20,7 @@ namespace SyncTool.FileSystem.Versioning.Test
         [Fact]
         public void Construtor_throws_ArgumentNullException_if_changes_is_empty()
         {
-            Assert.Throws<ArgumentException>(() => new ChangeList(Enumerable.Empty<IChange>()));
+            Assert.Throws<ArgumentException>(() => new ChangeList(Enumerable.Empty<Change>()));
         }
 
         [Fact]

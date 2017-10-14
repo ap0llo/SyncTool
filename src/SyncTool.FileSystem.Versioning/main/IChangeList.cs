@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SyncTool.FileSystem.Versioning
 {
@@ -9,6 +9,6 @@ namespace SyncTool.FileSystem.Versioning
     {
         string Path { get; }
 
-        IEnumerable<IChange> Changes { get; } 
+        IEnumerable<Change> Changes { get; } 
     }
 }

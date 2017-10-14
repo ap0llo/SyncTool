@@ -130,7 +130,7 @@ namespace SyncTool.Sql.Services
             var toSnapshot = GetSnapshotDo(toDbId);
 
             // iterate over all snapshots and get the changed files for every item
-            var changeLists = new Dictionary<string, LinkedList<IChange>>(StringComparer.InvariantCultureIgnoreCase);            
+            var changeLists = new Dictionary<string, LinkedList<Change>>(StringComparer.InvariantCultureIgnoreCase);            
             foreach (var snapshot in m_SnapshotRepository.GetSnapshotRange(toSnapshot))
             {
                 AppendChanges(snapshot, changeLists, pathFilter);
@@ -157,7 +157,7 @@ namespace SyncTool.Sql.Services
                 throw new InvalidRangeException($"Snapshot {toId} is not a descendant of {fromId}");
 
             // iterate over all snapshots and get the changed files for every item
-            var changeLists = new Dictionary<string, LinkedList<IChange>>(StringComparer.InvariantCultureIgnoreCase);
+            var changeLists = new Dictionary<string, LinkedList<Change>>(StringComparer.InvariantCultureIgnoreCase);
             foreach (var snapshot in m_SnapshotRepository.GetSnapshotRange(fromSnapshot, toSnapshot))
             {
                 AppendChanges(snapshot, changeLists, pathFilter);
@@ -199,19 +199,19 @@ namespace SyncTool.Sql.Services
                 lastWriteTime: Instant.FromUnixTimeTicks(instanceDo.LastWriteUnixTimeTicks),
                 length: instanceDo.Length);
         
-        void AppendChanges(FileSystemSnapshotDo currentSnapshot, Dictionary<string, LinkedList<IChange>> changeLists, string[] pathFilter)
+        void AppendChanges(FileSystemSnapshotDo currentSnapshot, Dictionary<string, LinkedList<Change>> changeLists, string[] pathFilter)
         {            
             foreach (var (previous, current) in m_SnapshotRepository.GetChanges(currentSnapshot, pathFilter))
             {
                 var change = GetChange(previous, current);
                 
                 changeLists
-                    .GetOrAdd(change.Path, () => new LinkedList<IChange>())
+                    .GetOrAdd(change.Path, () => new LinkedList<Change>())
                     .AddLast(change);
             }
         }
 
-        static IChange GetChange(FileInstanceDo previous, FileInstanceDo current)
+        static Change GetChange(FileInstanceDo previous, FileInstanceDo current)
         {
             if (previous == null && current != null)
                 return new Change(ChangeType.Added, null, GetFileReference(current));

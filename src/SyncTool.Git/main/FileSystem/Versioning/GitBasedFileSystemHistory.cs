@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -237,7 +237,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             }           
         }
 
-        IEnumerable<IChange> GetAllChanges(string fromCommit, GitBasedFileSystemSnapshot toSnapshot, string[] paths)
+        IEnumerable<Change> GetAllChanges(string fromCommit, GitBasedFileSystemSnapshot toSnapshot, string[] paths)
         {
             var currentCommit = toSnapshot.Commit;
             var currentSnapshot = toSnapshot;
@@ -291,7 +291,7 @@ namespace SyncTool.Git.FileSystem.Versioning
             }
         }
         
-        IEnumerable<IChange> GetChanges(TreeChanges treeChanges, GitBasedFileSystemSnapshot fromSnapshot, GitBasedFileSystemSnapshot toSnapshot)
+        IEnumerable<Change> GetChanges(TreeChanges treeChanges, GitBasedFileSystemSnapshot fromSnapshot, GitBasedFileSystemSnapshot toSnapshot)
         {
             foreach (var treeChange in treeChanges.Where(c => !IgnoreTreeChange(c)))
             {

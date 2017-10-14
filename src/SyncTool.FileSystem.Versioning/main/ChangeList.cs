@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,10 +11,10 @@ namespace SyncTool.FileSystem.Versioning
     {
         public string Path { get; }
 
-        public IEnumerable<IChange> Changes { get; }
+        public IEnumerable<Change> Changes { get; }
 
 
-        public ChangeList(IEnumerable<IChange> changes)
+        public ChangeList(IEnumerable<Change> changes)
         {
             changes = changes?.ToList() ?? throw new ArgumentNullException(nameof(changes));
 

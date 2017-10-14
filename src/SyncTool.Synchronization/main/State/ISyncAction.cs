@@ -8,7 +8,7 @@ namespace SyncTool.Synchronization.State
 {
     //TODO: Replace by sealed class?
     //TODO: Implementors should override ToString()
-    //TODO: Add change type similar to IChange
+    //TODO: Add change type similar to "Change"
     public interface ISyncAction : IEquatable<ISyncAction>
     {
         [NotNull]
