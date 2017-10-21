@@ -35,10 +35,20 @@ namespace SyncTool.Synchronization
             using (m_Logger.BeginScope("Synchronize"))
             {
                 m_Logger.LogInformation("Running sychronization");
-
+           
                 // get changes since last sync
-                var diff = GetDiff();
+                if(!TryGetDiff(out var diff))
+                {
+                    m_Logger.LogWarning("Could not determine differences. Aborting synchronization");
+                    return;
+                }
 
+                if(diff.ToSnapshot.HistoryNames.Count() < 2)
+                {
+                    m_Logger.LogWarning("Aborting sychronization becuse there are less than two histories to be synchronized");
+                    return;
+                }
+                
                 // removing histories is currently not supported
                 if (diff.HistoryChanges.Any(c => c.Type == ChangeType.Deleted))
                 {
@@ -54,7 +64,7 @@ namespace SyncTool.Synchronization
 
                 using (var updater = m_SyncStateService.BeginUpdate(diff.ToSnapshot.Id))
                 {
-                    if (updater.LastSyncSnapshotId != diff.ToSnapshot.Id)
+                    if (updater.LastSyncSnapshotId != diff.FromSnapshot?.Id)
                         throw new InvalidOperationException("The sync state was updated between getting the changes and initalizing the updater");
 
                     // run synchronization for all changed files
@@ -76,7 +86,7 @@ namespace SyncTool.Synchronization
         }
 
 
-        IMultiFileSystemDiff GetDiff()
+        bool TryGetDiff(out IMultiFileSystemDiff diff)
         {
             // load the id of the snapshot used the for the last sync
             var lastSnapshotId = m_SyncStateService.LastSyncSnapshotId;
@@ -85,7 +95,22 @@ namespace SyncTool.Synchronization
             // create new snapshot 
             var newSnapshot = m_MultiFileSystemHistoryService.CreateSnapshot();
 
-            return GetDiff(lastSnapshotId, newSnapshot.Id);
+            if (newSnapshot == null)
+            {
+                m_Logger.LogWarning("Could not create a new multi-filesystem snapshot");
+                diff = null;
+                return false;
+            }
+            
+            if (newSnapshot.HistoryNames.Any(n => newSnapshot.GetSnapshotId(n) == null))
+            {
+                m_Logger.LogWarning("Cannot get diff for synchronization because not all histories contain a snapshot");
+                diff = null;
+                return false;
+            }
+                        
+            diff = GetDiff(lastSnapshotId, newSnapshot.Id);
+            return true;
         }
 
         IMultiFileSystemDiff GetDiff([CanBeNull] string fromId, [NotNull] string toId, string[] pathFilter = null)
@@ -106,6 +131,32 @@ namespace SyncTool.Synchronization
 
                 var conflict = updater.GetConflictOrDefault(changeList.Path);
                 var actions = updater.GetActions(changeList.Path);
+
+                var currentFileVersions = diff.ToSnapshot
+                    .GetFiles(changeList.Path)
+                    .Select(fileAndName => fileAndName.file?.ToReference())
+                    .Distinct(m_FileReferenceComparer);
+
+                // if there is only a single version in all histories, no synchronization is necessary
+                // => remove all conflicts and sync actions for the file and abort
+                if (currentFileVersions.Count() == 1)
+                {
+                    m_Logger.LogDebug(
+                        "The latest version of the file is equal in all folders," +
+                        "no synchronization necessary. " +
+                        "Deleteing all actions and conflicts for the file.");
+
+                    foreach (var action in actions)
+                    {
+                        updater.Remove(action);
+                    }
+
+                    if(conflict != null)
+                        updater.Remove(conflict);
+
+                    return;
+                }
+
                 
                 // if there are conflicts or uncompleted actions for the file
                 // do not just look at the changes since the last sync
@@ -154,12 +205,12 @@ namespace SyncTool.Synchronization
                     }
                 }
 
-
+                
                 // build a graph from all the changes and get the sinks (nodes without outgoing edges)
                 var graph = GetChangeGraph(changeList, updater);
                 var sinks = graph.GetSinks();
 
-                if(sinks.Count == 0)
+                if(graph.HasCycles)
                 {
                     // no sinks => graph might contain a loop
                     // conflict needs to be resolved manually

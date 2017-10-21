@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.Logging.Abstractions;
 using SyncTool.Sql.Model;
 
@@ -6,7 +6,7 @@ namespace SyncTool.Sql.TestHelpers
 {
     public class SqlTestBase : IDisposable
     {
-        readonly Uri m_DatabaseUri;
+        protected readonly Uri m_DatabaseUri;
         protected Database Database { get; }
         
 
@@ -29,6 +29,6 @@ namespace SyncTool.Sql.TestHelpers
         }
                 
         
-        public void Dispose() => Database.Drop();
+        public virtual void Dispose() => Database.Drop();
     }
 }

@@ -19,15 +19,15 @@ namespace SyncTool.Sql.Model
         public SyncAction ToSyncAction(SyncStateRepository repository)
         {
             repository.LoadVersions(this);
-            return new SyncAction(SnapshotId, FromVersion.ToFileReference(), ToVersion.ToFileReference());
+            return new SyncAction(SnapshotId, FromVersion?.ToFileReference(), ToVersion?.ToFileReference());
         }
 
         public static SyncActionDo FromSyncAction(SyncAction syncAction) =>
             new SyncActionDo()
             {
                 SnapshotId = syncAction.SnapshotId,
-                FromVersion = FileReferenceDo.FromFileReference(syncAction.FromVersion),
-                ToVersion = FileReferenceDo.FromFileReference(syncAction.ToVersion)
+                FromVersion = syncAction.FromVersion != null ? FileReferenceDo.FromFileReference(syncAction.FromVersion) : null,
+                ToVersion = syncAction.ToVersion != null ? FileReferenceDo.FromFileReference(syncAction.ToVersion) : null
             };
     }
 }

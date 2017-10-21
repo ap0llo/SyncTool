@@ -24,8 +24,13 @@ namespace SyncTool.Synchronization.State
             if (conflictingVersions == null)
                 throw new ArgumentNullException(nameof(conflictingVersions));
 
-            SnapshotId = snapshotId;            
-            ConflictingVersions = conflictingVersions.ToArray();
+            var _conflictingVersions = conflictingVersions.ToArray();
+
+            if (_conflictingVersions.Length < 2)
+                throw new ArgumentException("Sync conflict needs to contains at least two conflicting versions", nameof(conflictingVersions));
+
+            SnapshotId = snapshotId;
+            ConflictingVersions = _conflictingVersions;
         }
 
 

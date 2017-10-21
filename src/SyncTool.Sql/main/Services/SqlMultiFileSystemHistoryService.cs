@@ -60,7 +60,7 @@ namespace SyncTool.Sql.Services
 
             if (!snapshotDo.SnapshotIds.Any())
             {
-                m_Logger.LogWarning("No snpashots in any history found, skipping aborting creation of snapshot");
+                m_Logger.LogWarning("No snapshots in any history found, skipping aborting creation of snapshot");
                 return null;
             }
 
