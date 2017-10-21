@@ -12,7 +12,7 @@ namespace SyncTool.Utilities
         readonly object m_Lock = new object();
         readonly IEqualityComparer<TNode> m_NodeComparer;
         readonly IEqualityComparer<TEdge> m_EdgeComparer;
-        readonly HashSet<(TNode, TNode, TEdge)> m_Edges;
+        readonly HashSet<(TNode from, TNode to, TEdge data)> m_Edges;
         readonly IDictionary<TNode, HashSet<TNode>> m_Successors;
         readonly IDictionary<TNode, HashSet<TNode>> m_Predecessors;
 
@@ -20,6 +20,55 @@ namespace SyncTool.Utilities
         public IEnumerable<TNode> Nodes => m_Successors.Keys;
 
         public IEnumerable<(TNode from, TNode to, TEdge data)> Edges => m_Edges;
+
+        /// <summary>
+        /// Determines if the graph contains cycles by topologically sorting the nodes
+        /// </summary>
+        /// <returns></returns>
+        public bool HasCycles
+        {
+            get
+            {
+                // see https://stackoverflow.com/questions/4168/graph-serialization/4577#4577
+
+                // L ← Empty list where we put the sorted elements
+                var l = new HashSet<TNode>(m_NodeComparer);
+                // Q ← Set of all nodes with no incoming edges
+                var q = GetSources().ToHashSet(m_NodeComparer);
+                HashSet<(TNode from, TNode to, TEdge data)> edges = Edges.ToHashSet(TupleComparer.Create(m_NodeComparer, m_NodeComparer, m_EdgeComparer));
+
+                // while Q is non-empty do
+                while (q.Any())
+                {
+                    // remove a node n from Q
+                    // insert n into L
+                    var n = q.First();
+                    q.Remove(n);
+                    l.Add(n);
+
+
+                    // for each node m with an edge e (n -> m) from n to m do
+                    var edgesToRemove = edges.Where(e => m_NodeComparer.Equals(e.from, n)).ToArray();
+                    foreach (var e in edgesToRemove)
+                    {
+                        var m = e.to;
+                        // remove edge e from the graph
+                        edges.Remove(e);
+
+                        //if m has no other incoming edges then
+                        var hasEdges = edges.Any(x => m_NodeComparer.Equals(x.to, m));
+                        if (!hasEdges)
+                        {
+                            //insert m into Q
+                            q.Add(m);
+                        }
+                    }
+                }
+
+                // if graph has edges then the graph has cycles
+                return edges.Any();
+            }
+        }
 
 
         public Graph() : this(EqualityComparer<TNode>.Default, EqualityComparer<TEdge>.Default)
