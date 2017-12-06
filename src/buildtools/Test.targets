@@ -11,7 +11,7 @@
 
   <Target Name="Test" Condition="$(IsTestProject) AND '$(TargetFramework)' == 'netcoreapp2.0' ">  
     <PropertyGroup>
-      <UseDotnetXunit Condition=" '$(UseDotnetXunit)' == ''">true</UseDotnetXunit>
+      <UseDotnetXunit Condition=" '$(UseDotnetXunit)' == ''">false</UseDotnetXunit>
       <XunitOptions>$(XunitOptions) -configuration $(Configuration) </XunitOptions>
       <XunitOptions>$(XunitOptions) -framework $(TargetFramework) </XunitOptions>
     </PropertyGroup>
