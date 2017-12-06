@@ -20,6 +20,7 @@ using SyncTool.Synchronization;
 using SyncTool.Synchronization.DI;
 using SyncTool.Utilities;
 using System.Linq;
+using SyncTool.Synchronization.TestHelpers;
 
 namespace SyncTool.Test
 {
@@ -190,50 +191,46 @@ namespace SyncTool.Test
             Assert.Empty(syncStateService.Conflicts);
         }
 
-        //[Fact]
-        //public void Synchronize_without_previous_sync_single_snapshots_and_no_conflicts()
-        //{
-        //    //ARRANGE
-        //    var left = new HistoryBuilder(m_Group, "left");
-        //    var right = new HistoryBuilder(m_Group, "right");
+        [Fact]
+        public void Synchronize_without_previous_sync_single_snapshots_and_no_conflicts()
+        {
+            //ARRANGE
+            var left = new HistoryBuilder(m_Group, "left");
+            var right = new HistoryBuilder(m_Group, "right");
 
-        //    left.AddFile("file1");
-        //    right.AddFile("file2");
+            left.AddFile("file1");
+            right.AddFile("file2");
 
-        //    var snapshot1 = left.CreateSnapshot();
-        //    var snapshot2 = right.CreateSnapshot();
+            var snapshot1 = left.CreateSnapshot();
+            var snapshot2 = right.CreateSnapshot();
 
-        //    //ACT
-        //    m_Synchronizer.Run();
+            //ACT
+            m_Synchronizer.Run();
 
+            //ASSERT
+            var syncStateService = m_Group.GetSyncStateService();
+            Assert.Equal(2, syncStateService.Actions.Count());
 
-        //    //ASSERT
-        //    var syncActionService = m_Group.GetSyncActionService();
-        //    Assert.Equal(2, syncActionService.AllItems.Count());
+            SyncAssert.ActionExists(syncStateService, "/file1",
+                expectedCount: 1,
+                //expectedState: SyncActionState.Queued,
+                expectedChangeType: ChangeType.Added
+                );
 
-        //    SyncAssert.ActionsExist(syncActionService, "/file1",
-        //        expectedCount: 1,
-        //        expectedState: SyncActionState.Queued,
-        //        expectedChangeType: ChangeType.Added
-        //        );
+            SyncAssert.ToVersionMatches(left.CurrentState.GetFile("/file1"), syncStateService.Actions.Single(a => a.Path == "/file1"));
 
-        //    SyncAssert.ToVersionMatches(left.CurrentState.GetFile("/file1"), syncActionService["/file1"].Single());
+            SyncAssert.ActionExists(syncStateService, "/file2",
+                expectedCount: 1,
+                //expectedState: SyncActionState.Queued,
+                expectedChangeType: ChangeType.Added);
 
-        //    SyncAssert.ActionsExist(syncActionService, "/file2",
-        //        expectedCount: 1,
-        //        expectedState: SyncActionState.Queued,
-        //        expectedChangeType: ChangeType.Added);
+            SyncAssert.ToVersionMatches(right.CurrentState.GetFile("/file2"), syncStateService.Actions.Single(a => a.Path == "/file2"));
 
-        //    SyncAssert.ToVersionMatches(right.CurrentState.GetFile("/file2"), syncActionService["/file2"].Single());
-
-        //    Assert.Empty(m_Group.GetSyncConflictService().Items);
-        //    Assert.Single(m_Group.GetSyncPointService().Items);
-
-        //    var syncPoint = m_Group.GetSyncPointService().Items.Single();
-        //    Assert.Equal(1, syncPoint.Id);
-        //    var expectedToSnapshotId = m_MultiFileSystemHistory.LatestSnapshot.Id;
-        //    Assert.Equal(expectedToSnapshotId, syncPoint.MultiFileSystemSnapshotId);
-        //}
+            Assert.Empty(syncStateService.Conflicts);
+            
+            Assert.NotNull(syncStateService.LastSyncSnapshotId);
+            Assert.Equal(m_Group.GetMultiFileSystemHistoryService().LatestSnapshot.Id, syncStateService.LastSyncSnapshotId);
+        }
 
         [Fact]
         public void Synchronize_without_previous_sync_no_conflicts()
