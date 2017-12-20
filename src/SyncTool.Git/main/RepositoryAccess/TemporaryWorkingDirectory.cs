@@ -2,6 +2,7 @@ using System;
 using LibGit2Sharp;
 using SyncTool.Git.Options;
 using Grynwald.Utilities.IO;
+using System.IO;
 
 namespace SyncTool.Git.RepositoryAccess
 {
@@ -61,6 +62,16 @@ namespace SyncTool.Git.RepositoryAccess
         public void Dispose()
         {
             m_Repository.Dispose();
+
+            // remove read-only flag from all files before deleting    
+
+            var directoryInfo = new DirectoryInfo(m_TempDirectory);
+            directoryInfo.Attributes = FileAttributes.Normal;
+            foreach (var info in directoryInfo.GetFileSystemInfos("*", SearchOption.AllDirectories))
+            {
+                info.Attributes = FileAttributes.Normal;
+            }
+            
             m_TempDirectory.Dispose();
         }
              
