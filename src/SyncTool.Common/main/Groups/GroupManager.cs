@@ -1,11 +1,11 @@
-﻿using Autofac;
+using Autofac;
 using SyncTool.Common.DI;
 using SyncTool.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-
+using Grynwald.Utilities.Collections;
 
 namespace SyncTool.Common.Groups
 {    

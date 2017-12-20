@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SyncTool.FileSystem;
 using System.Linq;
 using SyncTool.Utilities;
+using Grynwald.Utilities.Collections;
 
 namespace SyncTool.Synchronization.State
 {

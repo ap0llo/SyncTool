@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.IO;
 using Autofac;
 using SyncTool.Common.DI;
 using SyncTool.Common.Groups;
-using SyncTool.Utilities;
 using SyncTool.Common.Options;
 
 using Directory = System.IO.Directory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Grynwald.Utilities.IO;
 
 namespace SyncTool.Common.TestHelpers
 {

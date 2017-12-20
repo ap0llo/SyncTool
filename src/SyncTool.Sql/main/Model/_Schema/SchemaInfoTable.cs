@@ -1,4 +1,5 @@
-﻿using System.Data;
+using Grynwald.Utilities.Data;
+using System.Data;
 
 namespace SyncTool.Sql.Model
 {

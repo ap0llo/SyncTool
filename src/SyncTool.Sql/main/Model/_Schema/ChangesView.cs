@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Text;
+using Grynwald.Utilities.Data;
 using JetBrains.Annotations;
 
 namespace SyncTool.Sql.Model

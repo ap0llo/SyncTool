@@ -1,7 +1,8 @@
-﻿using SyncTool.Utilities;
+using SyncTool.Utilities;
 using System;
 using Xunit;
 using SyncTool.Common.Groups;
+using Grynwald.Utilities.IO;
 
 namespace SyncTool.Common.Test.Groups
 {

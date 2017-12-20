@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using LibGit2Sharp;
-using SyncTool.Utilities;
 using SyncTool.Git.Options;
+using Grynwald.Utilities.IO;
 
 namespace SyncTool.Git.RepositoryAccess
 {

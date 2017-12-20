@@ -1,4 +1,5 @@
-﻿using Dapper;
+using Dapper;
+using Grynwald.Utilities.Data;
 using System.Collections.Generic;
 
 namespace SyncTool.Sql.Model

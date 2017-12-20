@@ -18,7 +18,7 @@ using SyncTool.Sql.DI;
 using SyncTool.Sql.TestHelpers;
 using SyncTool.Synchronization;
 using SyncTool.Synchronization.DI;
-using SyncTool.Utilities;
+using Grynwald.Utilities.IO;
 using System.Linq;
 using SyncTool.Synchronization.TestHelpers;
 

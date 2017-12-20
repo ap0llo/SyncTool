@@ -7,6 +7,7 @@ using SyncTool.FileSystem;
 using SyncTool.FileSystem.Versioning;
 using SyncTool.Synchronization.State;
 using SyncTool.Utilities;
+using Grynwald.Utilities.Collections;
 
 namespace SyncTool.Synchronization
 {

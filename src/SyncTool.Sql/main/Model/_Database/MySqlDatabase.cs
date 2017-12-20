@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using Grynwald.Utilities.Data;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using SyncTool.Common.Groups;

@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Grynwald.Utilities.Collections;
 using JetBrains.Annotations;
 using LibGit2Sharp;
 using SyncTool.Git.RepositoryAccess;
